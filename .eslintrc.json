@@ -1,0 +1,36 @@
+{
+  "parser": "babel-eslint",
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "globals": {
+    "NodeJS": true,
+    "JQuery": true
+  },
+  "extends": ["eslint:recommended", "airbnb-base/legacy"],
+  "parserOptions": {
+    "ecmaVersion": 12,
+    "sourceType": "module"
+  },
+  "plugins": ["import", "fsd"],
+  "rules": {
+    "comma-dangle": ["warn", "always-multiline"],
+    "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
+    "lines-between-class-members": ["error", "always", { "exceptAfterSingleLine": true }],
+    "no-use-before-define": "warn",
+    "no-param-reassign": ["error", { "props": false }],
+    "no-unused-vars": ["warn", { "args": "none" }],
+    "semi": ["error", "always"],
+    "quotes": ["error", "single"],
+    "no-var": "error",
+    "no-console": "warn",
+    "linebreak-style": 0,
+    "fsd/hof-name-prefix": "error",
+    "fsd/no-heavy-constructor": "error",
+    "fsd/jq-cache-dom-elements": "error",
+    // "fsd/jq-use-js-prefix-in-selector": "error",
+    // "fsd/no-function-declaration-in-event-listener": "error",
+    "fsd/split-conditionals": "error"
+  }
+}
