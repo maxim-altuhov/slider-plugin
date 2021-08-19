@@ -1,0 +1,28 @@
+.meta-slider {
+  position: relative;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #6d6dff 50%, #e4e4e4 50%);
+  width: 100%;
+  height: 10px;
+  cursor: pointer;
+
+  &__thumb {
+    position: absolute;
+    top: -7px;
+    width: 24px;
+    height: 24px;
+    background: #6d6dff;
+    border-radius: 50%;
+    border: 2px solid #ffffff;
+    cursor: pointer;
+    transform: translateX(-12px);
+
+    &_left {
+      left: 0%;
+    }
+
+    &_right {
+      left: 50%;
+    }
+  }
+}
