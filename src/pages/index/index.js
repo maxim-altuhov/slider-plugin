@@ -11,5 +11,3 @@ import './index.scss';
 // $('#js-slider').myPlugin();
 
 const slider = new MetaSlider();
-
-slider.init();
