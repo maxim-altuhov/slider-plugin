@@ -1,14 +1,31 @@
 /* eslint-disable fsd/no-function-declaration-in-event-listener */
 class MetaSlider {
+  initValueLeft = 0;
+  initValueRight = 50;
+
   minValue = 0;
-  maxValue = 100;
+  maxValue = 200;
+
+  showMinAndMaxValue = true;
+  showTheScale = false;
+  showMarkers = true;
+
   elemSlider = document.querySelector('.meta-slider');
+
   elemThumbs = this.elemSlider.querySelectorAll('.meta-slider__thumb');
-  elemMarker = this.elemSlider.querySelector('.meta-slider__thumb > .meta-slider__marker');
+  elemThumbLeft = this.elemSlider.querySelector('.meta-slider__thumb_left');
+  elemThumbRight = this.elemSlider.querySelector('.meta-slider__thumb_right');
+
+  elemMarkerLeft = this.elemSlider.querySelector('.meta-slider__marker_left');
+  elemMarkerRight = this.elemSlider.querySelector('.meta-slider__marker_right');
+
+  elemWithMinValue = this.elemSlider.querySelector('.meta-slider__value_min');
+  elemWithMaxValue = this.elemSlider.querySelector('.meta-slider__value_max');
+
   linkInitMouseMove = this.handleInitMouseMove.bind(this);
   linkInitMouseUp = this.handleInitMouseUp.bind(this);
+
   widthSlider = this.elemSlider.offsetWidth;
-  initValueRight = 50;
 
   constructor() {
     this.init();
@@ -18,11 +35,29 @@ class MetaSlider {
     this.setEventsSlider();
     this.setEventsThumbs();
     this.setValueForThumbs(this.initValueRight);
+    this.indicateMinAndMaxValue();
+    this.createScaleOfValues();
+  }
+
+  indicateMinAndMaxValue() {
+    this.elemSlider.dataset.min = this.minValue;
+    this.elemSlider.dataset.max = this.maxValue;
+
+    if (this.showMinAndMaxValue && !this.showTheScale) {
+      this.elemWithMinValue.textContent = this.minValue;
+      this.elemWithMaxValue.textContent = this.maxValue;
+    }
+  }
+
+  createScaleOfValues() {
+    if (this.showTheScale && !this.showMinAndMaxValue) {
+      console.log('createScaleOfValues');
+    }
   }
 
   setValueInMarker(value) {
-    if (this.elemMarker) {
-      this.elemMarker.textContent = Math.round(value);
+    if (this.showMarkers) {
+      this.elemMarkerRight.textContent = Math.round(value);
     }
   }
 
@@ -32,33 +67,35 @@ class MetaSlider {
   }
 
   setValueForThumbs(value) {
+    let valueAsPercentage = (value / this.maxValue) * 100;
+
     this.elemThumbs[0].dataset.value = Math.round(value);
-    this.elemThumbs[0].style.left = value + '%';
-    this.setBackgroundTheRange(value);
+    this.elemThumbs[0].style.left = valueAsPercentage + '%';
+    this.setBackgroundTheRange(valueAsPercentage);
     this.setValueInMarker(value);
   }
 
   setPositionForThumbs(event) {
     if (event.target.classList.contains('meta-slider')) {
-      let positionValue = ((event.offsetX / this.widthSlider) * 100);
+      let valueAsPercentage = ((event.offsetX / this.widthSlider) * 100);
+      let value = (this.maxValue * valueAsPercentage) / 100;
 
-      this.elemThumbs[0].style.left = positionValue + '%';
-      this.setValueForThumbs(positionValue);
+      this.setValueForThumbs(value);
     }
   }
 
   handleInitMouseMove(event) {
     let newValuePosition = event.clientX - this.elemSlider.getBoundingClientRect().left;
-    let resultAsPercentage = (newValuePosition * 100) / this.widthSlider;
+    let valueAsPercentage = (newValuePosition * 100) / this.widthSlider;
+    let value = (this.maxValue * valueAsPercentage) / 100;
 
-    if (resultAsPercentage < 0) {
-      resultAsPercentage = 0;
-    } else if (resultAsPercentage > 100) {
-      resultAsPercentage = 100;
+    if (value < 0) {
+      value = 0;
+    } else if (value > this.maxValue) {
+      value = this.maxValue;
     }
 
-    this.elemThumbs[0].style.left = resultAsPercentage + '%';
-    this.setValueForThumbs(resultAsPercentage);
+    this.setValueForThumbs(value);
   }
 
   handleInitMouseUp() {

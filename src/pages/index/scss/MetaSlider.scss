@@ -6,6 +6,22 @@
   height: 10px;
   cursor: pointer;
 
+  &__value {
+    position: absolute;
+    color: #000;
+    font-size: 14px;
+    font-weight: 700;
+    bottom: -25px;
+
+    &_min {
+      left: 0;
+    }
+
+    &_max {
+      right: 0;
+    }
+  }
+
   &__thumb {
     position: absolute;
     top: -7px;
@@ -37,9 +53,11 @@
     color: #ffffff;
     padding: 5px 10px;
     border-radius: 4px;
+    font-size: 14px;
     font-weight: 700;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
   }
+
 }
