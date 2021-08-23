@@ -1,15 +1,21 @@
+@import '@base/base.scss';
+
 .meta-slider {
   position: relative;
   border-radius: 5px;
   background: linear-gradient(90deg, #6d6dff 50%, #e4e4e4 50%);
   width: 100%;
   height: 10px;
+  color: #000;
   cursor: pointer;
+  font-family: $font-family;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1;
+  box-sizing: border-box;
 
   &__value {
     position: absolute;
-    color: #000;
-    font-size: 14px;
     font-weight: 700;
     bottom: -25px;
 
@@ -30,8 +36,6 @@
     background: #6d6dff;
     border-radius: 50%;
     border: 2px solid #ffffff;
-    cursor: pointer;
-    transform: translateX(-12px);
 
     &_left {
       left: 0%;
@@ -53,11 +57,44 @@
     color: #ffffff;
     padding: 5px 10px;
     border-radius: 4px;
-    font-size: 14px;
     font-weight: 700;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
+  }
+
+  &__scale {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+  }
+
+  &__scale-point {
+    position: absolute;
+    list-style: none;
+    top: 33px;
+    text-align: center;
+
+    &::after {
+      content: '|';
+      position: absolute;
+      top: -18px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  *,
+  *:before,
+  *:after {
+    font-family: $font-family;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
   }
 
 }

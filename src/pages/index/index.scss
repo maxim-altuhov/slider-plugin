@@ -1,4 +1,4 @@
-@import '@base/base.scss';
+@import '@base/base-global.scss';
 @import './scss/MetaSlider';
 
 body,
@@ -16,9 +16,6 @@ html {
 }
 
 .slider {
-  display: flex;
-  justify-content: center;
-  align-items: center;
   width: 50%;
   padding: 0 2rem;
 }
