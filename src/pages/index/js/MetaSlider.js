@@ -3,20 +3,22 @@ class MetaSlider {
   selector = document.querySelector('#slider');
 
   initValueLeft = 0;
-  initValueRight = 0;
+  initValueRight = 50;
 
-  minValue = -10000;
-  maxValue = 10000;
+  minValue = -100;
+  maxValue = 200;
   numberOfDivisions = 10;
 
   showMinAndMaxValue = false;
   showTheScale = true;
   showMarkers = true;
+  showBackgroundForRange = true;
   isRange = false;
 
   constructor() {
     this.renderSlider();
     this.getInfoAboutSlider();
+    this.initValueCheck();
     this.init();
   }
 
@@ -28,6 +30,10 @@ class MetaSlider {
     this.createScaleOfValues();
   }
 
+  initValueCheck() {
+    console.log('initValueCheck');
+  }
+
   renderSlider() {
     const fragmentWithASlider = document.createDocumentFragment();
     const blockSlider = document.createElement('div');
@@ -35,13 +41,22 @@ class MetaSlider {
     blockSlider.dataset.min = this.minValue;
     blockSlider.dataset.max = this.maxValue;
 
-    const HTMLBlockWithOneThumb = `<span class="meta-slider__value meta-slider__value_min"></span>
-    <button class="meta-slider__thumb meta-slider__thumb_right" data-value=''>
-      <span class="meta-slider__marker meta-slider__marker_right" style="display:none"></span>
+    const HTMLBlockWithOneThumb = `<button class="meta-slider__thumb meta-slider__thumb_right" data-value=''>
+    <span class="meta-slider__marker meta-slider__marker_right" style="display:none"></span>
+    </button>`;
+
+    const HTMLBlockWithTwoThumb = `<button class="meta-slider__thumb meta-slider__thumb_left" data-value=''>
+    <span class="meta-slider__marker meta-slider__marker_left" style="display:none"></span>
     </button>
+    ${HTMLBlockWithOneThumb}`;
+
+    const checkIsRangeResult = this.isRange ? HTMLBlockWithTwoThumb : HTMLBlockWithOneThumb;
+
+    const HTMLBlockResult = `<span class="meta-slider__value meta-slider__value_min"></span>
+    ${checkIsRangeResult}
     <span class="meta-slider__value meta-slider__value_max"></span>`;
 
-    blockSlider.innerHTML = HTMLBlockWithOneThumb;
+    blockSlider.innerHTML = HTMLBlockResult;
 
     fragmentWithASlider.append(blockSlider);
     this.selector.append(fragmentWithASlider);
@@ -69,12 +84,15 @@ class MetaSlider {
   }
 
   indicateMinAndMaxValue() {
-    this.elemSlider.dataset.min = this.minValue;
-    this.elemSlider.dataset.max = this.maxValue;
-
-    if (this.showMinAndMaxValue && !this.showTheScale) {
+    if (this.showMinAndMaxValue) {
       this.elemWithMinValue.textContent = this.minValue;
       this.elemWithMaxValue.textContent = this.maxValue;
+      const minValueOffset = ((this.elemWithMinValue.offsetWidth / 2) / this.widthSlider) * 100;
+      const maxValueOffset = ((this.elemWithMaxValue.offsetWidth / 2) / this.widthSlider) * 100;
+
+      this.elemWithMinValue.style.left = (-minValueOffset) + '%';
+      this.elemWithMaxValue.style.right = (-maxValueOffset) + '%';
+
       this.elemSlider.style.marginBottom = '45px';
     }
   }
@@ -88,9 +106,11 @@ class MetaSlider {
 
       blockScale.classList.add('meta-slider__scale');
 
-      for (let i = 0; i < this.numberOfDivisions + 1; i++) {
+      for (let i = 0; i < (this.numberOfDivisions + 1); i++) {
         if (i === 0) {
           currentValue = this.minValue;
+        } else if (i === (this.numberOfDivisions + 1)) {
+          currentValue = this.maxValue;
         } else {
           currentValue += stepValue;
         }
@@ -129,8 +149,10 @@ class MetaSlider {
   }
 
   setBackgroundTheRange(value) {
-    const color = `linear-gradient(90deg, #6d6dff ${value}%, #e4e4e4 ${value}%)`;
-    this.elemSlider.style.background = color;
+    if (this.showBackgroundForRange) {
+      const color = `linear-gradient(90deg, #6d6dff ${value}%, #e4e4e4 ${value}%)`;
+      this.elemSlider.style.background = color;
+    }
   }
 
   setValueForSlider(value, valueAsPercentage) {
