@@ -3,9 +3,9 @@ class MetaSlider {
   selector = document.querySelector('#slider');
 
   initValueLeft = 0;
-  initValueRight = 50;
+  initValueRight = 0;
 
-  minValue = 0;
+  minValue = -100;
   maxValue = 100;
   numberOfDivisions = 5;
 
@@ -24,11 +24,11 @@ class MetaSlider {
   }
 
   init() {
-    this.setEventsSlider();
-    this.setEventsThumbs();
     this.setValueForThumbs(this.initValueRight);
     this.indicateMinAndMaxValue();
     this.createScaleOfValues();
+    this.setEventsSlider();
+    this.setEventsThumbs();
   }
 
   checkCorrectNumberOfDivisions() {
@@ -148,7 +148,7 @@ class MetaSlider {
   createScaleOfValues() {
     if (this.showTheScale && !this.showMinAndMaxValue) {
       const fragmentWithAScale = document.createDocumentFragment();
-      const blockScale = document.createElement('ul');
+      const blockScale = document.createElement('div');
       const stepValue = (this.maxValue - this.minValue) / this.numberOfDivisions;
       let currentValue;
 
@@ -163,7 +163,7 @@ class MetaSlider {
           currentValue += stepValue;
         }
 
-        const elemScalePoint = document.createElement('li');
+        const elemScalePoint = document.createElement('button');
         elemScalePoint.classList.add('meta-slider__scale-point');
         elemScalePoint.textContent = currentValue;
 
@@ -216,6 +216,11 @@ class MetaSlider {
     this.setValueForSlider(value, valueAsPercentage);
   }
 
+  setValueFromScale(event) {
+    const value = event.target.textContent;
+    this.setValueForThumbs(value);
+  }
+
   setPositionForThumbs(event) {
     if (event.target.classList.contains('meta-slider')) {
       const value = event.offsetX / this.widthSlider;
@@ -250,6 +255,14 @@ class MetaSlider {
   }
 
   setEventsSlider() {
+    const elemScalePoints = document.querySelectorAll('.meta-slider__scale-point');
+
+    if (elemScalePoints) {
+      elemScalePoints.forEach(elemPoint => {
+        elemPoint.addEventListener('click', this.setValueFromScale.bind(this));
+      });
+    }
+
     this.elemSlider.addEventListener('mousedown', this.setPositionForThumbs.bind(this));
   }
 
