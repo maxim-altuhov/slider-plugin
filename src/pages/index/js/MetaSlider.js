@@ -5,10 +5,11 @@ class MetaSlider {
   initValueLeft = 0;
   initValueRight = 50;
 
-  minValue = -100;
-  maxValue = 200;
-  numberOfDivisions = 10;
+  minValue = 0;
+  maxValue = 100;
+  numberOfDivisions = 5;
 
+  showError = true;
   showMinAndMaxValue = false;
   showTheScale = true;
   showMarkers = true;
@@ -30,8 +31,55 @@ class MetaSlider {
     this.createScaleOfValues();
   }
 
+  checkCorrectNumberOfDivisions() {
+    return Number.isInteger((this.maxValue - this.minValue) / this.numberOfDivisions);
+  }
+
+  renderErrorMessage(message) {
+    const elemErrorInfo = document.createElement('p');
+    elemErrorInfo.classList.add('error-info');
+    this.selector.append(elemErrorInfo);
+    elemErrorInfo.textContent = message;
+  }
+
   initValueCheck() {
-    console.log('initValueCheck');
+    if (this.showError) {
+      const errorMessage = {
+        initValueLeft: 'Ошибка в данных для левого ползунка слайдера. Значение бегунка установлено в значение по-умолчанию',
+        initValueRight: 'Ошибка в данных для правого ползунка слайдера. Значение бегунка установлено в значение по-умолчанию',
+        minAndMaxValue: 'Ошибка во входящих данных: Max значение установленное для слайдера меньше его Min значения!',
+        maxValue: 'Ошибка в данных для ползунка слайдера. Установленно Max возможное значение для слайдера.',
+        minValue: 'Ошибка в данных для ползунка слайдера. Установленно Min возможное значение для слайдера.',
+        numberOfDivisions: `Установите корректное значение кол-ва интервалов для отображения шкалы с делениями. Установлено ближайщее оптимальное значение равное ${this.numberOfDivisions}.`,
+      };
+
+      if (this.initValueLeft > this.initValueRight) {
+        this.initValueLeft = this.minValue;
+        this.renderErrorMessage(errorMessage.initValueLeft);
+      }
+
+      if (this.initValueRight < this.initValueLeft) {
+        this.initValueRight = this.maxValue;
+        this.renderErrorMessage(errorMessage.initValueRight);
+      }
+
+      if (this.minValue > this.maxValue) {
+        this.renderErrorMessage(errorMessage.minAndMaxValue);
+      }
+
+      if (this.initValueRight > this.maxValue) {
+        this.initValueRight = this.maxValue;
+        this.renderErrorMessage(errorMessage.maxValue);
+      } else if (this.initValueRight < this.minValue) {
+        this.initValueRight = this.minValue;
+        this.renderErrorMessage(errorMessage.minValue);
+      }
+
+      while (!this.checkCorrectNumberOfDivisions() || this.numberOfDivisions <= 0) {
+        this.numberOfDivisions += 1;
+        this.renderErrorMessage(errorMessage.numberOfDivisions);
+      }
+    }
   }
 
   renderSlider() {
@@ -101,7 +149,7 @@ class MetaSlider {
     if (this.showTheScale && !this.showMinAndMaxValue) {
       const fragmentWithAScale = document.createDocumentFragment();
       const blockScale = document.createElement('ul');
-      const stepValue = Math.round((this.maxValue - this.minValue) / this.numberOfDivisions);
+      const stepValue = (this.maxValue - this.minValue) / this.numberOfDivisions;
       let currentValue;
 
       blockScale.classList.add('meta-slider__scale');

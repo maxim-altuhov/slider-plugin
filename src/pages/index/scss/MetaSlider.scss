@@ -98,4 +98,11 @@
     box-sizing: border-box;
   }
 
+  &~.error-info {
+    margin: 5px 0;
+    color: #ff1b1b;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
 }
