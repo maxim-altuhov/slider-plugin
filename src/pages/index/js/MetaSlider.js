@@ -14,9 +14,11 @@ class MetaSlider {
   showBackgroundForRange = true;
   isRange = true;
 
-  minValue = -100;
+  minValue = 0;
   maxValue = 100;
-  numberOfDivisions = 10;
+  numberOfDivisions = 5;
+  preFix = '';
+  postFix = ' $';
 
   initValueLeft = 0;
   initValueRight = 50;
@@ -138,8 +140,8 @@ class MetaSlider {
 
   setMinAndMaxValues() {
     if (this.showMinAndMaxValue) {
-      this.elemWithMinValue.textContent = this.minValue;
-      this.elemWithMaxValue.textContent = this.maxValue;
+      this.elemWithMinValue.textContent = `${this.preFix}${this.minValue}${this.postFix}`;
+      this.elemWithMaxValue.textContent = `${this.preFix}${this.maxValue}${this.postFix}`;
       const minValueOffset = ((this.elemWithMinValue.offsetWidth / 2) / this.widthSlider) * 100;
       const maxValueOffset = ((this.elemWithMaxValue.offsetWidth / 2) / this.widthSlider) * 100;
 
@@ -171,7 +173,8 @@ class MetaSlider {
         const elemScalePoint = document.createElement('button');
         elemScalePoint.classList.add('meta-slider__scale-point');
         elemScalePoint.style.color = this.colorForScale;
-        elemScalePoint.textContent = currentScalePointValue;
+        elemScalePoint.dataset.value = currentScalePointValue;
+        elemScalePoint.textContent = `${this.preFix}${currentScalePointValue}${this.postFix}`;
 
         blockScale.append(elemScalePoint);
       }
@@ -181,7 +184,8 @@ class MetaSlider {
       const resultArrayScalePoint = document.querySelectorAll('.meta-slider__scale-point');
 
       resultArrayScalePoint.forEach((scalePoint) => {
-        const currentValueAsPercentage = ((scalePoint.textContent - this.minValue) / (this.maxValue - this.minValue)) * 100;
+        const valueInScalePoint = scalePoint.dataset.value;
+        const currentValueAsPercentage = ((valueInScalePoint - this.minValue) / (this.maxValue - this.minValue)) * 100;
         const widthScalePointAsPercentage = ((scalePoint.offsetWidth / 2) / this.widthSlider) * 100;
 
         scalePoint.style.left = (currentValueAsPercentage - widthScalePointAsPercentage) + '%';
@@ -198,7 +202,7 @@ class MetaSlider {
       this.elemSlider.style.marginTop = '45px';
 
       valuesArray.forEach((currentValue, index) => {
-        this.elemMarkers[index].textContent = Math.round(currentValue);
+        this.elemMarkers[index].textContent = `${this.preFix}${Math.round(currentValue)}${this.postFix}`;
         this.elemMarkers[index].style.display = 'block';
       });
     }
@@ -257,7 +261,7 @@ class MetaSlider {
 
   setValueWhenClickingOnTheScale(event) {
     event.preventDefault();
-    const targetValue = Number(event.target.textContent);
+    const targetValue = event.target.dataset.value;
 
     this.setEventTargetValue(targetValue);
   }
