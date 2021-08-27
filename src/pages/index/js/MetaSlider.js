@@ -1,5 +1,3 @@
-/* eslint-disable max-len */
-/* eslint-disable fsd/no-function-declaration-in-event-listener */
 class MetaSlider {
   selector = document.querySelector('#slider');
 
@@ -16,11 +14,11 @@ class MetaSlider {
   showBackgroundForRange = true;
   isRange = true;
 
-  minValue = 0;
+  minValue = -100;
   maxValue = 100;
   numberOfDivisions = 10;
 
-  initValueLeft = 50;
+  initValueLeft = 0;
   initValueRight = 50;
   checkedInitValueLeft = this.isRange ? this.initValueLeft : this.minValue;
   initValuesArray;
@@ -34,7 +32,7 @@ class MetaSlider {
 
   init() {
     this.setValueForThumbs(this.initValuesArray);
-    this.indicateMinAndMaxValue();
+    this.setMinAndMaxValues();
     this.createScaleOfValues();
     this.setEventsSlider();
     this.setEventsThumbs();
@@ -138,7 +136,7 @@ class MetaSlider {
     this.thumbWidthAsPercentage = ((this.widthThumb / 2) / this.widthSlider) * 100;
   }
 
-  indicateMinAndMaxValue() {
+  setMinAndMaxValues() {
     if (this.showMinAndMaxValue) {
       this.elemWithMinValue.textContent = this.minValue;
       this.elemWithMaxValue.textContent = this.maxValue;
@@ -154,31 +152,31 @@ class MetaSlider {
 
   createScaleOfValues() {
     if (this.showTheScale && !this.showMinAndMaxValue) {
-      const fragmentWithAScale = document.createDocumentFragment();
+      const fragmentWithScale = document.createDocumentFragment();
       const blockScale = document.createElement('div');
-      const stepValue = (this.maxValue - this.minValue) / this.numberOfDivisions;
-      let currentValue;
+      const stepValueScale = (this.maxValue - this.minValue) / this.numberOfDivisions;
+      let currentScalePointValue;
 
       blockScale.classList.add('meta-slider__scale');
 
       for (let i = 0; i < (this.numberOfDivisions + 1); i++) {
         if (i === 0) {
-          currentValue = this.minValue;
+          currentScalePointValue = this.minValue;
         } else if (i === (this.numberOfDivisions + 1)) {
-          currentValue = this.maxValue;
+          currentScalePointValue = this.maxValue;
         } else {
-          currentValue += stepValue;
+          currentScalePointValue += stepValueScale;
         }
 
         const elemScalePoint = document.createElement('button');
         elemScalePoint.classList.add('meta-slider__scale-point');
         elemScalePoint.style.color = this.colorForScale;
-        elemScalePoint.textContent = currentValue;
+        elemScalePoint.textContent = currentScalePointValue;
 
         blockScale.append(elemScalePoint);
       }
-      fragmentWithAScale.append(blockScale);
-      this.elemSlider.appendChild(fragmentWithAScale);
+      fragmentWithScale.append(blockScale);
+      this.elemSlider.appendChild(fragmentWithScale);
 
       const resultArrayScalePoint = document.querySelectorAll('.meta-slider__scale-point');
 
@@ -193,97 +191,100 @@ class MetaSlider {
     }
   }
 
-  setValueInMarker(values) {
+  setValueInMarker(valuesArray) {
     this.elemSlider.style.marginTop = '';
 
     if (this.showMarkers) {
       this.elemSlider.style.marginTop = '45px';
 
-      values.forEach((currentValue, index) => {
+      valuesArray.forEach((currentValue, index) => {
         this.elemMarkers[index].textContent = Math.round(currentValue);
         this.elemMarkers[index].style.display = 'block';
       });
     }
   }
 
-  setBackgroundTheRange(valuesAsPercentage) {
+  setBackgroundTheRange(valuesAsPercentageArray) {
     if (this.showBackgroundForRange) {
-      const settingForRange = `left: ${valuesAsPercentage[0]}%; right: ${100 - valuesAsPercentage[1]}%; background: ${this.mainColor};`;
+      const settingForRange = `left: ${valuesAsPercentageArray[0]}%; right: ${100 - valuesAsPercentageArray[1]}%; background: ${this.mainColor};`;
       this.sliderProgress.style = settingForRange;
     }
   }
 
-  setValueForSlider(values, valuesAsPercentage) {
-    values.forEach((currentValue, index) => {
+  setValueForSlider(valuesArray, valuesAsPercentageArray) {
+    valuesArray.forEach((currentValue, index) => {
       this.elemThumbs[index].dataset.value = Math.round(currentValue);
-      this.elemThumbs[index].style.left = (valuesAsPercentage[index] - this.thumbWidthAsPercentage) + '%';
+      this.elemThumbs[index].style.left = (valuesAsPercentageArray[index] - this.thumbWidthAsPercentage) + '%';
     });
-    this.setBackgroundTheRange(valuesAsPercentage);
-    this.setValueInMarker(values);
+    this.setBackgroundTheRange(valuesAsPercentageArray);
+    this.setValueInMarker(valuesArray);
   }
 
-  setValueForThumbs(values) {
-    let valuesAsPercentage = [];
+  setValueForThumbs(valuesArray) {
+    let valuesAsPercentageArray = [];
 
-    values.forEach(currentValue => {
+    valuesArray.forEach(currentValue => {
       const currentValueAsPersentage = ((currentValue - this.minValue) / (this.maxValue - this.minValue)) * 100;
-      valuesAsPercentage.push(currentValueAsPersentage);
+      valuesAsPercentageArray.push(currentValueAsPersentage);
     });
 
-    this.setValueForSlider(values, valuesAsPercentage);
+    this.setValueForSlider(valuesArray, valuesAsPercentageArray);
   }
 
-  setValueFromScale(event) {
-    const clickValue = Number(event.target.textContent);
+  setEventTargetValue(targetValue) {
     const [leftValue, rightValue] = this.elemThumbs;
     const currentLeftValue = leftValue.dataset.value;
     const currentRightValue = rightValue.dataset.value;
 
-    const leftThumbDiff = Math.abs(clickValue - currentLeftValue);
-    const rightThumbDiff = Math.abs(clickValue - currentRightValue);
-    const inRange = clickValue > currentLeftValue && clickValue < currentRightValue;
+    const leftThumbDiff = Math.abs(targetValue - currentLeftValue);
+    const rightThumbDiff = Math.abs(targetValue - currentRightValue);
+    const clickInRange = this.isRange ? targetValue > currentLeftValue && targetValue < currentRightValue : false;
 
-    if (clickValue <= currentLeftValue) this.initValuesArray[0] = clickValue;
+    if (targetValue <= currentLeftValue) this.initValuesArray[0] = targetValue;
 
-    if (inRange && leftThumbDiff < rightThumbDiff) {
-      this.initValuesArray[0] = clickValue;
-    } else if (inRange && leftThumbDiff > rightThumbDiff) {
-      this.initValuesArray[1] = clickValue;
-    } else if (inRange && leftThumbDiff === rightThumbDiff) {
-      this.initValuesArray[1] = clickValue;
+    if (clickInRange && leftThumbDiff < rightThumbDiff) {
+      this.initValuesArray[0] = targetValue;
+    } else if (clickInRange && leftThumbDiff > rightThumbDiff) {
+      this.initValuesArray[1] = targetValue;
+    } else if (clickInRange && leftThumbDiff === rightThumbDiff) {
+      this.initValuesArray[1] = targetValue;
     }
 
-    if (clickValue >= currentRightValue || !this.isRange) this.initValuesArray[1] = clickValue;
+    if (targetValue >= currentRightValue || !this.isRange) this.initValuesArray[1] = targetValue;
 
     this.setValueForThumbs(this.initValuesArray);
   }
 
+  setValueWhenClickingOnTheScale(event) {
+    event.preventDefault();
+    const targetValue = Number(event.target.textContent);
+
+    this.setEventTargetValue(targetValue);
+  }
+
   setPositionForThumbs(event) {
+    event.preventDefault();
     if (event.target.classList.contains('meta-slider')) {
       const value = event.offsetX / this.widthSlider;
-      const valueAsPercentage = value * 100;
-
       const resultValue = ((this.maxValue - this.minValue) * value) + this.minValue;
-      this.setValueForSlider(resultValue, valueAsPercentage);
+      this.setEventTargetValue(resultValue);
     }
   }
 
   handleInitMouseMove(event) {
+    event.preventDefault();
     const sliderPositionLeft = this.elemSlider.getBoundingClientRect().left;
     const newValuePosition = event.clientX - sliderPositionLeft;
-    let value = newValuePosition / this.widthSlider;
-    let valueAsPercentage = value * 100;
+    const value = newValuePosition / this.widthSlider;
     let resultValue = ((this.maxValue - this.minValue) * value) + this.minValue;
 
-    if (valueAsPercentage < 0) {
-      valueAsPercentage = 0;
+    if (resultValue < this.minValue) {
       resultValue = this.minValue;
-    } else if (valueAsPercentage > 100) {
-      valueAsPercentage = 100;
+    } else if (resultValue > this.maxValue) {
       resultValue = this.maxValue;
     }
 
-    this.setValueForSlider(resultValue, valueAsPercentage);
+    this.setEventTargetValue(resultValue);
   }
 
   handleInitMouseUp() {
@@ -291,12 +292,19 @@ class MetaSlider {
     document.removeEventListener('mouseup', this.linkInitMouseUp);
   }
 
+  handleSetEventListenerDoc(event) {
+    event.preventDefault();
+
+    document.addEventListener('mousemove', this.linkInitMouseMove);
+    document.addEventListener('mouseup', this.linkInitMouseUp);
+  }
+
   setEventsSlider() {
     const elemScalePoints = document.querySelectorAll('.meta-slider__scale-point');
 
     if (elemScalePoints) {
       elemScalePoints.forEach(elemPoint => {
-        elemPoint.addEventListener('click', this.setValueFromScale.bind(this));
+        elemPoint.addEventListener('click', this.setValueWhenClickingOnTheScale.bind(this));
       });
     }
 
@@ -305,13 +313,8 @@ class MetaSlider {
 
   setEventsThumbs() {
     this.elemThumbs.forEach(thumb => {
-      thumb.addEventListener('mousedown', (event) => {
-        event.preventDefault();
-
-        document.addEventListener('mousemove', this.linkInitMouseMove);
-        document.addEventListener('mouseup', this.linkInitMouseUp);
-      });
-
+      thumb.addEventListener('mousedown', this.handleSetEventListenerDoc.bind(this));
+      // eslint-disable-next-line fsd/no-function-declaration-in-event-listener
       thumb.addEventListener('dragstart', () => false);
     });
   }

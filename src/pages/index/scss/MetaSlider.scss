@@ -18,6 +18,7 @@
     position: absolute;
     border-radius: 5px;
     height: 10px;
+    pointer-events: none;
   }
 
   &__value {
@@ -44,11 +45,13 @@
     border: 2px solid #ffffff;
 
     &_left {
-      left: 0%;
+      left: 50%;
+      z-index: 1;
     }
 
     &_right {
-      left: 100%;
+      left: 50%;
+      z-index: 99;
     }
   }
 
