@@ -12,16 +12,17 @@ class MetaSlider {
   showTheScale = true;
   showMarkers = true;
   showBackgroundForRange = true;
-  isRange = true;
+  isRange = false;
 
-  minValue = 0;
+  step = 1;
+  minValue = -100;
   maxValue = 100;
-  numberOfDivisions = 5;
+  numberOfDivisions = 20;
   preFix = '';
-  postFix = ' $';
+  postFix = '';
 
   initValueLeft = 0;
-  initValueRight = 50;
+  initValueRight = 100;
   checkedInitValueLeft = this.isRange ? this.initValueLeft : this.minValue;
   initValuesArray;
 
@@ -156,20 +157,11 @@ class MetaSlider {
     if (this.showTheScale && !this.showMinAndMaxValue) {
       const fragmentWithScale = document.createDocumentFragment();
       const blockScale = document.createElement('div');
-      const stepValueScale = (this.maxValue - this.minValue) / this.numberOfDivisions;
-      let currentScalePointValue;
+      const stepValueScale = this.step > 1 ? this.step : this.numberOfDivisions;
 
       blockScale.classList.add('meta-slider__scale');
 
-      for (let i = 0; i < (this.numberOfDivisions + 1); i++) {
-        if (i === 0) {
-          currentScalePointValue = this.minValue;
-        } else if (i === (this.numberOfDivisions + 1)) {
-          currentScalePointValue = this.maxValue;
-        } else {
-          currentScalePointValue += stepValueScale;
-        }
-
+      for (let currentScalePointValue = this.minValue; currentScalePointValue <= this.maxValue; currentScalePointValue += stepValueScale) {
         const elemScalePoint = document.createElement('button');
         elemScalePoint.classList.add('meta-slider__scale-point');
         elemScalePoint.style.color = this.colorForScale;
@@ -178,6 +170,7 @@ class MetaSlider {
 
         blockScale.append(elemScalePoint);
       }
+
       fragmentWithScale.append(blockScale);
       this.elemSlider.appendChild(fragmentWithScale);
 
@@ -235,26 +228,40 @@ class MetaSlider {
     this.setValueForSlider(valuesArray, valuesAsPercentageArray);
   }
 
-  setEventTargetValue(targetValue) {
+  setEventTargetValue(targetValue, event) {
     const [leftValue, rightValue] = this.elemThumbs;
-    const currentLeftValue = leftValue.dataset.value;
-    const currentRightValue = rightValue.dataset.value;
+    const currentLeftValue = Number(leftValue.dataset.value);
+    const currentRightValue = Number(rightValue.dataset.value);
 
     const leftThumbDiff = Math.abs(targetValue - currentLeftValue);
     const rightThumbDiff = Math.abs(targetValue - currentRightValue);
     const clickInRange = this.isRange ? targetValue > currentLeftValue && targetValue < currentRightValue : false;
 
     if (targetValue <= currentLeftValue) this.initValuesArray[0] = targetValue;
+    if (targetValue >= currentRightValue || !this.isRange) this.initValuesArray[1] = targetValue;
 
     if (clickInRange && leftThumbDiff < rightThumbDiff) {
       this.initValuesArray[0] = targetValue;
     } else if (clickInRange && leftThumbDiff > rightThumbDiff) {
       this.initValuesArray[1] = targetValue;
-    } else if (clickInRange && leftThumbDiff === rightThumbDiff) {
-      this.initValuesArray[1] = targetValue;
     }
 
-    if (targetValue >= currentRightValue || !this.isRange) this.initValuesArray[1] = targetValue;
+    const identicalDistanceInRange = clickInRange && leftThumbDiff === rightThumbDiff;
+
+    if (identicalDistanceInRange && this.step > 1) {
+      const thumbLeftPosition = leftValue.getBoundingClientRect().left;
+      const thumbRightPosition = rightValue.getBoundingClientRect().left;
+      const leftValuePosition = Math.abs(event.clientX - thumbLeftPosition);
+      const rightValuePosition = Math.abs(event.clientX - thumbRightPosition);
+
+      if ((rightValuePosition - leftValuePosition) > 0) {
+        this.initValuesArray[0] = targetValue;
+      } else {
+        this.initValuesArray[1] = targetValue;
+      }
+    } else if (identicalDistanceInRange) {
+      this.initValuesArray[1] = targetValue;
+    }
 
     this.setValueForThumbs(this.initValuesArray);
   }
@@ -263,32 +270,34 @@ class MetaSlider {
     event.preventDefault();
     const targetValue = event.target.dataset.value;
 
-    this.setEventTargetValue(targetValue);
+    this.setEventTargetValue(targetValue, event);
   }
 
   setPositionForThumbs(event) {
     event.preventDefault();
     if (event.target.classList.contains('meta-slider')) {
       const value = event.offsetX / this.widthSlider;
-      const resultValue = ((this.maxValue - this.minValue) * value) + this.minValue;
-      this.setEventTargetValue(resultValue);
+      const calculatedValue = ((this.maxValue - this.minValue) * value) + this.minValue;
+      let valueAdjustedByAStep = Math.round(calculatedValue / this.step) * this.step;
+      this.setEventTargetValue(valueAdjustedByAStep, event);
     }
   }
 
   handleInitMouseMove(event) {
     event.preventDefault();
     const sliderPositionLeft = this.elemSlider.getBoundingClientRect().left;
-    const newValuePosition = event.clientX - sliderPositionLeft;
-    const value = newValuePosition / this.widthSlider;
-    let resultValue = ((this.maxValue - this.minValue) * value) + this.minValue;
+    const valuePosition = event.clientX - sliderPositionLeft;
+    const value = valuePosition / this.widthSlider;
+    const calculatedValue = ((this.maxValue - this.minValue) * value) + this.minValue;
+    let valueAdjustedByAStep = Math.round(calculatedValue / this.step) * this.step;
 
-    if (resultValue < this.minValue) {
-      resultValue = this.minValue;
-    } else if (resultValue > this.maxValue) {
-      resultValue = this.maxValue;
+    if (valueAdjustedByAStep < this.minValue) {
+      valueAdjustedByAStep = this.minValue;
+    } else if (valueAdjustedByAStep > this.maxValue) {
+      valueAdjustedByAStep = this.maxValue;
     }
 
-    this.setEventTargetValue(resultValue);
+    this.setEventTargetValue(valueAdjustedByAStep, event);
   }
 
   handleInitMouseUp() {
