@@ -12,9 +12,9 @@ class MetaSlider {
   showTheScale = true;
   showMarkers = true;
   showBackgroundForRange = true;
-  isRange = false;
+  isRange = true;
 
-  step = 1;
+  step = 50;
   minValue = -100;
   maxValue = 100;
   numberOfDivisions = 20;
@@ -25,6 +25,8 @@ class MetaSlider {
   initValueRight = 100;
   checkedInitValueLeft = this.isRange ? this.initValueLeft : this.minValue;
   initValuesArray;
+  stepCounter = (this.maxValue - this.minValue) / this.step;
+  stepAsPercentage = 100 / this.stepCounter;
 
   constructor() {
     this.renderSlider();
@@ -64,8 +66,14 @@ class MetaSlider {
       initValue: 'Ошибка во входящих данных для бегунков слайдеров. Установлены значения по-умолчанию',
       minAndMaxValue: 'Ошибка во входящих данных: Max значение установленное для слайдера меньше или равно его Min значению!',
       numberOfDivisions: 'Установите корректное значение кол-ва интервалов для отображения шкалы с делениями. Установлено ближайщее оптимальное значение.',
+      step: 'Значение шага слайдера не может быть меньше 0. Установлено значение равное 1.',
     };
     let showError = true;
+
+    if (this.step <= 0) {
+      this.step = 1;
+      this.renderErrorMessage(errorMessage.step);
+    }
 
     if (this.checkedInitValueLeft > this.initValueRight) {
       this.resetInitValue();
@@ -219,7 +227,6 @@ class MetaSlider {
 
   setValueForThumbs(valuesArray) {
     let valuesAsPercentageArray = [];
-
     valuesArray.forEach(currentValue => {
       const currentValueAsPersentage = ((currentValue - this.minValue) / (this.maxValue - this.minValue)) * 100;
       valuesAsPercentageArray.push(currentValueAsPersentage);
@@ -273,31 +280,29 @@ class MetaSlider {
     this.setEventTargetValue(targetValue, event);
   }
 
+  calculateTargetValue(event) {
+    const valuePosition = event.clientX - this.elemSlider.offsetLeft;
+    const valueAsPercentage = (valuePosition / this.widthSlider) * 100;
+    let stepFromLeftSide = Math.round(valueAsPercentage / this.stepAsPercentage) * this.stepAsPercentage;
+    if (stepFromLeftSide < 0) stepFromLeftSide = 0;
+    if (stepFromLeftSide > 100) stepFromLeftSide = 100;
+
+    let calculateValue = Number((((stepFromLeftSide / this.stepAsPercentage) * this.step).toFixed()));
+    const targetValue = calculateValue + this.minValue;
+
+    return targetValue;
+  }
+
   setPositionForThumbs(event) {
     event.preventDefault();
     if (event.target.classList.contains('meta-slider')) {
-      const value = event.offsetX / this.widthSlider;
-      const calculatedValue = ((this.maxValue - this.minValue) * value) + this.minValue;
-      let valueAdjustedByAStep = Math.round(calculatedValue / this.step) * this.step;
-      this.setEventTargetValue(valueAdjustedByAStep, event);
+      this.setEventTargetValue(this.calculateTargetValue(event), event);
     }
   }
 
   handleInitMouseMove(event) {
     event.preventDefault();
-    const sliderPositionLeft = this.elemSlider.getBoundingClientRect().left;
-    const valuePosition = event.clientX - sliderPositionLeft;
-    const value = valuePosition / this.widthSlider;
-    const calculatedValue = ((this.maxValue - this.minValue) * value) + this.minValue;
-    let valueAdjustedByAStep = Math.round(calculatedValue / this.step) * this.step;
-
-    if (valueAdjustedByAStep < this.minValue) {
-      valueAdjustedByAStep = this.minValue;
-    } else if (valueAdjustedByAStep > this.maxValue) {
-      valueAdjustedByAStep = this.maxValue;
-    }
-
-    this.setEventTargetValue(valueAdjustedByAStep, event);
+    this.setEventTargetValue(this.calculateTargetValue(event), event);
   }
 
   handleInitMouseUp() {
