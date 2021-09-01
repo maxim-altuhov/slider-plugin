@@ -5,6 +5,7 @@ class MetaSlider {
   secondColor = '#e4e4e4';
   colorMarker = this.mainColor;
   colorTextForMarker = '#ffffff'
+  colorTextForMinAndMaxValue = '#000000'
   colorForScale = '#000000'
 
   showError = true;
@@ -13,20 +14,21 @@ class MetaSlider {
   showMarkers = true;
   showBackgroundForRange = true;
   isRange = true;
+  checkStepSizeForScale = true;
+  enableAutoScaleCreation = true;
 
-  step = 50;
-  minValue = -100;
+  step = 20;
+  minValue = 0;
   maxValue = 100;
-  numberOfDivisions = 20;
+  stepSizeForScale = 10;
   preFix = '';
   postFix = '';
 
-  initValueLeft = 0;
-  initValueRight = 100;
+  initValueLeft = 10;
+  initValueRight = 50;
   checkedInitValueLeft = this.isRange ? this.initValueLeft : this.minValue;
   initValuesArray;
-  stepCounter = (this.maxValue - this.minValue) / this.step;
-  stepAsPercentage = 100 / this.stepCounter;
+  minAndMaxValuesArray;
 
   constructor() {
     this.renderSlider();
@@ -43,8 +45,8 @@ class MetaSlider {
     this.setEventsThumbs();
   }
 
-  checkCorrectNumberOfDivisions() {
-    return Number.isInteger((this.maxValue - this.minValue) / this.numberOfDivisions);
+  checkCorrectStepSizeForScale() {
+    return Number.isInteger((this.maxValue - this.minValue) / this.stepSizeForScale);
   }
 
   renderErrorMessage(message) {
@@ -63,9 +65,9 @@ class MetaSlider {
 
   initValueCheck() {
     const errorMessage = {
-      initValue: 'Ошибка во входящих данных для бегунков слайдеров. Установлены значения по-умолчанию',
-      minAndMaxValue: 'Ошибка во входящих данных: Max значение установленное для слайдера меньше или равно его Min значению!',
-      numberOfDivisions: 'Установите корректное значение кол-ва интервалов для отображения шкалы с делениями. Установлено ближайщее оптимальное значение.',
+      initValue: 'Ошибка во входящих данных для бегунков слайдеров. Установлены значения по-умолчанию.',
+      minAndMaxValue: 'Max значение установленное для слайдера меньше или равно его Min значению. Установлены значения по-умолчанию.',
+      stepSizeForScale: 'Установите корректное значение шага для шкалы с делениями. Установлено ближайщее оптимальное значение.',
       step: 'Значение шага слайдера не может быть меньше 0. Установлено значение равное 1.',
     };
     let showError = true;
@@ -81,6 +83,8 @@ class MetaSlider {
     }
 
     if (this.minValue > this.maxValue || this.minValue === this.maxValue) {
+      this.minValue = 0;
+      this.maxValue = 100;
       this.renderErrorMessage(errorMessage.minAndMaxValue);
     }
 
@@ -92,12 +96,15 @@ class MetaSlider {
       this.renderErrorMessage(errorMessage.initValue);
     }
 
-    while (!this.checkCorrectNumberOfDivisions() || this.numberOfDivisions <= 0) {
-      this.numberOfDivisions += 1;
-      if (showError) this.renderErrorMessage(errorMessage.numberOfDivisions);
-      showError = false;
+    if (this.checkStepSizeForScale) {
+      while (!this.checkCorrectStepSizeForScale() || this.stepSizeForScale <= 0) {
+        this.stepSizeForScale += 1;
+        if (showError) this.renderErrorMessage(errorMessage.stepSizeForScale);
+        showError = false;
+      }
     }
 
+    this.minAndMaxValuesArray = [this.minValue, this.maxValue];
     this.initValuesArray = [this.checkedInitValueLeft, this.initValueRight];
   }
 
@@ -113,14 +120,14 @@ class MetaSlider {
     const propDisplay = this.isRange ? 'display:block' : 'display:none';
 
     const HTMLBlock = `<div class="meta-slider__progress"></div>
-    <span class="meta-slider__value meta-slider__value_min"></span>
+    <span class="meta-slider__value meta-slider__value_min" style="color: ${this.colorTextForMinAndMaxValue}"></span>
     <button class="meta-slider__thumb meta-slider__thumb_left" style="background-color:${this.mainColor}; ${propDisplay}" data-value="">
       <span class="meta-slider__marker meta-slider__marker_left" style="background-color:${this.colorMarker}; color: ${this.colorTextForMarker}; display:none"></span>
     </button>
     <button class="meta-slider__thumb meta-slider__thumb_right" style="background-color:${this.mainColor}" data-value="">
       <span class="meta-slider__marker meta-slider__marker_right" style="background-color:${this.colorMarker}; color: ${this.colorTextForMarker}; display:none"></span>
     </button>
-    <span class="meta-slider__value meta-slider__value_max"></span>`;
+    <span class="meta-slider__value meta-slider__value_max" style="color: ${this.colorTextForMinAndMaxValue}"></span>`;
 
     blockSlider.innerHTML = HTMLBlock;
 
@@ -136,6 +143,7 @@ class MetaSlider {
     this.elemThumbs = this.elemSlider.querySelectorAll('.meta-slider__thumb');
     this.elemMarkers = this.elemSlider.querySelectorAll('.meta-slider__marker');
 
+    this.elemMinAndMaxValues = this.elemSlider.querySelectorAll('.meta-slider__value');
     this.elemWithMinValue = this.elemSlider.querySelector('.meta-slider__value_min');
     this.elemWithMaxValue = this.elemSlider.querySelector('.meta-slider__value_max');
 
@@ -145,17 +153,24 @@ class MetaSlider {
     this.widthSlider = this.elemSlider.offsetWidth;
     this.widthThumb = this.elemThumbs[1].offsetWidth;
     this.thumbWidthAsPercentage = ((this.widthThumb / 2) / this.widthSlider) * 100;
+    this.stepCounter = (this.maxValue - this.minValue) / this.step;
+    this.stepAsPercentage = 100 / this.stepCounter;
   }
 
   setMinAndMaxValues() {
-    if (this.showMinAndMaxValue) {
-      this.elemWithMinValue.textContent = `${this.preFix}${this.minValue}${this.postFix}`;
-      this.elemWithMaxValue.textContent = `${this.preFix}${this.maxValue}${this.postFix}`;
-      const minValueOffset = ((this.elemWithMinValue.offsetWidth / 2) / this.widthSlider) * 100;
-      const maxValueOffset = ((this.elemWithMaxValue.offsetWidth / 2) / this.widthSlider) * 100;
+    this.elemSlider.style.marginBottom = '';
 
-      this.elemWithMinValue.style.left = (-minValueOffset) + '%';
-      this.elemWithMaxValue.style.right = (-maxValueOffset) + '%';
+    if (this.showMinAndMaxValue) {
+      this.elemMinAndMaxValues.forEach((elem, index) => {
+        elem.textContent = `${this.preFix}${this.minAndMaxValuesArray[index]}${this.postFix}`;
+        const valueOffset = ((elem.offsetWidth / 2) / this.widthSlider) * 100;
+
+        if (index === 0) {
+          elem.style.left = (-valueOffset) + '%';
+        } else {
+          elem.style.right = (-valueOffset) + '%';
+        }
+      });
 
       this.elemSlider.style.marginBottom = '45px';
     }
@@ -165,11 +180,10 @@ class MetaSlider {
     if (this.showTheScale && !this.showMinAndMaxValue) {
       const fragmentWithScale = document.createDocumentFragment();
       const blockScale = document.createElement('div');
-      const stepValueScale = this.step > 1 ? this.step : this.numberOfDivisions;
-
+      const stepSizeValue = (this.step >= 5 && this.enableAutoScaleCreation) ? this.step : this.stepSizeForScale;
       blockScale.classList.add('meta-slider__scale');
 
-      for (let currentScalePointValue = this.minValue; currentScalePointValue <= this.maxValue; currentScalePointValue += stepValueScale) {
+      for (let currentScalePointValue = this.minValue; currentScalePointValue <= this.maxValue; currentScalePointValue += stepSizeValue) {
         const elemScalePoint = document.createElement('button');
         elemScalePoint.classList.add('meta-slider__scale-point');
         elemScalePoint.style.color = this.colorForScale;
@@ -253,21 +267,19 @@ class MetaSlider {
       this.initValuesArray[1] = targetValue;
     }
 
-    const identicalDistanceInRange = clickInRange && leftThumbDiff === rightThumbDiff;
+    const identicalDistanceInRange = (clickInRange && leftThumbDiff === rightThumbDiff);
 
-    if (identicalDistanceInRange && this.step > 1) {
+    if (identicalDistanceInRange) {
       const thumbLeftPosition = leftValue.getBoundingClientRect().left;
       const thumbRightPosition = rightValue.getBoundingClientRect().left;
       const leftValuePosition = Math.abs(event.clientX - thumbLeftPosition);
       const rightValuePosition = Math.abs(event.clientX - thumbRightPosition);
 
-      if ((rightValuePosition - leftValuePosition) > 0) {
+      if (Math.round(rightValuePosition - leftValuePosition) >= 0) {
         this.initValuesArray[0] = targetValue;
       } else {
         this.initValuesArray[1] = targetValue;
       }
-    } else if (identicalDistanceInRange) {
-      this.initValuesArray[1] = targetValue;
     }
 
     this.setValueForThumbs(this.initValuesArray);
@@ -289,7 +301,6 @@ class MetaSlider {
 
     let calculateValue = Number((((stepFromLeftSide / this.stepAsPercentage) * this.step).toFixed()));
     const targetValue = calculateValue + this.minValue;
-
     return targetValue;
   }
 
