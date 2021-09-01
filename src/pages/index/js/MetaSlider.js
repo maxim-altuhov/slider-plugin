@@ -14,18 +14,19 @@ class MetaSlider {
   showMarkers = true;
   showBackgroundForRange = true;
   isRange = true;
-  checkStepSizeForScale = true;
-  enableAutoScaleCreation = true;
+  enableAutoScaleCreation = false;
+  checkStepSizeForScale = !this.enableAutoScaleCreation;
 
-  step = 20;
+  step = 1;
   minValue = 0;
   maxValue = 100;
   stepSizeForScale = 10;
+  numberOfDecimalPlaces = this.step < 1 ? 1 : 0;
   preFix = '';
   postFix = '';
 
   initValueLeft = 10;
-  initValueRight = 50;
+  initValueRight = 20;
   checkedInitValueLeft = this.isRange ? this.initValueLeft : this.minValue;
   initValuesArray;
   minAndMaxValuesArray;
@@ -98,7 +99,12 @@ class MetaSlider {
 
     if (this.checkStepSizeForScale) {
       while (!this.checkCorrectStepSizeForScale() || this.stepSizeForScale <= 0) {
-        this.stepSizeForScale += 1;
+        if (this.stepSizeForScale > 1) {
+          this.stepSizeForScale += 1;
+        } else {
+          this.stepSizeForScale += 0.1;
+        }
+
         if (showError) this.renderErrorMessage(errorMessage.stepSizeForScale);
         showError = false;
       }
@@ -217,7 +223,7 @@ class MetaSlider {
       this.elemSlider.style.marginTop = '45px';
 
       valuesArray.forEach((currentValue, index) => {
-        this.elemMarkers[index].textContent = `${this.preFix}${Math.round(currentValue)}${this.postFix}`;
+        this.elemMarkers[index].textContent = `${this.preFix}${currentValue.toFixed(this.numberOfDecimalPlaces)}${this.postFix}`;
         this.elemMarkers[index].style.display = 'block';
       });
     }
@@ -232,7 +238,7 @@ class MetaSlider {
 
   setValueForSlider(valuesArray, valuesAsPercentageArray) {
     valuesArray.forEach((currentValue, index) => {
-      this.elemThumbs[index].dataset.value = Math.round(currentValue);
+      this.elemThumbs[index].dataset.value = currentValue.toFixed(this.numberOfDecimalPlaces);
       this.elemThumbs[index].style.left = (valuesAsPercentageArray[index] - this.thumbWidthAsPercentage) + '%';
     });
     this.setBackgroundTheRange(valuesAsPercentageArray);
@@ -299,7 +305,7 @@ class MetaSlider {
     if (stepFromLeftSide < 0) stepFromLeftSide = 0;
     if (stepFromLeftSide > 100) stepFromLeftSide = 100;
 
-    let calculateValue = Number((((stepFromLeftSide / this.stepAsPercentage) * this.step).toFixed()));
+    let calculateValue = Number((((stepFromLeftSide / this.stepAsPercentage) * this.step).toFixed(this.numberOfDecimalPlaces)));
     const targetValue = calculateValue + this.minValue;
     return targetValue;
   }
