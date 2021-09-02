@@ -5,6 +5,8 @@ class MetaSlider {
   secondColor = '#e4e4e4';
   colorMarker = this.mainColor;
   colorTextForMarker = '#ffffff'
+  colorBorderForMarker = '#ffffff'
+  colorBorderForThumb = '#ffffff'
   colorTextForMinAndMaxValue = '#000000'
   colorForScale = '#000000'
 
@@ -127,11 +129,13 @@ class MetaSlider {
 
     const HTMLBlock = `<div class="meta-slider__progress"></div>
     <span class="meta-slider__value meta-slider__value_min" style="color: ${this.colorTextForMinAndMaxValue}"></span>
-    <button class="meta-slider__thumb meta-slider__thumb_left" style="background-color:${this.mainColor}; ${propDisplay}" data-value="">
-      <span class="meta-slider__marker meta-slider__marker_left" style="background-color:${this.colorMarker}; color: ${this.colorTextForMarker}; display:none"></span>
+    <button class="meta-slider__thumb meta-slider__thumb_left" style="background-color:${this.mainColor}; ${propDisplay}; border-color:${this.colorBorderForThumb}" data-value="">
+      <span class="meta-slider__marker meta-slider__marker_left" style="background-color:${this.colorMarker}; color: ${this.colorTextForMarker};
+       border-color:${this.colorBorderForMarker}; display:none"></span>
     </button>
-    <button class="meta-slider__thumb meta-slider__thumb_right" style="background-color:${this.mainColor}" data-value="">
-      <span class="meta-slider__marker meta-slider__marker_right" style="background-color:${this.colorMarker}; color: ${this.colorTextForMarker}; display:none"></span>
+    <button class="meta-slider__thumb meta-slider__thumb_right" style="background-color:${this.mainColor}; border-color:${this.colorBorderForThumb}" data-value="">
+      <span class="meta-slider__marker meta-slider__marker_right" style="background-color:${this.colorMarker}; color: ${this.colorTextForMarker};
+       border-color:${this.colorBorderForMarker}; display:none"></span>
     </button>
     <span class="meta-slider__value meta-slider__value_max" style="color: ${this.colorTextForMinAndMaxValue}"></span>`;
 
@@ -164,8 +168,6 @@ class MetaSlider {
   }
 
   setMinAndMaxValues() {
-    this.elemSlider.style.marginBottom = '';
-
     if (this.showMinAndMaxValue) {
       this.elemMinAndMaxValues.forEach((elem, index) => {
         elem.textContent = `${this.preFix}${this.minAndMaxValuesArray[index]}${this.postFix}`;
@@ -177,8 +179,6 @@ class MetaSlider {
           elem.style.right = (-valueOffset) + '%';
         }
       });
-
-      this.elemSlider.style.marginBottom = '45px';
     }
   }
 
@@ -211,17 +211,11 @@ class MetaSlider {
 
         scalePoint.style.left = (currentValueAsPercentage - widthScalePointAsPercentage) + '%';
       });
-
-      this.elemSlider.style.marginBottom = '45px';
     }
   }
 
   setValueInMarker(valuesArray) {
-    this.elemSlider.style.marginTop = '';
-
     if (this.showMarkers) {
-      this.elemSlider.style.marginTop = '45px';
-
       valuesArray.forEach((currentValue, index) => {
         this.elemMarkers[index].textContent = `${this.preFix}${currentValue.toFixed(this.numberOfDecimalPlaces)}${this.postFix}`;
         this.elemMarkers[index].style.display = 'block';

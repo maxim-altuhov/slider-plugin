@@ -18,6 +18,10 @@ html {
 .slider {
   width: 50%;
   padding: 0 2rem;
+
+  &__block {
+    margin: 45px 0;
+  }
 }
 
 .config {
