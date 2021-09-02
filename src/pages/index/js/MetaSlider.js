@@ -10,6 +10,7 @@ class MetaSlider {
   colorTextForMinAndMaxValue = '#000000'
   colorForScale = '#000000'
 
+  enableAutoMargins = true;
   showError = true;
   showMinAndMaxValue = false;
   showTheScale = true;
@@ -19,7 +20,7 @@ class MetaSlider {
   enableAutoScaleCreation = false;
   checkStepSizeForScale = !this.enableAutoScaleCreation;
 
-  step = 1;
+  step = 10;
   minValue = 0;
   maxValue = 100;
   stepSizeForScale = 10;
@@ -54,10 +55,8 @@ class MetaSlider {
 
   renderErrorMessage(message) {
     if (this.showError) {
-      const elemErrorInfo = document.createElement('p');
-      elemErrorInfo.classList.add('error-info');
-      this.selector.append(elemErrorInfo);
-      elemErrorInfo.textContent = message;
+      this.elemErrorInfo.classList.remove('error-info__hidden');
+      this.elemErrorInfoText.textContent = message;
     }
   }
 
@@ -71,9 +70,8 @@ class MetaSlider {
       initValue: 'Ошибка во входящих данных для бегунков слайдеров. Установлены значения по-умолчанию.',
       minAndMaxValue: 'Max значение установленное для слайдера меньше или равно его Min значению. Установлены значения по-умолчанию.',
       stepSizeForScale: 'Установите корректное значение шага для шкалы с делениями. Установлено ближайщее оптимальное значение.',
-      step: 'Значение шага слайдера не может быть меньше 0. Установлено значение равное 1.',
+      step: 'Значение шага слайдера не может быть меньше или равно 0.',
     };
-    let showError = true;
 
     if (this.step <= 0) {
       this.step = 1;
@@ -101,14 +99,12 @@ class MetaSlider {
 
     if (this.checkStepSizeForScale) {
       while (!this.checkCorrectStepSizeForScale() || this.stepSizeForScale <= 0) {
-        if (this.stepSizeForScale > 1) {
+        if (this.stepSizeForScale > 1 || this.stepSizeForScale <= 0) {
           this.stepSizeForScale += 1;
         } else {
           this.stepSizeForScale += 0.1;
         }
-
-        if (showError) this.renderErrorMessage(errorMessage.stepSizeForScale);
-        showError = false;
+        this.renderErrorMessage(errorMessage.stepSizeForScale);
       }
     }
 
@@ -127,15 +123,16 @@ class MetaSlider {
 
     const propDisplay = this.isRange ? 'display:block' : 'display:none';
 
-    const HTMLBlock = `<div class="meta-slider__progress"></div>
+    const HTMLBlock = `<div class="error-info error-info__hidden"><p class="error-info__text"></p><span class="error-info__close">X</span></div>
+    <div class="meta-slider__progress"></div>
     <span class="meta-slider__value meta-slider__value_min" style="color: ${this.colorTextForMinAndMaxValue}"></span>
-    <button class="meta-slider__thumb meta-slider__thumb_left" style="background-color:${this.mainColor}; ${propDisplay}; border-color:${this.colorBorderForThumb}" data-value="">
+    <button class="meta-slider__thumb meta-slider__thumb_left" style="background-color:${this.mainColor}; border-color:${this.colorBorderForThumb}; ${propDisplay}" data-value="">
       <span class="meta-slider__marker meta-slider__marker_left" style="background-color:${this.colorMarker}; color: ${this.colorTextForMarker};
-       border-color:${this.colorBorderForMarker}; display:none"></span>
+       border-color:${this.colorBorderForMarker}"></span>
     </button>
     <button class="meta-slider__thumb meta-slider__thumb_right" style="background-color:${this.mainColor}; border-color:${this.colorBorderForThumb}" data-value="">
       <span class="meta-slider__marker meta-slider__marker_right" style="background-color:${this.colorMarker}; color: ${this.colorTextForMarker};
-       border-color:${this.colorBorderForMarker}; display:none"></span>
+       border-color:${this.colorBorderForMarker}"></span>
     </button>
     <span class="meta-slider__value meta-slider__value_max" style="color: ${this.colorTextForMinAndMaxValue}"></span>`;
 
@@ -150,6 +147,8 @@ class MetaSlider {
 
     this.sliderProgress = this.selector.querySelector('.meta-slider__progress');
 
+    this.elemScalePoints = document.querySelectorAll('.meta-slider__scale-point');
+
     this.elemThumbs = this.elemSlider.querySelectorAll('.meta-slider__thumb');
     this.elemMarkers = this.elemSlider.querySelectorAll('.meta-slider__marker');
 
@@ -157,18 +156,26 @@ class MetaSlider {
     this.elemWithMinValue = this.elemSlider.querySelector('.meta-slider__value_min');
     this.elemWithMaxValue = this.elemSlider.querySelector('.meta-slider__value_max');
 
+    this.elemErrorInfo = this.selector.querySelector('.error-info');
+    this.elemErrorInfoText = this.selector.querySelector('.error-info__text');
+    this.btnErrorClose = this.selector.querySelector('.error-info__close');
+
     this.linkInitMouseMove = this.handleInitMouseMove.bind(this);
     this.linkInitMouseUp = this.handleInitMouseUp.bind(this);
 
     this.widthSlider = this.elemSlider.offsetWidth;
+    this.heightMarker = this.elemMarkers[1].offsetHeight;
     this.widthThumb = this.elemThumbs[1].offsetWidth;
+    this.heightThumb = this.elemThumbs[1].offsetHeight;
     this.thumbWidthAsPercentage = ((this.widthThumb / 2) / this.widthSlider) * 100;
     this.stepCounter = (this.maxValue - this.minValue) / this.step;
     this.stepAsPercentage = 100 / this.stepCounter;
   }
 
   setMinAndMaxValues() {
-    if (this.showMinAndMaxValue) {
+    if (this.enableAutoMargins) this.elemSlider.style.marginBottom = '';
+
+    if (this.showMinAndMaxValue && !this.showTheScale) {
       this.elemMinAndMaxValues.forEach((elem, index) => {
         elem.textContent = `${this.preFix}${this.minAndMaxValuesArray[index]}${this.postFix}`;
         const valueOffset = ((elem.offsetWidth / 2) / this.widthSlider) * 100;
@@ -179,11 +186,15 @@ class MetaSlider {
           elem.style.right = (-valueOffset) + '%';
         }
       });
+
+      if (this.enableAutoMargins) this.elemSlider.style.marginBottom = (this.elemMinAndMaxValues[0].offsetHeight * 3) + 'px';
     }
   }
 
   createScaleOfValues() {
-    if (this.showTheScale && !this.showMinAndMaxValue) {
+    if (this.enableAutoMargins && !this.showMinAndMaxValue) this.elemSlider.style.marginBottom = '';
+
+    if (this.showTheScale) {
       const fragmentWithScale = document.createDocumentFragment();
       const blockScale = document.createElement('div');
       const stepSizeValue = (this.step >= 5 && this.enableAutoScaleCreation) ? this.step : this.stepSizeForScale;
@@ -200,25 +211,35 @@ class MetaSlider {
       }
 
       fragmentWithScale.append(blockScale);
-      this.elemSlider.appendChild(fragmentWithScale);
+      this.elemSlider.append(fragmentWithScale);
 
-      const resultArrayScalePoint = document.querySelectorAll('.meta-slider__scale-point');
+      this.elemScalePoints = document.querySelectorAll('.meta-slider__scale-point');
 
-      resultArrayScalePoint.forEach((scalePoint) => {
+      this.elemScalePoints.forEach((scalePoint) => {
         const valueInScalePoint = scalePoint.dataset.value;
         const currentValueAsPercentage = ((valueInScalePoint - this.minValue) / (this.maxValue - this.minValue)) * 100;
         const widthScalePointAsPercentage = ((scalePoint.offsetWidth / 2) / this.widthSlider) * 100;
 
         scalePoint.style.left = (currentValueAsPercentage - widthScalePointAsPercentage) + '%';
       });
+
+      if (this.enableAutoMargins) this.elemSlider.style.marginBottom = (this.elemScalePoints[0].offsetHeight * 3) + 'px';
     }
   }
 
   setValueInMarker(valuesArray) {
+    if (this.enableAutoMargins) this.elemSlider.style.marginTop = '';
+
+    this.elemMarkers.forEach(elem => {
+      elem.style.display = 'none';
+    });
+
     if (this.showMarkers) {
+      if (this.enableAutoMargins) this.elemSlider.style.marginTop = (this.heightMarker + (this.heightThumb / 2)) + 'px';
+
       valuesArray.forEach((currentValue, index) => {
         this.elemMarkers[index].textContent = `${this.preFix}${currentValue.toFixed(this.numberOfDecimalPlaces)}${this.postFix}`;
-        this.elemMarkers[index].style.display = 'block';
+        this.elemMarkers[index].style.display = '';
       });
     }
   }
@@ -287,7 +308,7 @@ class MetaSlider {
 
   setValueWhenClickingOnTheScale(event) {
     event.preventDefault();
-    const targetValue = event.target.dataset.value;
+    const targetValue = Number(event.target.dataset.value);
 
     this.setEventTargetValue(targetValue, event);
   }
@@ -304,7 +325,7 @@ class MetaSlider {
     return targetValue;
   }
 
-  setPositionForThumbs(event) {
+  handleSetPositionForThumbs(event) {
     event.preventDefault();
     if (event.target.classList.contains('meta-slider')) {
       this.setEventTargetValue(this.calculateTargetValue(event), event);
@@ -328,16 +349,18 @@ class MetaSlider {
     document.addEventListener('mouseup', this.linkInitMouseUp);
   }
 
-  setEventsSlider() {
-    const elemScalePoints = document.querySelectorAll('.meta-slider__scale-point');
+  handleCloseErrorWindow() {
+    this.elemErrorInfo.classList.add('error-info__hidden');
+  }
 
-    if (elemScalePoints) {
-      elemScalePoints.forEach(elemPoint => {
+  setEventsSlider() {
+    if (this.elemScalePoints) {
+      this.elemScalePoints.forEach(elemPoint => {
         elemPoint.addEventListener('click', this.setValueWhenClickingOnTheScale.bind(this));
       });
     }
-
-    this.elemSlider.addEventListener('mousedown', this.setPositionForThumbs.bind(this));
+    this.btnErrorClose.addEventListener('click', this.handleCloseErrorWindow.bind(this));
+    this.elemSlider.addEventListener('mousedown', this.handleSetPositionForThumbs.bind(this));
   }
 
   setEventsThumbs() {
