@@ -20,15 +20,15 @@ class MetaSlider {
   enableAutoScaleCreation = false;
   checkStepSizeForScale = !this.enableAutoScaleCreation;
 
-  step = 2000;
-  minValue = -200000;
-  maxValue = 200000;
-  stepSizeForScale = 50000;
+  step = 100;
+  minValue = 0;
+  maxValue = 1000;
+  stepSizeForScale = 100;
   numberOfDecimalPlaces = this.step < 1 ? 1 : 0;
   preFix = '';
   postFix = '';
   // 'ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'
-  customValues = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'];
+  customValues = [];
   initValueLeft = 0;
   initValueRight = 100;
   checkedInitValueLeft = this.isRange ? this.initValueLeft : this.minValue;
@@ -246,7 +246,7 @@ class MetaSlider {
         let currentScalePointValue = this.minValue;
 
         for (; currentScalePointValue <= this.maxValue; currentScalePointValue += stepSizeValue) {
-          const elemScalePoint = `<button type="button" class="meta-slider__scale-point" data-value="${currentScalePointValue.toFixed(0)}" style="color: ${this.colorForScale};">${this.preFix}${currentScalePointValue}${this.postFix}</button>`;
+          const elemScalePoint = `<button type="button" class="meta-slider__scale-point" data-value="${currentScalePointValue.toFixed(0)}" style="color: ${this.colorForScale};">${this.preFix}${currentScalePointValue.toLocaleString()}${this.postFix}</button>`;
 
           blockScale.insertAdjacentHTML('beforeEnd', elemScalePoint);
           fragmentWithScale.append(blockScale);
@@ -301,8 +301,10 @@ class MetaSlider {
         if (this.customValues.length > 0) {
           marker.textContent = `${this.preFix}${this.elemThumbs[index].dataset.text}${this.postFix}`;
         } else {
-          const dataValueAsNumber = Number(this.elemThumbs[index].dataset.value);
-          marker.textContent = `${this.preFix}${dataValueAsNumber.toFixed(this.numberOfDecimalPlaces)}${this.postFix}`;
+          const currentValue = this.elemThumbs[index].dataset.value;
+          const currentValueAsNumber = Number(currentValue).toFixed(this.numberOfDecimalPlaces);
+          const convertedValue = Number(currentValueAsNumber).toLocaleString();
+          marker.textContent = `${this.preFix}${convertedValue}${this.postFix}`;
         }
         marker.style.display = '';
       });
