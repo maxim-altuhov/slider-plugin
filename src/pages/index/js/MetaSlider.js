@@ -16,21 +16,21 @@ class MetaSlider {
   showTheScale = true;
   showMarkers = true;
   showBackgroundForRange = true;
-  isRange = true;
+  isRange = false;
   enableAutoScaleCreation = false;
   checkStepSizeForScale = !this.enableAutoScaleCreation;
 
-  step = 100;
+  step = 0.1;
   minValue = 0;
-  maxValue = 1000;
-  stepSizeForScale = 100;
-  numberOfDecimalPlaces = this.step < 1 ? 1 : 0;
+  maxValue = 1;
+  stepSizeForScale = 0.1;
+  numberOfDecimalPlaces = Number.isInteger(this.step) ? 0 : 1;
   preFix = '';
   postFix = '';
   // 'ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'
   customValues = [];
   initValueLeft = 0;
-  initValueRight = 100;
+  initValueRight = 1;
   checkedInitValueLeft = this.isRange ? this.initValueLeft : this.minValue;
 
   constructor() {
@@ -75,7 +75,7 @@ class MetaSlider {
     let currentStep = 0;
 
     this.customValues.forEach(value => {
-      const currentStepAsNumber = Number(currentStep.toFixed(0));
+      const currentStepAsNumber = Number(currentStep.toFixed(this.numberOfDecimalPlaces));
       this.mapCustomValues.set(currentStepAsNumber, value);
       currentStep += this.step;
     });
@@ -233,7 +233,7 @@ class MetaSlider {
         let currentScalePointValue = 0;
 
         this.customValues.forEach(currentValue => {
-          const elemScalePoint = `<button type="button" class="meta-slider__scale-point" data-value="${currentScalePointValue.toFixed(0)}" style="color: ${this.colorForScale};">${this.preFix}${currentValue}${this.postFix}</button>`;
+          const elemScalePoint = `<button type="button" class="meta-slider__scale-point" data-value="${currentScalePointValue.toFixed(this.numberOfDecimalPlaces)}" style="color: ${this.colorForScale};">${this.preFix}${currentValue}${this.postFix}</button>`;
 
           blockScale.insertAdjacentHTML('beforeEnd', elemScalePoint);
           fragmentWithScale.append(blockScale);
@@ -246,7 +246,7 @@ class MetaSlider {
         let currentScalePointValue = this.minValue;
 
         for (; currentScalePointValue <= this.maxValue; currentScalePointValue += stepSizeValue) {
-          const elemScalePoint = `<button type="button" class="meta-slider__scale-point" data-value="${currentScalePointValue.toFixed(0)}" style="color: ${this.colorForScale};">${this.preFix}${currentScalePointValue.toLocaleString()}${this.postFix}</button>`;
+          const elemScalePoint = `<button type="button" class="meta-slider__scale-point" data-value="${currentScalePointValue.toFixed(this.numberOfDecimalPlaces)}" style="color: ${this.colorForScale};">${this.preFix}${currentScalePointValue.toLocaleString()}${this.postFix}</button>`;
 
           blockScale.insertAdjacentHTML('beforeEnd', elemScalePoint);
           fragmentWithScale.append(blockScale);
