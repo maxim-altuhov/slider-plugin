@@ -113,12 +113,20 @@ class MetaSlider {
       this.renderErrorMessage(errorMessage.initValue);
     }
 
+    if (this.stepSizeForScale > this.maxValue) {
+      this.stepSizeForScale = this.maxValue;
+      this.renderErrorMessage(errorMessage.stepSizeForScale);
+    }
+
     if (this.checkStepSizeForScale && this.customValues.length === 0) {
       while (!this.checkCorrectStepSizeForScale() || this.stepSizeForScale <= 0) {
-        if (this.stepSizeForScale > 1 || this.stepSizeForScale <= 0) {
+        if (this.stepSizeForScale > 1 && Number.isInteger(this.stepSizeForScale)) {
           this.stepSizeForScale += 1;
-        } else {
+        } else if (this.stepSizeForScale <= 0) {
+          this.stepSizeForScale = 1;
+        } else if (!Number.isInteger(this.stepSizeForScale)) {
           this.stepSizeForScale += 0.1;
+          this.stepSizeForScale = Number(this.stepSizeForScale.toFixed(1));
         }
         this.renderErrorMessage(errorMessage.stepSizeForScale);
       }

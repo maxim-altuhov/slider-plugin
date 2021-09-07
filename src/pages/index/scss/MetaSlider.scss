@@ -58,9 +58,9 @@
 
   &__marker {
     display: inline-block;
-    min-width: 50px;
+    min-width: 40px;
     max-width: 100px;
-    min-height: 30px;
+    min-height: 25px;
     position: absolute;
     left: 50%;
     bottom: 120%;
@@ -73,7 +73,7 @@
     text-overflow: ellipsis;
     overflow: hidden;
     transform: translateX(-50%);
-    line-height: 30px;
+    line-height: 25px;
   }
 
   &__scale {
