@@ -1,4 +1,4 @@
-import $ from 'jquery';
+// import $ from 'jquery';
 import MetaSlider from './js/MetaSlider';
 import './index.scss';
 
@@ -10,4 +10,6 @@ import './index.scss';
 
 // $('#js-slider').myPlugin();
 
-const slider = new MetaSlider();
+document.addEventListener('DOMContentLoaded', () => {
+  const slider = new MetaSlider();
+});
