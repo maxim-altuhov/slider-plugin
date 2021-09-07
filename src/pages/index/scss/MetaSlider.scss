@@ -11,6 +11,7 @@
   font-weight: 400;
   line-height: 1;
   box-sizing: border-box;
+  touch-action: none;
 
   &__progress {
     position: absolute;
@@ -46,6 +47,7 @@
     border-style: solid;
     border-width: 2px;
     transform: translateY(-50%);
+    touch-action: none;
 
     &_left {
       left: 0%;
@@ -76,6 +78,7 @@
     overflow: hidden;
     transform: translateX(-50%);
     line-height: 25px;
+    touch-action: none;
   }
 
   &__scale {

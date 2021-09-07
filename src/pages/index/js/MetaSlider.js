@@ -17,11 +17,11 @@ class MetaSlider {
   showTheScale = true;
   showMarkers = true;
   showBackgroundForRange = true;
-  isRange = false;
+  isRange = true;
   enableAutoScaleCreation = false;
   checkStepSizeForScale = !this.enableAutoScaleCreation;
 
-  step = 10;
+  step = 1;
   minValue = 0;
   maxValue = 100;
   stepSizeForScale = 10;
@@ -189,8 +189,8 @@ class MetaSlider {
     this.elemErrorInfoText = this.selector.querySelector('.error-info__text');
     this.btnErrorClose = this.selector.querySelector('.error-info__close');
 
-    this.linkInitMouseMove = this.handleInitMouseMove.bind(this);
-    this.linkInitMouseUp = this.handleInitMouseUp.bind(this);
+    this.linkInitPointerMove = this.handleInitPointerMove.bind(this);
+    this.linkInitPointerUp = this.handleInitPointerUp.bind(this);
 
     this.widthSlider = this.elemSlider.getBoundingClientRect().width;
     this.heightMarker = this.elemMarkers[1].offsetHeight;
@@ -403,21 +403,19 @@ class MetaSlider {
     }
   }
 
-  handleInitMouseMove(event) {
-    event.preventDefault();
+  handleInitPointerMove(event) {
     this.checkEventTargetValue(this.calculateTargetValue(event), event);
   }
 
-  handleInitMouseUp() {
-    document.removeEventListener('mousemove', this.linkInitMouseMove);
-    document.removeEventListener('mouseup', this.linkInitMouseUp);
+  handleInitPointerUp(event) {
+    event.target.removeEventListener('pointermove', this.linkInitPointerMove);
+    event.target.removeEventListener('pointerup', this.linkInitPointerUp);
   }
 
-  handleSetEventListenerDoc(event) {
-    event.preventDefault();
-
-    document.addEventListener('mousemove', this.linkInitMouseMove);
-    document.addEventListener('mouseup', this.linkInitMouseUp);
+  handleSetEventListenerForThumbs(event) {
+    event.target.setPointerCapture(event.pointerId);
+    event.target.addEventListener('pointermove', this.linkInitPointerMove);
+    event.target.addEventListener('pointerup', this.linkInitPointerUp);
   }
 
   handleCloseErrorWindow() {
@@ -431,14 +429,16 @@ class MetaSlider {
       });
     }
     this.btnErrorClose.addEventListener('click', this.handleCloseErrorWindow.bind(this));
-    this.elemSlider.addEventListener('mousedown', this.handleSetPositionForThumbs.bind(this));
+    this.elemSlider.addEventListener('pointerdown', this.handleSetPositionForThumbs.bind(this));
   }
 
   setEventsThumbs() {
     this.elemThumbs.forEach(thumb => {
-      thumb.addEventListener('mousedown', this.handleSetEventListenerDoc.bind(this));
+      thumb.addEventListener('pointerdown', this.handleSetEventListenerForThumbs.bind(this));
       // eslint-disable-next-line fsd/no-function-declaration-in-event-listener
       thumb.addEventListener('dragstart', () => false);
+      // eslint-disable-next-line fsd/no-function-declaration-in-event-listener
+      thumb.addEventListener('selectstart', () => false);
     });
   }
 }
