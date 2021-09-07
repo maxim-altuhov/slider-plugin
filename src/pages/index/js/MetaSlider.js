@@ -10,6 +10,7 @@ class MetaSlider {
   colorTextForMinAndMaxValue = '#000000'
   colorForScale = '#000000'
 
+  enableFormatted = true;
   enableAutoMargins = true;
   showError = true;
   showMinAndMaxValue = true;
@@ -254,7 +255,11 @@ class MetaSlider {
         let currentScalePointValue = this.minValue;
 
         for (; currentScalePointValue <= this.maxValue; currentScalePointValue += stepSizeValue) {
-          const elemScalePoint = `<button type="button" class="meta-slider__scale-point" data-value="${currentScalePointValue.toFixed(this.numberOfDecimalPlaces)}" style="color: ${this.colorForScale};">${this.preFix}${currentScalePointValue.toLocaleString()}${this.postFix}</button>`;
+          const convertedScalePointValue = this.enableFormatted
+            ? currentScalePointValue.toLocaleString()
+            : currentScalePointValue.toFixed(this.numberOfDecimalPlaces);
+
+          const elemScalePoint = `<button type="button" class="meta-slider__scale-point" data-value="${currentScalePointValue.toFixed(this.numberOfDecimalPlaces)}" style="color: ${this.colorForScale};">${this.preFix}${convertedScalePointValue}${this.postFix}</button>`;
 
           blockScale.insertAdjacentHTML('beforeEnd', elemScalePoint);
           fragmentWithScale.append(blockScale);
@@ -311,7 +316,10 @@ class MetaSlider {
         } else {
           const currentValue = this.elemThumbs[index].dataset.value;
           const currentValueAsNumber = Number(currentValue).toFixed(this.numberOfDecimalPlaces);
-          const convertedValue = Number(currentValueAsNumber).toLocaleString();
+          const convertedValue = this.enableFormatted
+            ? Number(currentValueAsNumber).toLocaleString()
+            : currentValueAsNumber;
+
           marker.textContent = `${this.preFix}${convertedValue}${this.postFix}`;
         }
         marker.style.display = '';

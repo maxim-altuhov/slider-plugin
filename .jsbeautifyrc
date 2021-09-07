@@ -7,5 +7,6 @@
   "break_chained_methods": false,
   "wrap_line_length": 0,
   "end_with_newline": true,
-  "brace_style": "collapse,preserve-inline"
+  "brace_style": "collapse,preserve-inline",
+  "operator_position": "preserve-newline"
 }
