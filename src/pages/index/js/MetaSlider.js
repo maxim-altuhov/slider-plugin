@@ -157,7 +157,7 @@ class MetaSlider {
 
     const propDisplay = this.isRange ? '' : 'display:none';
 
-    const HTMLBlock = `<div class="error-info error-info__hidden"><p class="error-info__text"></p><span class="error-info__close">X</span></div>
+    const HTMLBlock = `<div class="error-info error-info__hidden"><p class="error-info__text"></p><button type="button" class="error-info__close">X</button></div>
     <div class="meta-slider__progress"></div>
     <span class="meta-slider__value meta-slider__value_min" style="color: ${this.colorTextForMinAndMaxValue}"></span>
     <button type="button" class="meta-slider__thumb meta-slider__thumb_left" style="background-color:${this.mainColor}; border-color:${this.colorBorderForThumb}; ${propDisplay}" data-value="">
@@ -337,10 +337,14 @@ class MetaSlider {
     }
   }
 
-  checkEventTargetValue(targetValue, event) {
-    const [leftValue, rightValue] = this.elemThumbs;
-    const currentLeftVal = Number(leftValue.dataset.value);
-    const currentRightVal = Number(rightValue.dataset.value);
+  checkTargetValue(initValue, event) {
+    const [leftThumb, rightThumb] = this.elemThumbs;
+    const currentLeftVal = Number(leftThumb.dataset.value);
+    const currentRightVal = Number(rightThumb.dataset.value);
+    let targetValue = initValue;
+
+    if (targetValue < this.minValue) targetValue = this.minValue;
+    if (targetValue > this.maxValue) targetValue = this.maxValue;
 
     const leftThumbDiff = Math.abs(targetValue - currentLeftVal);
     const rightThumbDiff = Math.abs(targetValue - currentRightVal);
@@ -357,17 +361,26 @@ class MetaSlider {
       this.initValuesArray[1] = targetValue;
     }
 
-    const identicalDistanceInRange = (clickInRange && leftThumbDiff === rightThumbDiff);
+    const isIdenticalDistanceInRange = (clickInRange && leftThumbDiff === rightThumbDiff);
+    const isEventMoveKeypress = (event.code === 'ArrowLeft' || event.code === 'ArrowRight');
 
-    if (identicalDistanceInRange) {
-      const thumbLeftPosition = leftValue.getBoundingClientRect().left;
-      const thumbRightPosition = rightValue.getBoundingClientRect().left;
-      const leftValuePosition = Math.abs(event.clientX - thumbLeftPosition);
-      const rightValuePosition = Math.abs(event.clientX - thumbRightPosition);
+    if (isIdenticalDistanceInRange && !isEventMoveKeypress) {
+      const leftThumbPosition = leftThumb.getBoundingClientRect().left;
+      const rightThumbPosition = rightThumb.getBoundingClientRect().left;
+      const leftValuePosition = Math.abs(event.clientX - leftThumbPosition);
+      const rightValuePosition = Math.abs(event.clientX - rightThumbPosition);
 
       if (Math.round(rightValuePosition - leftValuePosition) >= 0) {
         this.initValuesArray[0] = targetValue;
       } else {
+        this.initValuesArray[1] = targetValue;
+      }
+    }
+
+    if (isIdenticalDistanceInRange && isEventMoveKeypress) {
+      if (event.target.classList.contains('meta-slider__thumb_left')) {
+        this.initValuesArray[0] = targetValue;
+      } else if (event.target.classList.contains('meta-slider__thumb_right')) {
         this.initValuesArray[1] = targetValue;
       }
     }
@@ -393,18 +406,18 @@ class MetaSlider {
     event.preventDefault();
     const targetValue = Number(event.target.dataset.value);
 
-    this.checkEventTargetValue(targetValue, event);
+    this.checkTargetValue(targetValue, event);
   }
 
   handleSetPositionForThumbs(event) {
     event.preventDefault();
     if (event.target.classList.contains('meta-slider')) {
-      this.checkEventTargetValue(this.calculateTargetValue(event), event);
+      this.checkTargetValue(this.calculateTargetValue(event), event);
     }
   }
 
   handleInitPointerMove(event) {
-    this.checkEventTargetValue(this.calculateTargetValue(event), event);
+    this.checkTargetValue(this.calculateTargetValue(event), event);
   }
 
   handleInitPointerUp(event) {
@@ -422,6 +435,18 @@ class MetaSlider {
     this.elemErrorInfo.classList.add('error-info__hidden');
   }
 
+  handleChangeThumbPosition(event) {
+    if (event.code === 'ArrowLeft' || event.code === 'ArrowRight') {
+      const eventTargetValue = Number(event.target.dataset.value);
+      let targetValue;
+
+      if (event.code === 'ArrowLeft') targetValue = eventTargetValue - this.step;
+      if (event.code === 'ArrowRight') targetValue = eventTargetValue + this.step;
+
+      this.checkTargetValue(targetValue, event);
+    }
+  }
+
   setEventsSlider() {
     if (this.elemScalePoints) {
       this.elemScalePoints.forEach(elemPoint => {
@@ -435,10 +460,9 @@ class MetaSlider {
   setEventsThumbs() {
     this.elemThumbs.forEach(thumb => {
       thumb.addEventListener('pointerdown', this.handleSetEventListenerForThumbs.bind(this));
+      thumb.addEventListener('keydown', this.handleChangeThumbPosition.bind(this));
       // eslint-disable-next-line fsd/no-function-declaration-in-event-listener
       thumb.addEventListener('dragstart', () => false);
-      // eslint-disable-next-line fsd/no-function-declaration-in-event-listener
-      thumb.addEventListener('selectstart', () => false);
     });
   }
 }
