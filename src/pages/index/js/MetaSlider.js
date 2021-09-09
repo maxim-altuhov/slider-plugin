@@ -10,6 +10,7 @@ class MetaSlider {
   colorTextForMinAndMaxValue = '#000000'
   colorForScale = '#000000'
 
+  enableСorrectionValues = true;
   enableFormatted = false;
   enableAutoMargins = true;
   showError = true;
@@ -22,7 +23,7 @@ class MetaSlider {
   checkStepSizeForScale = !this.enableAutoScaleCreation;
 
   step = 5.5;
-  minValue = 0;
+  minValue = -100;
   maxValue = 100;
   stepSizeForScale = 20;
   numberOfDecimalPlaces = this.getNumberOfDecimalPlaces();
@@ -30,8 +31,8 @@ class MetaSlider {
   postFix = '';
   // 'ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'
   customValues = [];
-  initValueLeft = 0;
-  initValueRight = 5;
+  initValueLeft = -20;
+  initValueRight = 20;
   checkedInitValueLeft = this.isRange ? this.initValueLeft : this.minValue;
 
   constructor() {
@@ -148,9 +149,16 @@ class MetaSlider {
       this.minAndMaxValuesArray = [this.minValue, this.maxValue];
     }
 
-    this.initValuesArray = [this.checkedInitValueLeft, this.initValueRight];
     this.stepCounter = (this.maxValue - this.minValue) / this.step;
     this.stepAsPercent = 100 / this.stepCounter;
+
+    if (!Number.isInteger(this.step) && this.enableСorrectionValues) {
+      const event = undefined;
+      this.initValueRight = this.calculateTargetValue(event, this.initValueRight);
+      this.checkedInitValueLeft = this.calculateTargetValue(event, this.checkedInitValueLeft);
+    }
+
+    this.initValuesArray = [this.checkedInitValueLeft, this.initValueRight];
   }
 
   renderSlider() {
@@ -388,7 +396,7 @@ class MetaSlider {
   }
 
   calculateTargetValue(event, initValue) {
-    const valueInEventPosition = event.clientX - this.elemSlider.offsetLeft;
+    const valueInEventPosition = event ? event.clientX - this.elemSlider.offsetLeft : undefined;
     const valueAsPercentage = (initValue === undefined)
       ? (valueInEventPosition / this.widthSlider) * 100
       : ((initValue - this.minValue) / (this.maxValue - this.minValue)) * 100;
@@ -407,8 +415,11 @@ class MetaSlider {
   handleGetValueInScalePoint(event) {
     event.preventDefault();
     const targetValue = Number(event.target.dataset.value);
+    const calculateTargetValue = this.enableСorrectionValues
+      ? this.calculateTargetValue(event, targetValue)
+      : targetValue;
 
-    this.checkTargetValue(targetValue, event);
+    this.checkTargetValue(calculateTargetValue, event);
   }
 
   handleSetPositionForThumbs(event) {
