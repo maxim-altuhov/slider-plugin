@@ -21,17 +21,17 @@ class MetaSlider {
   enableAutoScaleCreation = false;
   checkStepSizeForScale = !this.enableAutoScaleCreation;
 
-  step = 1;
+  step = 5.5;
   minValue = 0;
   maxValue = 100;
-  stepSizeForScale = 10;
-  numberOfDecimalPlaces = Number.isInteger(this.step) ? 0 : 1;
+  stepSizeForScale = 20;
+  numberOfDecimalPlaces = this.getNumberOfDecimalPlaces();
   preFix = '';
   postFix = '';
   // 'ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'
   customValues = [];
   initValueLeft = 0;
-  initValueRight = 10;
+  initValueRight = 5;
   checkedInitValueLeft = this.isRange ? this.initValueLeft : this.minValue;
 
   constructor() {
@@ -51,6 +51,10 @@ class MetaSlider {
 
   checkCorrectStepSizeForScale() {
     return Number.isInteger((this.maxValue - this.minValue) / this.stepSizeForScale);
+  }
+
+  getNumberOfDecimalPlaces() {
+    return this.step.toString().includes('.') ? this.step.toString().match(/\.(\d+)/)[1].length : 0;
   }
 
   renderErrorMessage(message) {
@@ -77,8 +81,8 @@ class MetaSlider {
     let currentStep = 0;
 
     this.customValues.forEach(value => {
-      const currentStepAsNumber = Number(currentStep.toFixed(this.numberOfDecimalPlaces));
-      this.mapCustomValues.set(currentStepAsNumber, value);
+      const roundedValue = Number(currentStep.toFixed(this.numberOfDecimalPlaces));
+      this.mapCustomValues.set(roundedValue, value);
       currentStep += this.step;
     });
   }
@@ -337,17 +341,12 @@ class MetaSlider {
     }
   }
 
-  checkTargetValue(initValue, event) {
+  checkTargetValue(targetValue, event) {
     const [leftThumb, rightThumb] = this.elemThumbs;
     const currentLeftVal = Number(leftThumb.dataset.value);
     const currentRightVal = Number(rightThumb.dataset.value);
-    let targetValue = initValue;
-
-    if (targetValue < this.minValue) targetValue = this.minValue;
-    if (targetValue > this.maxValue) targetValue = this.maxValue;
-
-    const leftThumbDiff = Math.abs(targetValue - currentLeftVal);
-    const rightThumbDiff = Math.abs(targetValue - currentRightVal);
+    const leftThumbDiff = Math.abs((targetValue - currentLeftVal).toFixed(2));
+    const rightThumbDiff = Math.abs((targetValue - currentRightVal).toFixed(2));
     let clickInRange = false;
 
     if (this.isRange) clickInRange = targetValue > currentLeftVal && targetValue < currentRightVal;
@@ -388,9 +387,12 @@ class MetaSlider {
     this.setValueForSlider(this.initValuesArray);
   }
 
-  calculateTargetValue(event) {
-    const valuePosition = event.clientX - this.elemSlider.offsetLeft;
-    const valueAsPercentage = (valuePosition / this.widthSlider) * 100;
+  calculateTargetValue(event, initValue) {
+    const valueInEventPosition = event.clientX - this.elemSlider.offsetLeft;
+    const valueAsPercentage = (initValue === undefined)
+      ? (valueInEventPosition / this.widthSlider) * 100
+      : ((initValue - this.minValue) / (this.maxValue - this.minValue)) * 100;
+
     let totalPercent = Math.round(valueAsPercentage / this.stepAsPercent) * this.stepAsPercent;
 
     if (totalPercent < 0) totalPercent = 0;
@@ -412,12 +414,16 @@ class MetaSlider {
   handleSetPositionForThumbs(event) {
     event.preventDefault();
     if (event.target.classList.contains('meta-slider')) {
-      this.checkTargetValue(this.calculateTargetValue(event), event);
+      const calculateTargetValue = this.calculateTargetValue(event);
+
+      this.checkTargetValue(calculateTargetValue, event);
     }
   }
 
   handleInitPointerMove(event) {
-    this.checkTargetValue(this.calculateTargetValue(event), event);
+    const calculateTargetValue = this.calculateTargetValue(event);
+
+    this.checkTargetValue(calculateTargetValue, event);
   }
 
   handleInitPointerUp(event) {
@@ -437,13 +443,12 @@ class MetaSlider {
 
   handleChangeThumbPosition(event) {
     if (event.code === 'ArrowLeft' || event.code === 'ArrowRight') {
-      const eventTargetValue = Number(event.target.dataset.value);
-      let targetValue;
+      let eventTargetValue = Number(event.target.dataset.value);
+      if (event.code === 'ArrowLeft') eventTargetValue -= this.step;
+      if (event.code === 'ArrowRight') eventTargetValue += this.step;
 
-      if (event.code === 'ArrowLeft') targetValue = eventTargetValue - this.step;
-      if (event.code === 'ArrowRight') targetValue = eventTargetValue + this.step;
-
-      this.checkTargetValue(targetValue, event);
+      const calculateTargetValue = this.calculateTargetValue(event, eventTargetValue);
+      this.checkTargetValue(calculateTargetValue, event);
     }
   }
 
