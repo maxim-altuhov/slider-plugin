@@ -11,7 +11,7 @@ class MetaSlider {
   colorForScale = '#000000'
 
   enableСorrectionValues = true;
-  enableFormatted = false;
+  enableFormatted = true;
   enableAutoMargins = true;
   showError = true;
   showMinAndMaxValue = false;
@@ -22,17 +22,17 @@ class MetaSlider {
   enableAutoScaleCreation = false;
   checkStepSizeForScale = !this.enableAutoScaleCreation;
 
-  step = 5.5;
-  minValue = -100;
+  step = 1;
+  minValue = 0;
   maxValue = 100;
-  stepSizeForScale = 20;
+  stepSizeForScale = 5;
   numberOfDecimalPlaces = this.getNumberOfDecimalPlaces();
   preFix = '';
   postFix = '';
   // 'ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'
   customValues = [];
-  initValueLeft = -20;
-  initValueRight = 20;
+  initValueLeft = 0;
+  initValueRight = 10;
   checkedInitValueLeft = this.isRange ? this.initValueLeft : this.minValue;
 
   constructor() {
@@ -50,7 +50,7 @@ class MetaSlider {
     this.setEventsThumbs();
   }
 
-  checkCorrectStepSizeForScale() {
+  checkIsIntegerStepSizeForScale() {
     return Number.isInteger((this.maxValue - this.minValue) / this.stepSizeForScale);
   }
 
@@ -88,12 +88,44 @@ class MetaSlider {
     });
   }
 
+  checkCorrectStepSizeForScale(errorMessage) {
+    if (this.checkStepSizeForScale && this.customValues.length === 0) {
+      while (!this.checkIsIntegerStepSizeForScale() || this.stepSizeForScale <= 0) {
+        if (this.stepSizeForScale > 1 && Number.isInteger(this.stepSizeForScale)) {
+          this.stepSizeForScale += 1;
+        } else if (this.stepSizeForScale <= 0) {
+          this.stepSizeForScale = 1;
+        } else if (!Number.isInteger(this.stepSizeForScale)) {
+          this.stepSizeForScale += 0.1;
+          this.stepSizeForScale = Number(this.stepSizeForScale.toFixed(1));
+        }
+        this.renderErrorMessage(errorMessage.stepSizeForScale);
+      }
+    }
+  }
+
+  initValueCorrection(value, errorMessage) {
+    let resultValue = value;
+
+    if (this.enableСorrectionValues) {
+      const convertedValue = this.calculateTargetValue(null, value);
+
+      if (convertedValue !== value) {
+        resultValue = convertedValue;
+        this.renderErrorMessage(errorMessage.initСorrectionValues);
+      }
+    }
+
+    return resultValue;
+  }
+
   initValuesCheck() {
     const errorMessage = {
       initValue: 'Ошибка во входящих данных для бегунков слайдеров. Установлены значения по-умолчанию.',
       minAndMaxValue: 'Max значение установленное для слайдера меньше или равно его Min значению. Установлены значения по-умолчанию.',
       stepSizeForScale: 'Установите корректное значение шага для шкалы с делениями. Установлено ближайщее оптимальное значение.',
       step: 'Значение шага слайдера не может быть меньше или равно 0.',
+      initСorrectionValues: 'Входящие значения для бегунков скорректированны кратно установленному шагу.',
     };
 
     if (this.step <= 0) {
@@ -125,20 +157,6 @@ class MetaSlider {
       this.renderErrorMessage(errorMessage.stepSizeForScale);
     }
 
-    if (this.checkStepSizeForScale && this.customValues.length === 0) {
-      while (!this.checkCorrectStepSizeForScale() || this.stepSizeForScale <= 0) {
-        if (this.stepSizeForScale > 1 && Number.isInteger(this.stepSizeForScale)) {
-          this.stepSizeForScale += 1;
-        } else if (this.stepSizeForScale <= 0) {
-          this.stepSizeForScale = 1;
-        } else if (!Number.isInteger(this.stepSizeForScale)) {
-          this.stepSizeForScale += 0.1;
-          this.stepSizeForScale = Number(this.stepSizeForScale.toFixed(1));
-        }
-        this.renderErrorMessage(errorMessage.stepSizeForScale);
-      }
-    }
-
     if (this.customValues.length > 0) {
       this.initCustomValues();
       this.minAndMaxValuesArray = [
@@ -149,15 +167,11 @@ class MetaSlider {
       this.minAndMaxValuesArray = [this.minValue, this.maxValue];
     }
 
+    this.checkCorrectStepSizeForScale(errorMessage);
     this.stepCounter = (this.maxValue - this.minValue) / this.step;
     this.stepAsPercent = 100 / this.stepCounter;
-
-    if (!Number.isInteger(this.step) && this.enableСorrectionValues) {
-      const event = undefined;
-      this.initValueRight = this.calculateTargetValue(event, this.initValueRight);
-      this.checkedInitValueLeft = this.calculateTargetValue(event, this.checkedInitValueLeft);
-    }
-
+    this.checkedInitValueLeft = this.initValueCorrection(this.checkedInitValueLeft, errorMessage);
+    this.initValueRight = this.initValueCorrection(this.initValueRight, errorMessage);
     this.initValuesArray = [this.checkedInitValueLeft, this.initValueRight];
   }
 
@@ -224,10 +238,8 @@ class MetaSlider {
 
     if (this.showMinAndMaxValue && !this.showTheScale) {
       this.elemMinAndMaxValues.forEach((elem, index) => {
-        let convertedValue;
-
         if (this.customValues.length === 0) {
-          convertedValue = this.enableFormatted
+          let convertedValue = this.enableFormatted
             ? this.minAndMaxValuesArray[index].toLocaleString()
             : this.minAndMaxValuesArray[index].toFixed(this.numberOfDecimalPlaces);
 
@@ -373,7 +385,7 @@ class MetaSlider {
 
     if (isIdenticalDistanceInRange && !isEventMoveKeypress) {
       const leftThumbPosition = leftThumb.getBoundingClientRect().left;
-      const rightThumbPosition = rightThumb.getBoundingClientRect().left;
+      const rightThumbPosition = rightThumb.getBoundingClientRect().right;
       const leftValuePosition = Math.abs(event.clientX - leftThumbPosition);
       const rightValuePosition = Math.abs(event.clientX - rightThumbPosition);
 
@@ -416,7 +428,7 @@ class MetaSlider {
     event.preventDefault();
     const targetValue = Number(event.target.dataset.value);
     const calculateTargetValue = this.enableСorrectionValues
-      ? this.calculateTargetValue(event, targetValue)
+      ? this.calculateTargetValue(null, targetValue)
       : targetValue;
 
     this.checkTargetValue(calculateTargetValue, event);
@@ -458,7 +470,7 @@ class MetaSlider {
       if (event.code === 'ArrowLeft') eventTargetValue -= this.step;
       if (event.code === 'ArrowRight') eventTargetValue += this.step;
 
-      const calculateTargetValue = this.calculateTargetValue(event, eventTargetValue);
+      const calculateTargetValue = this.calculateTargetValue(null, eventTargetValue);
       this.checkTargetValue(calculateTargetValue, event);
     }
   }
