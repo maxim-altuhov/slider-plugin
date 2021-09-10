@@ -14,8 +14,8 @@ class MetaSlider {
   enableFormatted = true;
   enableAutoMargins = true;
   showError = true;
-  showMinAndMaxValue = false;
-  showTheScale = true;
+  showMinAndMaxValue = true;
+  showTheScale = false;
   showMarkers = true;
   showBackgroundForRange = true;
   isRange = true;
@@ -25,14 +25,14 @@ class MetaSlider {
   step = 1;
   minValue = 0;
   maxValue = 100;
-  stepSizeForScale = 5;
+  stepSizeForScale = 10;
   numberOfDecimalPlaces = this.getNumberOfDecimalPlaces();
   preFix = '';
   postFix = '';
   // 'ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'
   customValues = [];
-  initValueLeft = 0;
-  initValueRight = 10;
+  initValueLeft = 1;
+  initValueRight = 5;
   checkedInitValueLeft = this.isRange ? this.initValueLeft : this.minValue;
 
   constructor() {
@@ -72,48 +72,39 @@ class MetaSlider {
 
   initCustomValues() {
     this.minValue = 0;
-    this.maxValue = 100;
-    this.resetInitValue();
+    this.maxValue = this.customValues.length - 1;
     this.enableAutoScaleCreation = false;
+    this.checkStepSizeForScale = false;
     this.enableFormatted = false;
+    this.enableСorrectionValues = true;
     this.numberOfDecimalPlaces = 0;
-    this.step = this.maxValue / (this.customValues.length - 1);
-    this.mapCustomValues = new Map();
-    let currentStep = 0;
-
-    this.customValues.forEach(value => {
-      const roundedValue = Number(currentStep.toFixed(this.numberOfDecimalPlaces));
-      this.mapCustomValues.set(roundedValue, value);
-      currentStep += this.step;
-    });
+    this.step = 1;
+    this.stepSizeForScale = 1;
+    this.checkedInitValueLeft = Math.floor(this.checkedInitValueLeft);
+    this.initValueRight = Math.floor(this.initValueRight);
   }
 
   checkCorrectStepSizeForScale(errorMessage) {
-    if (this.checkStepSizeForScale && this.customValues.length === 0) {
-      while (!this.checkIsIntegerStepSizeForScale() || this.stepSizeForScale <= 0) {
-        if (this.stepSizeForScale > 1 && Number.isInteger(this.stepSizeForScale)) {
-          this.stepSizeForScale += 1;
-        } else if (this.stepSizeForScale <= 0) {
-          this.stepSizeForScale = 1;
-        } else if (!Number.isInteger(this.stepSizeForScale)) {
-          this.stepSizeForScale += 0.1;
-          this.stepSizeForScale = Number(this.stepSizeForScale.toFixed(1));
-        }
-        this.renderErrorMessage(errorMessage.stepSizeForScale);
+    while (!this.checkIsIntegerStepSizeForScale() || this.stepSizeForScale <= 0) {
+      if (this.stepSizeForScale > 1 && Number.isInteger(this.stepSizeForScale)) {
+        this.stepSizeForScale += 1;
+      } else if (this.stepSizeForScale <= 0) {
+        this.stepSizeForScale = 1;
+      } else if (!Number.isInteger(this.stepSizeForScale)) {
+        this.stepSizeForScale += 0.1;
+        this.stepSizeForScale = Number(this.stepSizeForScale.toFixed(1));
       }
+      this.renderErrorMessage(errorMessage.stepSizeForScale);
     }
   }
 
   initValueCorrection(value, errorMessage) {
+    const convertedValue = this.calculateTargetValue(null, value);
     let resultValue = value;
 
-    if (this.enableСorrectionValues) {
-      const convertedValue = this.calculateTargetValue(null, value);
-
-      if (convertedValue !== value) {
-        resultValue = convertedValue;
-        this.renderErrorMessage(errorMessage.initСorrectionValues);
-      }
+    if (convertedValue !== value) {
+      resultValue = convertedValue;
+      this.renderErrorMessage(errorMessage.initСorrectionValues);
     }
 
     return resultValue;
@@ -167,11 +158,18 @@ class MetaSlider {
       this.minAndMaxValuesArray = [this.minValue, this.maxValue];
     }
 
-    this.checkCorrectStepSizeForScale(errorMessage);
+    if (this.checkStepSizeForScale) {
+      this.checkCorrectStepSizeForScale(errorMessage);
+    }
+
     this.stepCounter = (this.maxValue - this.minValue) / this.step;
     this.stepAsPercent = 100 / this.stepCounter;
-    this.checkedInitValueLeft = this.initValueCorrection(this.checkedInitValueLeft, errorMessage);
-    this.initValueRight = this.initValueCorrection(this.initValueRight, errorMessage);
+
+    if (this.enableСorrectionValues) {
+      this.checkedInitValueLeft = this.initValueCorrection(this.checkedInitValueLeft, errorMessage);
+      this.initValueRight = this.initValueCorrection(this.initValueRight, errorMessage);
+    }
+
     this.initValuesArray = [this.checkedInitValueLeft, this.initValueRight];
   }
 
@@ -259,38 +257,28 @@ class MetaSlider {
     if (this.showTheScale) {
       const fragmentWithScale = document.createDocumentFragment();
       const blockScale = document.createElement('div');
+      const stepSizeValue = this.step >= 5 && this.enableAutoScaleCreation
+        ? this.step
+        : this.stepSizeForScale;
 
       blockScale.classList.add('meta-slider__scale');
       this.elemSlider.append(blockScale);
 
-      if (this.customValues.length > 0) {
-        let currentScalePointValue = 0;
+      let currentScalePointValue = this.minValue;
 
-        this.customValues.forEach(currentValue => {
-          const elemScalePoint = `<button type="button" class="meta-slider__scale-point" data-value="${currentScalePointValue.toFixed(this.numberOfDecimalPlaces)}" style="color: ${this.colorForScale};">${this.preFix}${currentValue}${this.postFix}</button>`;
+      for (; currentScalePointValue <= this.maxValue; currentScalePointValue += stepSizeValue) {
+        const convertedScalePointValue = this.enableFormatted
+          ? currentScalePointValue.toLocaleString()
+          : currentScalePointValue.toFixed(this.numberOfDecimalPlaces);
 
-          blockScale.insertAdjacentHTML('beforeEnd', elemScalePoint);
-          fragmentWithScale.append(blockScale);
+        const resultScalePointValue = this.customValues.length > 0
+          ? this.customValues[currentScalePointValue]
+          : convertedScalePointValue;
 
-          currentScalePointValue += this.step;
-        });
-      } else {
-        const stepSizeValue = this.step >= 5 && this.enableAutoScaleCreation
-          ? this.step
-          : this.stepSizeForScale;
+        const elemScalePoint = `<button type="button" class="meta-slider__scale-point" data-value="${currentScalePointValue.toFixed(this.numberOfDecimalPlaces)}" style="color: ${this.colorForScale};">${this.preFix}${resultScalePointValue}${this.postFix}</button>`;
 
-        let currentScalePointValue = this.minValue;
-
-        for (; currentScalePointValue <= this.maxValue; currentScalePointValue += stepSizeValue) {
-          const convertedScalePointValue = this.enableFormatted
-            ? currentScalePointValue.toLocaleString()
-            : currentScalePointValue.toFixed(this.numberOfDecimalPlaces);
-
-          const elemScalePoint = `<button type="button" class="meta-slider__scale-point" data-value="${currentScalePointValue.toFixed(this.numberOfDecimalPlaces)}" style="color: ${this.colorForScale};">${this.preFix}${convertedScalePointValue}${this.postFix}</button>`;
-
-          blockScale.insertAdjacentHTML('beforeEnd', elemScalePoint);
-          fragmentWithScale.append(blockScale);
-        }
+        blockScale.insertAdjacentHTML('beforeEnd', elemScalePoint);
+        fragmentWithScale.append(blockScale);
       }
 
       this.elemSlider.append(fragmentWithScale);
@@ -319,7 +307,7 @@ class MetaSlider {
       this.elemThumbs[index].dataset.value = currentValue.toFixed(this.numberOfDecimalPlaces);
 
       if (this.customValues.length > 0) {
-        this.elemThumbs[index].dataset.text = this.mapCustomValues.get(currentValue);
+        this.elemThumbs[index].dataset.text = this.customValues[currentValue];
       }
     });
 
