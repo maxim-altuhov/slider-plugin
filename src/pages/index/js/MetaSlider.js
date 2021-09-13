@@ -14,25 +14,25 @@ class MetaSlider {
   enableFormatted = true;
   enableAutoMargins = true;
   showError = true;
-  showMinAndMaxValue = true;
-  showTheScale = false;
+  showMinAndMaxValue = false;
+  showTheScale = true;
   showMarkers = true;
   showBackgroundForRange = true;
-  isRange = true;
+  isRange = false;
   enableAutoScaleCreation = false;
   checkStepSizeForScale = !this.enableAutoScaleCreation;
 
   step = 1;
   minValue = 0;
   maxValue = 100;
-  stepSizeForScale = 10;
+  stepSizeForScale = 5;
   numberOfDecimalPlaces = this.getNumberOfDecimalPlaces();
   preFix = '';
   postFix = '';
   // 'ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'
   customValues = [];
-  initValueLeft = 1;
-  initValueRight = 5;
+  initValueLeft = 0;
+  initValueRight = 50;
   checkedInitValueLeft = this.isRange ? this.initValueLeft : this.minValue;
 
   constructor() {
@@ -80,8 +80,6 @@ class MetaSlider {
     this.numberOfDecimalPlaces = 0;
     this.step = 1;
     this.stepSizeForScale = 1;
-    this.checkedInitValueLeft = Math.floor(this.checkedInitValueLeft);
-    this.initValueRight = Math.floor(this.initValueRight);
   }
 
   checkCorrectStepSizeForScale(errorMessage) {
@@ -183,14 +181,14 @@ class MetaSlider {
 
     const HTMLBlock = `<div class="error-info error-info__hidden"><p class="error-info__text"></p><button type="button" class="error-info__close">X</button></div>
     <div class="meta-slider__progress"></div>
-    <span class="meta-slider__value meta-slider__value_min" style="color: ${this.colorTextForMinAndMaxValue}"></span>
+    <button type="button" class="meta-slider__value meta-slider__value_min" style="color: ${this.colorTextForMinAndMaxValue}"></button>
     <button type="button" class="meta-slider__thumb meta-slider__thumb_left" style="background-color:${this.mainColor}; border-color:${this.colorBorderForThumb}; ${propDisplay}" data-value="">
       <span class="meta-slider__marker meta-slider__marker_left" style="background-color:${this.colorMarker}; color: ${this.colorTextForMarker}; border-color:${this.colorBorderForMarker}"></span>
     </button>
     <button type="button" class="meta-slider__thumb meta-slider__thumb_right" style="background-color:${this.mainColor}; border-color:${this.colorBorderForThumb}" data-value="">
       <span class="meta-slider__marker meta-slider__marker_right" style="background-color:${this.colorMarker}; color: ${this.colorTextForMarker}; border-color:${this.colorBorderForMarker}"></span>
     </button>
-    <span class="meta-slider__value meta-slider__value_max" style="color: ${this.colorTextForMinAndMaxValue}"></span>`;
+    <button type="button" class="meta-slider__value meta-slider__value_max" style="color: ${this.colorTextForMinAndMaxValue}"></button>`;
 
     blockSlider.innerHTML = HTMLBlock;
 
@@ -245,6 +243,8 @@ class MetaSlider {
         } else {
           elem.textContent = `${this.preFix}${this.minAndMaxValuesArray[index]}${this.postFix}`;
         }
+
+        elem.dataset.value = this.minAndMaxValuesArray[index];
       });
 
       if (this.enableAutoMargins) this.elemSlider.style.marginBottom = (this.elemMinAndMaxValues[0].offsetHeight * 3) + 'px';
@@ -415,9 +415,13 @@ class MetaSlider {
   handleGetValueInScalePoint(event) {
     event.preventDefault();
     const targetValue = Number(event.target.dataset.value);
-    const calculateTargetValue = this.enableСorrectionValues
-      ? this.calculateTargetValue(null, targetValue)
-      : targetValue;
+    let calculateTargetValue = targetValue;
+
+    if (!event.target.classList.contains('meta-slider__value')) {
+      calculateTargetValue = this.enableСorrectionValues
+        ? this.calculateTargetValue(null, targetValue)
+        : targetValue;
+    }
 
     this.checkTargetValue(calculateTargetValue, event);
   }
@@ -427,6 +431,17 @@ class MetaSlider {
     if (event.target.classList.contains('meta-slider')) {
       const calculateTargetValue = this.calculateTargetValue(event);
 
+      this.checkTargetValue(calculateTargetValue, event);
+    }
+  }
+
+  handleChangeThumbPosition(event) {
+    if (event.code === 'ArrowLeft' || event.code === 'ArrowRight') {
+      let eventTargetValue = Number(event.target.dataset.value);
+      if (event.code === 'ArrowLeft') eventTargetValue -= this.step;
+      if (event.code === 'ArrowRight') eventTargetValue += this.step;
+
+      const calculateTargetValue = this.calculateTargetValue(null, eventTargetValue);
       this.checkTargetValue(calculateTargetValue, event);
     }
   }
@@ -452,23 +467,19 @@ class MetaSlider {
     this.elemErrorInfo.classList.add('error-info__hidden');
   }
 
-  handleChangeThumbPosition(event) {
-    if (event.code === 'ArrowLeft' || event.code === 'ArrowRight') {
-      let eventTargetValue = Number(event.target.dataset.value);
-      if (event.code === 'ArrowLeft') eventTargetValue -= this.step;
-      if (event.code === 'ArrowRight') eventTargetValue += this.step;
-
-      const calculateTargetValue = this.calculateTargetValue(null, eventTargetValue);
-      this.checkTargetValue(calculateTargetValue, event);
-    }
-  }
-
   setEventsSlider() {
     if (this.elemScalePoints) {
       this.elemScalePoints.forEach(elemPoint => {
         elemPoint.addEventListener('click', this.handleGetValueInScalePoint.bind(this));
       });
     }
+
+    if (this.elemMinAndMaxValues) {
+      this.elemMinAndMaxValues.forEach(elem => {
+        elem.addEventListener('click', this.handleGetValueInScalePoint.bind(this));
+      });
+    }
+
     this.btnErrorClose.addEventListener('click', this.handleCloseErrorWindow.bind(this));
     this.elemSlider.addEventListener('pointerdown', this.handleSetPositionForThumbs.bind(this));
   }
