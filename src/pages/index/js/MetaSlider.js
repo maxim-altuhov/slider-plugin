@@ -18,27 +18,27 @@ class MetaSlider {
   showTheScale = true;
   showMarkers = true;
   showBackgroundForRange = true;
-  isRange = false;
+  isRange = true;
   enableAutoScaleCreation = false;
   checkStepSizeForScale = !this.enableAutoScaleCreation;
 
   step = 1;
   minValue = 0;
   maxValue = 100;
-  stepSizeForScale = 5;
+  stepSizeForScale = 1;
   numberOfDecimalPlaces = this.getNumberOfDecimalPlaces();
   preFix = '';
   postFix = '';
   // 'ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'
-  customValues = [];
-  initValueLeft = 0;
-  initValueRight = 50;
+  customValues = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'];
+  initValueLeft = 1;
+  initValueRight = 5;
   checkedInitValueLeft = this.isRange ? this.initValueLeft : this.minValue;
 
   constructor() {
     this.renderSlider();
-    this.getInfoAboutSlider();
     this.initValuesCheck();
+    this.getInfoAboutSlider();
     this.init();
   }
 
@@ -60,8 +60,8 @@ class MetaSlider {
 
   renderErrorMessage(message) {
     if (this.showError) {
-      this.elemErrorInfo.classList.remove('error-info__hidden');
-      this.elemErrorInfoText.textContent = message;
+      const HTMLBlockError = `<div class="error-info"><p class="error-info__text">${message}</p><button type="button" class="error-info__close">X</button></div>`;
+      this.elemSlider.insertAdjacentHTML('afterbegin', HTMLBlockError);
     }
   }
 
@@ -108,13 +108,37 @@ class MetaSlider {
     return resultValue;
   }
 
+  renderSlider() {
+    const fragmentWithASlider = document.createDocumentFragment();
+    const blockSlider = document.createElement('div');
+    blockSlider.classList.add('meta-slider');
+    blockSlider.style.backgroundColor = this.secondColor;
+
+    const propDisplay = this.isRange ? '' : 'display:none';
+
+    const HTMLBlock = `<div class="meta-slider__progress"></div>
+    <button type="button" class="meta-slider__thumb meta-slider__thumb_left" style="background-color:${this.mainColor}; border-color:${this.colorBorderForThumb}; ${propDisplay}" data-value="">
+      <span class="meta-slider__marker meta-slider__marker_left" style="background-color:${this.colorMarker}; color: ${this.colorTextForMarker}; border-color:${this.colorBorderForMarker}"></span>
+    </button>
+    <button type="button" class="meta-slider__thumb meta-slider__thumb_right" style="background-color:${this.mainColor}; border-color:${this.colorBorderForThumb}" data-value="">
+      <span class="meta-slider__marker meta-slider__marker_right" style="background-color:${this.colorMarker}; color: ${this.colorTextForMarker}; border-color:${this.colorBorderForMarker}"></span>
+    </button>`;
+
+    blockSlider.innerHTML = HTMLBlock;
+
+    fragmentWithASlider.append(blockSlider);
+    this.selector.append(fragmentWithASlider);
+  }
+
   initValuesCheck() {
+    this.elemSlider = this.selector.querySelector('.meta-slider');
+
     const errorMessage = {
       initValue: 'Ошибка во входящих данных для бегунков слайдеров. Установлены значения по-умолчанию.',
       minAndMaxValue: 'Max значение установленное для слайдера меньше или равно его Min значению. Установлены значения по-умолчанию.',
       stepSizeForScale: 'Установите корректное значение шага для шкалы с делениями. Установлено ближайщее оптимальное значение.',
       step: 'Значение шага слайдера не может быть меньше или равно 0.',
-      initСorrectionValues: 'Входящие значения для бегунков скорректированны кратно установленному шагу.',
+      initСorrectionValues: 'Входящие значения для бегунков скорректированны.',
     };
 
     if (this.step <= 0) {
@@ -171,44 +195,12 @@ class MetaSlider {
     this.initValuesArray = [this.checkedInitValueLeft, this.initValueRight];
   }
 
-  renderSlider() {
-    const fragmentWithASlider = document.createDocumentFragment();
-    const blockSlider = document.createElement('div');
-    blockSlider.classList.add('meta-slider');
-    blockSlider.style.backgroundColor = this.secondColor;
-
-    const propDisplay = this.isRange ? '' : 'display:none';
-
-    const HTMLBlock = `<div class="error-info error-info__hidden"><p class="error-info__text"></p><button type="button" class="error-info__close">X</button></div>
-    <div class="meta-slider__progress"></div>
-    <button type="button" class="meta-slider__value meta-slider__value_min" style="color: ${this.colorTextForMinAndMaxValue}"></button>
-    <button type="button" class="meta-slider__thumb meta-slider__thumb_left" style="background-color:${this.mainColor}; border-color:${this.colorBorderForThumb}; ${propDisplay}" data-value="">
-      <span class="meta-slider__marker meta-slider__marker_left" style="background-color:${this.colorMarker}; color: ${this.colorTextForMarker}; border-color:${this.colorBorderForMarker}"></span>
-    </button>
-    <button type="button" class="meta-slider__thumb meta-slider__thumb_right" style="background-color:${this.mainColor}; border-color:${this.colorBorderForThumb}" data-value="">
-      <span class="meta-slider__marker meta-slider__marker_right" style="background-color:${this.colorMarker}; color: ${this.colorTextForMarker}; border-color:${this.colorBorderForMarker}"></span>
-    </button>
-    <button type="button" class="meta-slider__value meta-slider__value_max" style="color: ${this.colorTextForMinAndMaxValue}"></button>`;
-
-    blockSlider.innerHTML = HTMLBlock;
-
-    fragmentWithASlider.append(blockSlider);
-    this.selector.append(fragmentWithASlider);
-  }
-
   getInfoAboutSlider() {
-    this.elemSlider = this.selector.querySelector('.meta-slider');
-
     this.sliderProgress = this.selector.querySelector('.meta-slider__progress');
-
-    this.elemScalePoints = document.querySelectorAll('.meta-slider__scale-point');
-
     this.elemThumbs = this.elemSlider.querySelectorAll('.meta-slider__thumb');
     this.elemMarkers = this.elemSlider.querySelectorAll('.meta-slider__marker');
-    this.elemMinAndMaxValues = this.elemSlider.querySelectorAll('.meta-slider__value');
 
     this.elemErrorInfo = this.selector.querySelector('.error-info');
-    this.elemErrorInfoText = this.selector.querySelector('.error-info__text');
     this.btnErrorClose = this.selector.querySelector('.error-info__close');
 
     this.linkInitPointerMove = this.handleInitPointerMove.bind(this);
@@ -233,6 +225,12 @@ class MetaSlider {
     }
 
     if (this.showMinAndMaxValue && !this.showTheScale) {
+      const HTMLBlockValues = `<button type="button" class="meta-slider__value meta-slider__value_min" style="color: ${this.colorTextForMinAndMaxValue}"></button>
+      <button type="button" class="meta-slider__value meta-slider__value_max" style="color: ${this.colorTextForMinAndMaxValue}"></button>`;
+      this.elemSlider.insertAdjacentHTML('beforeend', HTMLBlockValues);
+
+      this.elemMinAndMaxValues = this.elemSlider.querySelectorAll('.meta-slider__value');
+
       this.elemMinAndMaxValues.forEach((elem, index) => {
         if (this.customValues.length === 0) {
           let convertedValue = this.enableFormatted
@@ -464,7 +462,7 @@ class MetaSlider {
   }
 
   handleCloseErrorWindow() {
-    this.elemErrorInfo.classList.add('error-info__hidden');
+    this.elemErrorInfo.remove();
   }
 
   setEventsSlider() {
@@ -480,7 +478,10 @@ class MetaSlider {
       });
     }
 
-    this.btnErrorClose.addEventListener('click', this.handleCloseErrorWindow.bind(this));
+    if (this.btnErrorClose) {
+      this.btnErrorClose.addEventListener('click', this.handleCloseErrorWindow.bind(this));
+    }
+
     this.elemSlider.addEventListener('pointerdown', this.handleSetPositionForThumbs.bind(this));
   }
 
