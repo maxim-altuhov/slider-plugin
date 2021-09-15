@@ -45,7 +45,7 @@
     border-radius: 100%;
     border-style: solid;
     border-width: 2px;
-    transform: translateY(-50%);
+    transform: translate(-50%, -50%);
     touch-action: none;
 
     &_left {
@@ -87,10 +87,10 @@
   }
 
   &__scale-point {
-    min-width: 50px;
     position: absolute;
     top: 20px;
     border: 0;
+    white-space: nowrap;
     transform: translateX(-50%);
 
     &::after {

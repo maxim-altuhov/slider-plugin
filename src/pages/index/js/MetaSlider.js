@@ -22,17 +22,17 @@ class MetaSlider {
   enableAutoScaleCreation = false;
   checkStepSizeForScale = !this.enableAutoScaleCreation;
 
-  step = 1;
-  minValue = 0;
-  maxValue = 100;
-  stepSizeForScale = 1;
+  step = 100;
+  minValue = -10000;
+  maxValue = 10000;
+  stepSizeForScale = 5000;
   numberOfDecimalPlaces = this.getNumberOfDecimalPlaces();
   preFix = '';
-  postFix = '';
+  postFix = ' $';
   // 'ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'
-  customValues = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'];
-  initValueLeft = 1;
-  initValueRight = 5;
+  customValues = [];
+  initValueLeft = 0;
+  initValueRight = 100;
   checkedInitValueLeft = this.isRange ? this.initValueLeft : this.minValue;
 
   constructor() {
@@ -196,9 +196,9 @@ class MetaSlider {
   }
 
   getInfoAboutSlider() {
-    this.sliderProgress = this.selector.querySelector('.meta-slider__progress');
     this.elemThumbs = this.elemSlider.querySelectorAll('.meta-slider__thumb');
     this.elemMarkers = this.elemSlider.querySelectorAll('.meta-slider__marker');
+    this.sliderProgress = this.selector.querySelector('.meta-slider__progress');
 
     this.elemErrorInfo = this.selector.querySelector('.error-info');
     this.btnErrorClose = this.selector.querySelector('.error-info__close');
@@ -206,11 +206,8 @@ class MetaSlider {
     this.linkInitPointerMove = this.handleInitPointerMove.bind(this);
     this.linkInitPointerUp = this.handleInitPointerUp.bind(this);
 
-    this.widthSlider = this.elemSlider.getBoundingClientRect().width;
     this.heightMarker = this.elemMarkers[1].offsetHeight;
-    this.widthThumb = this.elemThumbs[1].offsetWidth;
     this.heightThumb = this.elemThumbs[1].offsetHeight;
-    this.thumbHalfWidthAsPercentage = ((this.widthThumb / 2) / this.widthSlider) * 100;
   }
 
   setMinAndMaxValues() {
@@ -281,7 +278,7 @@ class MetaSlider {
 
       this.elemSlider.append(fragmentWithScale);
 
-      this.elemScalePoints = document.querySelectorAll('.meta-slider__scale-point');
+      this.elemScalePoints = this.elemSlider.querySelectorAll('.meta-slider__scale-point');
 
       this.elemScalePoints.forEach(scalePoint => {
         const valueInScalePoint = scalePoint.dataset.value;
@@ -301,7 +298,7 @@ class MetaSlider {
       const resultValue = (currentValue - this.minValue) / (this.maxValue - this.minValue);
       valuesAsPercentageArray.push(resultValue * 100);
 
-      this.elemThumbs[index].style.left = (valuesAsPercentageArray[index] - this.thumbHalfWidthAsPercentage) + '%';
+      this.elemThumbs[index].style.left = valuesAsPercentageArray[index] + '%';
       this.elemThumbs[index].dataset.value = currentValue.toFixed(this.numberOfDecimalPlaces);
 
       if (this.customValues.length > 0) {
@@ -394,9 +391,10 @@ class MetaSlider {
   }
 
   calculateTargetValue(event, initValue) {
+    const widthSlider = this.elemSlider.getBoundingClientRect().width;
     const valueInEventPosition = event ? event.clientX - this.elemSlider.offsetLeft : undefined;
     const valueAsPercentage = (initValue === undefined)
-      ? (valueInEventPosition / this.widthSlider) * 100
+      ? (valueInEventPosition / widthSlider) * 100
       : ((initValue - this.minValue) / (this.maxValue - this.minValue)) * 100;
 
     let totalPercent = Math.round(valueAsPercentage / this.stepAsPercent) * this.stepAsPercent;
@@ -428,7 +426,6 @@ class MetaSlider {
     event.preventDefault();
     if (event.target.classList.contains('meta-slider')) {
       const calculateTargetValue = this.calculateTargetValue(event);
-
       this.checkTargetValue(calculateTargetValue, event);
     }
   }
