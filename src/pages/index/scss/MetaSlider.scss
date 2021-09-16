@@ -87,6 +87,7 @@
   }
 
   &__scale-point {
+    color: #000000;
     position: absolute;
     top: 20px;
     border: 0;
@@ -99,6 +100,16 @@
       bottom: 100%;
       left: 50%;
       transform: translateX(-50%);
+    }
+
+    &_skip {
+      color: transparent;
+      pointer-events: none;
+
+      &::after {
+        content: '╵';
+        color: #000000;
+      }
     }
   }
 
