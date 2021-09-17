@@ -30,7 +30,7 @@ class MetaSlider {
   preFix = '';
   postFix = ' $';
   // 'ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'
-  customValues = [];
+  customValues = ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'];
   initValueLeft = 100;
   initValueRight = 200;
   checkedInitValueLeft = this.isRange ? this.initValueLeft : this.minValue;
@@ -255,7 +255,7 @@ class MetaSlider {
     if (this.enableAutoMargins && !this.showMinAndMaxValue) this.elemSlider.style.marginBottom = '';
 
     if (this.showTheScale) {
-      this.totalWidthScalePoints = 0;
+      this.widthScalePoints = 0;
       this.mapSkipScalePoints = new Map();
       const fragmentWithScale = document.createDocumentFragment();
       const blockScale = document.createElement('div');
@@ -292,7 +292,7 @@ class MetaSlider {
       this.elemScalePoints.forEach(scalePoint => {
         const valueInScalePoint = scalePoint.dataset.value;
         const resultValue = (valueInScalePoint - this.minValue) / (this.maxValue - this.minValue);
-        this.totalWidthScalePoints += scalePoint.offsetWidth;
+        this.widthScalePoints += scalePoint.offsetWidth;
 
         scalePoint.style.left = (resultValue * 100) + '%';
       });
@@ -422,14 +422,15 @@ class MetaSlider {
 
   checkingScaleWidth() {
     if (this.showTheScale && this.enableScaleAdjustment) {
+      const MARGIN_POINTS = 180;
       const widthSlider = this.elemSlider.offsetWidth;
-      const MARGIN_POINTS = 150;
 
-      while (this.totalWidthScalePoints + MARGIN_POINTS > widthSlider) {
-        const skipScalePointsArray = [];
+      while (this.widthScalePoints + MARGIN_POINTS > widthSlider) {
+        const totalWidthScalePoints = this.widthScalePoints + MARGIN_POINTS;
+        let skipScalePointsArray = [];
 
         this.elemScalePoints = this.elemSlider.querySelectorAll('.meta-slider__scale-point:not(.meta-slider__scale-point_skip)');
-        this.totalWidthScalePoints = 0;
+        this.widthScalePoints = 0;
 
         if (this.elemScalePoints.length <= 2) break;
 
@@ -448,23 +449,20 @@ class MetaSlider {
             skipScalePointsArray.push(scalePoint);
           }
 
-          if (!scalePoint.classList.contains('meta-slider__scale-point_skip')) this.totalWidthScalePoints += scalePoint.offsetWidth;
+          if (!scalePoint.classList.contains('meta-slider__scale-point_skip')) this.widthScalePoints += scalePoint.offsetWidth;
         });
 
-        this.mapSkipScalePoints.set(widthSlider, [...skipScalePointsArray]);
-        console.log('init 1');
-        console.log(this.mapSkipScalePoints);
+        this.mapSkipScalePoints.set(totalWidthScalePoints, [...skipScalePointsArray]);
       }
 
       this.mapSkipScalePoints.forEach((scalePointSkipArray, controlWidth) => {
         if (widthSlider > controlWidth + MARGIN_POINTS) {
           scalePointSkipArray.forEach(scalePoint => {
             scalePoint.classList.remove('meta-slider__scale-point_skip');
-            this.totalWidthScalePoints += scalePoint.offsetWidth;
+            this.widthScalePoints += scalePoint.offsetWidth;
           });
 
           this.mapSkipScalePoints.delete(controlWidth);
-          console.log('init 2');
         }
       });
     }
