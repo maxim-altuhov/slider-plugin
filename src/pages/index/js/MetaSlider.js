@@ -19,12 +19,13 @@ class MetaSlider {
   showMarkers = true;
   showBackgroundForRange = true;
   isRange = true;
+  isVertical = true;
   enableAutoScaleCreation = true;
   checkingStepSizeForScale = !this.enableAutoScaleCreation;
 
-  step = 100;
+  step = 10;
   minValue = 0;
-  maxValue = 1000;
+  maxValue = 100;
   stepSizeForScale = this.step;
   numberOfDecimalPlaces = this.getNumberOfDecimalPlaces();
   preFix = '';
@@ -38,6 +39,7 @@ class MetaSlider {
   constructor() {
     this.renderSlider();
     this.initValuesCheck();
+    this.setVerticalOrientation();
     this.getInfoAboutSlider();
     this.init();
   }
@@ -50,6 +52,13 @@ class MetaSlider {
     this.setEventsSlider();
     this.setEventsThumbs();
     this.setEventsWindow();
+  }
+
+  setVerticalOrientation() {
+    if (this.isVertical) {
+      this.enableAutoMargins = false;
+      this.elemSlider.classList.add('meta-slider_vertical');
+    }
   }
 
   checkIsIntegerStepSizeForScale() {
@@ -373,13 +382,24 @@ class MetaSlider {
     }
 
     const isIdenticalDistanceInRange = (clickInRange && leftThumbDiff === rightThumbDiff);
-    const isEventMoveKeypress = (event.code === 'ArrowLeft' || event.code === 'ArrowRight');
+    const isEventMoveKeypress = (event.code === 'ArrowLeft' || event.code === 'ArrowRight' || event.code === 'ArrowUp' || event.code === 'ArrowDown');
+    let eventPosition;
+    let leftThumbPosition;
+    let rightThumbPosition;
+
+    if (this.isVertical) {
+      eventPosition = event.clientY;
+      leftThumbPosition = leftThumb.getBoundingClientRect().bottom;
+      rightThumbPosition = rightThumb.getBoundingClientRect().top;
+    } else if (!this.isVertical) {
+      eventPosition = event.clientX;
+      leftThumbPosition = leftThumb.getBoundingClientRect().left;
+      rightThumbPosition = rightThumb.getBoundingClientRect().right;
+    }
 
     if (isIdenticalDistanceInRange && !isEventMoveKeypress) {
-      const leftThumbPosition = leftThumb.getBoundingClientRect().left;
-      const rightThumbPosition = rightThumb.getBoundingClientRect().right;
-      const leftValuePosition = Math.abs(event.clientX - leftThumbPosition);
-      const rightValuePosition = Math.abs(event.clientX - rightThumbPosition);
+      const leftValuePosition = Math.abs(eventPosition - leftThumbPosition);
+      const rightValuePosition = Math.abs(eventPosition - rightThumbPosition);
 
       if (Math.round(rightValuePosition - leftValuePosition) >= 0) {
         this.initValuesArray[0] = targetValue;
@@ -400,10 +420,25 @@ class MetaSlider {
   }
 
   calculateTargetValue(event, initValue) {
-    const widthSlider = this.elemSlider.getBoundingClientRect().width;
-    const valueInEventPosition = event ? event.clientX - this.elemSlider.offsetLeft : undefined;
+    let eventPosition;
+    let sliderOffset;
+    let sizeSlider;
+    let valueInEventPosition;
+
+    if (this.isVertical && event) {
+      eventPosition = event.clientY;
+      sliderOffset = this.elemSlider.getBoundingClientRect().bottom;
+      sizeSlider = this.elemSlider.getBoundingClientRect().height;
+      valueInEventPosition = sliderOffset - eventPosition;
+    } else if (!this.isVertical && event) {
+      eventPosition = event.clientX;
+      sliderOffset = this.elemSlider.offsetLeft;
+      sizeSlider = this.elemSlider.getBoundingClientRect().width;
+      valueInEventPosition = eventPosition - sliderOffset;
+    }
+
     const valueAsPercentage = (initValue === undefined)
-      ? (valueInEventPosition / widthSlider) * 100
+      ? (valueInEventPosition / sizeSlider) * 100
       : ((initValue - this.minValue) / (this.maxValue - this.minValue)) * 100;
 
     let totalPercent = Math.round(valueAsPercentage / this.stepAsPercent) * this.stepAsPercent;
@@ -411,7 +446,7 @@ class MetaSlider {
     if (totalPercent < 0) totalPercent = 0;
     if (totalPercent > 100) totalPercent = 100;
 
-    let resultValue = (totalPercent / this.stepAsPercent) * this.step;
+    const resultValue = (totalPercent / this.stepAsPercent) * this.step;
     const targetValue = Number(resultValue.toFixed(this.numberOfDecimalPlaces)) + this.minValue;
 
     return targetValue;
@@ -492,10 +527,12 @@ class MetaSlider {
   }
 
   handleChangeThumbPosition(event) {
-    if (event.code === 'ArrowLeft' || event.code === 'ArrowRight') {
+    const configEventCode = (event.code === 'ArrowLeft' || event.code === 'ArrowRight' || event.code === 'ArrowUp' || event.code === 'ArrowDown');
+    if (configEventCode) {
       let eventTargetValue = Number(event.target.dataset.value);
-      if (event.code === 'ArrowLeft') eventTargetValue -= this.step;
-      if (event.code === 'ArrowRight') eventTargetValue += this.step;
+      if (event.code === 'ArrowUp' || event.code === 'ArrowDown') event.preventDefault();
+      if (event.code === 'ArrowLeft' || event.code === 'ArrowDown') eventTargetValue -= this.step;
+      if (event.code === 'ArrowRight' || event.code === 'ArrowUp') eventTargetValue += this.step;
 
       const calculateTargetValue = this.calculateTargetValue(null, eventTargetValue);
       this.checkTargetValue(calculateTargetValue, event);
