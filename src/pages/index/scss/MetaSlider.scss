@@ -1,16 +1,15 @@
-@import '@base/base.scss';
+@import './variables';
 
 .meta-slider {
+  box-sizing: border-box;
   position: relative;
-  border-radius: 5px;
   width: 100%;
   height: 10px;
-  cursor: pointer;
-  font-family: $font-family;
+  border-radius: 5px;
   font-size: 14px;
   font-weight: 400;
-  box-sizing: border-box;
   touch-action: none;
+  cursor: pointer;
 
   &_vertical {
     margin: 55% auto;
@@ -33,16 +32,16 @@
     }
 
     .meta-slider__scale-point {
-      transform: translateX(-50%) rotate(90deg);
-      top: 30px;
       min-height: 20px;
       line-height: 20px;
       max-width: 20px;
+      top: 30px;
+      transform: translateX(-50%) rotate(90deg);
 
       &::after {
-        transform: rotate(90deg) translate(50%, 50%);
         bottom: 1px;
         left: -2px;
+        transform: rotate(90deg) translate(50%, 50%);
       }
 
       &_skip {
@@ -56,16 +55,16 @@
 
   &__progress {
     position: absolute;
-    border-radius: 5px;
     height: 100%;
+    border-radius: 5px;
     pointer-events: none;
   }
 
   &__value {
     position: absolute;
-    font-weight: 700;
-    border: 0;
     bottom: -25px;
+    border: 0;
+    font-weight: 700;
     white-space: nowrap;
 
     &_min {
@@ -103,12 +102,13 @@
 
   &__marker {
     display: inline-block;
-    min-width: 40px;
-    max-width: 100px;
-    min-height: 25px;
     position: absolute;
     left: 50%;
     bottom: 120%;
+    min-width: 40px;
+    max-width: 100px;
+    min-height: 25px;
+    line-height: 25px;
     padding: 0 10px;
     border-radius: 5px;
     border-style: solid;
@@ -118,7 +118,6 @@
     text-overflow: ellipsis;
     overflow: hidden;
     transform: translateX(-50%);
-    line-height: 25px;
     touch-action: none;
   }
 
@@ -129,11 +128,11 @@
   }
 
   &__scale-point {
-    min-width: 20px;
-    color: #000000;
     position: absolute;
     top: 20px;
+    min-width: 20px;
     border: 0;
+    color: $color-scale;
     white-space: nowrap;
     transform: translateX(-50%);
     transition: color 0.2s linear;
@@ -152,7 +151,7 @@
 
       &::after {
         content: '╵';
-        color: #000000;
+        color: $color-scale;
       }
     }
   }
@@ -167,25 +166,23 @@
   *,
   *:before,
   *:after {
-    font-family: $font-family;
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
   }
 
-  &>.error-info {
-    position: absolute;
-    bottom: 15px;
-    padding: 10px 30px 10px 10px;
+  +.error-info {
+    position: relative;
     max-width: 100%;
     height: auto;
+    padding: 10px 30px 10px 10px;
     background-color: #ffffff;
     color: #000000;
     border: 1px solid #ff1b1b;
     border-radius: 5px;
     font-size: 13px;
-    line-height: 1.2;
     font-weight: 700;
+    line-height: 1.2;
     z-index: 199;
     opacity: 0.9;
     cursor: auto;
@@ -199,10 +196,14 @@
       position: absolute;
       right: 10px;
       top: 4px;
-      border: 0;
+      background: none;
       color: #000000;
+      border: 0;
+      padding: 0;
+      margin: 0;
       font-size: 16px;
       font-weight: 700;
+      cursor: pointer;
       transition: color 0.3s linear;
 
       &:hover {

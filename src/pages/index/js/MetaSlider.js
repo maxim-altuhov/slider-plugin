@@ -1,6 +1,4 @@
 class MetaSlider {
-  selector = document.querySelector('#slider');
-
   mainColor = '#6d6dff';
   secondColor = '#e4e4e4';
   colorMarker = this.mainColor;
@@ -14,12 +12,12 @@ class MetaSlider {
   enableAutoMargins = true;
   enableScaleAdjustment = true;
   showError = true;
-  showMinAndMaxValue = false;
+  showMinAndMaxValue = true;
   showTheScale = true;
   showMarkers = true;
   showBackgroundForRange = true;
   isRange = true;
-  isVertical = true;
+  isVertical = false;
   enableAutoScaleCreation = true;
   checkingStepSizeForScale = !this.enableAutoScaleCreation;
 
@@ -32,15 +30,16 @@ class MetaSlider {
   postFix = '';
   // 'ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'
   customValues = [];
-  initValueLeft = 0;
-  initValueRight = 100;
-  checkedInitValueLeft = this.isRange ? this.initValueLeft : this.minValue;
+  initValueFirst = 0;
+  initValueSecond = 100;
+  checkedValueFirst = this.isRange ? this.initValueFirst : this.minValue;
 
   constructor() {
+    this.getInitSelector('#slider');
     this.renderSlider();
+    this.getInfoAboutSlider();
     this.initValuesCheck();
     this.setVerticalOrientation();
-    this.getInfoAboutSlider();
     this.init();
   }
 
@@ -48,20 +47,25 @@ class MetaSlider {
     this.setValueForSlider(this.initValuesArray);
     this.setMinAndMaxValues();
     this.createScaleOfValues();
-    this.checkingScaleWidth();
+    this.checkingScaleSize();
     this.setEventsSlider();
     this.setEventsThumbs();
     this.setEventsWindow();
+  }
+
+  getInitSelector(initSelector) {
+    this.selector = document.querySelector(initSelector);
   }
 
   setVerticalOrientation() {
     if (this.isVertical) {
       this.enableAutoMargins = false;
       this.elemSlider.classList.add('meta-slider_vertical');
+      if (this.elemErrorInfo) this.elemErrorInfo.classList.add('error-info_vertical');
     }
   }
 
-  checkIsIntegerStepSizeForScale() {
+  checkIsIntegerSizeScale() {
     return Number.isInteger((this.maxValue - this.minValue) / this.stepSizeForScale);
   }
 
@@ -72,14 +76,17 @@ class MetaSlider {
   renderErrorMessage(message) {
     if (this.showError) {
       const HTMLBlockError = `<div class="error-info"><p class="error-info__text">${message}</p><button type="button" class="error-info__close">X</button></div>`;
-      this.elemSlider.insertAdjacentHTML('afterbegin', HTMLBlockError);
+      this.elemSlider.insertAdjacentHTML('afterend', HTMLBlockError);
       this.showError = false;
+
+      this.elemErrorInfo = this.selector.querySelector('.error-info');
+      this.btnErrorClose = this.selector.querySelector('.error-info__close');
     }
   }
 
   resetInitValue() {
-    this.initValueRight = this.maxValue;
-    this.checkedInitValueLeft = this.minValue;
+    this.initValueSecond = this.maxValue;
+    this.checkedValueFirst = this.minValue;
   }
 
   initCustomValues() {
@@ -95,7 +102,7 @@ class MetaSlider {
   }
 
   checkCorrectStepSizeForScale(errorMessage) {
-    while (!this.checkIsIntegerStepSizeForScale()) {
+    while (!this.checkIsIntegerSizeScale()) {
       if (this.stepSizeForScale > 1 && Number.isInteger(this.stepSizeForScale)) {
         this.stepSizeForScale += 1;
       } else if (!Number.isInteger(this.stepSizeForScale)) {
@@ -144,8 +151,6 @@ class MetaSlider {
   }
 
   initValuesCheck() {
-    this.elemSlider = this.selector.querySelector('.meta-slider');
-
     const errorMessage = {
       initValue: 'Ошибка во входящих данных для бегунков слайдера. Установлены значения по-умолчанию.',
       minAndMaxValue: 'Max значение установленное для слайдера меньше или равно его Min значению. Установлены значения по-умолчанию.',
@@ -154,13 +159,16 @@ class MetaSlider {
       initСorrectionValues: 'Входящие значения для бегунков скорректированны согласно установленному шагу.',
     };
 
+    if (this.showTheScale) this.showMinAndMaxValue = false;
+    if (this.showMinAndMaxValue) this.showTheScale = false;
+
     if (this.minValue > this.maxValue || this.minValue === this.maxValue) {
       this.minValue = 0;
       this.maxValue = 100;
       this.renderErrorMessage(errorMessage.minAndMaxValue);
     }
 
-    if (this.checkedInitValueLeft > this.initValueRight) {
+    if (this.checkedValueFirst > this.initValueSecond) {
       this.resetInitValue();
       this.renderErrorMessage(errorMessage.initValue);
     }
@@ -175,10 +183,10 @@ class MetaSlider {
       this.renderErrorMessage(errorMessage.stepSizeForScale);
     }
 
-    if (this.initValueRight > this.maxValue || this.checkedInitValueLeft > this.maxValue) {
+    if (this.initValueSecond > this.maxValue || this.checkedValueFirst > this.maxValue) {
       this.resetInitValue();
       this.renderErrorMessage(errorMessage.initValue);
-    } else if (this.initValueRight < this.minValue || this.checkedInitValueLeft < this.minValue) {
+    } else if (this.initValueSecond < this.minValue || this.checkedValueFirst < this.minValue) {
       this.resetInitValue();
       this.renderErrorMessage(errorMessage.initValue);
     }
@@ -197,24 +205,19 @@ class MetaSlider {
       this.checkCorrectStepSizeForScale(errorMessage);
     }
 
-    const stepCounter = (this.maxValue - this.minValue) / this.step;
-    this.stepAsPercent = 100 / stepCounter;
-
     if (this.enableСorrectionValues) {
-      this.checkedInitValueLeft = this.initValueCorrection(this.checkedInitValueLeft, errorMessage);
-      this.initValueRight = this.initValueCorrection(this.initValueRight, errorMessage);
+      this.checkedValueFirst = this.initValueCorrection(this.checkedValueFirst, errorMessage);
+      this.initValueSecond = this.initValueCorrection(this.initValueSecond, errorMessage);
     }
 
-    this.initValuesArray = [this.checkedInitValueLeft, this.initValueRight];
+    this.initValuesArray = [this.checkedValueFirst, this.initValueSecond];
   }
 
   getInfoAboutSlider() {
+    this.elemSlider = this.selector.querySelector('.meta-slider');
     this.elemThumbs = this.elemSlider.querySelectorAll('.meta-slider__thumb');
     this.elemMarkers = this.elemSlider.querySelectorAll('.meta-slider__marker');
     this.sliderProgress = this.selector.querySelector('.meta-slider__progress');
-
-    this.elemErrorInfo = this.selector.querySelector('.error-info');
-    this.btnErrorClose = this.selector.querySelector('.error-info__close');
 
     this.linkInitPointerMove = this.handleInitPointerMove.bind(this);
     this.linkInitPointerUp = this.handleInitPointerUp.bind(this);
@@ -224,8 +227,7 @@ class MetaSlider {
   }
 
   setMinAndMaxValues() {
-    if (this.enableAutoMargins) this.elemSlider.style.marginBottom = '';
-
+    this.elemSlider.style.marginBottom = '';
     this.elemSlider.dataset.min = this.minValue;
     this.elemSlider.dataset.max = this.maxValue;
 
@@ -234,7 +236,7 @@ class MetaSlider {
       this.elemSlider.dataset.max_text = this.customValues[this.customValues.length - 1];
     }
 
-    if (this.showMinAndMaxValue && !this.showTheScale) {
+    if (this.showMinAndMaxValue) {
       const HTMLBlockValues = `<button type="button" class="meta-slider__value meta-slider__value_min" style="color: ${this.colorTextForMinAndMaxValue}"></button>
       <button type="button" class="meta-slider__value meta-slider__value_max" style="color: ${this.colorTextForMinAndMaxValue}"></button>`;
       this.elemSlider.insertAdjacentHTML('beforeend', HTMLBlockValues);
@@ -255,15 +257,15 @@ class MetaSlider {
         elem.dataset.value = this.minAndMaxValuesArray[index];
       });
 
-      if (this.enableAutoMargins) this.elemSlider.style.marginBottom = (this.elemMinAndMaxValues[0].offsetHeight * 3) + 'px';
+      if (this.enableAutoMargins) this.elemSlider.style.marginBottom = (this.elemMinAndMaxValues[0].offsetHeight * 2) + 'px';
     }
   }
 
   createScaleOfValues() {
-    if (this.enableAutoMargins && !this.showMinAndMaxValue) this.elemSlider.style.marginBottom = '';
+    if (!this.showMinAndMaxValue) this.elemSlider.style.marginBottom = '';
 
     if (this.showTheScale) {
-      this.widthScalePoints = 0;
+      this.scalePointsSize = 0;
       this.mapSkipScalePoints = new Map();
       const fragmentWithScale = document.createDocumentFragment();
       const blockScale = document.createElement('div');
@@ -300,7 +302,7 @@ class MetaSlider {
       this.elemScalePoints.forEach(scalePoint => {
         const valueInScalePoint = scalePoint.dataset.value;
         const resultValue = (valueInScalePoint - this.minValue) / (this.maxValue - this.minValue);
-        this.widthScalePoints += scalePoint.offsetWidth;
+        this.scalePointsSize += scalePoint.offsetWidth;
 
         scalePoint.style.left = (resultValue * 100) + '%';
       });
@@ -329,8 +331,7 @@ class MetaSlider {
   }
 
   setValueInMarker() {
-    if (this.enableAutoMargins) this.elemSlider.style.marginTop = '';
-
+    this.elemSlider.style.marginTop = '';
     this.elemMarkers.forEach(elem => {
       elem.style.display = 'none';
     });
@@ -363,45 +364,45 @@ class MetaSlider {
   }
 
   checkTargetValue(targetValue, event) {
-    const [leftThumb, rightThumb] = this.elemThumbs;
-    const currentLeftVal = Number(leftThumb.dataset.value);
-    const currentRightVal = Number(rightThumb.dataset.value);
-    const leftThumbDiff = Math.abs((targetValue - currentLeftVal).toFixed(2));
-    const rightThumbDiff = Math.abs((targetValue - currentRightVal).toFixed(2));
+    const [firstThumb, secondThumb] = this.elemThumbs;
+    const firstValue = Number(firstThumb.dataset.value);
+    const secondtValue = Number(secondThumb.dataset.value);
+    const firstThumbDiff = Math.abs((targetValue - firstValue).toFixed(2));
+    const secondThumbDiff = Math.abs((targetValue - secondtValue).toFixed(2));
     let clickInRange = false;
 
-    if (this.isRange) clickInRange = targetValue > currentLeftVal && targetValue < currentRightVal;
+    if (this.isRange) clickInRange = targetValue > firstValue && targetValue < secondtValue;
 
-    if (targetValue <= currentLeftVal) this.initValuesArray[0] = targetValue;
-    if (targetValue >= currentRightVal || !this.isRange) this.initValuesArray[1] = targetValue;
+    if (targetValue <= firstValue) this.initValuesArray[0] = targetValue;
+    if (targetValue >= secondtValue || !this.isRange) this.initValuesArray[1] = targetValue;
 
-    if (clickInRange && leftThumbDiff < rightThumbDiff) {
+    if (clickInRange && firstThumbDiff < secondThumbDiff) {
       this.initValuesArray[0] = targetValue;
-    } else if (clickInRange && leftThumbDiff > rightThumbDiff) {
+    } else if (clickInRange && firstThumbDiff > secondThumbDiff) {
       this.initValuesArray[1] = targetValue;
     }
 
-    const isIdenticalDistanceInRange = (clickInRange && leftThumbDiff === rightThumbDiff);
+    const isIdenticalDistanceInRange = (clickInRange && firstThumbDiff === secondThumbDiff);
     const isEventMoveKeypress = (event.code === 'ArrowLeft' || event.code === 'ArrowRight' || event.code === 'ArrowUp' || event.code === 'ArrowDown');
     let eventPosition;
-    let leftThumbPosition;
-    let rightThumbPosition;
+    let firstThumbPosition;
+    let secondThumbPosition;
 
     if (this.isVertical) {
       eventPosition = event.clientY;
-      leftThumbPosition = leftThumb.getBoundingClientRect().bottom;
-      rightThumbPosition = rightThumb.getBoundingClientRect().top;
+      firstThumbPosition = firstThumb.getBoundingClientRect().bottom;
+      secondThumbPosition = secondThumb.getBoundingClientRect().top;
     } else if (!this.isVertical) {
       eventPosition = event.clientX;
-      leftThumbPosition = leftThumb.getBoundingClientRect().left;
-      rightThumbPosition = rightThumb.getBoundingClientRect().right;
+      firstThumbPosition = firstThumb.getBoundingClientRect().left;
+      secondThumbPosition = secondThumb.getBoundingClientRect().right;
     }
 
     if (isIdenticalDistanceInRange && !isEventMoveKeypress) {
-      const leftValuePosition = Math.abs(eventPosition - leftThumbPosition);
-      const rightValuePosition = Math.abs(eventPosition - rightThumbPosition);
+      const firstValuePosition = Math.abs(eventPosition - firstThumbPosition);
+      const secondValuePosition = Math.abs(eventPosition - secondThumbPosition);
 
-      if (Math.round(rightValuePosition - leftValuePosition) >= 0) {
+      if (Math.round(secondValuePosition - firstValuePosition) >= 0) {
         this.initValuesArray[0] = targetValue;
       } else {
         this.initValuesArray[1] = targetValue;
@@ -422,31 +423,34 @@ class MetaSlider {
   calculateTargetValue(event, initValue) {
     let eventPosition;
     let sliderOffset;
-    let sizeSlider;
+    let sliderSize;
     let valueInEventPosition;
 
     if (this.isVertical && event) {
       eventPosition = event.clientY;
       sliderOffset = this.elemSlider.getBoundingClientRect().bottom;
-      sizeSlider = this.elemSlider.getBoundingClientRect().height;
+      sliderSize = this.elemSlider.getBoundingClientRect().height;
       valueInEventPosition = sliderOffset - eventPosition;
     } else if (!this.isVertical && event) {
       eventPosition = event.clientX;
       sliderOffset = this.elemSlider.offsetLeft;
-      sizeSlider = this.elemSlider.getBoundingClientRect().width;
+      sliderSize = this.elemSlider.getBoundingClientRect().width;
       valueInEventPosition = eventPosition - sliderOffset;
     }
 
     const valueAsPercentage = (initValue === undefined)
-      ? (valueInEventPosition / sizeSlider) * 100
+      ? (valueInEventPosition / sliderSize) * 100
       : ((initValue - this.minValue) / (this.maxValue - this.minValue)) * 100;
 
-    let totalPercent = Math.round(valueAsPercentage / this.stepAsPercent) * this.stepAsPercent;
+    const stepCounter = (this.maxValue - this.minValue) / this.step;
+    const stepAsPercent = 100 / stepCounter;
+
+    let totalPercent = Math.round(valueAsPercentage / stepAsPercent) * stepAsPercent;
 
     if (totalPercent < 0) totalPercent = 0;
     if (totalPercent > 100) totalPercent = 100;
 
-    const resultValue = (totalPercent / this.stepAsPercent) * this.step;
+    const resultValue = (totalPercent / stepAsPercent) * this.step;
     const targetValue = Number(resultValue.toFixed(this.numberOfDecimalPlaces)) + this.minValue;
 
     return targetValue;
@@ -458,17 +462,17 @@ class MetaSlider {
     this.skipScalePointsArray.push(scalePoint);
   }
 
-  checkingScaleWidth() {
+  checkingScaleSize() {
     if (this.showTheScale && this.enableScaleAdjustment) {
-      const MARGIN_POINTS = 180;
-      const widthSlider = this.elemSlider.offsetWidth;
+      const MARGIN_POINTS = 120;
+      const sliderSize = this.elemSlider.offsetWidth;
 
-      while (this.widthScalePoints + MARGIN_POINTS > widthSlider) {
-        const totalWidthScalePoints = this.widthScalePoints + MARGIN_POINTS;
+      while (this.scalePointsSize + MARGIN_POINTS > sliderSize) {
+        const totalWidthScalePoints = this.scalePointsSize + MARGIN_POINTS;
         this.skipScalePointsArray = [];
 
         this.elemScalePoints = this.elemSlider.querySelectorAll('.meta-slider__scale-point:not(.meta-slider__scale-point_skip)');
-        this.widthScalePoints = 0;
+        this.scalePointsSize = 0;
 
         if (this.elemScalePoints.length <= 2) break;
 
@@ -484,21 +488,21 @@ class MetaSlider {
             this.setPropForSkipScalePoint(scalePoint);
           }
 
-          if (!scalePoint.classList.contains('meta-slider__scale-point_skip')) this.widthScalePoints += scalePoint.offsetWidth;
+          if (!scalePoint.classList.contains('meta-slider__scale-point_skip')) this.scalePointsSize += scalePoint.offsetWidth;
         });
 
         this.mapSkipScalePoints.set(totalWidthScalePoints, [...this.skipScalePointsArray]);
       }
 
-      this.mapSkipScalePoints.forEach((scalePointSkipArray, controlWidth) => {
-        if (widthSlider > controlWidth + MARGIN_POINTS) {
+      this.mapSkipScalePoints.forEach((scalePointSkipArray, controlSize) => {
+        if (sliderSize > controlSize + MARGIN_POINTS) {
           scalePointSkipArray.forEach(scalePoint => {
             scalePoint.tabIndex = '';
             scalePoint.classList.remove('meta-slider__scale-point_skip');
-            this.widthScalePoints += scalePoint.offsetWidth;
+            this.scalePointsSize += scalePoint.offsetWidth;
           });
 
-          this.mapSkipScalePoints.delete(controlWidth);
+          this.mapSkipScalePoints.delete(controlSize);
         }
       });
     }
@@ -556,12 +560,12 @@ class MetaSlider {
     event.target.addEventListener('pointerup', this.linkInitPointerUp);
   }
 
-  handleCloseErrorWindow() {
+  handleRemoveErrorWindow() {
     this.elemErrorInfo.remove();
   }
 
-  handleCheckingScaleWidth() {
-    this.checkingScaleWidth();
+  handleCheckingScaleSize() {
+    this.checkingScaleSize();
   }
 
   setEventsSlider() {
@@ -578,7 +582,7 @@ class MetaSlider {
     }
 
     if (this.btnErrorClose) {
-      this.btnErrorClose.addEventListener('click', this.handleCloseErrorWindow.bind(this));
+      this.btnErrorClose.addEventListener('click', this.handleRemoveErrorWindow.bind(this));
     }
 
     this.elemSlider.addEventListener('pointerdown', this.handleSetPositionForThumbs.bind(this));
@@ -595,7 +599,7 @@ class MetaSlider {
 
   setEventsWindow() {
     if (this.showTheScale && this.enableScaleAdjustment) {
-      window.addEventListener('resize', this.handleCheckingScaleWidth.bind(this));
+      window.addEventListener('resize', this.handleCheckingScaleSize.bind(this));
     }
   }
 }
