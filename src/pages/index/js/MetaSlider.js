@@ -5,21 +5,21 @@ class MetaSlider {
   colorTextForMarker = '#ffffff'
   colorBorderForMarker = '#ffffff'
   colorBorderForThumb = '#ffffff'
-  colorTextForMinAndMaxValue = '#000000'
+  colorTextForMinAndMax = '#000000'
 
-  enableСorrectionValues = true;
-  enableFormatted = true;
-  enableAutoMargins = true;
-  enableScaleAdjustment = true;
+  verifyInitValues = true;
+  initFormatted = true;
+  initAutoMargins = true;
+  initScaleAdjustment = true;
   showError = true;
-  showMinAndMaxValue = true;
+  showMinAndMax = true;
   showTheScale = true;
   showMarkers = true;
-  showBackgroundForRange = true;
+  showBackground = true;
   isRange = true;
   isVertical = false;
-  enableAutoScaleCreation = true;
-  checkingStepSizeForScale = !this.enableAutoScaleCreation;
+  initAutoScaleCreation = true;
+  checkingStepSizeForScale = !this.initAutoScaleCreation;
 
   step = 10;
   minValue = 0;
@@ -34,8 +34,8 @@ class MetaSlider {
   initValueSecond = 100;
   checkedValueFirst = this.isRange ? this.initValueFirst : this.minValue;
 
-  constructor() {
-    this.getInitSelector('#slider');
+  constructor(selector) {
+    this.getInitSelector(selector);
     this.renderSlider();
     this.getInfoAboutSlider();
     this.initValuesCheck();
@@ -46,7 +46,7 @@ class MetaSlider {
   init() {
     this.setValueForSlider(this.initValuesArray);
     this.setMinAndMaxValues();
-    this.createScaleOfValues();
+    this.createScale();
     this.checkingScaleSize();
     this.setEventsSlider();
     this.setEventsThumbs();
@@ -59,8 +59,9 @@ class MetaSlider {
 
   setVerticalOrientation() {
     if (this.isVertical) {
-      this.enableAutoMargins = false;
+      this.initAutoMargins = false;
       this.elemSlider.classList.add('meta-slider_vertical');
+
       if (this.elemErrorInfo) this.elemErrorInfo.classList.add('error-info_vertical');
     }
   }
@@ -92,10 +93,10 @@ class MetaSlider {
   initCustomValues() {
     this.minValue = 0;
     this.maxValue = this.customValues.length - 1;
-    this.enableAutoScaleCreation = false;
+    this.initAutoScaleCreation = false;
     this.checkingStepSizeForScale = false;
-    this.enableFormatted = false;
-    this.enableСorrectionValues = true;
+    this.initFormatted = false;
+    this.verifyInitValues = true;
     this.numberOfDecimalPlaces = 0;
     this.step = 1;
     this.stepSizeForScale = 1;
@@ -116,8 +117,11 @@ class MetaSlider {
     }
   }
 
-  initValueCorrection(value, errorMessage) {
-    const convertedValue = this.calculateTargetValue(null, value);
+  initValueCorrection(
+    value,
+    errorMessage,
+  ) {
+    const convertedValue = this.calcTargetValue(null, value);
     let resultValue = value;
 
     if (convertedValue !== value) {
@@ -159,8 +163,8 @@ class MetaSlider {
       initСorrectionValues: 'Входящие значения для бегунков скорректированны согласно установленному шагу.',
     };
 
-    if (this.showTheScale) this.showMinAndMaxValue = false;
-    if (this.showMinAndMaxValue) this.showTheScale = false;
+    if (this.showTheScale) this.showMinAndMax = false;
+    if (this.showMinAndMax) this.showTheScale = false;
 
     if (this.minValue > this.maxValue || this.minValue === this.maxValue) {
       this.minValue = 0;
@@ -193,19 +197,19 @@ class MetaSlider {
 
     if (this.customValues.length > 0) {
       this.initCustomValues();
-      this.minAndMaxValuesArray = [
+      this.minAndMaxArray = [
         this.customValues[0],
         this.customValues[this.customValues.length - 1],
       ];
     } else {
-      this.minAndMaxValuesArray = [this.minValue, this.maxValue];
+      this.minAndMaxArray = [this.minValue, this.maxValue];
     }
 
     if (this.checkingStepSizeForScale) {
       this.checkCorrectStepSizeForScale(errorMessage);
     }
 
-    if (this.enableСorrectionValues) {
+    if (this.verifyInitValues) {
       this.checkedValueFirst = this.initValueCorrection(this.checkedValueFirst, errorMessage);
       this.initValueSecond = this.initValueCorrection(this.initValueSecond, errorMessage);
     }
@@ -236,60 +240,56 @@ class MetaSlider {
       this.elemSlider.dataset.max_text = this.customValues[this.customValues.length - 1];
     }
 
-    if (this.showMinAndMaxValue) {
-      const HTMLBlockValues = `<button type="button" class="meta-slider__value meta-slider__value_min" style="color: ${this.colorTextForMinAndMaxValue}"></button>
-      <button type="button" class="meta-slider__value meta-slider__value_max" style="color: ${this.colorTextForMinAndMaxValue}"></button>`;
+    if (this.showMinAndMax) {
+      const HTMLBlockValues = `<button type="button" class="meta-slider__value meta-slider__value_min" style="color: ${this.colorTextForMinAndMax}"></button>
+      <button type="button" class="meta-slider__value meta-slider__value_max" style="color: ${this.colorTextForMinAndMax}"></button>`;
       this.elemSlider.insertAdjacentHTML('beforeend', HTMLBlockValues);
 
       this.elemMinAndMaxValues = this.elemSlider.querySelectorAll('.meta-slider__value');
 
       this.elemMinAndMaxValues.forEach((elem, index) => {
+        const currentValue = this.minAndMaxArray[index];
+
         if (this.customValues.length === 0) {
-          let convertedValue = this.enableFormatted
-            ? this.minAndMaxValuesArray[index].toLocaleString()
-            : this.minAndMaxValuesArray[index].toFixed(this.numberOfDecimalPlaces);
+          let convertedValue = this.initFormatted
+            ? currentValue.toLocaleString()
+            : currentValue.toFixed(this.numberOfDecimalPlaces);
 
           elem.textContent = `${this.preFix}${convertedValue}${this.postFix}`;
         } else {
-          elem.textContent = `${this.preFix}${this.minAndMaxValuesArray[index]}${this.postFix}`;
+          elem.textContent = `${this.preFix}${currentValue}${this.postFix}`;
         }
 
-        elem.dataset.value = this.minAndMaxValuesArray[index];
+        elem.dataset.value = currentValue;
       });
 
-      if (this.enableAutoMargins) this.elemSlider.style.marginBottom = (this.elemMinAndMaxValues[0].offsetHeight * 2) + 'px';
+      if (this.initAutoMargins) this.elemSlider.style.marginBottom = (this.elemMinAndMaxValues[0].offsetHeight * 2) + 'px';
     }
   }
 
-  createScaleOfValues() {
-    if (!this.showMinAndMaxValue) this.elemSlider.style.marginBottom = '';
+  createScale() {
+    if (!this.showMinAndMax) this.elemSlider.style.marginBottom = '';
 
     if (this.showTheScale) {
       this.scalePointsSize = 0;
       this.mapSkipScalePoints = new Map();
       const fragmentWithScale = document.createDocumentFragment();
       const blockScale = document.createElement('div');
-      const stepSizeValue = this.enableAutoScaleCreation
-        ? this.step
-        : this.stepSizeForScale;
+      const stepSizeValue = this.initAutoScaleCreation ? this.step : this.stepSizeForScale;
 
       blockScale.classList.add('meta-slider__scale');
       this.elemSlider.append(blockScale);
 
-      let currentScalePointValue = this.minValue;
+      let currentValue = this.minValue;
 
-      for (; currentScalePointValue <= this.maxValue; currentScalePointValue += stepSizeValue) {
-        currentScalePointValue = Number(currentScalePointValue.toFixed(this.numberOfDecimalPlaces));
+      for (; currentValue <= this.maxValue; currentValue += stepSizeValue) {
+        currentValue = Number(currentValue.toFixed(this.numberOfDecimalPlaces));
 
-        const convertedScalePointValue = this.enableFormatted
-          ? currentScalePointValue.toLocaleString()
-          : currentScalePointValue;
+        const isCustomValue = this.customValues.length > 0;
+        const convertedValue = this.initFormatted ? currentValue.toLocaleString() : currentValue;
+        const resultValue = isCustomValue ? this.customValues[currentValue] : convertedValue;
 
-        const resultScalePointValue = this.customValues.length > 0
-          ? this.customValues[currentScalePointValue]
-          : convertedScalePointValue;
-
-        const elemScalePoint = `<button type="button" class="meta-slider__scale-point" data-value="${currentScalePointValue}">${this.preFix}${resultScalePointValue}${this.postFix}</button>`;
+        const elemScalePoint = `<button type="button" class="meta-slider__scale-point" data-value="${currentValue}">${this.preFix}${resultValue}${this.postFix}</button>`;
 
         blockScale.insertAdjacentHTML('beforeEnd', elemScalePoint);
         fragmentWithScale.append(blockScale);
@@ -299,7 +299,7 @@ class MetaSlider {
 
       this.elemScalePoints = this.elemSlider.querySelectorAll('.meta-slider__scale-point');
 
-      this.elemScalePoints.forEach(scalePoint => {
+      this.elemScalePoints.forEach((scalePoint) => {
         const valueInScalePoint = scalePoint.dataset.value;
         const resultValue = (valueInScalePoint - this.minValue) / (this.maxValue - this.minValue);
         this.scalePointsSize += scalePoint.offsetWidth;
@@ -307,7 +307,7 @@ class MetaSlider {
         scalePoint.style.left = (resultValue * 100) + '%';
       });
 
-      if (this.enableAutoMargins) this.elemSlider.style.marginBottom = (this.elemScalePoints[0].offsetHeight * 3) + 'px';
+      if (this.initAutoMargins) this.elemSlider.style.marginBottom = (this.elemScalePoints[0].offsetHeight * 3) + 'px';
     }
   }
 
@@ -332,22 +332,20 @@ class MetaSlider {
 
   setValueInMarker() {
     this.elemSlider.style.marginTop = '';
-    this.elemMarkers.forEach(elem => {
+    this.elemMarkers.forEach((elem) => {
       elem.style.display = 'none';
     });
 
     if (this.showMarkers) {
-      if (this.enableAutoMargins) this.elemSlider.style.marginTop = (this.heightMarker + (this.heightThumb / 1.5)) + 'px';
+      if (this.initAutoMargins) this.elemSlider.style.marginTop = (this.heightMarker + (this.heightThumb / 1.5)) + 'px';
 
       this.elemMarkers.forEach((marker, index) => {
         if (this.customValues.length > 0) {
           marker.textContent = `${this.preFix}${this.elemThumbs[index].dataset.text}${this.postFix}`;
         } else {
-          const currentValue = this.elemThumbs[index].dataset.value;
-          const currentValueAsNumber = Number(currentValue).toFixed(this.numberOfDecimalPlaces);
-          const convertedValue = this.enableFormatted
-            ? Number(currentValueAsNumber).toLocaleString()
-            : currentValueAsNumber;
+          const currentValue = Number(this.elemThumbs[index].dataset.value);
+          const checkedValue = Number(currentValue.toFixed(this.numberOfDecimalPlaces));
+          const convertedValue = this.initFormatted ? checkedValue.toLocaleString() : checkedValue;
 
           marker.textContent = `${this.preFix}${convertedValue}${this.postFix}`;
         }
@@ -357,13 +355,16 @@ class MetaSlider {
   }
 
   setBackgroundTheRange(valuesAsPercentageArray) {
-    if (this.showBackgroundForRange) {
+    if (this.showBackground) {
       const settingForRange = `left: ${valuesAsPercentageArray[0]}%; right: ${100 - valuesAsPercentageArray[1]}%; background: ${this.mainColor};`;
       this.sliderProgress.style = settingForRange;
     }
   }
 
-  checkTargetValue(targetValue, event) {
+  checkTargetValue(
+    targetValue,
+    event,
+  ) {
     const [firstThumb, secondThumb] = this.elemThumbs;
     const firstValue = Number(firstThumb.dataset.value);
     const secondtValue = Number(secondThumb.dataset.value);
@@ -420,7 +421,10 @@ class MetaSlider {
     this.setValueForSlider(this.initValuesArray);
   }
 
-  calculateTargetValue(event, initValue) {
+  calcTargetValue(
+    event,
+    initValue = undefined,
+  ) {
     let eventPosition;
     let sliderOffset;
     let sliderSize;
@@ -438,13 +442,11 @@ class MetaSlider {
       valueInEventPosition = eventPosition - sliderOffset;
     }
 
-    const valueAsPercentage = (initValue === undefined)
-      ? (valueInEventPosition / sliderSize) * 100
-      : ((initValue - this.minValue) / (this.maxValue - this.minValue)) * 100;
-
+    const calcForInitValue = ((initValue - this.minValue) / (this.maxValue - this.minValue)) * 100;
+    const calcForEventValue = (valueInEventPosition / sliderSize) * 100;
+    const valueAsPercentage = (initValue === undefined) ? calcForEventValue : calcForInitValue;
     const stepCounter = (this.maxValue - this.minValue) / this.step;
     const stepAsPercent = 100 / stepCounter;
-
     let totalPercent = Math.round(valueAsPercentage / stepAsPercent) * stepAsPercent;
 
     if (totalPercent < 0) totalPercent = 0;
@@ -463,12 +465,12 @@ class MetaSlider {
   }
 
   checkingScaleSize() {
-    if (this.showTheScale && this.enableScaleAdjustment) {
+    if (this.showTheScale && this.initScaleAdjustment) {
       const MARGIN_POINTS = 120;
       const sliderSize = this.elemSlider.offsetWidth;
 
       while (this.scalePointsSize + MARGIN_POINTS > sliderSize) {
-        const totalWidthScalePoints = this.scalePointsSize + MARGIN_POINTS;
+        const totalSizeScalePoints = this.scalePointsSize + MARGIN_POINTS;
         this.skipScalePointsArray = [];
 
         this.elemScalePoints = this.elemSlider.querySelectorAll('.meta-slider__scale-point:not(.meta-slider__scale-point_skip)');
@@ -491,12 +493,12 @@ class MetaSlider {
           if (!scalePoint.classList.contains('meta-slider__scale-point_skip')) this.scalePointsSize += scalePoint.offsetWidth;
         });
 
-        this.mapSkipScalePoints.set(totalWidthScalePoints, [...this.skipScalePointsArray]);
+        this.mapSkipScalePoints.set(totalSizeScalePoints, [...this.skipScalePointsArray]);
       }
 
       this.mapSkipScalePoints.forEach((scalePointSkipArray, controlSize) => {
         if (sliderSize > controlSize + MARGIN_POINTS) {
-          scalePointSkipArray.forEach(scalePoint => {
+          scalePointSkipArray.forEach((scalePoint) => {
             scalePoint.tabIndex = '';
             scalePoint.classList.remove('meta-slider__scale-point_skip');
             this.scalePointsSize += scalePoint.offsetWidth;
@@ -511,22 +513,27 @@ class MetaSlider {
   handleGetValueInScalePoint(event) {
     event.preventDefault();
     const targetValue = Number(event.target.dataset.value);
-    let calculateTargetValue = targetValue;
+    let resultValue = targetValue;
 
     if (!event.target.classList.contains('meta-slider__value')) {
-      calculateTargetValue = this.enableСorrectionValues
-        ? this.calculateTargetValue(null, targetValue)
-        : targetValue;
+      resultValue = this.verifyInitValues ? this.calcTargetValue(null, targetValue) : targetValue;
     }
 
-    this.checkTargetValue(calculateTargetValue, event);
+    this.checkTargetValue(
+      resultValue,
+      event,
+    );
   }
 
   handleSetPositionForThumbs(event) {
     event.preventDefault();
     if (event.target.classList.contains('meta-slider')) {
-      const calculateTargetValue = this.calculateTargetValue(event);
-      this.checkTargetValue(calculateTargetValue, event);
+      const calculateTargetValue = this.calcTargetValue(event);
+
+      this.checkTargetValue(
+        calculateTargetValue,
+        event,
+      );
     }
   }
 
@@ -538,15 +545,22 @@ class MetaSlider {
       if (event.code === 'ArrowLeft' || event.code === 'ArrowDown') eventTargetValue -= this.step;
       if (event.code === 'ArrowRight' || event.code === 'ArrowUp') eventTargetValue += this.step;
 
-      const calculateTargetValue = this.calculateTargetValue(null, eventTargetValue);
-      this.checkTargetValue(calculateTargetValue, event);
+      const calculateTargetValue = this.calcTargetValue(null, eventTargetValue);
+
+      this.checkTargetValue(
+        calculateTargetValue,
+        event,
+      );
     }
   }
 
   handleInitPointerMove(event) {
-    const calculateTargetValue = this.calculateTargetValue(event);
+    const calculateTargetValue = this.calcTargetValue(event);
 
-    this.checkTargetValue(calculateTargetValue, event);
+    this.checkTargetValue(
+      calculateTargetValue,
+      event,
+    );
   }
 
   handleInitPointerUp(event) {
@@ -570,13 +584,13 @@ class MetaSlider {
 
   setEventsSlider() {
     if (this.elemScalePoints) {
-      this.elemScalePoints.forEach(elemPoint => {
+      this.elemScalePoints.forEach((elemPoint) => {
         elemPoint.addEventListener('click', this.handleGetValueInScalePoint.bind(this));
       });
     }
 
     if (this.elemMinAndMaxValues) {
-      this.elemMinAndMaxValues.forEach(elem => {
+      this.elemMinAndMaxValues.forEach((elem) => {
         elem.addEventListener('click', this.handleGetValueInScalePoint.bind(this));
       });
     }
@@ -589,7 +603,7 @@ class MetaSlider {
   }
 
   setEventsThumbs() {
-    this.elemThumbs.forEach(thumb => {
+    this.elemThumbs.forEach((thumb) => {
       thumb.addEventListener('pointerdown', this.handleSetEventListenerForThumbs.bind(this));
       thumb.addEventListener('keydown', this.handleChangeThumbPosition.bind(this));
       // eslint-disable-next-line fsd/no-function-declaration-in-event-listener
@@ -598,7 +612,7 @@ class MetaSlider {
   }
 
   setEventsWindow() {
-    if (this.showTheScale && this.enableScaleAdjustment) {
+    if (this.showTheScale && this.initScaleAdjustment) {
       window.addEventListener('resize', this.handleCheckingScaleSize.bind(this));
     }
   }
