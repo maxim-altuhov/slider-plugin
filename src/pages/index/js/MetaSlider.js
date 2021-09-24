@@ -468,35 +468,31 @@ class MetaSlider {
     this.skipScalePointsArray.push($scalePoint);
   }
 
-  // FIXME: неправильно переходит по дереву условий и скрывает scalePoint
   checkingScaleSize() {
     if (this.showTheScale && this.initScaleAdjustment) {
-      const MARGIN_POINTS = 120;
+      const MARGIN_POINTS = 100;
       const sliderSize = this.$elemSlider.outerWidth();
 
       while (this.scalePointsSize + MARGIN_POINTS > sliderSize) {
         const totalSizeScalePoints = this.scalePointsSize + MARGIN_POINTS;
-        const sizeScalePointsArray = this.$elemScalePoints.length;
         this.skipScalePointsArray = [];
-
         this.$elemScalePoints = this.$selector.find('.js-meta-slider__scale-point:not(.meta-slider__scale-point_skip)');
         this.scalePointsSize = 0;
+
+        const sizeScalePointsArray = this.$elemScalePoints.length;
 
         if (sizeScalePointsArray <= 2) break;
 
         this.$elemScalePoints.each((index, scalePoint) => {
           const $currentScalePoint = $(scalePoint);
-          const firstOrLastIndex = (index === 0) || (index === this.$elemScalePoints.eq(-1));
+          const firstOrLastIndex = (index === 0) || (index === (sizeScalePointsArray - 1));
           const intervalWithoutFirstAndLastIndex = !firstOrLastIndex && sizeScalePointsArray <= 6;
 
           if (index % 2 !== 0 && sizeScalePointsArray > 6) {
-            console.log(1);
             this.setPropForSkipScalePoint($currentScalePoint);
           } else if ((sizeScalePointsArray % 2 !== 0) && sizeScalePointsArray <= 6) {
-            console.log(2);
             this.setPropForSkipScalePoint($currentScalePoint);
           } else if ((sizeScalePointsArray % 2 === 0) && intervalWithoutFirstAndLastIndex) {
-            console.log(3);
             this.setPropForSkipScalePoint($currentScalePoint);
           }
 
@@ -507,7 +503,7 @@ class MetaSlider {
       }
 
       this.mapSkipScalePoints.forEach((scalePointSkipArray, controlSize) => {
-        if (sliderSize > controlSize + MARGIN_POINTS) {
+        if (sliderSize > controlSize + (MARGIN_POINTS / 3)) {
           scalePointSkipArray.forEach(($scalePoint) => {
             $scalePoint.removeAttr('tabindex').removeClass('meta-slider__scale-point_skip');
             this.scalePointsSize += $scalePoint.outerWidth();
