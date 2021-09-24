@@ -5,8 +5,7 @@
     "es2021": true
   },
   "globals": {
-    "NodeJS": true,
-    "JQuery": true
+    "jQuery": true
   },
   "extends": ["eslint:recommended", "airbnb-base/legacy"],
   "parserOptions": {
@@ -15,6 +14,8 @@
   },
   "plugins": ["import", "fsd"],
   "rules": {
+    "no-shadow": ["error", { "allow": ["$"] }],
+    "func-names": ["error", "never"],
     "max-len": ["warn"],
     "comma-dangle": ["warn", "always-multiline"],
     "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],

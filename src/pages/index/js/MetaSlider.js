@@ -1,41 +1,40 @@
 import $ from 'jquery';
 class MetaSlider {
-  mainColor = '#6d6dff';
-  secondColor = '#e4e4e4';
-  colorMarker = this.mainColor;
-  colorTextForMarker = '#ffffff'
-  colorBorderForMarker = '#ffffff'
-  colorBorderForThumb = '#ffffff'
-  colorTextForMinAndMax = '#000000'
+  constructor(selector, options) {
+    this.mainColor = options.mainColor;
+    this.secondColor = options.secondColor;
+    this.colorMarker = options.colorMarker;
+    this.colorTextForMarker = options.colorTextForMarker;
+    this.colorBorderForMarker = options.colorBorderForMarker;
+    this.colorBorderForThumb = options.colorBorderForThumb;
+    this.colorTextForMinAndMax = options.colorTextForMinAndMax;
 
-  verifyInitValues = true;
-  initFormatted = true;
-  initAutoMargins = true;
-  initScaleAdjustment = true;
-  showError = true;
-  showMinAndMax = true;
-  showTheScale = true;
-  showMarkers = true;
-  showBackground = true;
-  isRange = true;
-  isVertical = false;
-  initAutoScaleCreation = true;
-  checkingStepSizeForScale = true;
+    this.verifyInitValues = options.verifyInitValues;
+    this.initFormatted = options.initFormatted;
+    this.initAutoMargins = options.initAutoMargins;
+    this.initScaleAdjustment = options.initScaleAdjustment;
+    this.setNumberOfDecimalPlaces = options.setNumberOfDecimalPlaces;
+    this.showError = options.showError;
+    this.showMinAndMax = options.showMinAndMax;
+    this.showTheScale = options.showTheScale;
+    this.showMarkers = options.showMarkers;
+    this.showBackground = options.showBackground;
+    this.isRange = options.isRange;
+    this.isVertical = options.isVertical;
+    this.initAutoScaleCreation = options.initAutoScaleCreation;
+    this.checkingStepSizeForScale = options.checkingStepSizeForScale;
 
-  step = 5;
-  minValue = 0;
-  maxValue = 100;
-  stepSizeForScale = this.step;
-  numberOfDecimalPlaces = this.getNumberOfDecimalPlaces();
-  preFix = '';
-  postFix = '';
-  // 'ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'
-  customValues = [];
-  initValueFirst = 0;
-  initValueSecond = 100;
-  checkedValueFirst = this.isRange ? this.initValueFirst : this.minValue;
+    this.step = options.step;
+    this.minValue = options.minValue;
+    this.maxValue = options.maxValue;
+    this.stepSizeForScale = options.stepSizeForScale;
+    this.numberOfDecimalPlaces = options.numberOfDecimalPlaces;
+    this.preFix = options.preFix;
+    this.postFix = options.postFix;
+    this.customValues = options.customValues;
+    this.initValueFirst = options.initValueFirst;
+    this.initValueSecond = options.initValueSecond;
 
-  constructor(selector) {
     this.getInitSelector(selector);
     this.renderSlider();
     this.getInfoAboutSlider();
@@ -70,7 +69,7 @@ class MetaSlider {
   }
 
   getNumberOfDecimalPlaces() {
-    return this.step.toString().includes('.') ? this.step.toString().match(/\.(\d+)/)[1].length : 0;
+    this.numberOfDecimalPlaces = this.step.toString().includes('.') ? this.step.toString().match(/\.(\d+)/)[1].length : 0;
   }
 
   renderErrorMessage(message) {
@@ -163,6 +162,9 @@ class MetaSlider {
       initСorrectionValues: 'Входящие значения для бегунков скорректированны согласно установленному шагу.',
     };
 
+    this.checkedValueFirst = this.isRange ? this.initValueFirst : this.minValue;
+
+    if (this.setNumberOfDecimalPlaces) this.getNumberOfDecimalPlaces();
     if (this.showTheScale) this.showMinAndMax = false;
     if (this.showMinAndMax) this.showTheScale = false;
 
