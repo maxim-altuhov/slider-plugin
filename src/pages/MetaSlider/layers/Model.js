@@ -1,5 +1,6 @@
 import $ from 'jquery';
-class MetaSlider {
+
+class Model {
   constructor(selector, options) {
     this.mainColor = options.mainColor;
     this.secondColor = options.secondColor;
@@ -583,7 +584,7 @@ class MetaSlider {
     const $target = $(event.target);
     event.target.setPointerCapture(event.pointerId);
     $target.on('pointermove.thumb', this.handleInitPointerMove.bind(this));
-    $target.on('pointerup.thumb', MetaSlider.handleInitPointerUp);
+    $target.on('pointerup.thumb', Model.handleInitPointerUp);
   }
 
   handleRemoveErrorWindow() {
@@ -630,4 +631,4 @@ class MetaSlider {
   }
 }
 
-export default MetaSlider;
+export default Model;
