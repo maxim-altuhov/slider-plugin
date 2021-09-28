@@ -1,161 +1,96 @@
 import $ from 'jquery';
+import Observer from '../patterns/Observer';
 
 class Model {
-  constructor(selector, options) {
-    this.mainColor = options.mainColor;
-    this.secondColor = options.secondColor;
-    this.colorMarker = options.colorMarker;
-    this.colorTextForMarker = options.colorTextForMarker;
-    this.colorBorderForMarker = options.colorBorderForMarker;
-    this.colorBorderForThumb = options.colorBorderForThumb;
-    this.colorTextForMinAndMax = options.colorTextForMinAndMax;
-
-    this.verifyInitValues = options.verifyInitValues;
-    this.initFormatted = options.initFormatted;
-    this.initAutoMargins = options.initAutoMargins;
-    this.initScaleAdjustment = options.initScaleAdjustment;
-    this.setNumberOfDecimalPlaces = options.setNumberOfDecimalPlaces;
-    this.showError = options.showError;
-    this.showMinAndMax = options.showMinAndMax;
-    this.showTheScale = options.showTheScale;
-    this.showMarkers = options.showMarkers;
-    this.showBackground = options.showBackground;
-    this.isRange = options.isRange;
-    this.isVertical = options.isVertical;
-    this.initAutoScaleCreation = options.initAutoScaleCreation;
-    this.checkingStepSizeForScale = options.checkingStepSizeForScale;
-
-    this.step = options.step;
-    this.minValue = options.minValue;
-    this.maxValue = options.maxValue;
-    this.stepSizeForScale = options.stepSizeForScale;
-    this.numberOfDecimalPlaces = options.numberOfDecimalPlaces;
-    this.preFix = options.preFix;
-    this.postFix = options.postFix;
-    this.customValues = options.customValues;
-    this.initValueFirst = options.initValueFirst;
-    this.initValueSecond = options.initValueSecond;
-
-    this.getInitSelector(selector);
-    this.renderSlider();
-    this.getInfoAboutSlider();
-    this.initValuesCheck();
-    this.setVerticalOrientation();
-    this.init();
+  constructor(options) {
+    this.opt = options;
+    this.$selector = options.$initSelector;
+    this.renderErrorEvent = new Observer();
   }
 
   init() {
-    this.setValueForSlider(this.initValuesArray);
-    this.setMinAndMaxValues();
-    this.createScale();
-    this.checkingScaleSize();
-    this.setEventsSlider();
-    this.setEventsThumbs();
-    this.setEventsWindow();
+    this.initValuesCheck();
+    // this.setValueForSlider(this.initValuesArray);
+    // this.setMinAndMaxValues();
+    // this.createScale();
+    // this.checkingScaleSize();
+    // this.setEventsSlider();
+    // this.setEventsThumbs();
+    // this.setEventsWindow();
   }
 
-  getInitSelector(initSelector) {
-    this.$selector = $(initSelector);
+  getProp(prop) {
+    return this.opt[prop];
   }
 
-  setVerticalOrientation() {
-    if (this.isVertical) {
-      this.initAutoMargins = false;
-      this.$elemSlider.addClass('meta-slider_vertical');
-    }
+  setProp(prop, value) {
+    this.opt[prop] = value;
+  }
+
+  getOptionsObj() {
+    return this.opt;
+  }
+
+  renderError(message) {
+    this.renderErrorEvent.notify(message);
   }
 
   checkIsIntegerSizeScale() {
-    return Number.isInteger((this.maxValue - this.minValue) / this.stepSizeForScale);
+    return Number.isInteger((this.opt.maxValue - this.opt.minValue) / this.opt.stepSizeForScale);
   }
 
   getNumberOfDecimalPlaces() {
-    this.numberOfDecimalPlaces = this.step.toString().includes('.') ? this.step.toString().match(/\.(\d+)/)[1].length : 0;
-  }
-
-  renderErrorMessage(message) {
-    if (this.showError) {
-      const HTMLBlockError = `<div class="error-info js-error-info"><p class="error-info__text">${message}</p><button type="button" class="error-info__close js-error-info__close">X</button></div>`;
-      this.$elemSlider.after(HTMLBlockError);
-      this.showError = false;
-
-      this.$elemErrorInfo = this.$selector.find('.js-error-info');
-      this.$btnErrorClose = this.$selector.find('.js-error-info__close');
-    }
+    this.opt.numberOfDecimalPlaces = this.opt.step.toString().includes('.') ? this.opt.step.toString().match(/\.(\d+)/)[1].length : 0;
   }
 
   resetInitValue() {
-    this.initValueSecond = this.maxValue;
-    this.checkedValueFirst = this.minValue;
+    this.opt.initValueSecond = this.opt.maxValue;
+    this.opt.checkedValueFirst = this.opt.minValue;
   }
 
   initCustomValues() {
-    this.minValue = 0;
-    this.maxValue = this.customValues.length - 1;
-    this.initAutoScaleCreation = false;
-    this.checkingStepSizeForScale = false;
-    this.initFormatted = false;
-    this.verifyInitValues = true;
-    this.numberOfDecimalPlaces = 0;
-    this.step = 1;
-    this.stepSizeForScale = 1;
+    this.opt.minValue = 0;
+    this.opt.maxValue = this.opt.customValues.length - 1;
+    this.opt.initAutoScaleCreation = false;
+    this.opt.checkingStepSizeForScale = false;
+    this.opt.initFormatted = false;
+    this.opt.verifyInitValues = true;
+    this.opt.numberOfDecimalPlaces = 0;
+    this.opt.step = 1;
+    this.opt.stepSizeForScale = 1;
   }
 
   checkCorrectStepSizeForScale(errorMessage) {
-    const isIntegerStepSizeForScale = Number.isInteger(this.stepSizeForScale);
+    const isIntegerStepSizeForScale = Number.isInteger(this.opt.stepSizeForScale);
 
     while (!this.checkIsIntegerSizeScale()) {
-      if (this.stepSizeForScale > 1 && isIntegerStepSizeForScale) {
-        this.stepSizeForScale += 1;
+      if (this.opt.stepSizeForScale > 1 && isIntegerStepSizeForScale) {
+        this.opt.stepSizeForScale += 1;
       } else if (!isIntegerStepSizeForScale) {
-        this.stepSizeForScale += 0.1;
-        this.stepSizeForScale = Number(this.stepSizeForScale.toFixed(1));
+        this.opt.stepSizeForScale += 0.1;
+        this.opt.stepSizeForScale = Number(this.opt.stepSizeForScale.toFixed(1));
       } else {
         break;
       }
 
-      this.renderErrorMessage(errorMessage.stepSizeForScale);
+      this.renderError(errorMessage.stepSizeForScale);
     }
   }
 
-  initValueCorrection(
-    value,
-    errorMessage,
-  ) {
+  initValueCorrection(value, errorMessage) {
     const convertedValue = this.calcTargetValue(null, value);
     let resultValue = value;
 
     if (convertedValue !== value) {
       resultValue = convertedValue;
-      this.renderErrorMessage(errorMessage.initСorrectionValues);
+      this.renderError(errorMessage.initСorrectionValues);
     }
 
     return resultValue;
   }
 
-  renderSlider() {
-    const $fragmentWithASlider = $(document.createDocumentFragment());
-    const $blockSlider = $(document.createElement('div'));
-    $blockSlider.addClass('meta-slider js-meta-slider').css('background-color', this.secondColor);
-
-    const propDisplay = this.isRange ? '' : 'display:none';
-
-    const HTMLBlock = `<div class="meta-slider__progress js-meta-slider__progress"></div>
-    <button type="button" class="meta-slider__thumb js-meta-slider__thumb meta-slider__thumb_left" style="background-color:${this.mainColor}; border-color:${this.colorBorderForThumb}; ${propDisplay}" data-value="">
-      <span class="meta-slider__marker js-meta-slider__marker meta-slider__marker_left" style="background-color:${this.colorMarker}; color: ${this.colorTextForMarker}; border-color:${this.colorBorderForMarker}"></span>
-    </button>
-    <button type="button" class="meta-slider__thumb js-meta-slider__thumb meta-slider__thumb_right" style="background-color:${this.mainColor}; border-color:${this.colorBorderForThumb}" data-value="">
-      <span class="meta-slider__marker js-meta-slider__marker meta-slider__marker_right" style="background-color:${this.colorMarker}; color: ${this.colorTextForMarker}; border-color:${this.colorBorderForMarker}"></span>
-    </button>`;
-
-    $blockSlider.html(HTMLBlock);
-
-    $fragmentWithASlider.append($blockSlider);
-    this.$selector.append($fragmentWithASlider);
-  }
-
   initValuesCheck() {
-    const errorMessage = {
+    const errMessage = {
       initValue: 'Ошибка во входящих данных для бегунков слайдера. Установлены значения по-умолчанию.',
       minAndMaxValue: 'Max значение установленное для слайдера меньше или равно его Min значению. Установлены значения по-умолчанию.',
       stepSizeForScale: 'Установите корректное значение шага для шкалы с делениями. Установлено ближайщее оптимальное значение.',
@@ -163,71 +98,65 @@ class Model {
       initСorrectionValues: 'Входящие значения для бегунков скорректированны согласно установленному шагу.',
     };
 
-    this.checkedValueFirst = this.isRange ? this.initValueFirst : this.minValue;
+    const checkedValueFirst = this.opt.isRange ? this.opt.initValueFirst : this.opt.minValue;
+    this.setProp('checkedValueFirst', checkedValueFirst);
 
-    if (this.setNumberOfDecimalPlaces) this.getNumberOfDecimalPlaces();
-    if (this.showTheScale) this.showMinAndMax = false;
-    if (this.showMinAndMax) this.showTheScale = false;
+    if (this.opt.setNumberOfDecimalPlaces) this.getNumberOfDecimalPlaces();
+    if (this.opt.showTheScale) this.opt.showMinAndMax = false;
+    if (this.opt.showMinAndMax) this.opt.showTheScale = false;
 
-    if (this.minValue > this.maxValue || this.minValue === this.maxValue) {
-      this.minValue = 0;
-      this.maxValue = 100;
-      this.renderErrorMessage(errorMessage.minAndMaxValue);
+    if (this.opt.minValue > this.opt.maxValue || this.opt.minValue === this.opt.maxValue) {
+      this.opt.minValue = 0;
+      this.opt.maxValue = 100;
+      this.renderError(errMessage.minAndMaxValue);
     }
 
-    if (this.checkedValueFirst > this.initValueSecond) {
+    if (this.opt.checkedValueFirst > this.opt.initValueSecond) {
       this.resetInitValue();
-      this.renderErrorMessage(errorMessage.initValue);
+      this.renderError(errMessage.initValue);
     }
 
-    if (this.step <= 0 || this.step > this.maxValue) {
-      this.step = this.maxValue;
-      this.renderErrorMessage(errorMessage.step);
+    if (this.opt.step <= 0 || this.opt.step > this.opt.maxValue) {
+      this.opt.step = this.opt.maxValue;
+      this.renderError(errMessage.step);
     }
 
-    if (this.stepSizeForScale <= 0 || this.stepSizeForScale > this.maxValue) {
-      this.stepSizeForScale = this.maxValue;
-      this.renderErrorMessage(errorMessage.stepSizeForScale);
+    if (this.opt.stepSizeForScale <= 0 || this.opt.stepSizeForScale > this.opt.maxValue) {
+      this.opt.stepSizeForScale = this.opt.maxValue;
+      this.renderError(errMessage.stepSizeForScale);
     }
 
-    if (this.initValueSecond > this.maxValue || this.checkedValueFirst > this.maxValue) {
+    if (this.opt.initValueSecond > this.opt.maxValue
+      || this.opt.checkedValueFirst > this.opt.maxValue) {
       this.resetInitValue();
-      this.renderErrorMessage(errorMessage.initValue);
-    } else if (this.initValueSecond < this.minValue || this.checkedValueFirst < this.minValue) {
+      this.renderError(errMessage.initValue);
+    } else if (this.opt.initValueSecond < this.opt.minValue
+      || this.opt.checkedValueFirst < this.opt.minValue) {
       this.resetInitValue();
-      this.renderErrorMessage(errorMessage.initValue);
+      this.renderError(errMessage.initValue);
     }
 
-    if (this.customValues.length > 0) {
+    if (this.opt.customValues.length > 0) {
       this.initCustomValues();
-      this.minAndMaxArray = [
-        this.customValues[0],
-        this.customValues[this.customValues.length - 1],
-      ];
+
+      this.setProp('minAndMaxArray', [
+        this.opt.customValues[0],
+        this.opt.customValues[this.opt.customValues.length - 1],
+      ]);
     } else {
-      this.minAndMaxArray = [this.minValue, this.maxValue];
+      this.setProp('minAndMaxArray', [this.opt.minValue, this.opt.maxValue]);
     }
 
-    if (this.checkingStepSizeForScale && !this.initAutoScaleCreation) {
-      this.checkCorrectStepSizeForScale(errorMessage);
+    if (this.opt.checkingStepSizeForScale && !this.opt.initAutoScaleCreation) {
+      this.checkCorrectStepSizeForScale(errMessage);
     }
 
-    if (this.verifyInitValues) {
-      this.checkedValueFirst = this.initValueCorrection(this.checkedValueFirst, errorMessage);
-      this.initValueSecond = this.initValueCorrection(this.initValueSecond, errorMessage);
+    if (this.opt.verifyInitValues) {
+      this.opt.checkedValueFirst = this.initValueCorrection(this.opt.checkedValueFirst, errMessage);
+      this.opt.initValueSecond = this.initValueCorrection(this.opt.initValueSecond, errMessage);
     }
 
-    this.initValuesArray = [this.checkedValueFirst, this.initValueSecond];
-  }
-
-  getInfoAboutSlider() {
-    this.$elemSlider = this.$selector.find('.js-meta-slider');
-    this.$elemThumbs = this.$selector.find('.js-meta-slider__thumb');
-    this.$elemMarkers = this.$selector.find('.js-meta-slider__marker');
-    this.$sliderProgress = this.$selector.find('.js-meta-slider__progress');
-
-    this.heightMarker = this.$elemMarkers.eq(-1).outerHeight();
-    this.heightThumb = this.$elemThumbs.eq(-1).outerHeight();
+    this.setProp('initValuesArray', [this.opt.checkedValueFirst, this.opt.initValueSecond]);
   }
 
   setMinAndMaxValues() {

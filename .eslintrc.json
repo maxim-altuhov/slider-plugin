@@ -14,6 +14,7 @@
   },
   "plugins": ["import", "fsd"],
   "rules": {
+    "operator-linebreak": ["error", "before"],
     "no-shadow": ["error", { "allow": ["$"] }],
     "func-names": ["error", "never"],
     "max-len": ["warn"],
