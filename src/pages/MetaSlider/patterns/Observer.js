@@ -17,8 +17,8 @@ class Observer {
     this.observerList = this.observerList.filter((item) => item !== observer);
   }
 
-  notify(arg) {
-    this.observerList.forEach((observer) => observer(arg));
+  notify(...arg) {
+    this.observerList.forEach((observer) => observer(...arg));
   }
 }
 

@@ -65,6 +65,7 @@ import Presenter from './layers/Presenter';
       });
 
       model.init();
+      console.log(model);
     });
   };
 }(jQuery));

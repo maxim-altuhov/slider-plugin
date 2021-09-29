@@ -27,7 +27,7 @@ class Presenter {
   }
 
   setObservers() {
-    this.model.renderErrorEvent.subscribe(this.getView('viewError').renderErrorMessage.bind(this.getView('viewError')));
+    this.model.errorEvent.subscribe(this.views.viewError.renderError.bind(this.views.viewError));
   }
 }
 
