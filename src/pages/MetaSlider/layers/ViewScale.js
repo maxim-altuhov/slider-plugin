@@ -5,39 +5,62 @@ class ViewScale {
     this.presenter = null;
   }
 
+  init() {
+    this.$selector = this.getProp('$initSelector');
+    this.$elemSlider = this.getProp('$elemSlider');
+  }
+
+  initRender() {
+    this.createScale();
+    this.handleCheckingScaleSize();
+    this.setEventsScalePoints();
+    this.setEventsWindow();
+  }
+
   registerWith(presenter) {
     this.presenter = presenter;
   }
 
-  init() {
-    console.log('Init Scale');
-    this.opt = this.presenter.getOptionsObj();
-    this.$selector = this.opt.$initSelector;
+  getProp(prop) {
+    return this.presenter.getProp(prop);
+  }
+
+  setProp(prop, value) {
+    this.presenter.setProp(prop, value);
   }
 
   createScale() {
-    if (!this.showMinAndMax) this.$elemSlider.css('margin-bottom', '');
+    if (!this.getProp('showMinAndMax')) this.$elemSlider.css('margin-bottom', '');
 
-    if (this.showTheScale) {
-      this.scalePointsSize = 0;
-      this.mapSkipScalePoints = new Map();
-
+    if (this.getProp('showTheScale')) {
+      const initAutoScaleCreation = this.getProp('initAutoScaleCreation');
+      const step = this.getProp('step');
+      const stepSizeForScale = this.getProp('stepSizeForScale');
+      const minValue = this.getProp('minValue');
+      const maxValue = this.getProp('maxValue');
+      const numberOfDecimalPlaces = this.getProp('numberOfDecimalPlaces');
+      const customValues = this.getProp('customValues');
+      const initFormatted = this.getProp('initFormatted');
+      const preFix = this.getProp('preFix');
+      const postFix = this.getProp('postFix');
+      const initAutoMargins = this.getProp('initAutoMargins');
       const $fragmentWithScale = $(document.createDocumentFragment());
       const $blockScale = $(document.createElement('div'));
-      const stepSizeValue = this.initAutoScaleCreation ? this.step : this.stepSizeForScale;
-      let currentValue = this.minValue;
+
+      const stepSizeValue = initAutoScaleCreation ? step : stepSizeForScale;
+      let currentValue = minValue;
 
       $blockScale.addClass('meta-slider__scale');
       this.$elemSlider.append($blockScale);
 
-      for (; currentValue <= this.maxValue; currentValue += stepSizeValue) {
-        currentValue = Number(currentValue.toFixed(this.numberOfDecimalPlaces));
+      for (; currentValue <= maxValue; currentValue += stepSizeValue) {
+        currentValue = Number(currentValue.toFixed(numberOfDecimalPlaces));
 
-        const isCustomValue = this.customValues.length > 0;
-        const convertedValue = this.initFormatted ? currentValue.toLocaleString() : currentValue;
-        const resultValue = isCustomValue ? this.customValues[currentValue] : convertedValue;
+        const isCustomValue = customValues.length > 0;
+        const convertedValue = initFormatted ? currentValue.toLocaleString() : currentValue;
+        const resultValue = isCustomValue ? customValues[currentValue] : convertedValue;
 
-        const elemScalePoint = `<button type="button" class="meta-slider__scale-point js-meta-slider__scale-point" data-value="${currentValue}">${this.preFix}${resultValue}${this.postFix}</button>`;
+        const elemScalePoint = `<button type="button" class="meta-slider__scale-point js-meta-slider__scale-point" data-value="${currentValue}">${preFix}${resultValue}${postFix}</button>`;
 
         $blockScale.append(elemScalePoint);
         $fragmentWithScale.append($blockScale);
@@ -46,27 +69,29 @@ class ViewScale {
       this.$elemSlider.append($fragmentWithScale);
 
       this.$elemScalePoints = this.$selector.find('.js-meta-slider__scale-point');
+      this.scalePointsSize = 0;
+      this.mapSkipScalePoints = new Map();
 
       this.$elemScalePoints.each((index, scalePoint) => {
         const $scalePoint = $(scalePoint);
         const valueInScalePoint = Number($scalePoint.attr('data-value'));
-        const resultValue = (valueInScalePoint - this.minValue) / (this.maxValue - this.minValue);
+        const resultValue = (valueInScalePoint - minValue) / (maxValue - minValue);
         this.scalePointsSize += $scalePoint.outerWidth();
 
         $scalePoint.css('left', `${resultValue * 100}%`);
       });
 
-      if (this.initAutoMargins) this.$elemSlider.css('margin-bottom', `${this.$elemScalePoints.eq(0).outerHeight() * 3}px`);
+      if (initAutoMargins) this.$elemSlider.css('margin-bottom', `${this.$elemScalePoints.eq(0).outerHeight() * 3}px`);
     }
   }
 
   setPropForSkipScalePoint($scalePoint) {
     $scalePoint.addClass('meta-slider__scale-point_skip').attr('tabindex', -1);
-    this.op.skipScalePointsArray.push($scalePoint);
+    this.skipScalePointsArray.push($scalePoint);
   }
 
-  checkingScaleSize() {
-    if (this.showTheScale && this.initScaleAdjustment) {
+  handleCheckingScaleSize() {
+    if (this.getProp('showTheScale') && this.getProp('initScaleAdjustment')) {
       const MARGIN_POINTS = 100;
       const sliderSize = this.$elemSlider.outerWidth();
 
@@ -112,32 +137,26 @@ class ViewScale {
     }
   }
 
-  handleCheckingScaleSize() {
-    this.checkingScaleSize();
-  }
-
   handleGetValueInScalePoint(event) {
     event.preventDefault();
     const $target = $(event.target);
+    const verifyInitValues = this.getProp('verifyInitValues');
     let targetValue = Number($target.attr('data-value'));
 
-    if (!$target.hasClass('js-meta-slider__value')) {
-      targetValue = this.verifyInitValues ? this.calcTargetValue(null, targetValue) : targetValue;
-    }
+    targetValue = verifyInitValues
+      ? this.presenter.calcTargetValue(null, targetValue)
+      : targetValue;
 
-    this.checkTargetValue(
-      targetValue,
-      event,
-    );
+    this.presenter.checkTargetValue(targetValue, event);
   }
 
   setEventsWindow() {
-    if (this.showTheScale && this.initScaleAdjustment) {
+    if (this.getProp('showTheScale') && this.getProp('initScaleAdjustment')) {
       $(window).on('resize.scale', this.handleCheckingScaleSize.bind(this));
     }
   }
 
-  setEventsSlider() {
+  setEventsScalePoints() {
     if (this.$elemScalePoints) {
       this.$elemScalePoints.each((index, elemPoint) => {
         $(elemPoint).on('click.scalePoint', this.handleGetValueInScalePoint.bind(this));

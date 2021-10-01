@@ -5,6 +5,13 @@ class ViewMarkers {
     this.presenter = null;
   }
 
+  init() {
+    this.$selector = this.getProp('$initSelector');
+    this.$elemSlider = this.getProp('$elemSlider');
+    this.$elemThumbs = this.getProp('$elemThumbs');
+    this.getInfoAboutMarkers();
+  }
+
   registerWith(presenter) {
     this.presenter = presenter;
   }
@@ -15,12 +22,6 @@ class ViewMarkers {
 
   setProp(prop, value) {
     this.presenter.setProp(prop, value);
-  }
-
-  init() {
-    console.log('Init Markers');
-    this.$selector = this.getProp('$initSelector');
-    this.getInfoAboutMarkers();
   }
 
   getInfoAboutMarkers() {
@@ -38,19 +39,27 @@ class ViewMarkers {
     });
 
     if (this.getProp('showMarkers')) {
-      if (this.initAutoMargins) this.$elemSlider.css('margin-top', `${this.heightMarker + (this.heightThumb / 1.5)}px`);
+      const initAutoMargins = this.getProp('initAutoMargins');
+      const heightThumb = this.getProp('heightThumb');
+      const customValues = this.getProp('customValues');
+      const preFix = this.getProp('preFix');
+      const postFix = this.getProp('postFix');
+      const numberOfDecimalPlaces = this.getProp('numberOfDecimalPlaces');
+      const initFormatted = this.getProp('initFormatted');
+
+      if (initAutoMargins) this.$elemSlider.css('margin-top', `${this.heightMarker + (heightThumb / 1.5)}px`);
 
       this.$elemMarkers.each((index, marker) => {
         const $currentMarker = $(marker);
 
-        if (this.customValues.length > 0) {
-          $currentMarker.text(`${this.preFix}${this.$elemThumbs.eq(index).attr('data-text')}${this.postFix}`);
+        if (customValues.length > 0) {
+          $currentMarker.text(`${preFix}${this.$elemThumbs.eq(index).attr('data-text')}${postFix}`);
         } else {
           const currentValue = Number(this.$elemThumbs.eq(index).attr('data-value'));
-          const checkedValue = Number(currentValue.toFixed(this.numberOfDecimalPlaces));
-          const convertedValue = this.initFormatted ? checkedValue.toLocaleString() : checkedValue;
+          const checkedValue = Number(currentValue.toFixed(numberOfDecimalPlaces));
+          const convertedValue = initFormatted ? checkedValue.toLocaleString() : checkedValue;
 
-          $currentMarker.text(`${this.preFix}${convertedValue}${this.postFix}`);
+          $currentMarker.text(`${preFix}${convertedValue}${postFix}`);
         }
 
         $currentMarker.css('display', '');

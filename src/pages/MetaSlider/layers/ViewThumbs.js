@@ -5,15 +5,22 @@ class ViewThumbs {
     this.presenter = null;
   }
 
+  init() {
+    this.$selector = this.getProp('$initSelector');
+    this.getInfoAboutThumbs();
+    this.setEventsThumbs();
+  }
+
   registerWith(presenter) {
     this.presenter = presenter;
   }
 
-  init() {
-    console.log('Init Thumbs');
-    this.opt = this.presenter.getOptionsObj();
-    this.$selector = this.opt.$initSelector;
-    this.getInfoAboutThumbs();
+  getProp(prop) {
+    return this.presenter.getProp(prop);
+  }
+
+  setProp(prop, value) {
+    this.presenter.setProp(prop, value);
   }
 
   getInfoAboutThumbs() {
@@ -24,12 +31,17 @@ class ViewThumbs {
     this.presenter.setProp('heightThumb', this.heightThumb);
   }
 
-  setValueInThumbs(valuesArray, valuesAsPercentageArray) {
-    valuesArray.forEach((currentValue, index) => {
-      this.$elemThumbs.eq(index).css('left', `${valuesAsPercentageArray[index]}%`).attr('data-value', currentValue.toFixed(this.numberOfDecimalPlaces));
+  setValueInThumbs() {
+    const initValuesArray = this.getProp('initValuesArray');
+    const valuesAsPercentageArray = this.getProp('valuesAsPercentageArray');
+    const numberOfDecimalPlaces = this.getProp('numberOfDecimalPlaces');
+    const customValues = this.getProp('customValues');
 
-      if (this.customValues.length > 0) {
-        this.$elemThumbs.eq(index).attr('data-text', this.customValues[currentValue]);
+    initValuesArray.forEach((currentValue, index) => {
+      this.$elemThumbs.eq(index).css('left', `${valuesAsPercentageArray[index]}%`).attr('data-value', currentValue.toFixed(numberOfDecimalPlaces));
+
+      if (customValues.length > 0) {
+        this.$elemThumbs.eq(index).attr('data-text', customValues[currentValue]);
       }
     });
   }
@@ -38,30 +50,26 @@ class ViewThumbs {
     const configEventCode = (event.code === 'ArrowLeft' || event.code === 'ArrowRight' || event.code === 'ArrowUp' || event.code === 'ArrowDown');
     const $target = $(event.target);
     if (configEventCode) {
+      const step = this.getProp('step');
       let eventTargetValue = Number($target.attr('data-value'));
+
       if (event.code === 'ArrowUp' || event.code === 'ArrowDown') event.preventDefault();
-      if (event.code === 'ArrowLeft' || event.code === 'ArrowDown') eventTargetValue -= this.step;
-      if (event.code === 'ArrowRight' || event.code === 'ArrowUp') eventTargetValue += this.step;
+      if (event.code === 'ArrowLeft' || event.code === 'ArrowDown') eventTargetValue -= step;
+      if (event.code === 'ArrowRight' || event.code === 'ArrowUp') eventTargetValue += step;
 
-      const calculateTargetValue = this.calcTargetValue(null, eventTargetValue);
+      const calculateTargetValue = this.presenter.calcTargetValue(null, eventTargetValue);
 
-      this.checkTargetValue(
-        calculateTargetValue,
-        event,
-      );
+      this.presenter.checkTargetValue(calculateTargetValue, event);
     }
   }
 
   handleInitPointerMove(event) {
-    const calculateTargetValue = this.calcTargetValue(event);
+    const calculateTargetValue = this.presenter.calcTargetValue(event);
 
-    this.checkTargetValue(
-      calculateTargetValue,
-      event,
-    );
+    this.presenter.checkTargetValue(calculateTargetValue, event);
   }
 
-  handleInitPointerUp(event) {
+  static handleInitPointerUp(event) {
     const $target = $(event.target);
     $target.off('pointermove.thumb');
     $target.off('pointerup.thumb');
@@ -71,7 +79,7 @@ class ViewThumbs {
     const $target = $(event.target);
     event.target.setPointerCapture(event.pointerId);
     $target.on('pointermove.thumb', this.handleInitPointerMove.bind(this));
-    $target.on('pointerup.thumb', this.handleInitPointerUp.bind(this));
+    $target.on('pointerup.thumb', ViewThumbs.handleInitPointerUp.bind(this));
   }
 
   setEventsThumbs() {

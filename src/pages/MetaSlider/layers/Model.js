@@ -6,17 +6,14 @@ class Model {
     this.opt = options;
     this.$selector = options.$initSelector;
     this.errorEvent = new Observer();
+    this.setValueForSliderEvent = new Observer();
+    this.renderSliderElemEvent = new Observer();
   }
 
   init() {
     this.initValuesCheck();
-    this.setValueForSlider(this.opt.initValuesArray, this.opt.valuesAsPercentageArray);
-    // this.setMinAndMaxValues();
-    // this.createScale();
-    // this.checkingScaleSize();
-    // this.setEventsSlider();
-    // this.setEventsThumbs();
-    // this.setEventsWindow();
+    this.setValueForSlider();
+    this.renderSliderElem();
   }
 
   getProp(prop) {
@@ -25,10 +22,6 @@ class Model {
 
   setProp(prop, value) {
     this.opt[prop] = value;
-  }
-
-  getOptionsObj() {
-    return this.opt;
   }
 
   renderError(message) {
@@ -156,16 +149,18 @@ class Model {
     }
 
     this.opt.initValuesArray = [this.opt.checkedValueFirst, this.opt.initValueSecond];
+  }
 
+  setValueForSlider() {
     this.opt.valuesAsPercentageArray = this.opt.initValuesArray.map((currentValue) => {
       return ((currentValue - this.opt.minValue) / (this.opt.maxValue - this.opt.minValue)) * 100;
     });
+
+    this.setValueForSliderEvent.notify();
   }
 
-  setValueForSlider(valuesArray, valuesAsPercentageArray) {
-    this.setValueInThumbs(valuesArray, valuesAsPercentageArray);
-    this.setBackgroundTheRange(valuesAsPercentageArray);
-    this.setValueInMarkers();
+  renderSliderElem() {
+    this.renderSliderElemEvent.notify();
   }
 
   checkTargetValue(targetValue, event) {
@@ -224,11 +219,7 @@ class Model {
       }
     }
 
-    this.opt.valuesAsPercentageArray = this.opt.initValuesArray.map((currentValue) => {
-      return ((currentValue - this.opt.minValue) / (this.opt.maxValue - this.opt.minValue)) * 100;
-    });
-
-    this.setValueForSlider(this.opt.initValuesArray, this.opt.valuesAsPercentageArray);
+    this.setValueForSlider();
   }
 
   calcTargetValue(event, initValue = undefined) {

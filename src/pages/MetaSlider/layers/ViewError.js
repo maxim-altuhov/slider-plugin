@@ -3,6 +3,11 @@ class ViewError {
     this.presenter = null;
   }
 
+  init() {
+    this.$selector = this.getProp('$initSelector');
+    this.$elemSlider = this.getProp('$elemSlider');
+  }
+
   registerWith(presenter) {
     this.presenter = presenter;
   }
@@ -13,11 +18,6 @@ class ViewError {
 
   setProp(prop, value) {
     this.presenter.setProp(prop, value);
-  }
-
-  init() {
-    this.$selector = this.getProp('$initSelector');
-    this.$elemSlider = this.getProp('$elemSlider');
   }
 
   renderError(message) {

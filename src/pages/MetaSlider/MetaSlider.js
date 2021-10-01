@@ -3,7 +3,7 @@ import ViewSlider from './layers/ViewSlider';
 import ViewScale from './layers/ViewScale';
 import ViewMarkers from './layers/ViewMarkers';
 import ViewThumbs from './layers/ViewThumbs';
-import ViewMinAndMaxValue from './layers/ViewMinAndMaxValue';
+import ViewMinAndMaxValues from './layers/ViewMinAndMaxValues';
 import ViewError from './layers/ViewError';
 import Presenter from './layers/Presenter';
 
@@ -24,7 +24,7 @@ import Presenter from './layers/Presenter';
       initScaleAdjustment: true,
       setNumberOfDecimalPlaces: true,
       showError: true,
-      showMinAndMax: true,
+      showMinAndMax: false,
       showTheScale: true,
       showMarkers: true,
       showBackground: true,
@@ -41,7 +41,7 @@ import Presenter from './layers/Presenter';
       postFix: '',
       customValues: [],
       initValueFirst: 0,
-      initValueSecond: 150,
+      initValueSecond: 100,
     }, settings);
 
     return this.each(function () {
@@ -51,7 +51,7 @@ import Presenter from './layers/Presenter';
         viewThumbs: new ViewThumbs(),
         viewMarkers: new ViewMarkers(),
         viewScale: new ViewScale(),
-        viewMinAndMaxValue: new ViewMinAndMaxValue(),
+        viewMinAndMaxVal: new ViewMinAndMaxValues(),
         viewError: new ViewError(),
       };
       const presenter = new Presenter(views);
@@ -65,7 +65,6 @@ import Presenter from './layers/Presenter';
       });
 
       model.init();
-      console.log(model);
     });
   };
 }(jQuery));

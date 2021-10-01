@@ -5,6 +5,14 @@ class ViewSlider {
     this.presenter = null;
   }
 
+  init() {
+    this.$selector = this.getProp('$initSelector');
+    this.renderSlider();
+    this.getInfoAboutSlider();
+    this.setVerticalOrientation();
+    this.setEventsSlider();
+  }
+
   registerWith(presenter) {
     this.presenter = presenter;
   }
@@ -17,14 +25,13 @@ class ViewSlider {
     this.presenter.setProp(prop, value);
   }
 
-  init() {
-    this.$selector = this.getProp('$initSelector');
-    this.renderSlider();
-    this.getInfoAboutSlider();
-    this.setVerticalOrientation();
-  }
-
   renderSlider() {
+    const mainColor = this.getProp('mainColor');
+    const colorBorderForThumb = this.getProp('colorBorderForThumb');
+    const colorMarker = this.getProp('colorMarker');
+    const colorTextForMarker = this.getProp('colorTextForMarker');
+    const colorBorderForMarker = this.getProp('colorBorderForMarker');
+
     const $fragmentWithASlider = $(document.createDocumentFragment());
     const $blockSlider = $(document.createElement('div'));
     $blockSlider.addClass('meta-slider js-meta-slider').css('background-color', this.getProp('secondColor'));
@@ -32,11 +39,11 @@ class ViewSlider {
     const propDisplay = this.getProp('isRange') ? '' : 'display:none';
 
     const HTMLBlock = `<div class="meta-slider__progress js-meta-slider__progress"></div>
-    <button type="button" class="meta-slider__thumb js-meta-slider__thumb meta-slider__thumb_left" style="background-color:${this.getProp('mainColor')}; border-color:${this.getProp('colorBorderForThumb')}; ${propDisplay}" data-value="">
-      <span class="meta-slider__marker js-meta-slider__marker meta-slider__marker_left" style="background-color:${this.getProp('colorMarker')}; color: ${this.getProp('colorTextForMarker')}; border-color:${this.getProp('colorBorderForMarker')}"></span>
+    <button type="button" class="meta-slider__thumb js-meta-slider__thumb meta-slider__thumb_left" style="background-color:${mainColor}; border-color:${colorBorderForThumb}; ${propDisplay}" data-value="">
+      <span class="meta-slider__marker js-meta-slider__marker meta-slider__marker_left" style="background-color:${colorMarker}; color: ${colorTextForMarker}; border-color:${colorBorderForMarker}"></span>
     </button>
-    <button type="button" class="meta-slider__thumb js-meta-slider__thumb meta-slider__thumb_right" style="background-color:${this.getProp('mainColor')}; border-color:${this.getProp('colorBorderForThumb')}" data-value="">
-      <span class="meta-slider__marker js-meta-slider__marker meta-slider__marker_right" style="background-color:${this.getProp('colorMarker')}; color: ${this.getProp('colorTextForMarker')}; border-color:${this.getProp('colorBorderForMarker')}"></span>
+    <button type="button" class="meta-slider__thumb js-meta-slider__thumb meta-slider__thumb_right" style="background-color:${mainColor}; border-color:${colorBorderForThumb}" data-value="">
+      <span class="meta-slider__marker js-meta-slider__marker meta-slider__marker_right" style="background-color:${colorMarker}; color: ${colorTextForMarker}; border-color:${colorBorderForMarker}"></span>
     </button>`;
 
     $blockSlider.html(HTMLBlock);
@@ -59,27 +66,30 @@ class ViewSlider {
     }
   }
 
-  setBackgroundTheRange(valuesAsPercentageArray) {
+  setBackgroundTheRange() {
     if (this.getProp('showBackground')) {
+      const valuesAsPercentageArray = this.getProp('valuesAsPercentageArray');
+      const mainColor = this.getProp('mainColor');
       const [firstPosition, secondPosition] = valuesAsPercentageArray;
-      const settingForRange = { left: `${firstPosition}%`, right: `${100 - secondPosition}%`, background: this.getProp('mainColor') };
+      const settingForRange = { left: `${firstPosition}%`, right: `${100 - secondPosition}%`, background: mainColor };
+
       this.$sliderProgress.css(settingForRange);
     }
   }
 
-  handleSetPositionForThumbs(event) {
+  handleSetSliderValues(event) {
     event.preventDefault();
     const $target = $(event.target);
 
     if ($target.hasClass('js-meta-slider')) {
-      const calculateTargetValue = this.calcTargetValue(event);
+      const calculateTargetValue = this.presenter.calcTargetValue(event);
 
-      this.checkTargetValue(calculateTargetValue, event);
+      this.presenter.checkTargetValue(calculateTargetValue, event);
     }
   }
 
   setEventsSlider() {
-    this.$elemSlider.on('pointerdown.slider', this.handleSetPositionForThumbs.bind(this));
+    this.$elemSlider.on('pointerdown.slider', this.handleSetSliderValues.bind(this));
   }
 }
 
