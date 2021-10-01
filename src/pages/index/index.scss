@@ -4,6 +4,7 @@
 body,
 html {
   background-color: #414d58;
+  box-sizing: border-box;
 }
 
 .container {
@@ -22,30 +23,86 @@ html {
 
 .config {
   display: grid;
-  grid-template: repeat(4, 1fr)/repeat(2, 1fr);
+  grid-template: auto / repeat(2, auto);
+  justify-items: end;
+  align-content: space-between;
+  align-items: center;
   width: 50%;
   border-left: 1px solid #222;
+  font-size: 14px;
+  font-weight: 700;
 
   &__field {
-    margin: 1rem 2rem;
-    font-size: 16px;
-    font-weight: 700;
+    min-height: 50px;
 
     label {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      min-height: 35px;
       text-transform: uppercase;
       cursor: pointer;
     }
   }
 
   &__input {
-    max-width: 100px;
-    height: 35px;
-    border: 1px solid rgb(175, 175, 175);
-    border-radius: 10px;
-    box-shadow: 1px 1px 5px 3px rgba(138, 138, 138, 0.2);
+    max-width: 80px;
+    height: 30px;
+    border: 1px solid #afafaf;
+    border-radius: 5px;
+    box-shadow: 1px 1px 5px 1px rgba(138, 138, 138, 0.2);
+    margin-left: 25px;
+    padding: 0 15px;
+  }
+}
+
+.checkbox {
+
+  &__field:checked+&__title:before,
+  &__field:not(:checked)+&__title:before {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 30px;
+    height: 30px;
+    background: #FFFFFF;
+    border: 1px solid #afafaf;
+    border-radius: 5px;
+    box-shadow: 1px 1px 5px 1px rgba(138, 138, 138, 0.2);
+  }
+
+  &__field:checked+&__title:after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 30px;
+    height: 30px;
+    background-image: url('./img/checkbox.svg');
+    background-repeat: no-repeat;
+    background-size: 24px;
+    background-position: center 4px;
+  }
+
+  &__field:focus+&__title:before {
+    outline: #000 auto 2px;
+  }
+
+  &__field_hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    border: 0;
+    padding: 0;
+    white-space: nowrap;
+    clip-path: inset(100%);
+    clip: rect(0 0 0 0);
+    overflow: hidden;
+  }
+
+  &__title {
+    position: relative;
+    padding-right: 55px;
+    line-height: 30px;
   }
 }
