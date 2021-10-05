@@ -2,9 +2,9 @@ import $ from 'jquery';
 import Observer from '../patterns/Observer';
 
 class Model {
-  constructor(options) {
+  constructor(selector, options) {
     this.opt = options;
-    this.$selector = options.$initSelector;
+    this.opt.$initSelector = selector;
     this.errorEvent = new Observer();
     this.setValueForSliderEvent = new Observer();
     this.renderSliderElemEvent = new Observer();
@@ -14,6 +14,10 @@ class Model {
     this.initValuesCheck();
     this.setValueForSlider();
     this.renderSliderElem();
+  }
+
+  update() {
+    console.log(this.opt);
   }
 
   getProp(prop) {
