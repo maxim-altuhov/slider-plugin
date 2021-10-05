@@ -10,14 +10,16 @@ import Presenter from './layers/Presenter';
 (function ($) {
   const methods = {
     init(settings) {
-      const initSettings = {
+      let initSettings = {
         mainColor: '#6d6dff',
         secondColor: '#e4e4e4',
-        colorMarker: '#6d6dff',
+        colorMarker: '',
+        colorThumb: '',
         colorTextForMarker: '#ffffff',
         colorBorderForMarker: '#ffffff',
         colorBorderForThumb: '#ffffff',
         colorTextForMinAndMax: '#000000',
+        colorForScale: '#000000',
         verifyInitValues: true,
         initFormatted: true,
         initAutoMargins: true,
@@ -43,7 +45,12 @@ import Presenter from './layers/Presenter';
         initValueFirst: 0,
         initValueSecond: 100,
       };
+
       const inputOptions = $.extend({}, initSettings, settings);
+      const { colorMarker, colorThumb } = inputOptions;
+
+      inputOptions.colorMarker = colorMarker || inputOptions.mainColor;
+      inputOptions.colorThumb = colorThumb || inputOptions.mainColor;
 
       return this.each(() => {
         const data = this.data('metaSlider');

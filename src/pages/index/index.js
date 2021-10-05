@@ -10,6 +10,7 @@ $(() => {
   slider.metaSlider({
     step: 5,
     initValueFirst: 50,
+    // isVertical: true,
     // showTheScale: false,
     // showMinAndMax: true,
   });

@@ -41,6 +41,7 @@ class ViewScale {
       const numberOfDecimalPlaces = this.getProp('numberOfDecimalPlaces');
       const customValues = this.getProp('customValues');
       const initFormatted = this.getProp('initFormatted');
+      const colorForScale = this.getProp('colorForScale');
       const preFix = this.getProp('preFix');
       const postFix = this.getProp('postFix');
       const initAutoMargins = this.getProp('initAutoMargins');
@@ -50,7 +51,7 @@ class ViewScale {
       const stepSizeValue = initAutoScaleCreation ? step : stepSizeForScale;
       let currentValue = minValue;
 
-      $blockScale.addClass('meta-slider__scale');
+      $blockScale.addClass('meta-slider__scale').css({ borderColor: colorForScale, color: colorForScale });
       this.$elemSlider.append($blockScale);
 
       for (; currentValue <= maxValue; currentValue += stepSizeValue) {
@@ -60,7 +61,7 @@ class ViewScale {
         const convertedValue = initFormatted ? currentValue.toLocaleString() : currentValue;
         const resultValue = isCustomValue ? customValues[currentValue] : convertedValue;
 
-        const elemScalePoint = `<button type="button" class="meta-slider__scale-point js-meta-slider__scale-point" data-value="${currentValue}">${preFix}${resultValue}${postFix}</button>`;
+        const elemScalePoint = `<button type="button" class="meta-slider__scale-point js-meta-slider__scale-point" style="color: inherit" data-value="${currentValue}">${preFix}${resultValue}${postFix}</button>`;
 
         $blockScale.append(elemScalePoint);
         $fragmentWithScale.append($blockScale);
@@ -86,17 +87,19 @@ class ViewScale {
   }
 
   setPropForSkipScalePoint($scalePoint) {
-    $scalePoint.addClass('meta-slider__scale-point_skip').attr('tabindex', -1);
+    $scalePoint.addClass('meta-slider__scale-point_skip')
+      .attr('tabindex', -1)
+      .css({ color: 'transparent', borderColor: 'inherit' });
     this.skipScalePointsArray.push($scalePoint);
   }
 
   handleCheckingScaleSize() {
     if (this.getProp('showTheScale') && this.getProp('initScaleAdjustment')) {
-      const MARGIN_POINTS = 100;
+      const MARGIN_PX = 100;
       const sliderSize = this.$elemSlider.outerWidth();
 
-      while (this.scalePointsSize + MARGIN_POINTS > sliderSize) {
-        const totalSizeScalePoints = this.scalePointsSize + MARGIN_POINTS;
+      while (this.scalePointsSize + MARGIN_PX > sliderSize) {
+        const totalSizeScalePoints = this.scalePointsSize + MARGIN_PX;
         this.skipScalePointsArray = [];
         this.$elemScalePoints = this.$selector.find('.js-meta-slider__scale-point:not(.meta-slider__scale-point_skip)');
         this.scalePointsSize = 0;
@@ -125,9 +128,11 @@ class ViewScale {
       }
 
       this.mapSkipScalePoints.forEach((scalePointSkipArray, controlSize) => {
-        if (sliderSize > controlSize + (MARGIN_POINTS / 3)) {
+        if (sliderSize > controlSize + (MARGIN_PX / 3)) {
           scalePointSkipArray.forEach(($scalePoint) => {
-            $scalePoint.removeAttr('tabindex').removeClass('meta-slider__scale-point_skip');
+            $scalePoint.removeAttr('tabindex')
+              .removeClass('meta-slider__scale-point_skip')
+              .css({ color: 'inherit', borderColor: '' });
             this.scalePointsSize += $scalePoint.outerWidth();
           });
 

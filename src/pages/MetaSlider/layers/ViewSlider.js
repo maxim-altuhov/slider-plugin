@@ -26,7 +26,7 @@ class ViewSlider {
   }
 
   renderSlider() {
-    const mainColor = this.getProp('mainColor');
+    const colorThumb = this.getProp('colorThumb');
     const colorBorderForThumb = this.getProp('colorBorderForThumb');
     const colorMarker = this.getProp('colorMarker');
     const colorTextForMarker = this.getProp('colorTextForMarker');
@@ -39,10 +39,10 @@ class ViewSlider {
     const propDisplay = this.getProp('isRange') ? '' : 'display:none';
 
     const HTMLBlock = `<div class="meta-slider__progress js-meta-slider__progress"></div>
-    <button type="button" class="meta-slider__thumb js-meta-slider__thumb meta-slider__thumb_left" style="background-color:${mainColor}; border-color:${colorBorderForThumb}; ${propDisplay}" data-value="">
+    <button type="button" class="meta-slider__thumb js-meta-slider__thumb meta-slider__thumb_left" style="background-color:${colorThumb}; border-color:${colorBorderForThumb}; ${propDisplay}" data-value="">
       <span class="meta-slider__marker js-meta-slider__marker meta-slider__marker_left" style="background-color:${colorMarker}; color: ${colorTextForMarker}; border-color:${colorBorderForMarker}"></span>
     </button>
-    <button type="button" class="meta-slider__thumb js-meta-slider__thumb meta-slider__thumb_right" style="background-color:${mainColor}; border-color:${colorBorderForThumb}" data-value="">
+    <button type="button" class="meta-slider__thumb js-meta-slider__thumb meta-slider__thumb_right" style="background-color:${colorThumb}; border-color:${colorBorderForThumb}" data-value="">
       <span class="meta-slider__marker js-meta-slider__marker meta-slider__marker_right" style="background-color:${colorMarker}; color: ${colorTextForMarker}; border-color:${colorBorderForMarker}"></span>
     </button>`;
 
