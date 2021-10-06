@@ -30,21 +30,21 @@
     }
 
     .meta-slider__scale-point {
+      top: 30px;
+      max-width: 20px;
       min-height: 20px;
       line-height: 20px;
-      max-width: 20px;
-      top: 30px;
       transform: translateX(-50%) rotate(90deg);
 
       &::after {
+        bottom: 50%;
+        left: -50%;
         border: none;
         border-bottom-width: 1px;
         border-bottom-style: solid;
         border-color: inherit;
         height: 1px;
         width: 12px;
-        bottom: 50%;
-        left: -50%;
         transform: translate(-50%, 100%);
       }
 
@@ -143,13 +143,13 @@
 
     &::after {
       content: '';
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
       height: 12px;
       border-left-width: 1px;
       border-left-style: solid;
       border-color: inherit;
-      position: absolute;
-      bottom: 100%;
-      left: 50%;
       transform: translateX(-50%);
       transition: height 0.3s linear;
     }
