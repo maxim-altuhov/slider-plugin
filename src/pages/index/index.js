@@ -1,15 +1,18 @@
 import './index.scss';
 
 import $ from 'jquery';
+import ControlPanel from './js/ControlPanel';
 import '../MetaSlider/jquery.MetaSlider';
+import './js/ControlPanel';
 
 $(() => {
-  const slider = $('#slider');
-  const slider2 = $('#slider2');
+  const slider1 = $('#slider-1');
+  const slider2 = $('#slider-2');
 
-  slider.metaSlider({
+  slider1.metaSlider({
     step: 5,
     initValueFirst: 50,
+    // customValues: ['ПН', 'ВТ', 'СР'],
     // isVertical: true,
     // showTheScale: false,
     // showMinAndMax: true,
@@ -19,5 +22,10 @@ $(() => {
     initValueFirst: 10,
   });
 
-  slider.metaSlider('setProp', 'mainColor', '#000');
+  slider1.metaSlider('setProp', 'mainColor', '#000');
+
+  const controlPanel1 = new ControlPanel('#config-slider-1', slider1);
+  const controlPanel2 = new ControlPanel('#config-slider-2', slider2);
+  controlPanel1.init();
+  controlPanel2.init();
 });

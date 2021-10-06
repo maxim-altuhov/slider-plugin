@@ -37,7 +37,7 @@ import Presenter from './layers/Presenter';
         step: 1,
         minValue: 0,
         maxValue: 100,
-        stepSizeForScale: 1,
+        stepSizeForScale: '',
         numberOfDecimalPlaces: 0,
         preFix: '',
         postFix: '',
@@ -47,10 +47,11 @@ import Presenter from './layers/Presenter';
       };
 
       const inputOptions = $.extend({}, initSettings, settings);
-      const { colorMarker, colorThumb } = inputOptions;
+      const { colorMarker, colorThumb, stepSizeForScale } = inputOptions;
 
       inputOptions.colorMarker = colorMarker || inputOptions.mainColor;
       inputOptions.colorThumb = colorThumb || inputOptions.mainColor;
+      inputOptions.stepSizeForScale = stepSizeForScale || inputOptions.step;
 
       return this.each(() => {
         const data = this.data('metaSlider');
