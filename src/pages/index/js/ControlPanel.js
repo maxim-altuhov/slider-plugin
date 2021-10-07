@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import '../../MetaSlider/jquery.MetaSlider';
 
 class ControlPanel {
   constructor(panelSelector, sliderSelector) {
@@ -27,29 +28,44 @@ class ControlPanel {
     };
   }
 
-  init() {
-    Object.keys(this.selectorsObj).forEach((selector) => {
-      this.getProp(selector);
-    });
+  handleInputChanges(event) {
+    const target = $(event.target);
+    const prop = target.attr('name');
+    let value = '';
+
+    if (target.attr('type') === 'checkbox') {
+      value = target.prop('checked');
+    } else {
+      value = target.val();
+    }
+
+    this.setProp(prop, value);
   }
 
   setProp(prop, value) {
-    const data = this.$sliderSelector.data('metaSlider');
-    data.model.opt[prop] = value;
+    this.$sliderSelector.metaSlider('setProp', prop, value);
   }
 
   getProp(prop) {
-    const data = this.$sliderSelector.data('metaSlider');
+    const resultProp = this.$sliderSelector.metaSlider('getProp', prop);
     const target = this.selectorsObj[prop];
-    const resultProp = data.model.opt[prop];
 
-    if (typeof resultProp === 'boolean') {
+    if (target.attr('type') === 'checkbox') {
       target.prop('checked', resultProp);
     } else {
       target.val(resultProp);
     }
 
     return resultProp;
+  }
+
+  init() {
+    Object.entries(this.selectorsObj).forEach((valuesArray) => {
+      const [prop, selector] = valuesArray;
+      this.getProp(prop);
+
+      selector.on('change.input', this.handleInputChanges.bind(this));
+    });
   }
 }
 

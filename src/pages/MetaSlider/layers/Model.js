@@ -17,6 +17,7 @@ class Model {
   }
 
   update() {
+    this.initValuesCheck();
     console.log(this.opt);
   }
 
@@ -55,6 +56,7 @@ class Model {
     this.opt.numberOfDecimalPlaces = 0;
     this.opt.step = 1;
     this.opt.stepSizeForScale = 1;
+    this.opt.customValues = (typeof this.opt.customValues !== 'string') ? this.opt.customValues : this.opt.customValues.split(',');
   }
 
   checkCorrectStepSizeForScale(errorMessage) {

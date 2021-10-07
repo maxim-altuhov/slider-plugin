@@ -47,7 +47,11 @@ import Presenter from './layers/Presenter';
       };
 
       const inputOptions = $.extend({}, initSettings, settings);
-      const { colorMarker, colorThumb, stepSizeForScale } = inputOptions;
+      const {
+        colorMarker,
+        colorThumb,
+        stepSizeForScale,
+      } = inputOptions;
 
       inputOptions.colorMarker = colorMarker || inputOptions.mainColor;
       inputOptions.colorThumb = colorThumb || inputOptions.mainColor;

@@ -8,6 +8,8 @@ import './js/ControlPanel';
 $(() => {
   const slider1 = $('#slider-1');
   const slider2 = $('#slider-2');
+  const controlPanel1 = new ControlPanel('#config-slider-1', slider1);
+  const controlPanel2 = new ControlPanel('#config-slider-2', slider2);
 
   slider1.metaSlider({
     step: 5,
@@ -22,10 +24,6 @@ $(() => {
     initValueFirst: 10,
   });
 
-  slider1.metaSlider('setProp', 'mainColor', '#000');
-
-  const controlPanel1 = new ControlPanel('#config-slider-1', slider1);
-  const controlPanel2 = new ControlPanel('#config-slider-2', slider2);
   controlPanel1.init();
   controlPanel2.init();
 });
