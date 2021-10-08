@@ -67,7 +67,7 @@ import Presenter from './layers/Presenter';
             viewThumbs: new ViewThumbs(),
             viewMarkers: new ViewMarkers(),
             viewScale: new ViewScale(),
-            viewMinAndMaxVal: new ViewMinAndMaxValues(),
+            viewMinAndMax: new ViewMinAndMaxValues(),
             viewError: new ViewError(),
           };
           const presenter = new Presenter(views);
@@ -76,8 +76,7 @@ import Presenter from './layers/Presenter';
           presenter.setObservers();
 
           Object.keys(views).forEach((view) => {
-            views[view].registerWith(presenter);
-            views[view].init();
+            views[view].init(inputOptions);
           });
 
           model.init();

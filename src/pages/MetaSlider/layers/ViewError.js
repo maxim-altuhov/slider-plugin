@@ -1,44 +1,29 @@
 class ViewError {
-  constructor() {
-    this.presenter = null;
+  init(options) {
+    this.$selector = options.$initSelector;
+    this.$elemSlider = this.$selector.find('.js-meta-slider');
   }
 
-  init() {
-    this.$selector = this.getProp('$initSelector');
-    this.$elemSlider = this.getProp('$elemSlider');
-  }
-
-  registerWith(presenter) {
-    this.presenter = presenter;
-  }
-
-  getProp(prop) {
-    return this.presenter.getProp(prop);
-  }
-
-  setProp(prop, value) {
-    this.presenter.setProp(prop, value);
-  }
-
-  renderError(message) {
-    if (this.getProp('showError')) {
-      const HTMLBlockError = `<div class="error-info js-error-info"><p class="error-info__text">${message}</p><button type="button" class="error-info__close js-error-info__close">X</button></div>`;
+  renderError(options, message) {
+    if (options.showError && !this.$elemErrorInfo) {
+      const HTMLBlockError = `<div class="error-info js-error-info"><p class="error-info__text js-error-info__text">${message}</p><button type="button" class="error-info__close js-error-info__close">X</button></div>`;
       this.$elemSlider.after(HTMLBlockError);
 
       this.getInfoAboutError();
       this.setEventErrorClose();
-      this.setProp('showError', false);
+    } else if (options.showError && this.$elemErrorInfo) {
+      this.$elemErrorText.text(message);
     }
   }
 
   getInfoAboutError() {
     this.$elemErrorInfo = this.$selector.find('.js-error-info');
+    this.$elemErrorText = this.$selector.find('.js-error-info__text');
     this.$btnErrorClose = this.$selector.find('.js-error-info__close');
   }
 
   handleRemoveErrorWindow() {
     this.$elemErrorInfo.remove();
-    this.setProp('showError', true);
   }
 
   setEventErrorClose() {

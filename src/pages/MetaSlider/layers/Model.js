@@ -6,19 +6,19 @@ class Model {
     this.opt = options;
     this.opt.$initSelector = selector;
     this.errorEvent = new Observer();
-    this.setValueForSliderEvent = new Observer();
-    this.renderSliderElemEvent = new Observer();
+    this.setValueEvent = new Observer();
+    this.renderSliderEvent = new Observer();
   }
 
   init() {
     this.initValuesCheck();
     this.setValueForSlider();
-    this.renderSliderElem();
+    this.renderSliderEvent.notify();
   }
 
   update() {
     this.initValuesCheck();
-    console.log(this.opt);
+    this.setValueForSlider();
   }
 
   getProp(prop) {
@@ -29,8 +29,8 @@ class Model {
     this.opt[prop] = value;
   }
 
-  renderError(message) {
-    this.errorEvent.notify(message);
+  getOptionsObj() {
+    return this.opt;
   }
 
   checkIsIntegerSizeScale() {
@@ -72,7 +72,7 @@ class Model {
         break;
       }
 
-      this.renderError(errorMessage.stepSizeForScale);
+      this.errorEvent.notify(errorMessage.stepSizeForScale);
     }
   }
 
@@ -82,7 +82,7 @@ class Model {
 
     if (convertedValue !== value) {
       resultValue = convertedValue;
-      this.renderError(errorMessage.initСorrectionValues);
+      this.errorEvent.notify(errorMessage.initСorrectionValues);
     }
 
     return resultValue;
@@ -102,36 +102,37 @@ class Model {
     if (this.opt.setNumberOfDecimalPlaces) this.getNumberOfDecimalPlaces();
     if (this.opt.showTheScale) this.opt.showMinAndMax = false;
     if (this.opt.showMinAndMax) this.opt.showTheScale = false;
+    if (this.opt.isVertical) this.opt.initAutoMargins = false;
 
     if (this.opt.minValue > this.opt.maxValue || this.opt.minValue === this.opt.maxValue) {
       this.opt.minValue = 0;
       this.opt.maxValue = 100;
-      this.renderError(errMessage.minAndMaxValue);
+      this.errorEvent.notify(errMessage.minAndMaxValue);
     }
 
     if (this.opt.checkedValueFirst > this.opt.initValueSecond) {
       this.resetInitValue();
-      this.renderError(errMessage.initValue);
+      this.errorEvent.notify(errMessage.initValue);
     }
 
     if (this.opt.step <= 0 || this.opt.step > this.opt.maxValue) {
       this.opt.step = this.opt.maxValue;
-      this.renderError(errMessage.step);
+      this.errorEvent.notify(errMessage.step);
     }
 
     if (this.opt.stepSizeForScale <= 0 || this.opt.stepSizeForScale > this.opt.maxValue) {
       this.opt.stepSizeForScale = this.opt.maxValue;
-      this.renderError(errMessage.stepSizeForScale);
+      this.errorEvent.notify(errMessage.stepSizeForScale);
     }
 
     if (this.opt.initValueSecond > this.opt.maxValue
       || this.opt.checkedValueFirst > this.opt.maxValue) {
       this.resetInitValue();
-      this.renderError(errMessage.initValue);
+      this.errorEvent.notify(errMessage.initValue);
     } else if (this.opt.initValueSecond < this.opt.minValue
       || this.opt.checkedValueFirst < this.opt.minValue) {
       this.resetInitValue();
-      this.renderError(errMessage.initValue);
+      this.errorEvent.notify(errMessage.initValue);
     }
 
     if (this.opt.customValues.length > 0) {
@@ -162,11 +163,7 @@ class Model {
       return ((currentValue - this.opt.minValue) / (this.opt.maxValue - this.opt.minValue)) * 100;
     });
 
-    this.setValueForSliderEvent.notify();
-  }
-
-  renderSliderElem() {
-    this.renderSliderElemEvent.notify();
+    this.setValueEvent.notify();
   }
 
   checkTargetValue(targetValue, event) {

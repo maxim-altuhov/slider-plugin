@@ -1,42 +1,30 @@
 import $ from 'jquery';
 
 class ViewSlider {
-  constructor() {
-    this.presenter = null;
-  }
-
-  init() {
-    this.$selector = this.getProp('$initSelector');
-    this.renderSlider();
+  init(options) {
+    this.$selector = options.$initSelector;
+    this.renderSlider(options);
     this.getInfoAboutSlider();
-    this.setVerticalOrientation();
+    this.setVerticalOrientation(options);
     this.setEventsSlider();
   }
 
-  registerWith(presenter) {
-    this.presenter = presenter;
-  }
-
-  getProp(prop) {
-    return this.presenter.getProp(prop);
-  }
-
-  setProp(prop, value) {
-    this.presenter.setProp(prop, value);
-  }
-
-  renderSlider() {
-    const colorThumb = this.getProp('colorThumb');
-    const colorBorderForThumb = this.getProp('colorBorderForThumb');
-    const colorMarker = this.getProp('colorMarker');
-    const colorTextForMarker = this.getProp('colorTextForMarker');
-    const colorBorderForMarker = this.getProp('colorBorderForMarker');
+  renderSlider(options) {
+    const {
+      secondColor,
+      isRange,
+      colorThumb,
+      colorBorderForThumb,
+      colorMarker,
+      colorTextForMarker,
+      colorBorderForMarker,
+    } = options;
 
     const $fragmentWithASlider = $(document.createDocumentFragment());
     const $blockSlider = $(document.createElement('div'));
-    $blockSlider.addClass('meta-slider js-meta-slider').css('background-color', this.getProp('secondColor'));
+    $blockSlider.addClass('meta-slider js-meta-slider').css('background-color', secondColor);
 
-    const propDisplay = this.getProp('isRange') ? '' : 'display:none';
+    const propDisplay = isRange ? '' : 'display:none';
 
     const HTMLBlock = `<div class="meta-slider__progress js-meta-slider__progress"></div>
     <button type="button" class="meta-slider__thumb js-meta-slider__thumb meta-slider__thumb_left" style="background-color:${colorThumb}; border-color:${colorBorderForThumb}; ${propDisplay}" data-value="">
@@ -55,25 +43,25 @@ class ViewSlider {
   getInfoAboutSlider() {
     this.$elemSlider = this.$selector.find('.js-meta-slider');
     this.$sliderProgress = this.$selector.find('.js-meta-slider__progress');
-
-    this.setProp('$elemSlider', this.$elemSlider);
   }
 
-  setVerticalOrientation() {
-    if (this.getProp('isVertical')) {
-      this.setProp('initAutoMargins', false);
+  setVerticalOrientation(options) {
+    if (options.isVertical) {
       this.$elemSlider.addClass('meta-slider_vertical');
+    } else {
+      this.$elemSlider.removeClass('meta-slider_vertical');
     }
   }
 
-  setBackgroundTheRange() {
-    if (this.getProp('showBackground')) {
-      const valuesAsPercentageArray = this.getProp('valuesAsPercentageArray');
-      const mainColor = this.getProp('mainColor');
+  setBackgroundTheRange(options) {
+    if (options.showBackground) {
+      const { valuesAsPercentageArray, mainColor } = options;
       const [firstPosition, secondPosition] = valuesAsPercentageArray;
       const settingForRange = { left: `${firstPosition}%`, right: `${100 - secondPosition}%`, background: mainColor };
 
       this.$sliderProgress.css(settingForRange);
+    } else {
+      this.$sliderProgress.css(' ');
     }
   }
 
@@ -82,9 +70,9 @@ class ViewSlider {
     const $target = $(event.target);
 
     if ($target.hasClass('js-meta-slider')) {
-      const calculateTargetValue = this.presenter.calcTargetValue(event);
+      const calculateTargetValue = this.calcTargetValue(event);
 
-      this.presenter.checkTargetValue(calculateTargetValue, event);
+      this.checkTargetValue(calculateTargetValue, event);
     }
   }
 

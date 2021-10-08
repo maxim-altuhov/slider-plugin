@@ -1,37 +1,30 @@
 import $ from 'jquery';
 
 class ViewMinAndMaxValues {
-  constructor() {
-    this.presenter = null;
+  init(options) {
+    this.$selector = options.$initSelector;
+    this.$elemSlider = this.$selector.find('.js-meta-slider');
   }
 
-  init() {
-    this.$selector = this.getProp('$initSelector');
-    this.$elemSlider = this.getProp('$elemSlider');
-  }
-
-  initRender() {
-    this.setMinAndMaxValues();
+  initRender(options) {
+    this.setMinAndMaxValues(options);
     this.setEventsMinAndMaxValues();
   }
 
-  registerWith(presenter) {
-    this.presenter = presenter;
-  }
-
-  getProp(prop) {
-    return this.presenter.getProp(prop);
-  }
-
-  setProp(prop, value) {
-    this.presenter.setProp(prop, value);
-  }
-
-  setMinAndMaxValues() {
-    const customValues = this.getProp('customValues');
-    const minValue = this.getProp('minValue');
-    const maxValue = this.getProp('maxValue');
-    const showMinAndMax = this.getProp('showMinAndMax');
+  setMinAndMaxValues(options) {
+    const {
+      customValues,
+      minValue,
+      maxValue,
+      showMinAndMax,
+      colorTextForMinAndMax,
+      minAndMaxArray,
+      initFormatted,
+      numberOfDecimalPlaces,
+      preFix,
+      postFix,
+      initAutoMargins,
+    } = options;
 
     this.$elemSlider.css('margin-bottom', '').attr({ 'data-min': minValue, 'data-max': maxValue });
 
@@ -42,14 +35,6 @@ class ViewMinAndMaxValues {
     }
 
     if (showMinAndMax) {
-      const colorTextForMinAndMax = this.getProp('colorTextForMinAndMax');
-      const minAndMaxArray = this.getProp('minAndMaxArray');
-      const initFormatted = this.getProp('initFormatted');
-      const numberOfDecimalPlaces = this.getProp('numberOfDecimalPlaces');
-      const preFix = this.getProp('preFix');
-      const postFix = this.getProp('postFix');
-      const initAutoMargins = this.getProp('initAutoMargins');
-
       const HTMLBlockValues = `<button type="button" class="meta-slider__value js-meta-slider__value meta-slider__value_min" style="color: ${colorTextForMinAndMax}"></button>
       <button type="button" class="meta-slider__value js-meta-slider__value meta-slider__value_max" style="color: ${colorTextForMinAndMax}"></button>`;
       this.$elemSlider.append(HTMLBlockValues);

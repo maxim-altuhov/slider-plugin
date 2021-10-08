@@ -16,8 +16,8 @@ $(() => {
     initValueFirst: 50,
     // customValues: ['ПН', 'ВТ', 'СР'],
     // isVertical: true,
-    // showTheScale: false,
-    // showMinAndMax: true,
+    showTheScale: false,
+    showMinAndMax: true,
   });
   slider2.metaSlider({
     step: 10,

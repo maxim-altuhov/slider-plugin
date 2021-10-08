@@ -1,50 +1,36 @@
 import $ from 'jquery';
 
 class ViewScale {
-  constructor() {
-    this.presenter = null;
+  init(options) {
+    this.$selector = options.$initSelector;
+    this.$elemSlider = this.$selector.find('.js-meta-slider');
   }
 
-  init() {
-    this.$selector = this.getProp('$initSelector');
-    this.$elemSlider = this.getProp('$elemSlider');
+  initRender(options) {
+    this.createScale(options);
+    this.handleCheckingScaleSize(options);
+    this.setEventsScalePoints(options);
+    this.setEventsWindow(options);
   }
 
-  initRender() {
-    this.createScale();
-    this.handleCheckingScaleSize();
-    this.setEventsScalePoints();
-    this.setEventsWindow();
-  }
+  createScale(options) {
+    if (!options.showMinAndMax) this.$elemSlider.css('margin-bottom', '');
 
-  registerWith(presenter) {
-    this.presenter = presenter;
-  }
-
-  getProp(prop) {
-    return this.presenter.getProp(prop);
-  }
-
-  setProp(prop, value) {
-    this.presenter.setProp(prop, value);
-  }
-
-  createScale() {
-    if (!this.getProp('showMinAndMax')) this.$elemSlider.css('margin-bottom', '');
-
-    if (this.getProp('showTheScale')) {
-      const initAutoScaleCreation = this.getProp('initAutoScaleCreation');
-      const step = this.getProp('step');
-      const stepSizeForScale = this.getProp('stepSizeForScale');
-      const minValue = this.getProp('minValue');
-      const maxValue = this.getProp('maxValue');
-      const numberOfDecimalPlaces = this.getProp('numberOfDecimalPlaces');
-      const customValues = this.getProp('customValues');
-      const initFormatted = this.getProp('initFormatted');
-      const colorForScale = this.getProp('colorForScale');
-      const preFix = this.getProp('preFix');
-      const postFix = this.getProp('postFix');
-      const initAutoMargins = this.getProp('initAutoMargins');
+    if (options.showTheScale) {
+      const {
+        initAutoScaleCreation,
+        step,
+        stepSizeForScale,
+        minValue,
+        maxValue,
+        numberOfDecimalPlaces,
+        customValues,
+        initFormatted,
+        colorForScale,
+        preFix,
+        postFix,
+        initAutoMargins,
+      } = options;
       const $fragmentWithScale = $(document.createDocumentFragment());
       const $blockScale = $(document.createElement('div'));
 
@@ -93,8 +79,8 @@ class ViewScale {
     this.skipScalePointsArray.push($scalePoint);
   }
 
-  handleCheckingScaleSize() {
-    if (this.getProp('showTheScale') && this.getProp('initScaleAdjustment')) {
+  handleCheckingScaleSize(options) {
+    if (options.showTheScale && options.initScaleAdjustment) {
       const MARGIN_PX = 100;
       const sliderSize = this.$elemSlider.outerWidth();
 
@@ -142,29 +128,28 @@ class ViewScale {
     }
   }
 
-  handleGetValueInScalePoint(event) {
+  handleGetValueInScalePoint(options, event) {
     event.preventDefault();
     const $target = $(event.target);
-    const verifyInitValues = this.getProp('verifyInitValues');
     let targetValue = Number($target.attr('data-value'));
 
-    targetValue = verifyInitValues
+    targetValue = options.verifyInitValues
       ? this.presenter.calcTargetValue(null, targetValue)
       : targetValue;
 
     this.presenter.checkTargetValue(targetValue, event);
   }
 
-  setEventsWindow() {
-    if (this.getProp('showTheScale') && this.getProp('initScaleAdjustment')) {
+  setEventsWindow(options) {
+    if (options.showTheScale && options.initScaleAdjustment) {
       $(window).on('resize.scale', this.handleCheckingScaleSize.bind(this));
     }
   }
 
-  setEventsScalePoints() {
+  setEventsScalePoints(options) {
     if (this.$elemScalePoints) {
       this.$elemScalePoints.each((index, elemPoint) => {
-        $(elemPoint).on('click.scalePoint', this.handleGetValueInScalePoint.bind(this));
+        $(elemPoint).on('click.scalePoint', this.handleGetValueInScalePoint.bind(this, options));
       });
     }
   }

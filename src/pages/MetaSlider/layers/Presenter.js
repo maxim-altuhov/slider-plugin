@@ -8,18 +8,6 @@ class Presenter {
     this.model = model;
   }
 
-  getView(view) {
-    return this.views[view];
-  }
-
-  getProp(prop) {
-    return this.model.getProp(prop);
-  }
-
-  setProp(prop, value) {
-    this.model.setProp(prop, value);
-  }
-
   getOptionsObj() {
     return this.model.getOptionsObj();
   }
@@ -30,15 +18,17 @@ class Presenter {
       viewMarkers,
       viewThumbs,
       viewScale,
-      viewMinAndMaxVal,
+      viewMinAndMax,
       viewError,
     } = this.views;
-    this.model.errorEvent.subscribe(viewError.renderError.bind(viewError));
-    this.model.setValueForSliderEvent.subscribe(viewThumbs.setValueInThumbs.bind(viewThumbs));
-    this.model.setValueForSliderEvent.subscribe(viewSlider.setBackgroundTheRange.bind(viewSlider));
-    this.model.setValueForSliderEvent.subscribe(viewMarkers.setValueInMarkers.bind(viewMarkers));
-    this.model.renderSliderElemEvent.subscribe(viewMinAndMaxVal.initRender.bind(viewMinAndMaxVal));
-    this.model.renderSliderElemEvent.subscribe(viewScale.initRender.bind(viewScale));
+    const options = this.getOptionsObj();
+
+    this.model.errorEvent.subscribe(viewError.renderError.bind(viewError, options));
+    this.model.setValueEvent.subscribe(viewThumbs.setValueInThumbs.bind(viewThumbs, options));
+    this.model.setValueEvent.subscribe(viewSlider.setBackgroundTheRange.bind(viewSlider, options));
+    this.model.setValueEvent.subscribe(viewMarkers.setValueInMarkers.bind(viewMarkers, options));
+    this.model.renderSliderEvent.subscribe(viewMinAndMax.initRender.bind(viewMinAndMax, options));
+    this.model.renderSliderEvent.subscribe(viewScale.initRender.bind(viewScale, options));
   }
 
   checkTargetValue(targetValue, event) {

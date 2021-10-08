@@ -1,53 +1,27 @@
 import $ from 'jquery';
-
 class ViewMarkers {
-  constructor() {
-    this.presenter = null;
-  }
-
-  init() {
-    this.$selector = this.getProp('$initSelector');
-    this.$elemSlider = this.getProp('$elemSlider');
-    this.$elemThumbs = this.getProp('$elemThumbs');
-    this.getInfoAboutMarkers();
-  }
-
-  registerWith(presenter) {
-    this.presenter = presenter;
-  }
-
-  getProp(prop) {
-    return this.presenter.getProp(prop);
-  }
-
-  setProp(prop, value) {
-    this.presenter.setProp(prop, value);
-  }
-
-  getInfoAboutMarkers() {
+  init(options) {
+    this.$selector = options.$initSelector;
+    this.$elemSlider = this.$selector.find('.js-meta-slider');
+    this.$elemThumbs = this.$selector.find('.js-meta-slider__thumb');
     this.$elemMarkers = this.$selector.find('.js-meta-slider__marker');
-    this.heightMarker = this.$elemMarkers.eq(-1).outerHeight();
-
-    this.presenter.setProp('$elemMarkers', this.$elemMarkers);
-    this.presenter.setProp('heightMarker', this.heightMarker);
   }
 
-  setValueInMarkers() {
+  setValueInMarkers(options) {
     this.$elemSlider.css('margin-top', '');
     this.$elemMarkers.each((index, elem) => {
       $(elem).css('display', 'none');
     });
 
-    if (this.getProp('showMarkers')) {
-      const initAutoMargins = this.getProp('initAutoMargins');
-      const heightThumb = this.getProp('heightThumb');
-      const customValues = this.getProp('customValues');
-      const preFix = this.getProp('preFix');
-      const postFix = this.getProp('postFix');
-      const numberOfDecimalPlaces = this.getProp('numberOfDecimalPlaces');
-      const initFormatted = this.getProp('initFormatted');
-
-      if (initAutoMargins) this.$elemSlider.css('margin-top', `${this.heightMarker + (heightThumb / 1.5)}px`);
+    if (options.showMarkers) {
+      const {
+        initAutoMargins,
+        customValues,
+        preFix,
+        postFix,
+        numberOfDecimalPlaces,
+        initFormatted,
+      } = options;
 
       this.$elemMarkers.each((index, marker) => {
         const $currentMarker = $(marker);
@@ -63,6 +37,12 @@ class ViewMarkers {
         }
 
         $currentMarker.css('display', '');
+
+        if (initAutoMargins) {
+          this.heightMarker = this.$elemMarkers.eq(-1).outerHeight();
+          this.heightThumb = this.$elemThumbs.eq(-1).outerHeight();
+          this.$elemSlider.css('margin-top', `${this.heightMarker + (this.heightThumb / 1.5)}px`);
+        }
       });
     }
   }
