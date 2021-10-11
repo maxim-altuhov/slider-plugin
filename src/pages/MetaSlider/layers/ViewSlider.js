@@ -1,6 +1,7 @@
 import $ from 'jquery';
+import Observer from '../patterns/Observer';
 
-class ViewSlider {
+class ViewSlider extends Observer {
   init(options) {
     this.$selector = options.$initSelector;
     this.renderSlider(options);
@@ -70,9 +71,7 @@ class ViewSlider {
     const $target = $(event.target);
 
     if ($target.hasClass('js-meta-slider')) {
-      const calculateTargetValue = this.calcTargetValue(event);
-
-      this.checkTargetValue(calculateTargetValue, event);
+      this.notify(event);
     }
   }
 

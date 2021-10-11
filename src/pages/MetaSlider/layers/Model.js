@@ -5,15 +5,17 @@ class Model {
   constructor(selector, options) {
     this.opt = options;
     this.opt.$initSelector = selector;
+    this.initViewsEvent = new Observer();
     this.errorEvent = new Observer();
     this.setValueEvent = new Observer();
-    this.renderSliderEvent = new Observer();
+    this.renderSliderElemEvent = new Observer();
   }
 
   init() {
+    this.initViewsEvent.notify();
     this.initValuesCheck();
     this.setValueForSlider();
-    this.renderSliderEvent.notify();
+    this.renderSliderElemEvent.notify();
   }
 
   update() {
@@ -52,7 +54,6 @@ class Model {
     this.opt.initAutoScaleCreation = false;
     this.opt.checkingStepSizeForScale = false;
     this.opt.initFormatted = false;
-    this.opt.verifyInitValues = true;
     this.opt.numberOfDecimalPlaces = 0;
     this.opt.step = 1;
     this.opt.stepSizeForScale = 1;
@@ -77,7 +78,7 @@ class Model {
   }
 
   initValueCorrection(value, errorMessage) {
-    const convertedValue = this.calcTargetValue(null, value);
+    const convertedValue = this.calcTargetValue(null, value, true);
     let resultValue = value;
 
     if (convertedValue !== value) {
@@ -167,7 +168,8 @@ class Model {
   }
 
   checkTargetValue(targetValue, event) {
-    const [firstThumb, secondThumb] = this.opt.$elemThumbs;
+    this.$elemThumbs = this.opt.$initSelector.find('.js-meta-slider__thumb');
+    const [firstThumb, secondThumb] = this.$elemThumbs;
     const firstValue = Number(firstThumb.dataset.value);
     const secondtValue = Number(secondThumb.dataset.value);
     const firstThumbDiff = Math.abs((targetValue - firstValue).toFixed(2));
@@ -225,7 +227,8 @@ class Model {
     this.setValueForSlider();
   }
 
-  calcTargetValue(event, initValue = undefined) {
+  calcTargetValue(event, initValue, onlyReturn = false) {
+    this.$elemSlider = this.opt.$initSelector.find('.js-meta-slider');
     let eventPosition;
     let sliderOffset;
     let sliderSize;
@@ -233,13 +236,13 @@ class Model {
 
     if (this.opt.isVertical && event) {
       eventPosition = event.clientY;
-      sliderOffset = this.opt.$elemSlider[0].getBoundingClientRect().bottom;
-      sliderSize = this.opt.$elemSlider[0].getBoundingClientRect().height;
+      sliderOffset = this.$elemSlider[0].getBoundingClientRect().bottom;
+      sliderSize = this.$elemSlider[0].getBoundingClientRect().height;
       valueInEventPosition = sliderOffset - eventPosition;
     } else if (!this.opt.isVertical && event) {
       eventPosition = event.clientX;
-      sliderOffset = this.opt.$elemSlider.offset().left;
-      sliderSize = this.opt.$elemSlider.outerWidth();
+      sliderOffset = this.$elemSlider.offset().left;
+      sliderSize = this.$elemSlider.outerWidth();
       valueInEventPosition = eventPosition - sliderOffset;
     }
 
@@ -260,6 +263,10 @@ class Model {
     const targetValue = (
       Number(resultValue.toFixed(this.opt.numberOfDecimalPlaces)) + this.opt.minValue
     );
+
+    if (!onlyReturn) {
+      this.checkTargetValue(targetValue, event);
+    }
 
     return targetValue;
   }

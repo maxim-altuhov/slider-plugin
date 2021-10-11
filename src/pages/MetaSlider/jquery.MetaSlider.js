@@ -1,10 +1,5 @@
 import Model from './layers/Model';
-import ViewSlider from './layers/ViewSlider';
-import ViewScale from './layers/ViewScale';
-import ViewMarkers from './layers/ViewMarkers';
-import ViewThumbs from './layers/ViewThumbs';
-import ViewMinAndMaxValues from './layers/ViewMinAndMaxValues';
-import ViewError from './layers/ViewError';
+import View from './layers/View';
 import Presenter from './layers/Presenter';
 
 (function ($) {
@@ -62,23 +57,10 @@ import Presenter from './layers/Presenter';
 
         if (!data) {
           const model = new Model(this, inputOptions);
-          const views = {
-            viewSlider: new ViewSlider(),
-            viewThumbs: new ViewThumbs(),
-            viewMarkers: new ViewMarkers(),
-            viewScale: new ViewScale(),
-            viewMinAndMax: new ViewMinAndMaxValues(),
-            viewError: new ViewError(),
-          };
-          const presenter = new Presenter(views);
+          const view = new View();
+          const presenter = new Presenter(view, model);
 
-          presenter.setModel(model);
           presenter.setObservers();
-
-          Object.keys(views).forEach((view) => {
-            views[view].init(inputOptions);
-          });
-
           model.init();
           this.data('metaSlider', { model: model });
         }
@@ -109,6 +91,6 @@ import Presenter from './layers/Presenter';
     if (methods[method]) return methods[method].apply(this, prop);
     if (typeof method === 'object' || !method) return methods.init.call(this, method);
 
-    return $.error(`Метод с именем ${method} не существует для jQuery.metaSlider`);
+    return $.error(`A method named ${method} does not exist for jQuery.MetaSlider`);
   };
 }(jQuery));

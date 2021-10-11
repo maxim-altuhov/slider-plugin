@@ -1,6 +1,7 @@
 import $ from 'jquery';
+import Observer from '../patterns/Observer';
 
-class ViewMinAndMaxValues {
+class ViewMinAndMaxValues extends Observer {
   init(options) {
     this.$selector = options.$initSelector;
     this.$elemSlider = this.$selector.find('.js-meta-slider');
@@ -66,8 +67,7 @@ class ViewMinAndMaxValues {
     event.preventDefault();
     const $target = $(event.target);
     const targetValue = Number($target.attr('data-value'));
-
-    this.presenter.checkTargetValue(targetValue, event);
+    this.notify(event, targetValue);
   }
 
   setEventsMinAndMaxValues() {

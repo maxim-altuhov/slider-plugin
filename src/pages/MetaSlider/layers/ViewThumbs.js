@@ -1,6 +1,7 @@
 import $ from 'jquery';
+import Observer from '../patterns/Observer';
 
-class ViewThumbs {
+class ViewThumbs extends Observer {
   init(options) {
     this.$selector = options.$initSelector;
     this.$elemThumbs = this.$selector.find('.js-meta-slider__thumb');
@@ -35,16 +36,12 @@ class ViewThumbs {
       if (event.code === 'ArrowLeft' || event.code === 'ArrowDown') eventTargetValue -= step;
       if (event.code === 'ArrowRight' || event.code === 'ArrowUp') eventTargetValue += step;
 
-      const calculateTargetValue = this.presenter.calcTargetValue(null, eventTargetValue);
-
-      this.presenter.checkTargetValue(calculateTargetValue, event);
+      this.notify(event, eventTargetValue);
     }
   }
 
   handleInitPointerMove(event) {
-    const calculateTargetValue = this.presenter.calcTargetValue(event);
-
-    this.presenter.checkTargetValue(calculateTargetValue, event);
+    this.notify(event);
   }
 
   static handleInitPointerUp(event) {

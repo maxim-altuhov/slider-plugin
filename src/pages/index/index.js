@@ -3,7 +3,6 @@ import './index.scss';
 import $ from 'jquery';
 import ControlPanel from './js/ControlPanel';
 import '../MetaSlider/jquery.MetaSlider';
-import './js/ControlPanel';
 
 $(() => {
   const slider1 = $('#slider-1');
@@ -16,8 +15,8 @@ $(() => {
     initValueFirst: 50,
     // customValues: ['ПН', 'ВТ', 'СР'],
     // isVertical: true,
-    showTheScale: false,
-    showMinAndMax: true,
+    // showTheScale: false,
+    // showMinAndMax: true,
   });
   slider2.metaSlider({
     step: 10,

@@ -1,6 +1,6 @@
 import $ from 'jquery';
-
-class ViewScale {
+import Observer from '../patterns/Observer';
+class ViewScale extends Observer {
   init(options) {
     this.$selector = options.$initSelector;
     this.$elemSlider = this.$selector.find('.js-meta-slider');
@@ -9,7 +9,7 @@ class ViewScale {
   initRender(options) {
     this.createScale(options);
     this.handleCheckingScaleSize(options);
-    this.setEventsScalePoints(options);
+    this.setEventsScalePoints();
     this.setEventsWindow(options);
   }
 
@@ -128,28 +128,24 @@ class ViewScale {
     }
   }
 
-  handleGetValueInScalePoint(options, event) {
+  handleGetValueInScalePoint(event) {
     event.preventDefault();
     const $target = $(event.target);
     let targetValue = Number($target.attr('data-value'));
 
-    targetValue = options.verifyInitValues
-      ? this.presenter.calcTargetValue(null, targetValue)
-      : targetValue;
-
-    this.presenter.checkTargetValue(targetValue, event);
+    this.notify(event, targetValue);
   }
 
   setEventsWindow(options) {
     if (options.showTheScale && options.initScaleAdjustment) {
-      $(window).on('resize.scale', this.handleCheckingScaleSize.bind(this));
+      $(window).on('resize.scale', this.handleCheckingScaleSize.bind(this, options));
     }
   }
 
-  setEventsScalePoints(options) {
+  setEventsScalePoints() {
     if (this.$elemScalePoints) {
       this.$elemScalePoints.each((index, elemPoint) => {
-        $(elemPoint).on('click.scalePoint', this.handleGetValueInScalePoint.bind(this, options));
+        $(elemPoint).on('click.scalePoint', this.handleGetValueInScalePoint.bind(this));
       });
     }
   }
