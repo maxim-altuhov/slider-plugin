@@ -2,11 +2,8 @@ import $ from 'jquery';
 import Observer from '../patterns/Observer';
 class ViewScale extends Observer {
   init(options) {
-    this.$selector = options.$initSelector;
-    this.$elemSlider = this.$selector.find('.js-meta-slider');
-  }
-
-  initRender(options) {
+    this.$selector = options.$selector;
+    this.$elemSlider = options.$elemSlider;
     this.createScale(options);
     this.handleCheckingScaleSize(options);
     this.setEventsScalePoints();

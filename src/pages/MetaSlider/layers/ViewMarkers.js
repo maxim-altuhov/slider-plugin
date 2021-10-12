@@ -1,10 +1,10 @@
 import $ from 'jquery';
 class ViewMarkers {
   init(options) {
-    this.$selector = options.$initSelector;
-    this.$elemSlider = this.$selector.find('.js-meta-slider');
-    this.$elemThumbs = this.$selector.find('.js-meta-slider__thumb');
-    this.$elemMarkers = this.$selector.find('.js-meta-slider__marker');
+    this.$selector = options.$selector;
+    this.$elemSlider = options.$elemSlider;
+    this.$elemThumbs = options.$elemThumbs;
+    this.$elemMarkers = options.$elemMarkers;
   }
 
   setValueInMarkers(options) {
@@ -39,9 +39,10 @@ class ViewMarkers {
         $currentMarker.css('display', '');
 
         if (initAutoMargins) {
-          this.heightMarker = this.$elemMarkers.eq(-1).outerHeight();
-          this.heightThumb = this.$elemThumbs.eq(-1).outerHeight();
-          this.$elemSlider.css('margin-top', `${this.heightMarker + (this.heightThumb / 1.5)}px`);
+          const heightMarker = this.$elemMarkers.eq(-1).outerHeight();
+          const heightThumb = this.$elemThumbs.eq(-1).outerHeight();
+
+          this.$elemSlider.css('margin-top', `${heightMarker + (heightThumb / 1.5)}px`);
         }
       });
     }

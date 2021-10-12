@@ -3,14 +3,15 @@ import Observer from '../patterns/Observer';
 
 class ViewSlider extends Observer {
   init(options) {
-    this.$selector = options.$initSelector;
-    this.renderSlider(options);
-    this.getInfoAboutSlider();
+    this.$elemSlider = options.$elemSlider;
+    this.$sliderProgress = options.$sliderProgress;
     this.setVerticalOrientation(options);
     this.setEventsSlider();
   }
 
-  renderSlider(options) {
+  renderSlider(initSelector, options) {
+    if (!this.$selector) this.$selector = initSelector;
+
     const {
       secondColor,
       isRange,
@@ -39,11 +40,6 @@ class ViewSlider extends Observer {
 
     $fragmentWithASlider.append($blockSlider);
     this.$selector.append($fragmentWithASlider);
-  }
-
-  getInfoAboutSlider() {
-    this.$elemSlider = this.$selector.find('.js-meta-slider');
-    this.$sliderProgress = this.$selector.find('.js-meta-slider__progress');
   }
 
   setVerticalOrientation(options) {

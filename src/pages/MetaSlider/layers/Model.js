@@ -4,18 +4,17 @@ import Observer from '../patterns/Observer';
 class Model {
   constructor(selector, options) {
     this.opt = options;
-    this.opt.$initSelector = selector;
-    this.initViewsEvent = new Observer();
+    this.opt.$selector = selector;
     this.errorEvent = new Observer();
+    this.initViewsEvent = new Observer();
     this.setValueEvent = new Observer();
-    this.renderSliderElemEvent = new Observer();
   }
 
   init() {
-    this.initViewsEvent.notify();
+    this.getInfoAboutSlider();
     this.initValuesCheck();
+    this.initViewsEvent.notify(this.opt);
     this.setValueForSlider();
-    this.renderSliderElemEvent.notify();
   }
 
   update() {
@@ -23,16 +22,11 @@ class Model {
     this.setValueForSlider();
   }
 
-  getProp(prop) {
-    return this.opt[prop];
-  }
-
-  setProp(prop, value) {
-    this.opt[prop] = value;
-  }
-
-  getOptionsObj() {
-    return this.opt;
+  getInfoAboutSlider() {
+    this.opt.$elemSlider = this.opt.$selector.find('.js-meta-slider');
+    this.opt.$sliderProgress = this.opt.$selector.find('.js-meta-slider__progress');
+    this.opt.$elemThumbs = this.opt.$selector.find('.js-meta-slider__thumb');
+    this.opt.$elemMarkers = this.opt.$selector.find('.js-meta-slider__marker');
   }
 
   checkIsIntegerSizeScale() {
@@ -73,20 +67,8 @@ class Model {
         break;
       }
 
-      this.errorEvent.notify(errorMessage.stepSizeForScale);
+      this.errorEvent.notify(errorMessage.stepSizeForScale, this.opt);
     }
-  }
-
-  initValueCorrection(value, errorMessage) {
-    const convertedValue = this.calcTargetValue(null, value, true);
-    let resultValue = value;
-
-    if (convertedValue !== value) {
-      resultValue = convertedValue;
-      this.errorEvent.notify(errorMessage.initСorrectionValues);
-    }
-
-    return resultValue;
   }
 
   initValuesCheck() {
@@ -95,7 +77,6 @@ class Model {
       minAndMaxValue: 'Max значение установленное для слайдера меньше или равно его Min значению. Установлены значения по-умолчанию.',
       stepSizeForScale: 'Установите корректное значение шага для шкалы с делениями. Установлено ближайщее оптимальное значение.',
       step: 'Значение шага слайдера не может быть больше его макс.значения, а также меньше или равно 0.',
-      initСorrectionValues: 'Входящие значения для бегунков скорректированны согласно установленному шагу.',
     };
 
     this.opt.checkedValueFirst = this.opt.isRange ? this.opt.initValueFirst : this.opt.minValue;
@@ -108,32 +89,32 @@ class Model {
     if (this.opt.minValue > this.opt.maxValue || this.opt.minValue === this.opt.maxValue) {
       this.opt.minValue = 0;
       this.opt.maxValue = 100;
-      this.errorEvent.notify(errMessage.minAndMaxValue);
+      this.errorEvent.notify(errMessage.minAndMaxValue, this.opt);
     }
 
     if (this.opt.checkedValueFirst > this.opt.initValueSecond) {
       this.resetInitValue();
-      this.errorEvent.notify(errMessage.initValue);
+      this.errorEvent.notify(errMessage.initValue, this.opt);
     }
 
     if (this.opt.step <= 0 || this.opt.step > this.opt.maxValue) {
       this.opt.step = this.opt.maxValue;
-      this.errorEvent.notify(errMessage.step);
+      this.errorEvent.notify(errMessage.step, this.opt);
     }
 
     if (this.opt.stepSizeForScale <= 0 || this.opt.stepSizeForScale > this.opt.maxValue) {
       this.opt.stepSizeForScale = this.opt.maxValue;
-      this.errorEvent.notify(errMessage.stepSizeForScale);
+      this.errorEvent.notify(errMessage.stepSizeForScale, this.opt);
     }
 
     if (this.opt.initValueSecond > this.opt.maxValue
       || this.opt.checkedValueFirst > this.opt.maxValue) {
       this.resetInitValue();
-      this.errorEvent.notify(errMessage.initValue);
+      this.errorEvent.notify(errMessage.initValue, this.opt);
     } else if (this.opt.initValueSecond < this.opt.minValue
       || this.opt.checkedValueFirst < this.opt.minValue) {
       this.resetInitValue();
-      this.errorEvent.notify(errMessage.initValue);
+      this.errorEvent.notify(errMessage.initValue, this.opt);
     }
 
     if (this.opt.customValues.length > 0) {
@@ -151,10 +132,8 @@ class Model {
       this.checkCorrectStepSizeForScale(errMessage);
     }
 
-    if (this.opt.verifyInitValues) {
-      this.opt.checkedValueFirst = this.initValueCorrection(this.opt.checkedValueFirst, errMessage);
-      this.opt.initValueSecond = this.initValueCorrection(this.opt.initValueSecond, errMessage);
-    }
+    this.opt.checkedValueFirst = this.calcTargetValue(null, this.opt.checkedValueFirst, true);
+    this.opt.initValueSecond = this.calcTargetValue(null, this.opt.initValueSecond, true);
 
     this.opt.initValuesArray = [this.opt.checkedValueFirst, this.opt.initValueSecond];
   }
@@ -164,12 +143,11 @@ class Model {
       return ((currentValue - this.opt.minValue) / (this.opt.maxValue - this.opt.minValue)) * 100;
     });
 
-    this.setValueEvent.notify();
+    this.setValueEvent.notify(this.opt);
   }
 
   checkTargetValue(targetValue, event) {
-    this.$elemThumbs = this.opt.$initSelector.find('.js-meta-slider__thumb');
-    const [firstThumb, secondThumb] = this.$elemThumbs;
+    const [firstThumb, secondThumb] = this.opt.$elemThumbs;
     const firstValue = Number(firstThumb.dataset.value);
     const secondtValue = Number(secondThumb.dataset.value);
     const firstThumbDiff = Math.abs((targetValue - firstValue).toFixed(2));
@@ -228,7 +206,6 @@ class Model {
   }
 
   calcTargetValue(event, initValue, onlyReturn = false) {
-    this.$elemSlider = this.opt.$initSelector.find('.js-meta-slider');
     let eventPosition;
     let sliderOffset;
     let sliderSize;
@@ -236,13 +213,13 @@ class Model {
 
     if (this.opt.isVertical && event) {
       eventPosition = event.clientY;
-      sliderOffset = this.$elemSlider[0].getBoundingClientRect().bottom;
-      sliderSize = this.$elemSlider[0].getBoundingClientRect().height;
+      sliderOffset = this.opt.$elemSlider[0].getBoundingClientRect().bottom;
+      sliderSize = this.opt.$elemSlider[0].getBoundingClientRect().height;
       valueInEventPosition = sliderOffset - eventPosition;
     } else if (!this.opt.isVertical && event) {
       eventPosition = event.clientX;
-      sliderOffset = this.$elemSlider.offset().left;
-      sliderSize = this.$elemSlider.outerWidth();
+      sliderOffset = this.opt.$elemSlider.offset().left;
+      sliderSize = this.opt.$elemSlider.outerWidth();
       valueInEventPosition = eventPosition - sliderOffset;
     }
 

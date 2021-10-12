@@ -8,19 +8,23 @@ import ViewError from './ViewError';
 class View {
   constructor() {
     this.views = {
+      viewError: new ViewError(),
       viewSlider: new ViewSlider(),
       viewThumbs: new ViewThumbs(),
       viewMarkers: new ViewMarkers(),
-      viewScale: new ViewScale(),
       viewMinAndMax: new ViewMinAndMaxValues(),
-      viewError: new ViewError(),
+      viewScale: new ViewScale(),
     };
   }
 
   init(options) {
     Object.keys(this.views).forEach((view) => {
-      this.views[view].init(options);
+      if ('init' in this.views[view]) this.views[view].init(options);
     });
+  }
+
+  renderSlider(initSelector, options) {
+    this.views.viewSlider.renderSlider(initSelector, options);
   }
 }
 

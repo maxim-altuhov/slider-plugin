@@ -3,8 +3,8 @@ import Observer from '../patterns/Observer';
 
 class ViewThumbs extends Observer {
   init(options) {
-    this.$selector = options.$initSelector;
-    this.$elemThumbs = this.$selector.find('.js-meta-slider__thumb');
+    this.$selector = options.$selector;
+    this.$elemThumbs = options.$elemThumbs;
     this.setEventsThumbs(options);
   }
 

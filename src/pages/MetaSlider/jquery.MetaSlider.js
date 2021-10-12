@@ -15,7 +15,6 @@ import Presenter from './layers/Presenter';
         colorBorderForThumb: '#ffffff',
         colorTextForMinAndMax: '#000000',
         colorForScale: '#000000',
-        verifyInitValues: true,
         initFormatted: true,
         initAutoMargins: true,
         initScaleAdjustment: true,
@@ -60,6 +59,7 @@ import Presenter from './layers/Presenter';
           const view = new View();
           const presenter = new Presenter(view, model);
 
+          view.renderSlider(this, inputOptions);
           presenter.setObservers();
           model.init();
           this.data('metaSlider', { model: model });

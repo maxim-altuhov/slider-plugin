@@ -3,11 +3,8 @@ import Observer from '../patterns/Observer';
 
 class ViewMinAndMaxValues extends Observer {
   init(options) {
-    this.$selector = options.$initSelector;
-    this.$elemSlider = this.$selector.find('.js-meta-slider');
-  }
-
-  initRender(options) {
+    this.$selector = options.$selector;
+    this.$elemSlider = options.$elemSlider;
     this.setMinAndMaxValues(options);
     this.setEventsMinAndMaxValues();
   }

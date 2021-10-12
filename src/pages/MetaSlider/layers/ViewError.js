@@ -1,13 +1,10 @@
 class ViewError {
-  init(options) {
-    this.$selector = options.$initSelector;
-    this.$elemSlider = this.$selector.find('.js-meta-slider');
-  }
+  renderError(message, options) {
+    if (!this.$selector) this.$selector = options.$selector;
 
-  renderError(options, message) {
     if (options.showError && !this.$elemErrorInfo) {
       const HTMLBlockError = `<div class="error-info js-error-info"><p class="error-info__text js-error-info__text">${message}</p><button type="button" class="error-info__close js-error-info__close">X</button></div>`;
-      this.$elemSlider.after(HTMLBlockError);
+      options.$elemSlider.after(HTMLBlockError);
 
       this.getInfoAboutError();
       this.setEventErrorClose();
