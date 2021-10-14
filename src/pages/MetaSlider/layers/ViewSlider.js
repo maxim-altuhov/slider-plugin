@@ -5,41 +5,81 @@ class ViewSlider extends Observer {
   init(options) {
     this.$elemSlider = options.$elemSlider;
     this.$sliderProgress = options.$sliderProgress;
-    this.setVerticalOrientation(options);
+    this.$elemThumbs = options.$elemThumbs;
+    this.$elemMarkers = options.$elemMarkers;
     this.setEventsSlider();
   }
 
-  renderSlider(initSelector, options) {
-    if (!this.$selector) this.$selector = initSelector;
+  update(options) {
+    const { key } = options;
+    const verificationKeys = (
+      key === 'init'
+      || key === 'showBackground'
+      || key === 'changedValue'
+      || key === 'initValueFirst'
+      || key === 'initValueSecond'
+    );
+    const autoMarginVerificationKeys = (
+      key === 'init'
+      || key === 'initAutoMargins'
+      || key === 'showMarkers'
+    );
 
-    const {
-      secondColor,
-      isRange,
-      colorThumb,
-      colorBorderForThumb,
-      colorMarker,
-      colorTextForMarker,
-      colorBorderForMarker,
-    } = options;
+    if (verificationKeys) this.setBackgroundTheRange(options);
+
+    if (key === 'isVertical' || key === 'init') this.setVerticalOrientation(options);
+    if (key === 'isRange' || key === 'init') this.checkIsRange(options);
+    if (key === 'secondColor' || key === 'init') this.setBackgroundForSlider(options);
+    if (autoMarginVerificationKeys) this.setAutoMargins(options);
+  }
+
+  renderSlider(initSelector) {
+    if (!this.$selector) this.$selector = initSelector;
 
     const $fragmentWithASlider = $(document.createDocumentFragment());
     const $blockSlider = $(document.createElement('div'));
-    $blockSlider.addClass('meta-slider js-meta-slider').css('background-color', secondColor);
-
-    const propDisplay = isRange ? '' : 'display:none';
+    $blockSlider.addClass('meta-slider js-meta-slider');
 
     const HTMLBlock = `<div class="meta-slider__progress js-meta-slider__progress"></div>
-    <button type="button" class="meta-slider__thumb js-meta-slider__thumb meta-slider__thumb_left" style="background-color:${colorThumb}; border-color:${colorBorderForThumb}; ${propDisplay}" data-value="">
-      <span class="meta-slider__marker js-meta-slider__marker meta-slider__marker_left" style="background-color:${colorMarker}; color: ${colorTextForMarker}; border-color:${colorBorderForMarker}"></span>
+    <button type="button" class="meta-slider__thumb js-meta-slider__thumb meta-slider__thumb_left" data-value="">
+      <span class="meta-slider__marker js-meta-slider__marker meta-slider__marker_left"></span>
     </button>
-    <button type="button" class="meta-slider__thumb js-meta-slider__thumb meta-slider__thumb_right" style="background-color:${colorThumb}; border-color:${colorBorderForThumb}" data-value="">
-      <span class="meta-slider__marker js-meta-slider__marker meta-slider__marker_right" style="background-color:${colorMarker}; color: ${colorTextForMarker}; border-color:${colorBorderForMarker}"></span>
+    <button type="button" class="meta-slider__thumb js-meta-slider__thumb meta-slider__thumb_right" data-value="">
+      <span class="meta-slider__marker js-meta-slider__marker meta-slider__marker_right"></span>
     </button>`;
 
     $blockSlider.html(HTMLBlock);
 
     $fragmentWithASlider.append($blockSlider);
     this.$selector.append($fragmentWithASlider);
+  }
+
+  setAutoMargins(options) {
+    const {
+      initAutoMargins,
+      showMarkers,
+    } = options;
+
+    if (initAutoMargins && showMarkers) {
+      const heightMarker = this.$elemMarkers.eq(-1).outerHeight();
+      const heightThumb = this.$elemThumbs.eq(-1).outerHeight();
+
+      this.$elemSlider.css('margin-top', `${heightMarker + (heightThumb / 1.5)}px`);
+    } else {
+      this.$elemSlider.css('margin-top', '');
+    }
+  }
+
+  setBackgroundForSlider(options) {
+    this.$elemSlider.css('background-color', options.secondColor);
+  }
+
+  checkIsRange(options) {
+    if (options.isRange) {
+      this.$elemThumbs.eq(0).css('display', '');
+    } else {
+      this.$elemThumbs.eq(0).css('display', 'none');
+    }
   }
 
   setVerticalOrientation(options) {
@@ -58,7 +98,7 @@ class ViewSlider extends Observer {
 
       this.$sliderProgress.css(settingForRange);
     } else {
-      this.$sliderProgress.css(' ');
+      this.$sliderProgress.css('background', 'none');
     }
   }
 

@@ -12,6 +12,8 @@ class ControlPanel {
     this.selectorsObj = {
       mainColor: this.$selector.find('[name = mainColor]'),
       secondColor: this.$selector.find('[name = secondColor]'),
+      colorTextForMinAndMax: this.$selector.find('[name = colorTextForMinAndMax]'),
+      colorForScale: this.$selector.find('[name = colorForScale]'),
       initValueFirst: this.$selector.find('[name = initValueFirst]'),
       initValueSecond: this.$selector.find('[name = initValueSecond]'),
       minValue: this.$selector.find('[name = minValue]'),
@@ -25,6 +27,9 @@ class ControlPanel {
       showTheScale: this.$selector.find('[name = showTheScale]'),
       isRange: this.$selector.find('[name = isRange]'),
       isVertical: this.$selector.find('[name = isVertical]'),
+      showBackground: this.$selector.find('[name = showBackground]'),
+      showMinAndMax: this.$selector.find('[name = showMinAndMax]'),
+      initAutoMargins: this.$selector.find('[name = initAutoMargins]'),
     };
   }
 

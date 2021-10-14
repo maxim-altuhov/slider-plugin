@@ -23,8 +23,8 @@ class View {
     });
   }
 
-  renderSlider(initSelector, options) {
-    this.views.viewSlider.renderSlider(initSelector, options);
+  renderSlider(initSelector) {
+    this.views.viewSlider.renderSlider(initSelector);
   }
 }
 

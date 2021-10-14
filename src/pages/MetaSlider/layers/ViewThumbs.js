@@ -8,6 +8,17 @@ class ViewThumbs extends Observer {
     this.setEventsThumbs(options);
   }
 
+  setStyleForThumbs(options) {
+    const {
+      colorThumb,
+      colorBorderForThumb,
+    } = options;
+
+    this.$elemThumbs.each((index, thumb) => {
+      $(thumb).css({ 'background-color': colorThumb, 'border-color': colorBorderForThumb });
+    });
+  }
+
   setValueInThumbs(options) {
     const {
       initValuesArray,

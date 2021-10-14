@@ -1,25 +1,25 @@
 import $ from 'jquery';
 import Observer from '../patterns/Observer';
 
-class Model {
+class Model extends Observer {
   constructor(selector, options) {
+    super();
     this.opt = options;
     this.opt.$selector = selector;
     this.errorEvent = new Observer();
-    this.initViewsEvent = new Observer();
-    this.setValueEvent = new Observer();
   }
 
   init() {
+    this.opt.key = 'init';
     this.getInfoAboutSlider();
     this.initValuesCheck();
-    this.initViewsEvent.notify(this.opt);
-    this.setValueForSlider();
+    this.calcValueInPrecentage();
+    this.notify(this.opt);
   }
 
   update() {
     this.initValuesCheck();
-    this.setValueForSlider();
+    this.notify(this.opt);
   }
 
   getInfoAboutSlider() {
@@ -138,12 +138,10 @@ class Model {
     this.opt.initValuesArray = [this.opt.checkedValueFirst, this.opt.initValueSecond];
   }
 
-  setValueForSlider() {
+  calcValueInPrecentage() {
     this.opt.valuesAsPercentageArray = this.opt.initValuesArray.map((currentValue) => {
       return ((currentValue - this.opt.minValue) / (this.opt.maxValue - this.opt.minValue)) * 100;
     });
-
-    this.setValueEvent.notify(this.opt);
   }
 
   checkTargetValue(targetValue, event) {
@@ -152,7 +150,7 @@ class Model {
     const secondtValue = Number(secondThumb.dataset.value);
     const firstThumbDiff = Math.abs((targetValue - firstValue).toFixed(2));
     const secondThumbDiff = Math.abs((targetValue - secondtValue).toFixed(2));
-    let clickInRange = false;
+    let clickInRange = '';
 
     if (this.opt.isRange) clickInRange = targetValue > firstValue && targetValue < secondtValue;
 
@@ -202,7 +200,9 @@ class Model {
       }
     }
 
-    this.setValueForSlider();
+    this.calcValueInPrecentage();
+    this.opt.key = 'changedValue';
+    this.notify(this.opt);
   }
 
   calcTargetValue(event, initValue, onlyReturn = false) {
@@ -241,11 +241,10 @@ class Model {
       Number(resultValue.toFixed(this.opt.numberOfDecimalPlaces)) + this.opt.minValue
     );
 
-    if (!onlyReturn) {
-      this.checkTargetValue(targetValue, event);
-    }
+    if (onlyReturn) return targetValue;
+    this.checkTargetValue(targetValue, event);
 
-    return targetValue;
+    return undefined;
   }
 }
 

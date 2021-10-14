@@ -59,7 +59,7 @@ import Presenter from './layers/Presenter';
           const view = new View();
           const presenter = new Presenter(view, model);
 
-          view.renderSlider(this, inputOptions);
+          view.renderSlider(this);
           presenter.setObservers();
           model.init();
           this.data('metaSlider', { model: model });
@@ -69,6 +69,7 @@ import Presenter from './layers/Presenter';
     setProp(prop, value) {
       const data = this.data('metaSlider');
       data.model.opt[prop] = value;
+      data.model.opt.key = prop;
       data.model.update();
 
       return this;

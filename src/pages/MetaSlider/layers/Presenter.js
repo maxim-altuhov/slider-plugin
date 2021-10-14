@@ -9,7 +9,10 @@ class Presenter {
   }
 
   initViews(options) {
-    this.view.init(options);
+    if (options.key === 'init') {
+      this.view.init(options);
+      this.model.unsubscribe(this.linkInitViewsFunc);
+    }
   }
 
   calcTargetValue(event, initValue, onlyReturn) {
@@ -20,21 +23,29 @@ class Presenter {
     this.getView('viewError').renderError(message, options);
   }
 
+  updateViews(options) {
+    this.setValueForSlider(options);
+
+    this.getView('viewSlider').update(options);
+    this.getView('viewMarkers').update(options);
+    this.getView('viewMinAndMax').update(options);
+  }
+
   setValueForSlider(options) {
     this.getView('viewThumbs').setValueInThumbs(options);
-    this.getView('viewSlider').setBackgroundTheRange(options);
-    this.getView('viewMarkers').setValueInMarkers(options);
   }
 
   setObservers() {
+    this.linkInitViewsFunc = this.initViews.bind(this);
+
+    this.model.subscribe(this.linkInitViewsFunc);
+    this.model.subscribe(this.updateViews.bind(this));
+    this.model.errorEvent.subscribe(this.renderError.bind(this));
+
     this.getView('viewSlider').subscribe(this.calcTargetValue.bind(this));
     this.getView('viewThumbs').subscribe(this.calcTargetValue.bind(this));
     this.getView('viewMinAndMax').subscribe(this.calcTargetValue.bind(this));
     this.getView('viewScale').subscribe(this.calcTargetValue.bind(this));
-
-    this.model.initViewsEvent.subscribe(this.initViews.bind(this));
-    this.model.errorEvent.subscribe(this.renderError.bind(this));
-    this.model.setValueEvent.subscribe(this.setValueForSlider.bind(this));
   }
 }
 

@@ -7,15 +7,60 @@ class ViewMarkers {
     this.$elemMarkers = options.$elemMarkers;
   }
 
-  setValueInMarkers(options) {
-    this.$elemSlider.css('margin-top', '');
-    this.$elemMarkers.each((index, elem) => {
-      $(elem).css('display', 'none');
-    });
+  update(options) {
+    const { key } = options;
 
+    const verificationKeys = (
+      key === 'init'
+      || key === 'changedValue'
+      || key === 'initValueFirst'
+      || key === 'initValueSecond'
+      || key === 'customValues'
+      || key === 'preFix'
+      || key === 'postFix'
+      || key === 'numberOfDecimalPlaces'
+      || key === 'initFormatted'
+    );
+    const styleVerificationKeys = (
+      key === 'init'
+      || key === 'showMarkers'
+      || key === 'colorMarker'
+      || key === 'colorTextForMarker'
+      || key === 'colorBorderForMarker'
+    );
+
+    if (verificationKeys) this.setValueInMarkers(options);
+    if (styleVerificationKeys) this.setStyleForMarkers(options);
+  }
+
+  setStyleForMarkers(options) {
+    const {
+      showMarkers,
+      colorMarker,
+      colorTextForMarker,
+      colorBorderForMarker,
+    } = options;
+
+    this.$elemMarkers.each((index, marker) => {
+      const $currentMarker = $(marker);
+      const styleProp = {
+        display: '',
+        color: colorTextForMarker,
+        'background-color': colorMarker,
+        'border-color': colorBorderForMarker,
+      };
+
+      if (showMarkers) {
+        $currentMarker.css(styleProp);
+      } else {
+        $currentMarker.css('display', 'none');
+      }
+    });
+  }
+
+  setValueInMarkers(options) {
     if (options.showMarkers) {
       const {
-        initAutoMargins,
         customValues,
         preFix,
         postFix,
@@ -34,15 +79,6 @@ class ViewMarkers {
           const convertedValue = initFormatted ? checkedValue.toLocaleString() : checkedValue;
 
           $currentMarker.text(`${preFix}${convertedValue}${postFix}`);
-        }
-
-        $currentMarker.css('display', '');
-
-        if (initAutoMargins) {
-          const heightMarker = this.$elemMarkers.eq(-1).outerHeight();
-          const heightThumb = this.$elemThumbs.eq(-1).outerHeight();
-
-          this.$elemSlider.css('margin-top', `${heightMarker + (heightThumb / 1.5)}px`);
         }
       });
     }
