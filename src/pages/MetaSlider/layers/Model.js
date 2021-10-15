@@ -10,15 +10,16 @@ class Model extends Observer {
   }
 
   init() {
-    this.opt.key = 'init';
     this.getInfoAboutSlider();
     this.initValuesCheck();
     this.calcValueInPrecentage();
+    this.opt.key = 'init';
     this.notify(this.opt);
   }
 
   update() {
     this.initValuesCheck();
+    this.calcValueInPrecentage();
     this.notify(this.opt);
   }
 
@@ -27,6 +28,7 @@ class Model extends Observer {
     this.opt.$sliderProgress = this.opt.$selector.find('.js-meta-slider__progress');
     this.opt.$elemThumbs = this.opt.$selector.find('.js-meta-slider__thumb');
     this.opt.$elemMarkers = this.opt.$selector.find('.js-meta-slider__marker');
+    this.opt.$elemScale = this.opt.$selector.find('.js-meta-slider__scale');
   }
 
   checkIsIntegerSizeScale() {
@@ -51,7 +53,6 @@ class Model extends Observer {
     this.opt.numberOfDecimalPlaces = 0;
     this.opt.step = 1;
     this.opt.stepSizeForScale = 1;
-    this.opt.customValues = (typeof this.opt.customValues !== 'string') ? this.opt.customValues : this.opt.customValues.split(',');
   }
 
   checkCorrectStepSizeForScale(errorMessage) {
@@ -80,11 +81,9 @@ class Model extends Observer {
     };
 
     this.opt.checkedValueFirst = this.opt.isRange ? this.opt.initValueFirst : this.opt.minValue;
+    this.opt.customValues = (typeof this.opt.customValues === 'string') ? this.opt.customValues.split(',') : this.opt.customValues;
 
     if (this.opt.setNumberOfDecimalPlaces) this.getNumberOfDecimalPlaces();
-    if (this.opt.showTheScale) this.opt.showMinAndMax = false;
-    if (this.opt.showMinAndMax) this.opt.showTheScale = false;
-    if (this.opt.isVertical) this.opt.initAutoMargins = false;
 
     if (this.opt.minValue > this.opt.maxValue || this.opt.minValue === this.opt.maxValue) {
       this.opt.minValue = 0;

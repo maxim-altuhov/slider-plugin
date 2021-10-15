@@ -1,19 +1,62 @@
 import $ from 'jquery';
 import Observer from '../patterns/Observer';
 class ViewScale extends Observer {
+  constructor() {
+    super();
+    this.isFirstInit = true;
+  }
+
   init(options) {
     this.$selector = options.$selector;
     this.$elemSlider = options.$elemSlider;
-    this.createScale(options);
-    this.handleCheckingScaleSize(options);
-    this.setEventsScalePoints();
-    this.setEventsWindow(options);
+    this.$elemScale = options.$elemScale;
+  }
+
+  update(options) {
+    if (this.isFirstInit) {
+      this.init(options);
+      this.isFirstInit = false;
+    }
+
+    const { key } = options;
+    const styleVerifKeys = (
+      key === 'init'
+      || key === 'colorForScale'
+      || key === 'showScale'
+    );
+    const renderScaleVerifKeys = (
+      key === 'init'
+      || key === 'showScale'
+      // || key === 'initAutoScaleCreation'
+      || key === 'step'
+      || key === 'stepSizeForScale'
+      || key === 'minValue'
+      || key === 'maxValue'
+      || key === 'numberOfDecimalPlaces'
+      || key === 'customValues'
+      // || key === 'initFormatted'
+      || key === 'preFix'
+      || key === 'postFix'
+    );
+
+    // const checkingScaleSizeVerifKeys = (
+    //   key === 'init'
+    //   || key === 'showScale'
+    //   || key === 'initScaleAdjustment'
+    // );
+
+    if (renderScaleVerifKeys) this.createScale(options);
+    if (styleVerifKeys) this.setStyleForScale(options);
+    // if (checkingScaleSizeVerifKeys) {
+    //   this.checkingScaleSize(options);
+    //   this.setEventsWindow(options);
+    // }
   }
 
   createScale(options) {
-    if (!options.showMinAndMax) this.$elemSlider.css('margin-bottom', '');
-
-    if (options.showTheScale) {
+    if (options.showScale) {
+      this.$elemScale.empty();
+      const $fragmentWithScale = $(document.createDocumentFragment());
       const {
         initAutoScaleCreation,
         step,
@@ -23,19 +66,11 @@ class ViewScale extends Observer {
         numberOfDecimalPlaces,
         customValues,
         initFormatted,
-        colorForScale,
         preFix,
         postFix,
-        initAutoMargins,
       } = options;
-      const $fragmentWithScale = $(document.createDocumentFragment());
-      const $blockScale = $(document.createElement('div'));
-
       const stepSizeValue = initAutoScaleCreation ? step : stepSizeForScale;
       let currentValue = minValue;
-
-      $blockScale.addClass('meta-slider__scale').css({ borderColor: colorForScale, color: colorForScale });
-      this.$elemSlider.append($blockScale);
 
       for (; currentValue <= maxValue; currentValue += stepSizeValue) {
         currentValue = Number(currentValue.toFixed(numberOfDecimalPlaces));
@@ -46,11 +81,10 @@ class ViewScale extends Observer {
 
         const elemScalePoint = `<button type="button" class="meta-slider__scale-point js-meta-slider__scale-point" style="color: inherit" data-value="${currentValue}">${preFix}${resultValue}${postFix}</button>`;
 
-        $blockScale.append(elemScalePoint);
-        $fragmentWithScale.append($blockScale);
+        $fragmentWithScale.append(elemScalePoint);
       }
 
-      this.$elemSlider.append($fragmentWithScale);
+      this.$elemScale.append($fragmentWithScale);
 
       this.$elemScalePoints = this.$selector.find('.js-meta-slider__scale-point');
       this.scalePointsSize = 0;
@@ -65,7 +99,17 @@ class ViewScale extends Observer {
         $scalePoint.css('left', `${resultValue * 100}%`);
       });
 
-      if (initAutoMargins) this.$elemSlider.css('margin-bottom', `${this.$elemScalePoints.eq(0).outerHeight() * 3}px`);
+      this.setEventsScalePoints();
+    }
+  }
+
+  setStyleForScale(options) {
+    const { colorForScale, showScale } = options;
+
+    if (showScale) {
+      this.$elemScale.css({ borderColor: colorForScale, color: colorForScale, display: '' });
+    } else {
+      this.$elemScale.css('display', 'none');
     }
   }
 
@@ -76,8 +120,26 @@ class ViewScale extends Observer {
     this.skipScalePointsArray.push($scalePoint);
   }
 
-  handleCheckingScaleSize(options) {
-    if (options.showTheScale && options.initScaleAdjustment) {
+  checkingSkipScalePointSize(sliderSize, margin) {
+    this.mapSkipScalePoints.forEach((scalePointSkipArray, controlSize) => {
+      if (sliderSize > controlSize + (margin / 3)) {
+        scalePointSkipArray.forEach(($scalePoint) => {
+          $scalePoint.removeAttr('tabindex')
+            .removeClass('meta-slider__scale-point_skip')
+            .css({ color: 'inherit', borderColor: '' });
+
+          this.scalePointsSize += $scalePoint.outerWidth();
+        });
+
+        this.mapSkipScalePoints.delete(controlSize);
+      }
+    });
+  }
+
+  checkingScaleSize(options) {
+    const { showScale, initScaleAdjustment } = options;
+
+    if (showScale && initScaleAdjustment) {
       const MARGIN_PX = 100;
       const sliderSize = this.$elemSlider.outerWidth();
 
@@ -109,20 +171,12 @@ class ViewScale extends Observer {
 
         this.mapSkipScalePoints.set(totalSizeScalePoints, [...this.skipScalePointsArray]);
       }
-
-      this.mapSkipScalePoints.forEach((scalePointSkipArray, controlSize) => {
-        if (sliderSize > controlSize + (MARGIN_PX / 3)) {
-          scalePointSkipArray.forEach(($scalePoint) => {
-            $scalePoint.removeAttr('tabindex')
-              .removeClass('meta-slider__scale-point_skip')
-              .css({ color: 'inherit', borderColor: '' });
-            this.scalePointsSize += $scalePoint.outerWidth();
-          });
-
-          this.mapSkipScalePoints.delete(controlSize);
-        }
-      });
+      this.checkingSkipScalePointSize(sliderSize, MARGIN_PX);
     }
+  }
+
+  handleCheckingScaleSize(options) {
+    this.checkingScaleSize(options);
   }
 
   handleGetValueInScalePoint(event) {
@@ -134,17 +188,17 @@ class ViewScale extends Observer {
   }
 
   setEventsWindow(options) {
-    if (options.showTheScale && options.initScaleAdjustment) {
+    const { showScale, initScaleAdjustment } = options;
+
+    if (showScale && initScaleAdjustment) {
       $(window).on('resize.scale', this.handleCheckingScaleSize.bind(this, options));
     }
   }
 
   setEventsScalePoints() {
-    if (this.$elemScalePoints) {
-      this.$elemScalePoints.each((index, elemPoint) => {
-        $(elemPoint).on('click.scalePoint', this.handleGetValueInScalePoint.bind(this));
-      });
-    }
+    this.$elemScalePoints.each((index, elemPoint) => {
+      $(elemPoint).on('click.scalePoint', this.handleGetValueInScalePoint.bind(this));
+    });
   }
 }
 

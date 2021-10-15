@@ -2,20 +2,55 @@ import $ from 'jquery';
 import Observer from '../patterns/Observer';
 
 class ViewThumbs extends Observer {
+  constructor() {
+    super();
+    this.isFirstInit = true;
+  }
+
   init(options) {
     this.$selector = options.$selector;
     this.$elemThumbs = options.$elemThumbs;
     this.setEventsThumbs(options);
   }
 
+  update(options) {
+    if (this.isFirstInit) {
+      this.init(options);
+      this.isFirstInit = false;
+    }
+
+    const { key } = options;
+    const setValueVerifKeys = (
+      key === 'init'
+      || key === 'changedValue'
+      || key === 'initValueFirst'
+      || key === 'initValueSecond'
+      || key === 'customValues'
+      || key === 'numberOfDecimalPlaces'
+    );
+    const styleVerifKeys = (
+      key === 'init'
+      || key === 'mainColor'
+      || key === 'colorThumb'
+      || key === 'colorBorderForThumb'
+    );
+
+    if (setValueVerifKeys) this.setValueInThumbs(options);
+    if (styleVerifKeys) this.setStyleForThumbs(options);
+    if (key === 'isRange' || key === 'init') this.checkIsRange(options);
+  }
+
   setStyleForThumbs(options) {
     const {
+      mainColor,
       colorThumb,
       colorBorderForThumb,
     } = options;
 
+    const backgroundColor = colorThumb || mainColor;
+
     this.$elemThumbs.each((index, thumb) => {
-      $(thumb).css({ 'background-color': colorThumb, 'border-color': colorBorderForThumb });
+      $(thumb).css({ 'background-color': backgroundColor, 'border-color': colorBorderForThumb });
     });
   }
 
@@ -36,11 +71,25 @@ class ViewThumbs extends Observer {
     });
   }
 
+  checkIsRange(options) {
+    if (options.isRange) {
+      this.$elemThumbs.eq(0).css('display', '');
+      this.setValueInThumbs(options);
+    } else {
+      this.$elemThumbs.eq(0).css('display', 'none');
+    }
+  }
+
   handleChangeThumbPosition(options, event) {
-    const configEventCode = (event.code === 'ArrowLeft' || event.code === 'ArrowRight' || event.code === 'ArrowUp' || event.code === 'ArrowDown');
+    const configEventCode = (
+      event.code === 'ArrowLeft'
+      || event.code === 'ArrowRight'
+      || event.code === 'ArrowUp'
+      || event.code === 'ArrowDown'
+    );
     const $target = $(event.target);
     if (configEventCode) {
-      const step = options.step;
+      const { step } = options;
       let eventTargetValue = Number($target.attr('data-value'));
 
       if (event.code === 'ArrowUp' || event.code === 'ArrowDown') event.preventDefault();

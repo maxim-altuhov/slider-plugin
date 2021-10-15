@@ -1,16 +1,22 @@
 import $ from 'jquery';
 class ViewMarkers {
+  constructor() {
+    this.isFirstInit = true;
+  }
+
   init(options) {
-    this.$selector = options.$selector;
-    this.$elemSlider = options.$elemSlider;
     this.$elemThumbs = options.$elemThumbs;
     this.$elemMarkers = options.$elemMarkers;
   }
 
   update(options) {
-    const { key } = options;
+    if (this.isFirstInit) {
+      this.init(options);
+      this.isFirstInit = false;
+    }
 
-    const verificationKeys = (
+    const { key } = options;
+    const setValueVerifKeys = (
       key === 'init'
       || key === 'changedValue'
       || key === 'initValueFirst'
@@ -21,41 +27,17 @@ class ViewMarkers {
       || key === 'numberOfDecimalPlaces'
       || key === 'initFormatted'
     );
-    const styleVerificationKeys = (
+    const styleVerifKeys = (
       key === 'init'
       || key === 'showMarkers'
+      || key === 'mainColor'
       || key === 'colorMarker'
       || key === 'colorTextForMarker'
       || key === 'colorBorderForMarker'
     );
 
-    if (verificationKeys) this.setValueInMarkers(options);
-    if (styleVerificationKeys) this.setStyleForMarkers(options);
-  }
-
-  setStyleForMarkers(options) {
-    const {
-      showMarkers,
-      colorMarker,
-      colorTextForMarker,
-      colorBorderForMarker,
-    } = options;
-
-    this.$elemMarkers.each((index, marker) => {
-      const $currentMarker = $(marker);
-      const styleProp = {
-        display: '',
-        color: colorTextForMarker,
-        'background-color': colorMarker,
-        'border-color': colorBorderForMarker,
-      };
-
-      if (showMarkers) {
-        $currentMarker.css(styleProp);
-      } else {
-        $currentMarker.css('display', 'none');
-      }
-    });
+    if (setValueVerifKeys) this.setValueInMarkers(options);
+    if (styleVerifKeys) this.setStyleForMarkers(options);
   }
 
   setValueInMarkers(options) {
@@ -82,6 +64,34 @@ class ViewMarkers {
         }
       });
     }
+  }
+
+  setStyleForMarkers(options) {
+    const {
+      mainColor,
+      showMarkers,
+      colorMarker,
+      colorTextForMarker,
+      colorBorderForMarker,
+    } = options;
+
+    const backgroundColor = colorMarker || mainColor;
+
+    this.$elemMarkers.each((index, marker) => {
+      const $currentMarker = $(marker);
+      const styleProp = {
+        display: '',
+        color: colorTextForMarker,
+        'background-color': backgroundColor,
+        'border-color': colorBorderForMarker,
+      };
+
+      if (showMarkers) {
+        $currentMarker.css(styleProp);
+      } else {
+        $currentMarker.css('display', 'none');
+      }
+    });
   }
 }
 

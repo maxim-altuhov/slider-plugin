@@ -2,6 +2,11 @@ import $ from 'jquery';
 import Observer from '../patterns/Observer';
 
 class ViewSlider extends Observer {
+  constructor() {
+    super();
+    this.isFirstInit = true;
+  }
+
   init(options) {
     this.$elemSlider = options.$elemSlider;
     this.$sliderProgress = options.$sliderProgress;
@@ -11,26 +16,33 @@ class ViewSlider extends Observer {
   }
 
   update(options) {
+    if (this.isFirstInit) {
+      this.init(options);
+      this.isFirstInit = false;
+    }
+
     const { key } = options;
-    const verificationKeys = (
+    const setValueVerifKeys = (
       key === 'init'
       || key === 'showBackground'
+      || key === 'mainColor'
       || key === 'changedValue'
       || key === 'initValueFirst'
       || key === 'initValueSecond'
+      || key === 'isRange'
     );
-    const autoMarginVerificationKeys = (
+    const autoMarginVerifKeys = (
       key === 'init'
       || key === 'initAutoMargins'
       || key === 'showMarkers'
+      || key === 'showScale'
+      || key === 'isVertical'
     );
 
-    if (verificationKeys) this.setBackgroundTheRange(options);
-
-    if (key === 'isVertical' || key === 'init') this.setVerticalOrientation(options);
-    if (key === 'isRange' || key === 'init') this.checkIsRange(options);
+    if (setValueVerifKeys) this.setBackgroundTheRange(options);
     if (key === 'secondColor' || key === 'init') this.setBackgroundForSlider(options);
-    if (autoMarginVerificationKeys) this.setAutoMargins(options);
+    if (key === 'isVertical' || key === 'init') this.setVerticalOrientation(options);
+    if (autoMarginVerifKeys) this.setAutoMargins(options);
   }
 
   renderSlider(initSelector) {
@@ -46,7 +58,8 @@ class ViewSlider extends Observer {
     </button>
     <button type="button" class="meta-slider__thumb js-meta-slider__thumb meta-slider__thumb_right" data-value="">
       <span class="meta-slider__marker js-meta-slider__marker meta-slider__marker_right"></span>
-    </button>`;
+    </button>
+    <div class="meta-slider__scale js-meta-slider__scale"></div>`;
 
     $blockSlider.html(HTMLBlock);
 
@@ -58,9 +71,12 @@ class ViewSlider extends Observer {
     const {
       initAutoMargins,
       showMarkers,
+      showScale,
+      isVertical,
     } = options;
+    const verifiableProp = (initAutoMargins && !isVertical);
 
-    if (initAutoMargins && showMarkers) {
+    if (verifiableProp && showMarkers) {
       const heightMarker = this.$elemMarkers.eq(-1).outerHeight();
       const heightThumb = this.$elemThumbs.eq(-1).outerHeight();
 
@@ -68,18 +84,17 @@ class ViewSlider extends Observer {
     } else {
       this.$elemSlider.css('margin-top', '');
     }
+
+    if (verifiableProp && showScale) {
+      const elemScalePoints = this.$selector.find('.js-meta-slider__scale-point');
+      this.$elemSlider.css('margin-bottom', `${elemScalePoints.eq(0).outerHeight() * 3}px`);
+    } else {
+      this.$elemSlider.css('margin-bottom', '');
+    }
   }
 
   setBackgroundForSlider(options) {
     this.$elemSlider.css('background-color', options.secondColor);
-  }
-
-  checkIsRange(options) {
-    if (options.isRange) {
-      this.$elemThumbs.eq(0).css('display', '');
-    } else {
-      this.$elemThumbs.eq(0).css('display', 'none');
-    }
   }
 
   setVerticalOrientation(options) {
@@ -90,6 +105,7 @@ class ViewSlider extends Observer {
     }
   }
 
+  // FIXME: ОШИБКА В УСТАНОВКЕ БЕКГРАУНДА ПРИ СНЯТИИ ФЛАЖКА ИНТЕРВАЛ ИЛИ ФОН У СЛАЙДЕРА
   setBackgroundTheRange(options) {
     if (options.showBackground) {
       const { valuesAsPercentageArray, mainColor } = options;

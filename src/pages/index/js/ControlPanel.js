@@ -12,8 +12,12 @@ class ControlPanel {
     this.selectorsObj = {
       mainColor: this.$selector.find('[name = mainColor]'),
       secondColor: this.$selector.find('[name = secondColor]'),
-      colorTextForMinAndMax: this.$selector.find('[name = colorTextForMinAndMax]'),
       colorForScale: this.$selector.find('[name = colorForScale]'),
+      colorMarker: this.$selector.find('[name = colorMarker]'),
+      colorTextForMarker: this.$selector.find('[name = colorTextForMarker]'),
+      colorBorderForMarker: this.$selector.find('[name = colorBorderForMarker]'),
+      colorThumb: this.$selector.find('[name = colorThumb]'),
+      colorBorderForThumb: this.$selector.find('[name = colorBorderForThumb]'),
       initValueFirst: this.$selector.find('[name = initValueFirst]'),
       initValueSecond: this.$selector.find('[name = initValueSecond]'),
       minValue: this.$selector.find('[name = minValue]'),
@@ -23,13 +27,19 @@ class ControlPanel {
       preFix: this.$selector.find('[name = preFix]'),
       postFix: this.$selector.find('[name = postFix]'),
       customValues: this.$selector.find('[name = customValues]'),
+      numberOfDecimalPlaces: this.$selector.find('[name = numberOfDecimalPlaces]'),
       showMarkers: this.$selector.find('[name = showMarkers]'),
-      showTheScale: this.$selector.find('[name = showTheScale]'),
+      showScale: this.$selector.find('[name = showScale]'),
       isRange: this.$selector.find('[name = isRange]'),
       isVertical: this.$selector.find('[name = isVertical]'),
       showBackground: this.$selector.find('[name = showBackground]'),
-      showMinAndMax: this.$selector.find('[name = showMinAndMax]'),
       initAutoMargins: this.$selector.find('[name = initAutoMargins]'),
+      initFormatted: this.$selector.find('[name = initFormatted]'),
+      initScaleAdjustment: this.$selector.find('[name = initScaleAdjustment]'),
+      setNumberOfDecimalPlaces: this.$selector.find('[name = setNumberOfDecimalPlaces]'),
+      showError: this.$selector.find('[name = showError]'),
+      initAutoScaleCreation: this.$selector.find('[name = initAutoScaleCreation]'),
+      checkingStepSizeForScale: this.$selector.find('[name = checkingStepSizeForScale]'),
     };
   }
 
@@ -40,8 +50,10 @@ class ControlPanel {
 
     if (target.attr('type') === 'checkbox') {
       value = target.prop('checked');
-    } else {
+    } else if (target.attr('type') === 'text') {
       value = target.val();
+    } else {
+      value = Number(target.val());
     }
 
     this.setProp(prop, value);

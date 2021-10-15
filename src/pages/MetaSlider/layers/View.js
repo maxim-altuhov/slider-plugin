@@ -2,24 +2,22 @@ import ViewSlider from './ViewSlider';
 import ViewScale from './ViewScale';
 import ViewMarkers from './ViewMarkers';
 import ViewThumbs from './ViewThumbs';
-import ViewMinAndMaxValues from './ViewMinAndMaxValues';
 import ViewError from './ViewError';
 
 class View {
   constructor() {
     this.views = {
       viewError: new ViewError(),
+      viewScale: new ViewScale(),
       viewSlider: new ViewSlider(),
       viewThumbs: new ViewThumbs(),
       viewMarkers: new ViewMarkers(),
-      viewMinAndMax: new ViewMinAndMaxValues(),
-      viewScale: new ViewScale(),
     };
   }
 
-  init(options) {
+  update(options) {
     Object.keys(this.views).forEach((view) => {
-      if ('init' in this.views[view]) this.views[view].init(options);
+      if ('update' in this.views[view]) this.views[view].update(options);
     });
   }
 

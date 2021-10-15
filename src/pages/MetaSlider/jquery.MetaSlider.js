@@ -13,15 +13,13 @@ import Presenter from './layers/Presenter';
         colorTextForMarker: '#ffffff',
         colorBorderForMarker: '#ffffff',
         colorBorderForThumb: '#ffffff',
-        colorTextForMinAndMax: '#000000',
         colorForScale: '#000000',
         initFormatted: true,
         initAutoMargins: true,
         initScaleAdjustment: true,
         setNumberOfDecimalPlaces: true,
         showError: true,
-        showMinAndMax: false,
-        showTheScale: true,
+        showScale: true,
         showMarkers: true,
         showBackground: true,
         isRange: true,
@@ -41,14 +39,8 @@ import Presenter from './layers/Presenter';
       };
 
       const inputOptions = $.extend({}, initSettings, settings);
-      const {
-        colorMarker,
-        colorThumb,
-        stepSizeForScale,
-      } = inputOptions;
+      const { stepSizeForScale } = inputOptions;
 
-      inputOptions.colorMarker = colorMarker || inputOptions.mainColor;
-      inputOptions.colorThumb = colorThumb || inputOptions.mainColor;
       inputOptions.stepSizeForScale = stepSizeForScale || inputOptions.step;
 
       return this.each(() => {
