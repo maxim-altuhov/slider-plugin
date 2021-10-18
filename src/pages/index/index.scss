@@ -45,6 +45,12 @@ html {
     margin-left: 25px;
     padding: 0 15px;
     font-weight: 700;
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+      background-color: #ffd7d7;
+    }
   }
 
   &__label {
@@ -66,6 +72,12 @@ html {
     border: 1px solid #afafaf;
     border-radius: 5px;
     box-shadow: 1px 1px 5px 1px rgba(138, 138, 138, 0.2);
+  }
+
+  &__checkbox:disabled+&__checkbox-title:before {
+    cursor: not-allowed;
+    opacity: 0.5;
+    background-color: #ffd7d7;
   }
 
   &__checkbox:checked+&__checkbox-title:after {

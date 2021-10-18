@@ -30,6 +30,9 @@ class ViewSlider extends Observer {
       || key === 'initValueFirst'
       || key === 'initValueSecond'
       || key === 'isRange'
+      || key === 'minValue'
+      || key === 'maxValue'
+      || key === 'customValues'
     );
     const autoMarginVerifKeys = (
       key === 'init'
@@ -38,11 +41,18 @@ class ViewSlider extends Observer {
       || key === 'showScale'
       || key === 'isVertical'
     );
+    const minAndMaxVerifKeys = (
+      key === 'init'
+      || key === 'minValue'
+      || key === 'maxValue'
+      || key === 'customValues'
+    );
 
     if (setValueVerifKeys) this.setBackgroundTheRange(options);
     if (key === 'secondColor' || key === 'init') this.setBackgroundForSlider(options);
     if (key === 'isVertical' || key === 'init') this.setVerticalOrientation(options);
     if (autoMarginVerifKeys) this.setAutoMargins(options);
+    if (minAndMaxVerifKeys) this.setMinAndMaxVal(options);
   }
 
   renderSlider(initSelector) {
@@ -65,6 +75,24 @@ class ViewSlider extends Observer {
 
     $fragmentWithASlider.append($blockSlider);
     this.$selector.append($fragmentWithASlider);
+  }
+
+  setMinAndMaxVal(options) {
+    const {
+      minValue,
+      maxValue,
+      customValues,
+    } = options;
+
+    this.$elemSlider.attr({ 'data-min': minValue, 'data-max': maxValue });
+
+    if (customValues.length > 0) {
+      const firstCustomElem = customValues[0];
+      const lastCustomElem = customValues[customValues.length - 1];
+      this.$elemSlider.attr({ 'data-min_text': firstCustomElem, 'data-max_text': lastCustomElem });
+    } else {
+      this.$elemSlider.removeAttr('data-min_text data-max_text');
+    }
   }
 
   setAutoMargins(options) {
@@ -105,7 +133,6 @@ class ViewSlider extends Observer {
     }
   }
 
-  // FIXME: ОШИБКА В УСТАНОВКЕ БЕКГРАУНДА ПРИ СНЯТИИ ФЛАЖКА ИНТЕРВАЛ ИЛИ ФОН У СЛАЙДЕРА
   setBackgroundTheRange(options) {
     if (options.showBackground) {
       const { valuesAsPercentageArray, mainColor } = options;

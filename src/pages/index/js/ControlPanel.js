@@ -5,6 +5,15 @@ class ControlPanel {
   constructor(panelSelector, sliderSelector) {
     this.$selector = $(panelSelector);
     this.$sliderSelector = sliderSelector;
+    this.customValuesDependencies = [
+      'minValue',
+      'maxValue',
+      'step',
+      'stepSizeForScale',
+      'numberOfDecimalPlaces',
+      'initAutoScaleCreation',
+    ];
+
     this.getSelectors();
   }
 
@@ -43,6 +52,54 @@ class ControlPanel {
     };
   }
 
+  watchTheSlider() {
+    const key = this.$sliderSelector.metaSlider('getProp', 'key');
+    const setValueVerifKeys = (
+      key === 'changedValue'
+      || key === 'initValueFirst'
+      || key === 'initValueSecond'
+      || key === 'customValues'
+      || key === 'numberOfDecimalPlaces'
+      || key === 'minValue'
+      || key === 'maxValue'
+    );
+
+    if (setValueVerifKeys || key === 'isRange') this.getProp('initValueFirst');
+
+    if (setValueVerifKeys) {
+      this.getProp('initValueSecond');
+      this.getProp('minValue');
+      this.getProp('maxValue');
+      this.getProp('numberOfDecimalPlaces');
+
+      if (key === 'customValues') this.getProp('initAutoScaleCreation');
+    }
+    // TODO: сделать так, чтобы правильно отрабатывало правило установки свойства disabled
+    if (key === 'customValues') this.checkingDependencies(key, this.customValuesDependencies);
+    if (key === 'setNumberOfDecimalPlaces') this.checkingDependencies(key, ['numberOfDecimalPlaces']);
+  }
+
+  checkingDependencies(initProp, checkingOptions) {
+    const target = this.selectorsObj[initProp];
+    let verifyingKey;
+
+    if (target.attr('type') === 'checkbox') {
+      verifyingKey = target.prop('checked');
+    } else {
+      verifyingKey = target.val();
+    }
+
+    if (verifyingKey) {
+      checkingOptions.forEach((prop) => {
+        this.propDisableToggle(prop, true);
+      });
+    } else {
+      checkingOptions.forEach((prop) => {
+        this.propDisableToggle(prop, false);
+      });
+    }
+  }
+
   handleInputChanges(event) {
     const target = $(event.target);
     const prop = target.attr('name');
@@ -63,6 +120,11 @@ class ControlPanel {
     this.$sliderSelector.metaSlider('setProp', prop, value);
   }
 
+  propDisableToggle(prop, options) {
+    const target = this.selectorsObj[prop];
+    target.prop('disabled', options);
+  }
+
   getProp(prop) {
     const resultProp = this.$sliderSelector.metaSlider('getProp', prop);
     const target = this.selectorsObj[prop];
@@ -81,8 +143,13 @@ class ControlPanel {
       const [prop, selector] = valuesArray;
       this.getProp(prop);
 
+      if (prop === 'customValues') this.checkingDependencies(prop, this.customValuesDependencies);
+      if (prop === 'setNumberOfDecimalPlaces') this.checkingDependencies(prop, ['numberOfDecimalPlaces']);
+
       selector.on('change.input', this.handleInputChanges.bind(this));
     });
+
+    this.$sliderSelector.metaSlider('subscribe', this.watchTheSlider.bind(this));
   }
 }
 

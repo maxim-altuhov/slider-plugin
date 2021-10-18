@@ -10,10 +10,10 @@ class Model extends Observer {
   }
 
   init() {
+    this.opt.key = 'init';
     this.getInfoAboutSlider();
     this.initValuesCheck();
     this.calcValueInPrecentage();
-    this.opt.key = 'init';
     this.notify(this.opt);
   }
 
@@ -41,18 +41,23 @@ class Model extends Observer {
 
   resetInitValue() {
     this.opt.initValueSecond = this.opt.maxValue;
-    this.opt.checkedValueFirst = this.opt.minValue;
+    this.opt.initValueFirst = this.opt.minValue;
   }
 
   initCustomValues() {
-    this.opt.minValue = 0;
-    this.opt.maxValue = this.opt.customValues.length - 1;
-    this.opt.initAutoScaleCreation = false;
-    this.opt.checkingStepSizeForScale = false;
-    this.opt.initFormatted = false;
-    this.opt.numberOfDecimalPlaces = 0;
-    this.opt.step = 1;
-    this.opt.stepSizeForScale = 1;
+    const { key } = this.opt;
+    if (key === 'init' || key === 'customValues') {
+      this.opt.minValue = 0;
+      this.opt.maxValue = this.opt.customValues.length - 1;
+      this.opt.initValueFirst = this.opt.minValue;
+      this.opt.initValueSecond = this.opt.maxValue;
+      this.opt.initAutoScaleCreation = false;
+      this.opt.checkingStepSizeForScale = false;
+      this.opt.initFormatted = false;
+      this.opt.numberOfDecimalPlaces = 0;
+      this.opt.step = 1;
+      this.opt.stepSizeForScale = 1;
+    }
   }
 
   checkCorrectStepSizeForScale(errorMessage) {
@@ -80,8 +85,9 @@ class Model extends Observer {
       step: 'Значение шага слайдера не может быть больше его макс.значения, а также меньше или равно 0.',
     };
 
-    this.opt.checkedValueFirst = this.opt.isRange ? this.opt.initValueFirst : this.opt.minValue;
+    this.opt.initValueFirst = this.opt.isRange ? this.opt.initValueFirst : this.opt.minValue;
     this.opt.customValues = (typeof this.opt.customValues === 'string') ? this.opt.customValues.split(',') : this.opt.customValues;
+    this.opt.customValues = this.opt.customValues.filter((elem) => (elem !== '' && elem !== ' '));
 
     if (this.opt.setNumberOfDecimalPlaces) this.getNumberOfDecimalPlaces();
 
@@ -91,7 +97,7 @@ class Model extends Observer {
       this.errorEvent.notify(errMessage.minAndMaxValue, this.opt);
     }
 
-    if (this.opt.checkedValueFirst > this.opt.initValueSecond) {
+    if (this.opt.initValueFirst > this.opt.initValueSecond) {
       this.resetInitValue();
       this.errorEvent.notify(errMessage.initValue, this.opt);
     }
@@ -107,34 +113,27 @@ class Model extends Observer {
     }
 
     if (this.opt.initValueSecond > this.opt.maxValue
-      || this.opt.checkedValueFirst > this.opt.maxValue) {
+      || this.opt.initValueFirst > this.opt.maxValue) {
       this.resetInitValue();
       this.errorEvent.notify(errMessage.initValue, this.opt);
     } else if (this.opt.initValueSecond < this.opt.minValue
-      || this.opt.checkedValueFirst < this.opt.minValue) {
+      || this.opt.initValueFirst < this.opt.minValue) {
       this.resetInitValue();
       this.errorEvent.notify(errMessage.initValue, this.opt);
     }
 
     if (this.opt.customValues.length > 0) {
       this.initCustomValues();
-
-      this.opt.minAndMaxArray = [
-        this.opt.customValues[0],
-        this.opt.customValues[this.opt.customValues.length - 1],
-      ];
-    } else {
-      this.opt.minAndMaxArray = [this.opt.minValue, this.opt.maxValue];
     }
 
     if (this.opt.checkingStepSizeForScale && !this.opt.initAutoScaleCreation) {
       this.checkCorrectStepSizeForScale(errMessage);
     }
 
-    this.opt.checkedValueFirst = this.calcTargetValue(null, this.opt.checkedValueFirst, true);
+    this.opt.initValueFirst = this.calcTargetValue(null, this.opt.initValueFirst, true);
     this.opt.initValueSecond = this.calcTargetValue(null, this.opt.initValueSecond, true);
 
-    this.opt.initValuesArray = [this.opt.checkedValueFirst, this.opt.initValueSecond];
+    this.opt.initValuesArray = [this.opt.initValueFirst, this.opt.initValueSecond];
   }
 
   calcValueInPrecentage() {
@@ -144,35 +143,41 @@ class Model extends Observer {
   }
 
   checkTargetValue(targetValue, event) {
-    const [firstThumb, secondThumb] = this.opt.$elemThumbs;
-    const firstValue = Number(firstThumb.dataset.value);
-    const secondtValue = Number(secondThumb.dataset.value);
-    const firstThumbDiff = Math.abs((targetValue - firstValue).toFixed(2));
-    const secondThumbDiff = Math.abs((targetValue - secondtValue).toFixed(2));
-    let clickInRange = '';
+    const {
+      initValueFirst,
+      initValueSecond,
+      isRange,
+      initValuesArray,
+      $elemThumbs,
+      isVertical,
+    } = this.opt;
+    const firstThumbDiff = Math.abs((targetValue - initValueFirst).toFixed(2));
+    const secondThumbDiff = Math.abs((targetValue - initValueSecond).toFixed(2));
+    let clickInRange = false;
 
-    if (this.opt.isRange) clickInRange = targetValue > firstValue && targetValue < secondtValue;
+    if (isRange) clickInRange = targetValue > initValueFirst && targetValue < initValueSecond;
 
-    if (targetValue <= firstValue) this.opt.initValuesArray[0] = targetValue;
-    if (targetValue >= secondtValue || !this.opt.isRange) this.opt.initValuesArray[1] = targetValue;
+    if (targetValue <= initValueFirst) initValuesArray[0] = targetValue;
+    if (targetValue >= initValueSecond || !isRange) initValuesArray[1] = targetValue;
 
     if (clickInRange && firstThumbDiff < secondThumbDiff) {
-      this.opt.initValuesArray[0] = targetValue;
+      initValuesArray[0] = targetValue;
     } else if (clickInRange && firstThumbDiff > secondThumbDiff) {
-      this.opt.initValuesArray[1] = targetValue;
+      initValuesArray[1] = targetValue;
     }
 
+    const [firstThumb, secondThumb] = $elemThumbs;
     const isIdenticalDistanceInRange = (clickInRange && firstThumbDiff === secondThumbDiff);
     const isEventMoveKeypress = (event.code === 'ArrowLeft' || event.code === 'ArrowRight' || event.code === 'ArrowUp' || event.code === 'ArrowDown');
     let eventPosition;
     let firstThumbPosition;
     let secondThumbPosition;
 
-    if (this.opt.isVertical) {
+    if (isVertical) {
       eventPosition = event.clientY;
       firstThumbPosition = firstThumb.getBoundingClientRect().bottom;
       secondThumbPosition = secondThumb.getBoundingClientRect().top;
-    } else if (!this.opt.isVertical) {
+    } else if (!isVertical) {
       eventPosition = event.clientX;
       firstThumbPosition = firstThumb.getBoundingClientRect().left;
       secondThumbPosition = secondThumb.getBoundingClientRect().right;
@@ -183,9 +188,9 @@ class Model extends Observer {
       const secondValuePosition = Math.abs(eventPosition - secondThumbPosition);
 
       if (Math.round(secondValuePosition - firstValuePosition) >= 0) {
-        this.opt.initValuesArray[0] = targetValue;
+        initValuesArray[0] = targetValue;
       } else {
-        this.opt.initValuesArray[1] = targetValue;
+        initValuesArray[1] = targetValue;
       }
     }
 
@@ -193,41 +198,51 @@ class Model extends Observer {
       const $target = $(event.target);
 
       if ($target.hasClass('meta-slider__thumb_left')) {
-        this.opt.initValuesArray[0] = targetValue;
+        initValuesArray[0] = targetValue;
       } else if ($target.hasClass('meta-slider__thumb_right')) {
-        this.opt.initValuesArray[1] = targetValue;
+        initValuesArray[1] = targetValue;
       }
     }
 
     this.calcValueInPrecentage();
+    this.opt.initValueFirst = initValuesArray[0];
+    this.opt.initValueSecond = initValuesArray[1];
     this.opt.key = 'changedValue';
     this.notify(this.opt);
   }
 
   calcTargetValue(event, initValue, onlyReturn = false) {
+    const {
+      $elemSlider,
+      isVertical,
+      minValue,
+      maxValue,
+      step,
+      numberOfDecimalPlaces,
+    } = this.opt;
     let eventPosition;
     let sliderOffset;
     let sliderSize;
     let valueInEventPosition;
 
-    if (this.opt.isVertical && event) {
+    if (isVertical && event) {
       eventPosition = event.clientY;
-      sliderOffset = this.opt.$elemSlider[0].getBoundingClientRect().bottom;
-      sliderSize = this.opt.$elemSlider[0].getBoundingClientRect().height;
+      sliderOffset = $elemSlider[0].getBoundingClientRect().bottom;
+      sliderSize = $elemSlider[0].getBoundingClientRect().height;
       valueInEventPosition = sliderOffset - eventPosition;
-    } else if (!this.opt.isVertical && event) {
+    } else if (!isVertical && event) {
       eventPosition = event.clientX;
-      sliderOffset = this.opt.$elemSlider.offset().left;
-      sliderSize = this.opt.$elemSlider.outerWidth();
+      sliderOffset = $elemSlider.offset().left;
+      sliderSize = $elemSlider.outerWidth();
       valueInEventPosition = eventPosition - sliderOffset;
     }
 
     const calcForInitValue = (
-      ((initValue - this.opt.minValue) / (this.opt.maxValue - this.opt.minValue)) * 100
+      ((initValue - minValue) / (maxValue - minValue)) * 100
     );
     const calcForEventValue = (valueInEventPosition / sliderSize) * 100;
     const valueAsPercentage = (initValue === undefined) ? calcForEventValue : calcForInitValue;
-    const stepCounter = (this.opt.maxValue - this.opt.minValue) / this.opt.step;
+    const stepCounter = (maxValue - minValue) / step;
     const stepAsPercent = 100 / stepCounter;
 
     let totalPercent = Math.round(valueAsPercentage / stepAsPercent) * stepAsPercent;
@@ -235,9 +250,9 @@ class Model extends Observer {
     if (totalPercent < 0) totalPercent = 0;
     if (totalPercent > 100) totalPercent = 100;
 
-    const resultValue = (totalPercent / stepAsPercent) * this.opt.step;
+    const resultValue = (totalPercent / stepAsPercent) * step;
     const targetValue = (
-      Number(resultValue.toFixed(this.opt.numberOfDecimalPlaces)) + this.opt.minValue
+      Number(resultValue.toFixed(numberOfDecimalPlaces)) + minValue
     );
 
     if (onlyReturn) return targetValue;

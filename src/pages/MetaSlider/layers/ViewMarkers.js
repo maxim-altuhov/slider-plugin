@@ -26,6 +26,9 @@ class ViewMarkers {
       || key === 'postFix'
       || key === 'numberOfDecimalPlaces'
       || key === 'initFormatted'
+      || key === 'isRange'
+      || key === 'minValue'
+      || key === 'maxValue'
     );
     const styleVerifKeys = (
       key === 'init'

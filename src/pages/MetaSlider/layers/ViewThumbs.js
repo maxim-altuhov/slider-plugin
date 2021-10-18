@@ -27,6 +27,9 @@ class ViewThumbs extends Observer {
       || key === 'initValueSecond'
       || key === 'customValues'
       || key === 'numberOfDecimalPlaces'
+      || key === 'isRange'
+      || key === 'minValue'
+      || key === 'maxValue'
     );
     const styleVerifKeys = (
       key === 'init'
@@ -74,7 +77,6 @@ class ViewThumbs extends Observer {
   checkIsRange(options) {
     if (options.isRange) {
       this.$elemThumbs.eq(0).css('display', '');
-      this.setValueInThumbs(options);
     } else {
       this.$elemThumbs.eq(0).css('display', 'none');
     }

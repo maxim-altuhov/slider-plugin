@@ -78,6 +78,12 @@ import Presenter from './layers/Presenter';
         this.empty();
       });
     },
+    subscribe(observer) {
+      this.data('metaSlider').model.subscribe(observer);
+    },
+    unsubscribe(observer) {
+      this.data('metaSlider').model.unsubscribe(observer);
+    },
   };
 
   $.fn.metaSlider = function (method, ...prop) {

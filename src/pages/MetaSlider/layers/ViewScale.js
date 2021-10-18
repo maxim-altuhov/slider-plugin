@@ -27,35 +27,43 @@ class ViewScale extends Observer {
     const renderScaleVerifKeys = (
       key === 'init'
       || key === 'showScale'
-      // || key === 'initAutoScaleCreation'
+      || key === 'initAutoScaleCreation'
       || key === 'step'
       || key === 'stepSizeForScale'
       || key === 'minValue'
       || key === 'maxValue'
       || key === 'numberOfDecimalPlaces'
       || key === 'customValues'
-      // || key === 'initFormatted'
+      || key === 'initFormatted'
       || key === 'preFix'
       || key === 'postFix'
     );
 
-    // const checkingScaleSizeVerifKeys = (
-    //   key === 'init'
-    //   || key === 'showScale'
-    //   || key === 'initScaleAdjustment'
-    // );
+    const checkingScaleSizeVerifKeys = (
+      key === 'init'
+      || key === 'showScale'
+      || key === 'initScaleAdjustment'
+    );
 
     if (renderScaleVerifKeys) this.createScale(options);
     if (styleVerifKeys) this.setStyleForScale(options);
-    // if (checkingScaleSizeVerifKeys) {
-    //   this.checkingScaleSize(options);
-    //   this.setEventsWindow(options);
-    // }
+    if (checkingScaleSizeVerifKeys) {
+      this.checkingScaleSize(options);
+      this.setEventsWindow(options);
+    }
   }
 
   createScale(options) {
     if (options.showScale) {
       this.$elemScale.empty();
+      this.scalePointsSize = 0;
+
+      if (this.mapSkipScalePoints && this.mapSkipScalePoints.size > 0) {
+        this.mapSkipScalePoints.clear();
+      } else {
+        this.mapSkipScalePoints = new Map();
+      }
+
       const $fragmentWithScale = $(document.createDocumentFragment());
       const {
         initAutoScaleCreation,
@@ -87,8 +95,6 @@ class ViewScale extends Observer {
       this.$elemScale.append($fragmentWithScale);
 
       this.$elemScalePoints = this.$selector.find('.js-meta-slider__scale-point');
-      this.scalePointsSize = 0;
-      this.mapSkipScalePoints = new Map();
 
       this.$elemScalePoints.each((index, scalePoint) => {
         const $scalePoint = $(scalePoint);
