@@ -54,6 +54,7 @@ class Model extends Observer {
       this.opt.initAutoScaleCreation = false;
       this.opt.checkingStepSizeForScale = false;
       this.opt.initFormatted = false;
+      this.opt.setNumberOfDecimalPlaces = false;
       this.opt.numberOfDecimalPlaces = 0;
       this.opt.step = 1;
       this.opt.stepSizeForScale = 1;

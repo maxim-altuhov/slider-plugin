@@ -10,8 +10,9 @@ class ControlPanel {
       'maxValue',
       'step',
       'stepSizeForScale',
-      'numberOfDecimalPlaces',
       'initAutoScaleCreation',
+      'numberOfDecimalPlaces',
+      'setNumberOfDecimalPlaces',
     ];
 
     this.getSelectors();
@@ -35,8 +36,9 @@ class ControlPanel {
       stepSizeForScale: this.$selector.find('[name = stepSizeForScale]'),
       preFix: this.$selector.find('[name = preFix]'),
       postFix: this.$selector.find('[name = postFix]'),
-      customValues: this.$selector.find('[name = customValues]'),
+      setNumberOfDecimalPlaces: this.$selector.find('[name = setNumberOfDecimalPlaces]'),
       numberOfDecimalPlaces: this.$selector.find('[name = numberOfDecimalPlaces]'),
+      customValues: this.$selector.find('[name = customValues]'),
       showMarkers: this.$selector.find('[name = showMarkers]'),
       showScale: this.$selector.find('[name = showScale]'),
       isRange: this.$selector.find('[name = isRange]'),
@@ -45,7 +47,6 @@ class ControlPanel {
       initAutoMargins: this.$selector.find('[name = initAutoMargins]'),
       initFormatted: this.$selector.find('[name = initFormatted]'),
       initScaleAdjustment: this.$selector.find('[name = initScaleAdjustment]'),
-      setNumberOfDecimalPlaces: this.$selector.find('[name = setNumberOfDecimalPlaces]'),
       showError: this.$selector.find('[name = showError]'),
       initAutoScaleCreation: this.$selector.find('[name = initAutoScaleCreation]'),
       checkingStepSizeForScale: this.$selector.find('[name = checkingStepSizeForScale]'),
@@ -70,19 +71,19 @@ class ControlPanel {
       this.getProp('initValueSecond');
       this.getProp('minValue');
       this.getProp('maxValue');
+      this.getProp('setNumberOfDecimalPlaces');
       this.getProp('numberOfDecimalPlaces');
 
       if (key === 'customValues') this.getProp('initAutoScaleCreation');
     }
-    // TODO: сделать так, чтобы правильно отрабатывало правило установки свойства disabled
-    if (key === 'customValues') this.checkingDependencies(key, this.customValuesDependencies);
+
     if (key === 'setNumberOfDecimalPlaces') this.checkingDependencies(key, ['numberOfDecimalPlaces']);
+    if (key === 'customValues') this.checkingDependencies(key, this.customValuesDependencies);
   }
 
   checkingDependencies(initProp, checkingOptions) {
     const target = this.selectorsObj[initProp];
     let verifyingKey;
-
     if (target.attr('type') === 'checkbox') {
       verifyingKey = target.prop('checked');
     } else {
@@ -90,10 +91,12 @@ class ControlPanel {
     }
 
     if (verifyingKey) {
+      target.attr('data-disabled', true);
       checkingOptions.forEach((prop) => {
         this.propDisableToggle(prop, true);
       });
-    } else {
+    } else if (target.attr('data-disabled')) {
+      target.attr('data-disabled', false);
       checkingOptions.forEach((prop) => {
         this.propDisableToggle(prop, false);
       });
@@ -143,8 +146,8 @@ class ControlPanel {
       const [prop, selector] = valuesArray;
       this.getProp(prop);
 
-      if (prop === 'customValues') this.checkingDependencies(prop, this.customValuesDependencies);
       if (prop === 'setNumberOfDecimalPlaces') this.checkingDependencies(prop, ['numberOfDecimalPlaces']);
+      if (prop === 'customValues') this.checkingDependencies(prop, this.customValuesDependencies);
 
       selector.on('change.input', this.handleInputChanges.bind(this));
     });
