@@ -8,29 +8,37 @@ html {
 }
 
 .container {
-  display: flex;
-  background-color: #ffffff;
-  margin: 1rem;
-  padding: 2.5rem;
-  border-radius: 10px;
-  min-height: 250px;
+  &__wrapper {
+    display: flex;
+    background-color: #ffffff;
+    margin: 1rem;
+    padding: 2.5rem;
+    border-radius: 10px;
+    min-height: 250px;
+  }
 }
 
 .slider {
   width: 50%;
-  padding: 0 2rem;
+
+  &__wrapper {
+    padding: 0 2rem;
+  }
 }
 
 .config {
-  display: grid;
-  grid-template: auto / repeat(2, auto);
-  justify-items: end;
-  align-content: space-between;
-  align-items: center;
   width: 50%;
-  border-left: 1px solid #222;
-  font-size: 14px;
-  font-weight: 700;
+
+  &__wrapper {
+    display: grid;
+    grid-template: auto / repeat(2, auto);
+    justify-items: end;
+    align-content: space-between;
+    align-items: center;
+    border-left: 1px solid #222;
+    font-size: 14px;
+    font-weight: 700;
+  }
 
   &__field {
     min-height: 50px;

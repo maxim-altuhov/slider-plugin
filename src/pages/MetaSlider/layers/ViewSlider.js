@@ -128,8 +128,10 @@ class ViewSlider extends Observer {
   setVerticalOrientation(options) {
     if (options.isVertical) {
       this.$elemSlider.addClass('meta-slider_vertical');
+      this.$selector.addClass('selector-vertical');
     } else {
       this.$elemSlider.removeClass('meta-slider_vertical');
+      this.$selector.removeClass('selector-vertical');
     }
   }
 
