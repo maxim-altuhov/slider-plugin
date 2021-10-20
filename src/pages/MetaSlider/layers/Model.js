@@ -90,6 +90,8 @@ class Model extends Observer {
     this.opt.customValues = (typeof this.opt.customValues === 'string') ? this.opt.customValues.split(',') : this.opt.customValues;
     this.opt.customValues = this.opt.customValues.filter((elem) => (elem !== '' && elem !== ' '));
 
+    if (this.opt.initAutoScaleCreation) this.opt.checkingStepSizeForScale = false;
+
     if (this.opt.setNumberOfDecimalPlaces) this.getNumberOfDecimalPlaces();
 
     if (this.opt.minValue > this.opt.maxValue || this.opt.minValue === this.opt.maxValue) {

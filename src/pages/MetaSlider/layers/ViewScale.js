@@ -37,33 +37,21 @@ class ViewScale extends Observer {
       || key === 'initFormatted'
       || key === 'preFix'
       || key === 'postFix'
-    );
-
-    const checkingScaleSizeVerifKeys = (
-      key === 'init'
-      || key === 'showScale'
       || key === 'initScaleAdjustment'
     );
 
-    if (renderScaleVerifKeys) this.createScale(options);
-    if (styleVerifKeys) this.setStyleForScale(options);
-    if (checkingScaleSizeVerifKeys) {
+    if (renderScaleVerifKeys) {
+      this.createScale(options);
       this.checkingScaleSize(options);
-      this.setEventsWindow(options);
+
+      if (key === 'initScaleAdjustment' || key === 'init') this.setEventsWindow(options);
     }
+    if (styleVerifKeys) this.setStyleForScale(options);
   }
 
   createScale(options) {
     if (options.showScale) {
       this.$elemScale.empty();
-      this.scalePointsSize = 0;
-
-      if (this.mapSkipScalePoints && this.mapSkipScalePoints.size > 0) {
-        this.mapSkipScalePoints.clear();
-      } else {
-        this.mapSkipScalePoints = new Map();
-      }
-
       const $fragmentWithScale = $(document.createDocumentFragment());
       const {
         initAutoScaleCreation,
@@ -95,6 +83,7 @@ class ViewScale extends Observer {
       this.$elemScale.append($fragmentWithScale);
 
       this.$elemScalePoints = this.$selector.find('.js-meta-slider__scale-point');
+      this.scalePointsSize = 0;
 
       this.$elemScalePoints.each((index, scalePoint) => {
         const $scalePoint = $(scalePoint);
@@ -105,6 +94,12 @@ class ViewScale extends Observer {
         $scalePoint.css('left', `${resultValue * 100}%`);
       });
 
+      if (this.mapSkipScalePoints && this.mapSkipScalePoints.size > 0) {
+        this.mapSkipScalePoints.clear();
+      } else {
+        this.mapSkipScalePoints = new Map();
+      }
+
       this.setEventsScalePoints();
     }
   }
@@ -113,9 +108,14 @@ class ViewScale extends Observer {
     const { colorForScale, showScale } = options;
 
     if (showScale) {
-      this.$elemScale.css({ borderColor: colorForScale, color: colorForScale, display: '' });
+      this.$elemScale.css({
+        borderColor: colorForScale,
+        color: colorForScale,
+        opacity: 1,
+        'pointer-events': '',
+      });
     } else {
-      this.$elemScale.css('display', 'none');
+      this.$elemScale.css({ opacity: 0, 'pointer-events': 'none' });
     }
   }
 
@@ -177,6 +177,7 @@ class ViewScale extends Observer {
 
         this.mapSkipScalePoints.set(totalSizeScalePoints, [...this.skipScalePointsArray]);
       }
+
       this.checkingSkipScalePointSize(sliderSize, MARGIN_PX);
     }
   }
@@ -198,6 +199,8 @@ class ViewScale extends Observer {
 
     if (showScale && initScaleAdjustment) {
       $(window).on('resize.scale', this.handleCheckingScaleSize.bind(this, options));
+    } else {
+      $(window).off('resize.scale');
     }
   }
 

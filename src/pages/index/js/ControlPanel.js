@@ -13,6 +13,8 @@ class ControlPanel {
       'initAutoScaleCreation',
       'numberOfDecimalPlaces',
       'setNumberOfDecimalPlaces',
+      'checkingStepSizeForScale',
+      'initFormatted',
     ];
 
     this.getSelectors();
@@ -63,7 +65,14 @@ class ControlPanel {
       || key === 'numberOfDecimalPlaces'
       || key === 'minValue'
       || key === 'maxValue'
+      || key === 'step'
+      || key === 'stepSizeForScale'
     );
+
+    if (key === 'initAutoScaleCreation' || key === 'checkingStepSizeForScale') {
+      this.getProp('initAutoScaleCreation');
+      this.getProp('checkingStepSizeForScale');
+    }
 
     if (setValueVerifKeys || key === 'isRange') this.getProp('initValueFirst');
 
@@ -73,17 +82,26 @@ class ControlPanel {
       this.getProp('maxValue');
       this.getProp('setNumberOfDecimalPlaces');
       this.getProp('numberOfDecimalPlaces');
+      this.getProp('step');
+      this.getProp('stepSizeForScale');
 
-      if (key === 'customValues') this.getProp('initAutoScaleCreation');
+      if (key === 'customValues') {
+        this.getProp('initAutoScaleCreation');
+        this.getProp('checkingStepSizeForScale');
+        this.getProp('initFormatted');
+      }
     }
 
+    if (key === 'initAutoScaleCreation') this.checkingDependencies(key, ['stepSizeForScale', 'checkingStepSizeForScale']);
+    if (key === 'checkingStepSizeForScale') this.checkingDependencies(key, ['initAutoScaleCreation']);
     if (key === 'setNumberOfDecimalPlaces') this.checkingDependencies(key, ['numberOfDecimalPlaces']);
     if (key === 'customValues') this.checkingDependencies(key, this.customValuesDependencies);
   }
 
-  checkingDependencies(initProp, checkingOptions) {
-    const target = this.selectorsObj[initProp];
+  checkingDependencies(initProp, checkingOptions, isToggle = false) {
+    let target = this.selectorsObj[initProp];
     let verifyingKey;
+
     if (target.attr('type') === 'checkbox') {
       verifyingKey = target.prop('checked');
     } else {
@@ -92,11 +110,13 @@ class ControlPanel {
 
     if (verifyingKey) {
       target.attr('data-disabled', true);
+
       checkingOptions.forEach((prop) => {
         this.propDisableToggle(prop, true);
       });
     } else if (target.attr('data-disabled')) {
       target.attr('data-disabled', false);
+
       checkingOptions.forEach((prop) => {
         this.propDisableToggle(prop, false);
       });
@@ -146,6 +166,8 @@ class ControlPanel {
       const [prop, selector] = valuesArray;
       this.getProp(prop);
 
+      if (prop === 'initAutoScaleCreation') this.checkingDependencies(prop, ['stepSizeForScale', 'checkingStepSizeForScale']);
+      if (prop === 'checkingStepSizeForScale') this.checkingDependencies(prop, ['initAutoScaleCreation']);
       if (prop === 'setNumberOfDecimalPlaces') this.checkingDependencies(prop, ['numberOfDecimalPlaces']);
       if (prop === 'customValues') this.checkingDependencies(prop, this.customValuesDependencies);
 

@@ -25,7 +25,7 @@ import Presenter from './layers/Presenter';
         isRange: true,
         isVertical: false,
         initAutoScaleCreation: true,
-        checkingStepSizeForScale: true,
+        checkingStepSizeForScale: false,
         step: 1,
         minValue: 0,
         maxValue: 100,
@@ -34,14 +34,23 @@ import Presenter from './layers/Presenter';
         preFix: '',
         postFix: '',
         customValues: [],
-        initValueFirst: 0,
-        initValueSecond: 100,
+        initValueFirst: '',
+        initValueSecond: '',
       };
 
       const inputOptions = $.extend({}, initSettings, settings);
-      const { stepSizeForScale } = inputOptions;
+      const {
+        initValueFirst,
+        initValueSecond,
+        minValue,
+        maxValue,
+        stepSizeForScale,
+        step,
+      } = inputOptions;
 
-      inputOptions.stepSizeForScale = stepSizeForScale || inputOptions.step;
+      inputOptions.initValueFirst = initValueFirst || minValue;
+      inputOptions.initValueSecond = initValueSecond || maxValue;
+      inputOptions.stepSizeForScale = stepSizeForScale || step;
 
       return this.each(() => {
         const data = this.data('metaSlider');

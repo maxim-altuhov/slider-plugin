@@ -10,8 +10,12 @@ $(() => {
 
   slider1.metaSlider({
     step: 1,
-    initValueFirst: 20,
+    initValueFirst: 1,
+    minValue: 0,
+    maxValue: 10,
     showScale: true,
+    // initAutoScaleCreation: true,
+    // checkingStepSizeForScale: true,
     // customValues: ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ'],
   });
   controlPanel1.init();

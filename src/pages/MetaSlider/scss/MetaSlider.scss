@@ -109,7 +109,6 @@
     border: 0;
     white-space: nowrap;
     transform: translateX(-50%);
-    transition: color 0.3s linear;
 
     &::after {
       content: '';
@@ -121,7 +120,6 @@
       border-left-style: solid;
       border-color: inherit;
       transform: translateX(-50%);
-      transition: height 0.3s linear;
     }
 
     &_skip {
