@@ -92,6 +92,11 @@ class ControlPanel {
       }
     }
 
+    if (key === 'isVertical') {
+      this.getProp('initAutoMargins');
+      this.checkingDependencies(key, ['initAutoMargins']);
+    }
+
     if (key === 'initAutoScaleCreation') this.checkingDependencies(key, ['stepSizeForScale', 'checkingStepSizeForScale']);
     if (key === 'checkingStepSizeForScale') this.checkingDependencies(key, ['initAutoScaleCreation']);
     if (key === 'setNumberOfDecimalPlaces') this.checkingDependencies(key, ['numberOfDecimalPlaces']);
@@ -166,6 +171,7 @@ class ControlPanel {
       const [prop, selector] = valuesArray;
       this.getProp(prop);
 
+      if (prop === 'isVertical') this.checkingDependencies(prop, ['initAutoMargins']);
       if (prop === 'initAutoScaleCreation') this.checkingDependencies(prop, ['stepSizeForScale', 'checkingStepSizeForScale']);
       if (prop === 'checkingStepSizeForScale') this.checkingDependencies(prop, ['initAutoScaleCreation']);
       if (prop === 'setNumberOfDecimalPlaces') this.checkingDependencies(prop, ['numberOfDecimalPlaces']);

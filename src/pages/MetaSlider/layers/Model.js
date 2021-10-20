@@ -91,6 +91,7 @@ class Model extends Observer {
     this.opt.customValues = this.opt.customValues.filter((elem) => (elem !== '' && elem !== ' '));
 
     if (this.opt.initAutoScaleCreation) this.opt.checkingStepSizeForScale = false;
+    if (this.opt.isVertical) this.opt.initAutoMargins = false;
 
     if (this.opt.setNumberOfDecimalPlaces) this.getNumberOfDecimalPlaces();
 
