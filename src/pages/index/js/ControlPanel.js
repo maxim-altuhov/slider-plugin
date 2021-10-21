@@ -90,6 +90,7 @@ class ControlPanel {
   }
 
   initCheckingDependencies(prop) {
+    if (prop === 'isRange') this.checkingDependencies(prop, ['initValueFirst'], true);
     if (prop === 'isVertical') this.checkingDependencies(prop, ['initAutoMargins']);
     if (prop === 'initAutoScaleCreation') this.checkingDependencies(prop, ['stepSizeForScale', 'checkingStepSizeForScale']);
     if (prop === 'checkingStepSizeForScale') this.checkingDependencies(prop, ['initAutoScaleCreation']);
@@ -112,7 +113,7 @@ class ControlPanel {
     }
   }
 
-  checkingDependencies(initProp, checkingOptions) {
+  checkingDependencies(initProp, checkingOptions, isReverse = false) {
     let target = this.selectorsObj[initProp];
     let verifyingKey;
 
@@ -121,6 +122,8 @@ class ControlPanel {
     } else {
       verifyingKey = target.val();
     }
+
+    verifyingKey = isReverse ? !verifyingKey : verifyingKey;
 
     if (verifyingKey) {
       target.attr('data-link', true);
