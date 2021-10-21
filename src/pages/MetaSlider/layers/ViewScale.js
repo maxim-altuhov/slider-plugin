@@ -19,11 +19,6 @@ class ViewScale extends Observer {
     }
 
     const { key } = options;
-    const styleVerifKeys = (
-      key === 'init'
-      || key === 'colorForScale'
-      || key === 'showScale'
-    );
     const renderScaleVerifKeys = (
       key === 'init'
       || key === 'showScale'
@@ -39,6 +34,11 @@ class ViewScale extends Observer {
       || key === 'postFix'
       || key === 'initScaleAdjustment'
     );
+    const styleVerifKeys = (
+      key === 'init'
+      || key === 'colorForScale'
+      || key === 'showScale'
+    );
 
     if (renderScaleVerifKeys) {
       this.createScale(options);
@@ -52,7 +52,7 @@ class ViewScale extends Observer {
   createScale(options) {
     if (options.showScale) {
       this.$elemScale.empty();
-      const $fragmentWithScale = $(document.createDocumentFragment());
+
       const {
         initAutoScaleCreation,
         step,
@@ -65,6 +65,8 @@ class ViewScale extends Observer {
         preFix,
         postFix,
       } = options;
+
+      const $fragmentWithScale = $(document.createDocumentFragment());
       const stepSizeValue = initAutoScaleCreation ? step : stepSizeForScale;
       let currentValue = minValue;
 
@@ -88,6 +90,7 @@ class ViewScale extends Observer {
       this.$elemScalePoints.each((index, scalePoint) => {
         const $scalePoint = $(scalePoint);
         const valueInScalePoint = Number($scalePoint.attr('data-value'));
+
         const resultValue = (valueInScalePoint - minValue) / (maxValue - minValue);
         this.scalePointsSize += $scalePoint.outerWidth();
 
@@ -114,8 +117,10 @@ class ViewScale extends Observer {
         opacity: 1,
         'pointer-events': '',
       });
+      this.$elemScale.children().removeAttr('tabindex');
     } else {
       this.$elemScale.css({ opacity: 0, 'pointer-events': 'none' });
+      this.$elemScale.children().attr('tabindex', -1);
     }
   }
 
@@ -123,6 +128,7 @@ class ViewScale extends Observer {
     $scalePoint.addClass('meta-slider__scale-point_skip')
       .attr('tabindex', -1)
       .css({ color: 'transparent', borderColor: 'inherit' });
+
     this.skipScalePointsArray.push($scalePoint);
   }
 

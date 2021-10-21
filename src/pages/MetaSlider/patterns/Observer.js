@@ -7,7 +7,7 @@ class Observer {
     if (typeof observer !== 'function') throw new Error('Add observer must be a function');
 
     this.observerList.forEach((item) => {
-      if (item === observer) throw new Error('Add observer must be a function');
+      if (item === observer) throw new Error('Observer already in the list');
     });
 
     this.observerList.push(observer);

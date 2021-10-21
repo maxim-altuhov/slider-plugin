@@ -26,14 +26,15 @@ class ViewError {
   }
 
   handleRemoveErrorWindow() {
+    this.$btnErrorClose.off('click.btnErrorClose');
     this.$elemErrorInfo.remove();
     this.$elemErrorInfo = null;
+    this.$elemErrorText = null;
+    this.$btnErrorClose = null;
   }
 
   setEventErrorClose() {
-    if (this.$btnErrorClose) {
-      this.$btnErrorClose.on('click.btnErrorClose', this.handleRemoveErrorWindow.bind(this));
-    }
+    if (this.$btnErrorClose) this.$btnErrorClose.on('click.btnErrorClose', this.handleRemoveErrorWindow.bind(this));
   }
 }
 

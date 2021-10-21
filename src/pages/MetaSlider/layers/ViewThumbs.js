@@ -70,6 +70,8 @@ class ViewThumbs extends Observer {
 
       if (customValues.length > 0) {
         this.$elemThumbs.eq(index).attr('data-text', customValues[currentValue]);
+      } else {
+        this.$elemThumbs.eq(index).removeAttr('data-text');
       }
     });
   }
@@ -90,6 +92,7 @@ class ViewThumbs extends Observer {
       || event.code === 'ArrowDown'
     );
     const $target = $(event.target);
+
     if (configEventCode) {
       const { step } = options;
       let eventTargetValue = Number($target.attr('data-value'));

@@ -102,9 +102,9 @@ class ViewSlider extends Observer {
       showScale,
       isVertical,
     } = options;
-    const verifiableProp = (initAutoMargins && !isVertical);
+    const verifProp = (initAutoMargins && !isVertical);
 
-    if (verifiableProp && showMarkers) {
+    if (verifProp && showMarkers) {
       const heightMarker = this.$elemMarkers.eq(-1).outerHeight();
       const heightThumb = this.$elemThumbs.eq(-1).outerHeight();
 
@@ -113,7 +113,7 @@ class ViewSlider extends Observer {
       this.$elemSlider.css('margin-top', '');
     }
 
-    if (verifiableProp && showScale) {
+    if (verifProp && showScale) {
       const elemScalePoints = this.$selector.find('.js-meta-slider__scale-point');
       this.$elemSlider.css('margin-bottom', `${elemScalePoints.eq(0).outerHeight() * 3}px`);
     } else {
@@ -139,8 +139,8 @@ class ViewSlider extends Observer {
     if (options.showBackground) {
       const { valuesAsPercentageArray, mainColor } = options;
       const [firstPosition, secondPosition] = valuesAsPercentageArray;
-      const settingForRange = { left: `${firstPosition}%`, right: `${100 - secondPosition}%`, background: mainColor };
 
+      const settingForRange = { left: `${firstPosition}%`, right: `${100 - secondPosition}%`, background: mainColor };
       this.$sliderProgress.css(settingForRange);
     } else {
       this.$sliderProgress.css('background', 'none');

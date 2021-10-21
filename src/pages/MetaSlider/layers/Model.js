@@ -24,31 +24,44 @@ class Model extends Observer {
   }
 
   getInfoAboutSlider() {
-    this.opt.$elemSlider = this.opt.$selector.find('.js-meta-slider');
-    this.opt.$sliderProgress = this.opt.$selector.find('.js-meta-slider__progress');
-    this.opt.$elemThumbs = this.opt.$selector.find('.js-meta-slider__thumb');
-    this.opt.$elemMarkers = this.opt.$selector.find('.js-meta-slider__marker');
-    this.opt.$elemScale = this.opt.$selector.find('.js-meta-slider__scale');
+    const { $selector } = this.opt;
+
+    this.opt.$elemSlider = $selector.find('.js-meta-slider');
+    this.opt.$sliderProgress = $selector.find('.js-meta-slider__progress');
+    this.opt.$elemThumbs = $selector.find('.js-meta-slider__thumb');
+    this.opt.$elemMarkers = $selector.find('.js-meta-slider__marker');
+    this.opt.$elemScale = $selector.find('.js-meta-slider__scale');
   }
 
-  checkIsIntegerSizeScale() {
-    return Number.isInteger((this.opt.maxValue - this.opt.minValue) / this.opt.stepSizeForScale);
+  checkingIsIntegerSizeScale() {
+    const {
+      maxValue,
+      minValue,
+      stepSizeForScale,
+    } = this.opt;
+
+    return Number.isInteger((maxValue - minValue) / stepSizeForScale);
   }
 
   getNumberOfDecimalPlaces() {
-    this.opt.numberOfDecimalPlaces = this.opt.step.toString().includes('.') ? this.opt.step.toString().match(/\.(\d+)/)[1].length : 0;
+    const { step } = this.opt;
+
+    this.opt.numberOfDecimalPlaces = step.toString().includes('.') ? step.toString().match(/\.(\d+)/)[1].length : 0;
   }
 
   resetInitValue() {
-    this.opt.initValueSecond = this.opt.maxValue;
-    this.opt.initValueFirst = this.opt.minValue;
+    const { minValue, maxValue } = this.opt;
+
+    this.opt.initValueFirst = minValue;
+    this.opt.initValueSecond = maxValue;
   }
 
   initCustomValues() {
-    const { key } = this.opt;
+    const { key, customValues } = this.opt;
+
     if (key === 'init' || key === 'customValues') {
       this.opt.minValue = 0;
-      this.opt.maxValue = this.opt.customValues.length - 1;
+      this.opt.maxValue = customValues.length - 1;
       this.opt.initValueFirst = this.opt.minValue;
       this.opt.initValueSecond = this.opt.maxValue;
       this.opt.initAutoScaleCreation = false;
@@ -61,10 +74,10 @@ class Model extends Observer {
     }
   }
 
-  checkCorrectStepSizeForScale(errorMessage) {
+  checkingCorrectStepSizeForScale(errorMessage) {
     const isIntegerStepSizeForScale = Number.isInteger(this.opt.stepSizeForScale);
 
-    while (!this.checkIsIntegerSizeScale()) {
+    while (!this.checkingIsIntegerSizeScale()) {
       if (this.opt.stepSizeForScale > 1 && isIntegerStepSizeForScale) {
         this.opt.stepSizeForScale += 1;
       } else if (!isIntegerStepSizeForScale) {
@@ -92,7 +105,6 @@ class Model extends Observer {
 
     if (this.opt.initAutoScaleCreation) this.opt.checkingStepSizeForScale = false;
     if (this.opt.isVertical) this.opt.initAutoMargins = false;
-
     if (this.opt.setNumberOfDecimalPlaces) this.getNumberOfDecimalPlaces();
 
     if (this.opt.minValue > this.opt.maxValue || this.opt.minValue === this.opt.maxValue) {
@@ -126,12 +138,10 @@ class Model extends Observer {
       this.errorEvent.notify(errMessage.initValue, this.opt);
     }
 
-    if (this.opt.customValues.length > 0) {
-      this.initCustomValues();
-    }
+    if (this.opt.customValues.length > 0) this.initCustomValues();
 
     if (this.opt.checkingStepSizeForScale && !this.opt.initAutoScaleCreation) {
-      this.checkCorrectStepSizeForScale(errMessage);
+      this.checkingCorrectStepSizeForScale(errMessage);
     }
 
     this.opt.initValueFirst = this.calcTargetValue(null, this.opt.initValueFirst, true);
@@ -141,8 +151,15 @@ class Model extends Observer {
   }
 
   calcValueInPrecentage() {
-    this.opt.valuesAsPercentageArray = this.opt.initValuesArray.map((currentValue) => {
-      return ((currentValue - this.opt.minValue) / (this.opt.maxValue - this.opt.minValue)) * 100;
+    const {
+      initValuesArray,
+      minValue,
+      maxValue,
+
+    } = this.opt;
+
+    this.opt.valuesAsPercentageArray = initValuesArray.map((currentValue) => {
+      return ((currentValue - minValue) / (maxValue - minValue)) * 100;
     });
   }
 
@@ -160,7 +177,6 @@ class Model extends Observer {
     let clickInRange = false;
 
     if (isRange) clickInRange = targetValue > initValueFirst && targetValue < initValueSecond;
-
     if (targetValue <= initValueFirst) initValuesArray[0] = targetValue;
     if (targetValue >= initValueSecond || !isRange) initValuesArray[1] = targetValue;
 
@@ -172,7 +188,12 @@ class Model extends Observer {
 
     const [firstThumb, secondThumb] = $elemThumbs;
     const isIdenticalDistanceInRange = (clickInRange && firstThumbDiff === secondThumbDiff);
-    const isEventMoveKeypress = (event.code === 'ArrowLeft' || event.code === 'ArrowRight' || event.code === 'ArrowUp' || event.code === 'ArrowDown');
+    const isEventMoveKeypress = (
+      event.code === 'ArrowLeft'
+      || event.code === 'ArrowRight'
+      || event.code === 'ArrowUp'
+      || event.code === 'ArrowDown'
+    );
     let eventPosition;
     let firstThumbPosition;
     let secondThumbPosition;
@@ -241,9 +262,7 @@ class Model extends Observer {
       valueInEventPosition = eventPosition - sliderOffset;
     }
 
-    const calcForInitValue = (
-      ((initValue - minValue) / (maxValue - minValue)) * 100
-    );
+    const calcForInitValue = ((initValue - minValue) / (maxValue - minValue)) * 100;
     const calcForEventValue = (valueInEventPosition / sliderSize) * 100;
     const valueAsPercentage = (initValue === undefined) ? calcForEventValue : calcForInitValue;
     const stepCounter = (maxValue - minValue) / step;
@@ -255,9 +274,7 @@ class Model extends Observer {
     if (totalPercent > 100) totalPercent = 100;
 
     const resultValue = (totalPercent / stepAsPercent) * step;
-    const targetValue = (
-      Number(resultValue.toFixed(numberOfDecimalPlaces)) + minValue
-    );
+    const targetValue = Number(resultValue.toFixed(numberOfDecimalPlaces)) + minValue;
 
     if (onlyReturn) return targetValue;
     this.checkTargetValue(targetValue, event);
