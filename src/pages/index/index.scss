@@ -1,5 +1,6 @@
-@import '../MetaSlider/scss/MetaSlider';
+@import '../MetaSlider/MetaSlider';
 @import '@base/base.scss';
+@import './components/control/control';
 
 body,
 html {
@@ -17,110 +18,26 @@ html {
     min-height: 250px;
     text-align: justify;
   }
+
+  &__block {
+    flex: 1 0 50%;
+  }
 }
 
 .slider {
-  width: 50%;
-
   &__wrapper {
     padding: 0 2rem;
   }
 }
 
 .config {
-  width: 50%;
-
   &__wrapper {
     display: grid;
     grid-template: auto / repeat(2, auto);
     justify-items: end;
     align-content: space-between;
     align-items: center;
-    border-left: 1px solid #222;
     font-size: 14px;
     font-weight: 700;
-  }
-
-  &__field {
-    min-height: 45px;
-  }
-
-  &__input {
-    max-width: 70px;
-    height: 30px;
-    border: 1px solid #afafaf;
-    border-radius: 5px;
-    box-shadow: 1px 1px 5px 1px rgba(138, 138, 138, 0.2);
-    margin-left: 25px;
-    padding: 0 15px;
-    font-weight: 700;
-
-    &:disabled {
-      cursor: not-allowed;
-      opacity: 0.5;
-      background-color: #cecece;
-    }
-  }
-
-  &__label {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-  }
-
-  &__checkbox:checked+&__checkbox-title:before,
-  &__checkbox:not(:checked)+&__checkbox-title:before {
-    content: "";
-    position: absolute;
-    right: 0;
-    top: 0;
-    width: 30px;
-    height: 30px;
-    background: #FFFFFF;
-    border: 1px solid #afafaf;
-    border-radius: 5px;
-    box-shadow: 1px 1px 5px 1px rgba(138, 138, 138, 0.2);
-  }
-
-  &__checkbox:disabled+&__checkbox-title:before {
-    cursor: not-allowed;
-    opacity: 0.5;
-    background-color: #cecece;
-  }
-
-  &__checkbox:checked+&__checkbox-title:after {
-    content: "";
-    position: absolute;
-    right: 0;
-    top: 0;
-    width: 30px;
-    height: 30px;
-    background-image: url('./img/checkbox.svg');
-    background-repeat: no-repeat;
-    background-size: 24px;
-    background-position: center 4px;
-  }
-
-  &__checkbox:focus+&__checkbox-title:before {
-    outline: #000 auto 2px;
-  }
-
-  &__checkbox_hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    margin: -1px;
-    border: 0;
-    padding: 0;
-    white-space: nowrap;
-    clip-path: inset(100%);
-    clip: rect(0 0 0 0);
-    overflow: hidden;
-  }
-
-  &__checkbox-title {
-    position: relative;
-    padding-right: 55px;
-    line-height: 30px;
   }
 }

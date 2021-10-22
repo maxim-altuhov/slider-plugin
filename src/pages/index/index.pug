@@ -1,0 +1,29 @@
+include ./components/control/control.pug
+include ./data/propInput.pug
+include ./data/propCheckbox.pug
+
+meta(charset="utf-8")
+title Слайдер
+meta(name="viewport" content="width=device-width,initial-scale=1")
+meta(name="description" content="Плагин слайдера")
+meta(name="keywords" content="Слайдер")
+meta(name="msapplication-TileColor" content="#da532c")
+meta(name="theme-color" content="#ffffff")
+link(rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png")
+link(rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32x32.png")
+link(rel="icon" type="image/png" sizes="16x16" href="./assets/favicon-16x16.png")
+link(rel="manifest" href="./assets/site.webmanifest")
+link(rel="mask-icon" href="./assets/safari-pinned-tab.svg" color="#5bbad5")
+.container
+  .container__wrapper
+    .container__block
+      .slider
+        .slider__wrapper
+          p Lorem ipsum dolor sit amet consectetur adipisicing elit. Explicabo, nisi eius! Reprehenderit voluptatum dolores sapiente aliquam suscipit ipsum odio soluta nobis deleniti ipsa exercitationem, necessitatibus fuga! Asperiores vitae at cupiditate. Sint animi voluptatem qui vitae, corporis eaque dicta ratione harum doloribus eius rerum necessitatibus non impedit magni iure, voluptas reprehenderit modi fugiat nesciunt laboriosam omnis nisi totam quibusdam? Praesentium, natus!
+          #slider-1
+          p Lorem ipsum dolor sit amet consectetur adipisicing elit. Explicabo, nisi eius! Reprehenderit voluptatum dolores sapiente aliquam suscipit ipsum odio soluta nobis deleniti ipsa exercitationem, necessitatibus fuga! Asperiores vitae at cupiditate. Sint animi voluptatem qui vitae, corporis eaque dicta ratione harum doloribus eius rerum necessitatibus non impedit magni iure, voluptas reprehenderit modi fugiat nesciunt laboriosam omnis nisi totam quibusdam? Praesentium, natus!
+    .container__block
+      .config#config-slider-1
+        .config__wrapper
+          +control(propInput)
+          +control(propCheckbox)

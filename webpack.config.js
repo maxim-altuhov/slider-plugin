@@ -22,7 +22,7 @@ const allPages = fs.readdirSync(pagesDir);
 const isDev = process.env.NODE_ENV === 'development';
 const isDevServer = process.env.SECOND_ENV === 'devserver';
 const isProd = !isDev;
-let inputTypeFile = 'html'; // либо pug
+let inputTypeFile = 'pug'; // либо pug
 
 // формируем имя файла в зависимости от режима сборки
 const filename = ext => isDev ? `[name].${ext}` : `[name].[fullhash].${ext}`;
@@ -219,10 +219,7 @@ module.exports = {
       '@base': path.resolve(__dirname, 'src/base'),
       '@scss': path.resolve(__dirname, 'src/base/scss'),
       '@fonts': path.resolve(__dirname, 'src/base/fonts'),
-      '@libs': path.resolve(__dirname, 'src/base/libs'),
       '@pages': path.resolve(__dirname, 'src/pages'),
-      '@comp': path.resolve(__dirname, 'src/components'),
-      '@lo': path.resolve(__dirname, 'src/layout'),
     },
   },
   optimization: optimization(),
