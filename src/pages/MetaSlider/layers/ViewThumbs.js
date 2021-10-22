@@ -26,10 +26,12 @@ class ViewThumbs extends Observer {
       || key === 'initValueFirst'
       || key === 'initValueSecond'
       || key === 'customValues'
+      || key === 'setNumberOfDecimalPlaces'
       || key === 'numberOfDecimalPlaces'
       || key === 'isRange'
       || key === 'minValue'
       || key === 'maxValue'
+      || key === 'step'
     );
     const styleVerifKeys = (
       key === 'init'

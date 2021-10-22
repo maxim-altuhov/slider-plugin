@@ -14,6 +14,7 @@ $(() => {
     minValue: 10,
     maxValue: 20,
     showScale: true,
+    setNumberOfDecimalPlaces: false,
     // customValues: ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ'],
   });
   controlPanel1.init();

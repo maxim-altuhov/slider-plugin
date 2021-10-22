@@ -24,11 +24,13 @@ class ViewMarkers {
       || key === 'customValues'
       || key === 'preFix'
       || key === 'postFix'
+      || key === 'setNumberOfDecimalPlaces'
       || key === 'numberOfDecimalPlaces'
       || key === 'initFormatted'
       || key === 'isRange'
       || key === 'minValue'
       || key === 'maxValue'
+      || key === 'step'
     );
     const styleVerifKeys = (
       key === 'init'

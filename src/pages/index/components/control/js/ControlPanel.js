@@ -56,6 +56,7 @@ class ControlPanel {
       || key === 'initValueSecond'
       || key === 'minValue'
       || key === 'maxValue'
+      || key === 'setNumberOfDecimalPlaces'
       || key === 'numberOfDecimalPlaces'
       || key === 'step'
       || key === 'stepSizeForScale'
