@@ -24,7 +24,7 @@ class ViewMarkers {
       || key === 'customValues'
       || key === 'preFix'
       || key === 'postFix'
-      || key === 'setNumberOfDecimalPlaces'
+      || key === 'calcNumberOfDecimalPlaces'
       || key === 'numberOfDecimalPlaces'
       || key === 'initFormatted'
       || key === 'isRange'

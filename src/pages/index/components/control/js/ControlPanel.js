@@ -23,7 +23,7 @@ class ControlPanel {
       'stepSizeForScale',
       'preFix',
       'postFix',
-      'setNumberOfDecimalPlaces',
+      'calcNumberOfDecimalPlaces',
       'numberOfDecimalPlaces',
       'customValues',
       'showMarkers',
@@ -56,7 +56,7 @@ class ControlPanel {
       || key === 'initValueSecond'
       || key === 'minValue'
       || key === 'maxValue'
-      || key === 'setNumberOfDecimalPlaces'
+      || key === 'calcNumberOfDecimalPlaces'
       || key === 'numberOfDecimalPlaces'
       || key === 'step'
       || key === 'stepSizeForScale'
@@ -70,7 +70,7 @@ class ControlPanel {
       this.getProp('initValueSecond');
       this.getProp('minValue');
       this.getProp('maxValue');
-      this.getProp('setNumberOfDecimalPlaces');
+      this.getProp('calcNumberOfDecimalPlaces');
       this.getProp('numberOfDecimalPlaces');
       this.getProp('step');
       this.getProp('stepSizeForScale');
@@ -95,7 +95,7 @@ class ControlPanel {
     if (prop === 'isVertical') this.checkingDependencies(prop, ['initAutoMargins']);
     if (prop === 'initAutoScaleCreation') this.checkingDependencies(prop, ['stepSizeForScale', 'checkingStepSizeForScale']);
     if (prop === 'checkingStepSizeForScale') this.checkingDependencies(prop, ['initAutoScaleCreation']);
-    if (prop === 'setNumberOfDecimalPlaces') this.checkingDependencies(prop, ['numberOfDecimalPlaces']);
+    if (prop === 'calcNumberOfDecimalPlaces') this.checkingDependencies(prop, ['numberOfDecimalPlaces']);
 
     if (prop === 'customValues') {
       const customValuesDependencies = [
@@ -105,7 +105,7 @@ class ControlPanel {
         'stepSizeForScale',
         'initAutoScaleCreation',
         'numberOfDecimalPlaces',
-        'setNumberOfDecimalPlaces',
+        'calcNumberOfDecimalPlaces',
         'checkingStepSizeForScale',
         'initFormatted',
       ];

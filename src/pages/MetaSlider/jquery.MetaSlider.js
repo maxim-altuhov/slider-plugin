@@ -17,7 +17,7 @@ import Presenter from './layers/Presenter';
         initFormatted: true,
         initAutoMargins: true,
         initScaleAdjustment: true,
-        setNumberOfDecimalPlaces: true,
+        calcNumberOfDecimalPlaces: true,
         showError: true,
         showScale: true,
         showMarkers: true,

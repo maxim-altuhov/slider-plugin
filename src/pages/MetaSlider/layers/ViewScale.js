@@ -27,7 +27,7 @@ class ViewScale extends Observer {
       || key === 'stepSizeForScale'
       || key === 'minValue'
       || key === 'maxValue'
-      || key === 'setNumberOfDecimalPlaces'
+      || key === 'calcNumberOfDecimalPlaces'
       || key === 'numberOfDecimalPlaces'
       || key === 'customValues'
       || key === 'initFormatted'

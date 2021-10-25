@@ -34,7 +34,7 @@ class ViewSlider extends Observer {
       || key === 'maxValue'
       || key === 'customValues'
       || key === 'step'
-      || key === 'setNumberOfDecimalPlaces'
+      || key === 'calcNumberOfDecimalPlaces'
       || key === 'numberOfDecimalPlaces'
     );
     const autoMarginVerifKeys = (

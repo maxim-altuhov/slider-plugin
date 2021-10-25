@@ -26,7 +26,7 @@ class ViewThumbs extends Observer {
       || key === 'initValueFirst'
       || key === 'initValueSecond'
       || key === 'customValues'
-      || key === 'setNumberOfDecimalPlaces'
+      || key === 'calcNumberOfDecimalPlaces'
       || key === 'numberOfDecimalPlaces'
       || key === 'isRange'
       || key === 'minValue'
