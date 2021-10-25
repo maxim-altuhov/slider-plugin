@@ -12,32 +12,95 @@ html {
   &__wrapper {
     display: flex;
     background-color: #ffffff;
-    margin: 1rem;
-    padding: 2.5rem;
+    margin: 15px;
+    padding: 30px;
     border-radius: 10px;
     min-height: 250px;
     text-align: justify;
+
+    @media (max-width: 1199px) {
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 767px) {
+      padding: 20px;
+    }
   }
 
   &__block {
     flex: 1 0 50%;
+
+    @media (max-width: 1199px) {
+      flex: 1 0 100%;
+    }
+
+    &:first-child {
+      border-right: 2px dashed #b1b1b1;
+
+      @media (max-width: 1199px) {
+        border-right: none;
+        border-bottom: 2px dashed #b1b1b1;
+      }
+    }
   }
 }
 
 .slider {
   &__wrapper {
-    padding: 0 2rem;
+    padding: 0 30px;
+
+    @media (max-width: 767px) {
+      padding: 0 15px;
+    }
+  }
+
+  &__block {
+    padding: 0 15px;
   }
 }
 
 .config {
   &__wrapper {
     display: grid;
+    gap: 10px;
     grid-template: auto / repeat(2, auto);
     justify-items: end;
-    align-content: space-between;
     align-items: center;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 700;
+    padding: 25px 15px;
+
+    @media (max-width: 1199px) {
+      grid-template: auto / repeat(3, auto);
+    }
+
+    @media (max-width: 991px) {
+      grid-template: auto / repeat(2, auto);
+      justify-content: space-between;
+    }
+
+    @media (max-width: 767px) {
+      padding: 25px 0px;
+    }
+
+    @media (max-width: 575px) {
+      grid-template: auto / 1fr;
+      justify-items: stretch;
+    }
+  }
+}
+
+.control {
+  &__label {
+    @media (max-width: 575px) {
+      justify-content: space-between;
+      text-align: left;
+    }
+  }
+
+  &__checkbox-title {
+    @media (max-width: 575px) {
+      width: 100%;
+    }
   }
 }

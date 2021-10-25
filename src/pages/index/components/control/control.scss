@@ -1,12 +1,14 @@
 .control {
   &__field {
-    min-height: 40px;
+    min-height: 32px;
   }
 
   &__label {
     display: flex;
     align-items: center;
     cursor: pointer;
+    text-align: right;
+    line-height: 1.4;
   }
 
   &__input {
@@ -77,8 +79,10 @@
   }
 
   &__checkbox-title {
+    display: flex;
+    align-items: center;
     position: relative;
+    min-height: 32px;
     padding-right: 55px;
-    line-height: 30px;
   }
 }
