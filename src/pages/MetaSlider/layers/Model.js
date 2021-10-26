@@ -156,9 +156,11 @@ class Model extends Observer {
 
     if (verifKeys) {
       this.opt.step = Number(step.toFixed(numberOfDecimalPlaces));
-      this.opt.stepSizeForScale = Number(stepSizeForScale.toFixed(numberOfDecimalPlaces));
 
-      if (initAutoScaleCreation) this.opt.checkingStepSizeForScale = false;
+      if (initAutoScaleCreation) {
+        this.opt.checkingStepSizeForScale = false;
+        this.opt.stepSizeForScale = this.opt.step;
+      }
 
       if (step <= 0 || step > differenceMinAndMax) {
         this.opt.step = differenceMinAndMax;
@@ -180,7 +182,7 @@ class Model extends Observer {
     const { customValues } = this.opt;
 
     this.opt.minValue = 0;
-    this.opt.initValueFirst = this.opt.minValue;
+    this.opt.initValueFirst = this.opt.initValueFirst || this.opt.minValue;
     this.opt.initAutoScaleCreation = false;
     this.opt.checkingStepSizeForScale = false;
     this.opt.initFormatted = false;
@@ -192,7 +194,7 @@ class Model extends Observer {
     if (customValues.length === 1) customValues.push(customValues[0]);
 
     this.opt.maxValue = customValues.length - 1;
-    this.opt.initValueSecond = this.opt.maxValue;
+    this.opt.initValueSecond = this.opt.initValueSecond || this.opt.maxValue;
   }
 
   checkingCustomValues() {
@@ -214,6 +216,7 @@ class Model extends Observer {
       minValue,
       maxValue,
       isRange,
+      customValues,
     } = this.opt;
 
     const verifKeys = (
@@ -225,6 +228,7 @@ class Model extends Observer {
       || key === 'isRange'
       || key === 'step'
       || key === 'numberOfDecimalPlaces'
+      || key === 'customValues'
     );
 
     const checkingKeys = (
@@ -245,6 +249,14 @@ class Model extends Observer {
       this.opt.initValueFirst = isRange ? this.opt.initValueFirst : minValue;
       this.opt.initValueFirst = this.calcTargetValue(null, this.opt.initValueFirst, true);
       this.opt.initValueSecond = this.calcTargetValue(null, this.opt.initValueSecond, true);
+
+      if (customValues.length > 0) {
+        this.opt.textValueFirst = customValues[this.opt.initValueFirst];
+        this.opt.textValueSecond = customValues[this.opt.initValueSecond];
+      } else {
+        this.opt.textValueFirst = '';
+        this.opt.textValueSecond = '';
+      }
     }
   }
 
@@ -286,6 +298,7 @@ class Model extends Observer {
       initValuesArray,
       $elemThumbs,
       isVertical,
+      customValues,
     } = this.opt;
     const firstThumbDiff = Math.abs((targetValue - initValueFirst).toFixed(2));
     const secondThumbDiff = Math.abs((targetValue - initValueSecond).toFixed(2));
@@ -347,6 +360,12 @@ class Model extends Observer {
     this.calcValueInPrecentage();
     this.opt.initValueFirst = initValuesArray[0];
     this.opt.initValueSecond = initValuesArray[1];
+
+    if (customValues.length > 0) {
+      this.opt.textValueFirst = customValues[this.opt.initValueFirst];
+      this.opt.textValueSecond = customValues[this.opt.initValueSecond];
+    }
+
     this.opt.key = 'changedValue';
     this.notify(this.opt);
   }

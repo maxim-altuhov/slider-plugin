@@ -9,10 +9,9 @@ $(() => {
   const controlPanel1 = new ControlPanel('#config-slider-1', slider1);
 
   slider1.metaSlider({
-    step: 1,
-    initValueFirst: 12,
-    minValue: 10,
-    maxValue: 20,
+    step: 10,
+    initValueFirst: 10,
+    initValueSecond: 80,
     showScale: true,
     // customValues: ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ'],
   });

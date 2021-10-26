@@ -18,7 +18,7 @@ import Presenter from './layers/Presenter';
         initAutoMargins: true,
         initScaleAdjustment: true,
         calcNumberOfDecimalPlaces: true,
-        showError: true,
+        showError: false,
         showScale: true,
         showMarkers: true,
         showBackground: true,
@@ -36,10 +36,13 @@ import Presenter from './layers/Presenter';
         customValues: [],
         initValueFirst: '',
         initValueSecond: '',
+        textValueFirst: '',
+        textValueSecond: '',
       };
 
       const inputOptions = $.extend({}, initSettings, settings);
       const {
+        customValues,
         initValueFirst,
         initValueSecond,
         minValue,
@@ -48,9 +51,12 @@ import Presenter from './layers/Presenter';
         step,
       } = inputOptions;
 
-      inputOptions.initValueFirst = initValueFirst || minValue;
-      inputOptions.initValueSecond = initValueSecond || maxValue;
       inputOptions.stepSizeForScale = stepSizeForScale || step;
+
+      if (customValues.length === 0) {
+        inputOptions.initValueFirst = initValueFirst || minValue;
+        inputOptions.initValueSecond = initValueSecond || maxValue;
+      }
 
       return this.each(() => {
         const data = this.data('metaSlider');

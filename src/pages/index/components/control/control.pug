@@ -4,11 +4,11 @@ mixin control(properties)
       .control__field
         if prop.type === "text"
           label.control__label= prop.text
-            input.control__input(type="text" name=prop.name)
+            input.control__input(type="text" name=prop.name disabled=prop.disabled)
         else if prop.type === "checkbox"
           label.control__label
-            input.control__checkbox.control__checkbox_hidden(type="checkbox" name=prop.name value=prop.name)
+            input.control__checkbox.control__checkbox_hidden(type="checkbox" name=prop.name value=prop.name disabled=prop.disabled)
             span.control__checkbox-title= prop.text
         else
           label.control__label= prop.text
-            input.control__input(type="number" step=prop.step name=prop.name)
+            input.control__input(type="number" step=prop.step name=prop.name disabled=prop.disabled)

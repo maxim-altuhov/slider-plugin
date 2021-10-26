@@ -17,6 +17,8 @@ class ControlPanel {
       'colorBorderForThumb',
       'initValueFirst',
       'initValueSecond',
+      'textValueFirst',
+      'textValueSecond',
       'minValue',
       'maxValue',
       'step',
@@ -50,41 +52,78 @@ class ControlPanel {
 
   watchTheSlider() {
     const key = this.$sliderSelector.metaSlider('getProp', 'key');
-    const setValueVerifKeys = (
+    const changeValuesVerifKeys = (
       key === 'changedValue'
       || key === 'initValueFirst'
       || key === 'initValueSecond'
-      || key === 'minValue'
-      || key === 'maxValue'
-      || key === 'calcNumberOfDecimalPlaces'
-      || key === 'numberOfDecimalPlaces'
-      || key === 'step'
-      || key === 'stepSizeForScale'
-      || key === 'customValues'
     );
 
-    if (setValueVerifKeys || key === 'isRange') this.getProp('initValueFirst');
-    if (key === 'isVertical') this.getProp('initAutoMargins');
+    if (changeValuesVerifKeys) {
+      this.getProp('initValueFirst');
+      this.getProp('initValueSecond');
+      this.getProp('textValueFirst');
+      this.getProp('textValueSecond');
+    }
 
-    if (setValueVerifKeys) {
+    if (key === 'maxValue' || key === 'minValue') {
+      this.getProp('minValue');
+      this.getProp('maxValue');
+      this.getProp('initValueFirst');
+      this.getProp('initValueSecond');
+      this.getProp('numberOfDecimalPlaces');
+    }
+
+    if (key === 'step') {
+      this.getProp('step');
+      this.getProp('initValueFirst');
+      this.getProp('initValueSecond');
+      this.getProp('numberOfDecimalPlaces');
+      this.getProp('stepSizeForScale');
+    }
+
+    if (key === 'stepSizeForScale') this.getProp('stepSizeForScale');
+
+    if (key === 'customValues') {
+      this.getProp('customValues');
+      this.getProp('initValueFirst');
+      this.getProp('initValueSecond');
+      this.getProp('textValueFirst');
+      this.getProp('textValueSecond');
+      this.getProp('minValue');
+      this.getProp('maxValue');
+      this.getProp('step');
+      this.getProp('stepSizeForScale');
+      this.getProp('numberOfDecimalPlaces');
+      this.getProp('initFormatted');
+      this.getProp('calcNumberOfDecimalPlaces');
+      this.getProp('initAutoScaleCreation');
+      this.getProp('checkingStepSizeForScale');
+    }
+
+    if (key === 'calcNumberOfDecimalPlaces') this.getProp('numberOfDecimalPlaces');
+
+    if (key === 'numberOfDecimalPlaces') {
+      this.getProp('numberOfDecimalPlaces');
+      this.getProp('initValueFirst');
       this.getProp('initValueSecond');
       this.getProp('minValue');
       this.getProp('maxValue');
-      this.getProp('calcNumberOfDecimalPlaces');
-      this.getProp('numberOfDecimalPlaces');
       this.getProp('step');
-      this.getProp('stepSizeForScale');
+    }
 
-      if (key === 'customValues') {
-        this.getProp('initAutoScaleCreation');
-        this.getProp('checkingStepSizeForScale');
-        this.getProp('initFormatted');
-      }
+    if (key === 'isRange') {
+      this.getProp('initValueFirst');
+      this.getProp('textValueFirst');
+    }
+
+    if (key === 'isVertical') {
+      this.getProp('initAutoMargins');
     }
 
     if (key === 'initAutoScaleCreation' || key === 'checkingStepSizeForScale') {
       this.getProp('initAutoScaleCreation');
       this.getProp('checkingStepSizeForScale');
+      this.getProp('stepSizeForScale');
     }
 
     this.initCheckingDependencies(key);

@@ -60,7 +60,6 @@ class ViewScale extends Observer {
         stepSizeForScale,
         minValue,
         maxValue,
-        numberOfDecimalPlaces,
         customValues,
         initFormatted,
         preFix,
@@ -72,8 +71,6 @@ class ViewScale extends Observer {
       let currentValue = minValue;
 
       for (; currentValue <= maxValue; currentValue += stepSizeValue) {
-        currentValue = Number(currentValue.toFixed(numberOfDecimalPlaces));
-
         const isCustomValue = customValues.length > 0;
         const convertedValue = initFormatted ? currentValue.toLocaleString() : currentValue;
         const resultValue = isCustomValue ? customValues[currentValue] : convertedValue;
