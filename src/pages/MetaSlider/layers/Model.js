@@ -35,12 +35,9 @@ class Model extends Observer {
 
   getNumberOfDecimalPlaces() {
     const propToCheck = [
-      'step',
-      'initValueFirst',
-      'initValueSecond',
       'minValue',
       'maxValue',
-      'stepSizeForScale',
+      'step',
     ];
 
     const resultArr = propToCheck.map((prop) => {
@@ -62,12 +59,11 @@ class Model extends Observer {
     const calcNumberVerifKeys = (
       key === 'init'
       || key === 'calcNumberOfDecimalPlaces'
-      || key === 'step'
       || key === 'initValueFirst'
       || key === 'initValueSecond'
       || key === 'minValue'
       || key === 'maxValue'
-      || key === 'stepSizeForScale'
+      || key === 'step'
     );
 
     if (calcNumberVerifKeys && calcNumberOfDecimalPlaces) this.getNumberOfDecimalPlaces();
@@ -227,6 +223,8 @@ class Model extends Observer {
       || key === 'minValue'
       || key === 'maxValue'
       || key === 'isRange'
+      || key === 'step'
+      || key === 'numberOfDecimalPlaces'
     );
 
     const checkingKeys = (
