@@ -6,6 +6,8 @@ class ControlPanel {
     this.$selector = $(panelSelector);
     this.$sliderSelector = sliderSelector;
     this.selectorsObj = {};
+
+    // список всех доступных свойств слайдера
     this.propertyList = [
       'mainColor',
       'secondColor',
@@ -44,12 +46,54 @@ class ControlPanel {
     this.getSelectors();
   }
 
+  /**
+   * Инициализация контр.панели и её заполнение значениями свойств слайдера,
+   * установка обработчика событий на инпуты и подписка на обновление модели слайдера
+   */
+  init() {
+    Object.entries(this.selectorsObj).forEach((valuesArray) => {
+      const [prop, $selector] = valuesArray;
+      this.getProp(prop);
+      this.initCheckingDependencies(prop);
+
+      $selector.on('change.input', this.handleInputChanges.bind(this));
+    });
+
+    this.$sliderSelector.metaSlider('subscribe', this.watchTheSlider.bind(this));
+  }
+
+  // Метод для установки новых значений для слайдера
+  setProp(prop, value) {
+    this.$sliderSelector.metaSlider('setProp', prop, value);
+  }
+
+  // Метод для получения текущих свойств слайдера и установки новых значений в контр.панели
+  getProp(prop) {
+    const resultProp = this.$sliderSelector.metaSlider('getProp', prop);
+    const target = this.selectorsObj[prop];
+
+    if (target.attr('type') === 'checkbox') {
+      target.prop('checked', resultProp);
+    } else {
+      target.val(resultProp);
+    }
+
+    return resultProp;
+  }
+
+  // Получаем в виде объекта все инпуты по имени свойств слайдера
   getSelectors() {
     this.propertyList.forEach((prop) => {
       this.selectorsObj[prop] = this.$selector.find(`[name = ${prop}]`);
     });
   }
 
+  /**
+   * Метод который следит за обновлением модели через патерн Observer и выводит данные
+   * в контр. панель, проверка происходит по значению свойства 'key', которое присваевается
+   * в зависимости от того, какое свойство слайдера изменилось.
+   * Здесь также происходит инициализация метода проверки зависимости свойств слайдера друг от друга
+   */
   watchTheSlider() {
     const key = this.$sliderSelector.metaSlider('getProp', 'key');
     const changeValuesVerifKeys = (
@@ -126,15 +170,21 @@ class ControlPanel {
       this.getProp('stepSizeForScale');
     }
 
+    // Инициализация проверки зависимости свойств слайдера друг от друга
     this.initCheckingDependencies(key);
   }
 
+  /**
+   * Проверка наличия зависимости входящего свойства от других заранее определенных свойств слайдера
+   * и установка инпутам в контр.панели с этими свойствами заданного атрибута
+   */
+  //
   initCheckingDependencies(prop) {
-    if (prop === 'isRange') this.checkingDependencies(prop, ['initValueFirst'], true);
-    if (prop === 'isVertical') this.checkingDependencies(prop, ['initAutoMargins']);
-    if (prop === 'initAutoScaleCreation') this.checkingDependencies(prop, ['stepSizeForScale', 'checkingStepSizeForScale']);
-    if (prop === 'checkingStepSizeForScale') this.checkingDependencies(prop, ['initAutoScaleCreation']);
-    if (prop === 'calcNumberOfDecimalPlaces') this.checkingDependencies(prop, ['numberOfDecimalPlaces']);
+    if (prop === 'isRange') this.checkTheProp(prop, ['initValueFirst'], true);
+    if (prop === 'isVertical') this.checkTheProp(prop, ['initAutoMargins']);
+    if (prop === 'initAutoScaleCreation') this.checkTheProp(prop, ['stepSizeForScale', 'checkingStepSizeForScale']);
+    if (prop === 'checkingStepSizeForScale') this.checkTheProp(prop, ['initAutoScaleCreation']);
+    if (prop === 'calcNumberOfDecimalPlaces') this.checkTheProp(prop, ['numberOfDecimalPlaces']);
 
     if (prop === 'customValues') {
       const customValuesDependencies = [
@@ -149,11 +199,15 @@ class ControlPanel {
         'initFormatted',
       ];
 
-      this.checkingDependencies(prop, customValuesDependencies);
+      this.checkTheProp(prop, customValuesDependencies);
     }
   }
 
-  checkingDependencies(initProp, checkingOptions, isReverse = false) {
+  /**
+   * Проверка инпута с определенным свойством слайдера на наличие в нём значения
+   * и установка атрибута disabled зависимым от него инпутам
+   */
+  checkTheProp(initProp, checkingOptions, isReverse = false) {
     let target = this.selectorsObj[initProp];
     let verifyingKey;
 
@@ -180,6 +234,13 @@ class ControlPanel {
     }
   }
 
+  // Метод переключения атрибута disabled у инпутов
+  togglePropDisable(prop, options) {
+    const target = this.selectorsObj[prop];
+    target.prop('disabled', options);
+  }
+
+  // Установка новых значений свойств слайдера при изменении инпутов контр. панели
   handleInputChanges(event) {
     const target = $(event.target);
     const prop = target.attr('name');
@@ -194,40 +255,6 @@ class ControlPanel {
     }
 
     this.setProp(prop, value);
-  }
-
-  setProp(prop, value) {
-    this.$sliderSelector.metaSlider('setProp', prop, value);
-  }
-
-  togglePropDisable(prop, options) {
-    const target = this.selectorsObj[prop];
-    target.prop('disabled', options);
-  }
-
-  getProp(prop) {
-    const resultProp = this.$sliderSelector.metaSlider('getProp', prop);
-    const target = this.selectorsObj[prop];
-
-    if (target.attr('type') === 'checkbox') {
-      target.prop('checked', resultProp);
-    } else {
-      target.val(resultProp);
-    }
-
-    return resultProp;
-  }
-
-  init() {
-    Object.entries(this.selectorsObj).forEach((valuesArray) => {
-      const [prop, $selector] = valuesArray;
-      this.getProp(prop);
-      this.initCheckingDependencies(prop);
-
-      $selector.on('change.input', this.handleInputChanges.bind(this));
-    });
-
-    this.$sliderSelector.metaSlider('subscribe', this.watchTheSlider.bind(this));
   }
 }
 

@@ -7,12 +7,14 @@ class ViewThumbs extends Observer {
     this.isFirstInit = true;
   }
 
+  // Первоначальная инициализация
   init(options) {
     this.$selector = options.$selector;
     this.$elemThumbs = options.$elemThumbs;
     this.setEventsThumbs(options);
   }
 
+  // Обновление view
   update(options) {
     if (this.isFirstInit) {
       this.init(options);
@@ -42,9 +44,10 @@ class ViewThumbs extends Observer {
 
     if (setValueVerifKeys) this.setValueInThumbs(options);
     if (styleVerifKeys) this.setStyleForThumbs(options);
-    if (key === 'isRange' || key === 'init') this.checkIsRange(options);
+    if (key === 'init' || key === 'isRange') this.checkIsRange(options);
   }
 
+  //  Установка стиля для бегунков
   setStyleForThumbs(options) {
     const {
       mainColor,
@@ -59,6 +62,7 @@ class ViewThumbs extends Observer {
     });
   }
 
+  // Установка бегунков в нужные позиции и добавление data-атрибутов для слайдера
   setValueInThumbs(options) {
     const {
       initValuesArray,
@@ -78,6 +82,7 @@ class ViewThumbs extends Observer {
     });
   }
 
+  // Проверка опции "IsRange" у слайдера и показ/скрытие первого бегунка
   checkIsRange(options) {
     if (options.isRange) {
       this.$elemThumbs.eq(0).css('display', '');
@@ -86,6 +91,17 @@ class ViewThumbs extends Observer {
     }
   }
 
+  // Установка обработчиков событий на бегунки слайдера
+  setEventsThumbs(options) {
+    this.$elemThumbs.each((index, thumb) => {
+      const $currentThumb = $(thumb);
+      $currentThumb.on('pointerdown.thumb', this.handleSetEventListenerForThumbs.bind(this));
+      $currentThumb.on('keydown.thumb', this.handleChangeThumbPosition.bind(this, options));
+      $currentThumb.on('dragstart.thumb', false);
+    });
+  }
+
+  // Изменение позиции бегунков слайдера при использовании клавиатуры
   handleChangeThumbPosition(options, event) {
     const configEventCode = (
       event.code === 'ArrowLeft'
@@ -107,16 +123,7 @@ class ViewThumbs extends Observer {
     }
   }
 
-  handleInitPointerMove(event) {
-    this.notify(event);
-  }
-
-  static handleInitPointerUp(event) {
-    const $target = $(event.target);
-    $target.off('pointermove.thumb');
-    $target.off('pointerup.thumb');
-  }
-
+  // Установка обработчиков событий движения/прекращения движения бегунков слайдера
   handleSetEventListenerForThumbs(event) {
     const $target = $(event.target);
     event.target.setPointerCapture(event.pointerId);
@@ -124,13 +131,16 @@ class ViewThumbs extends Observer {
     $target.on('pointerup.thumb', ViewThumbs.handleInitPointerUp.bind(this));
   }
 
-  setEventsThumbs(options) {
-    this.$elemThumbs.each((index, thumb) => {
-      const $currentThumb = $(thumb);
-      $currentThumb.on('pointerdown.thumb', this.handleSetEventListenerForThumbs.bind(this));
-      $currentThumb.on('keydown.thumb', this.handleChangeThumbPosition.bind(this, options));
-      $currentThumb.on('dragstart.thumb', false);
-    });
+  // Отслеживание перемещение бегунков слайдера
+  handleInitPointerMove(event) {
+    this.notify(event);
+  }
+
+  // Отслеживание прекращения движения бегунков слайдера
+  static handleInitPointerUp(event) {
+    const $target = $(event.target);
+    $target.off('pointermove.thumb');
+    $target.off('pointerup.thumb');
   }
 }
 

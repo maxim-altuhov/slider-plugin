@@ -15,5 +15,6 @@ $(() => {
     showScale: true,
     // customValues: ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ'],
   });
+
   controlPanel1.init();
 });

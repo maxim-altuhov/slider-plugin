@@ -6,12 +6,14 @@ class ViewScale extends Observer {
     this.isFirstInit = true;
   }
 
+  // Первоначальная инициализация
   init(options) {
     this.$selector = options.$selector;
     this.$elemSlider = options.$elemSlider;
     this.$elemScale = options.$elemScale;
   }
 
+  // Обновление view
   update(options) {
     if (this.isFirstInit) {
       this.init(options);
@@ -50,6 +52,7 @@ class ViewScale extends Observer {
     if (styleVerifKeys) this.setStyleForScale(options);
   }
 
+  // Рендер шкалы значений
   createScale(options) {
     if (options.showScale) {
       this.$elemScale.empty();
@@ -105,6 +108,7 @@ class ViewScale extends Observer {
     }
   }
 
+  // Устанавливаем стили для шкалы
   setStyleForScale(options) {
     const { colorForScale, showScale } = options;
 
@@ -122,30 +126,10 @@ class ViewScale extends Observer {
     }
   }
 
-  setPropForSkipScalePoint($scalePoint) {
-    $scalePoint.addClass('meta-slider__scale-point_skip')
-      .attr('tabindex', -1)
-      .css({ color: 'transparent', borderColor: 'inherit' });
-
-    this.skipScalePointsArray.push($scalePoint);
-  }
-
-  checkingSkipScalePointSize(sliderSize, margin) {
-    this.mapSkipScalePoints.forEach((scalePointSkipArray, controlSize) => {
-      if (sliderSize > controlSize + (margin / 3)) {
-        scalePointSkipArray.forEach(($scalePoint) => {
-          $scalePoint.removeAttr('tabindex')
-            .removeClass('meta-slider__scale-point_skip')
-            .css({ color: 'inherit', borderColor: '' });
-
-          this.scalePointsSize += $scalePoint.outerWidth();
-        });
-
-        this.mapSkipScalePoints.delete(controlSize);
-      }
-    });
-  }
-
+  /**
+   * Метод, который проверяет помещаются ли все деления шкалы на данной длине слайдера.
+   * Если нет, то этот метод делает авто-подстройку делений шкалы и скрывает лишние значения
+   */
   checkingScaleSize(options) {
     const { showScale, initScaleAdjustment } = options;
 
@@ -186,18 +170,36 @@ class ViewScale extends Observer {
     }
   }
 
-  handleCheckingScaleSize(options) {
-    this.checkingScaleSize(options);
+  // Установка стилей для пропущенных делений шкалы
+  setPropForSkipScalePoint($scalePoint) {
+    $scalePoint.addClass('meta-slider__scale-point_skip')
+      .attr('tabindex', -1)
+      .css({ color: 'transparent', borderColor: 'inherit' });
+
+    this.skipScalePointsArray.push($scalePoint);
   }
 
-  handleGetValueInScalePoint(event) {
-    event.preventDefault();
-    const $target = $(event.target);
-    let targetValue = Number($target.attr('data-value'));
+  /**
+   * Метод отслеживает размер слайдера и возвращает скрытые деления шкалы,
+   * если они уже помещаются на шкале
+   */
+  checkingSkipScalePointSize(sliderSize, margin) {
+    this.mapSkipScalePoints.forEach((scalePointSkipArray, controlSize) => {
+      if (sliderSize > controlSize + (margin / 3)) {
+        scalePointSkipArray.forEach(($scalePoint) => {
+          $scalePoint.removeAttr('tabindex')
+            .removeClass('meta-slider__scale-point_skip')
+            .css({ color: 'inherit', borderColor: '' });
 
-    this.notify(event, targetValue);
+          this.scalePointsSize += $scalePoint.outerWidth();
+        });
+
+        this.mapSkipScalePoints.delete(controlSize);
+      }
+    });
   }
 
+  // Обработчик события отслеживающий размер окна браузера для метода checkingScaleSize()
   setEventsWindow(options) {
     const { showScale, initScaleAdjustment } = options;
 
@@ -208,10 +210,25 @@ class ViewScale extends Observer {
     }
   }
 
+  // Отслеживает ширину слайдера
+  handleCheckingScaleSize(options) {
+    this.checkingScaleSize(options);
+  }
+
+  // Обрабочик событий кликов на значения шкалы
   setEventsScalePoints() {
     this.$elemScalePoints.each((index, elemPoint) => {
       $(elemPoint).on('click.scalePoint', this.handleGetValueInScalePoint.bind(this));
     });
+  }
+
+  // Получает значения при клике на шкалу слайдера
+  handleGetValueInScalePoint(event) {
+    event.preventDefault();
+    const $target = $(event.target);
+    let targetValue = Number($target.attr('data-value'));
+
+    this.notify(event, targetValue);
   }
 }
 

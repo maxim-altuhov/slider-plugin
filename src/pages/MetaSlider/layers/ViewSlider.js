@@ -7,6 +7,7 @@ class ViewSlider extends Observer {
     this.isFirstInit = true;
   }
 
+  // Первоначальная инициализация
   init(options) {
     this.$elemSlider = options.$elemSlider;
     this.$sliderProgress = options.$sliderProgress;
@@ -15,6 +16,7 @@ class ViewSlider extends Observer {
     this.setEventsSlider();
   }
 
+  // Обновление view
   update(options) {
     if (this.isFirstInit) {
       this.init(options);
@@ -58,6 +60,7 @@ class ViewSlider extends Observer {
     if (minAndMaxVerifKeys) this.setMinAndMaxVal(options);
   }
 
+  // Первоначальный рендер слайдера
   renderSlider(initSelector) {
     if (!this.$selector) this.$selector = initSelector;
 
@@ -80,6 +83,7 @@ class ViewSlider extends Observer {
     this.$selector.append($fragmentWithASlider);
   }
 
+  // Устанвливает data-атрибуты с мин. и макс. значениями слайдера
   setMinAndMaxVal(options) {
     const {
       minValue,
@@ -98,6 +102,7 @@ class ViewSlider extends Observer {
     }
   }
 
+  // Проверка и установка отступов у слайдера
   setAutoMargins(options) {
     const {
       initAutoMargins,
@@ -124,10 +129,12 @@ class ViewSlider extends Observer {
     }
   }
 
+  // Установка фонового цвета для слайдера
   setBackgroundForSlider(options) {
     this.$elemSlider.css('background-color', options.secondColor);
   }
 
+  // Сброс или установка вертикальной ориентации слайдера
   setVerticalOrientation(options) {
     if (options.isVertical) {
       this.$elemSlider.addClass('meta-slider_vertical');
@@ -138,6 +145,7 @@ class ViewSlider extends Observer {
     }
   }
 
+  // Проверка и установка цвета заливки интервала между бегунками
   setBackgroundTheRange(options) {
     if (options.showBackground) {
       const { valuesAsPercentageArray, mainColor } = options;
@@ -150,6 +158,12 @@ class ViewSlider extends Observer {
     }
   }
 
+  // Обработчик события клика внутри слайдера
+  setEventsSlider() {
+    this.$elemSlider.on('pointerdown.slider', this.handleSetSliderValues.bind(this));
+  }
+
+  // Получает значения при клике внутри слайдера
   handleSetSliderValues(event) {
     event.preventDefault();
     const $target = $(event.target);
@@ -157,10 +171,6 @@ class ViewSlider extends Observer {
     if ($target.hasClass('js-meta-slider')) {
       this.notify(event);
     }
-  }
-
-  setEventsSlider() {
-    this.$elemSlider.on('pointerdown.slider', this.handleSetSliderValues.bind(this));
   }
 }
 

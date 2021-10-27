@@ -4,11 +4,13 @@ class ViewMarkers {
     this.isFirstInit = true;
   }
 
+  // Первоначальная инициализация
   init(options) {
     this.$elemThumbs = options.$elemThumbs;
     this.$elemMarkers = options.$elemMarkers;
   }
 
+  // Обновление view
   update(options) {
     if (this.isFirstInit) {
       this.init(options);
@@ -45,6 +47,7 @@ class ViewMarkers {
     if (styleVerifKeys) this.setStyleForMarkers(options);
   }
 
+  // Устанавливаем значения в маркеры
   setValueInMarkers(options) {
     if (options.showMarkers) {
       const {
@@ -71,6 +74,7 @@ class ViewMarkers {
     }
   }
 
+  // Устанавливаем стили для маркеров
   setStyleForMarkers(options) {
     const {
       mainColor,

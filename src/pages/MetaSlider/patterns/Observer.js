@@ -3,6 +3,7 @@ class Observer {
     this.observerList = [];
   }
 
+  // Добавляет метод в список подписчиков
   subscribe(observer) {
     if (typeof observer !== 'function') throw new Error('Add observer must be a function');
 
@@ -13,10 +14,12 @@ class Observer {
     this.observerList.push(observer);
   }
 
+  // Удаляет метод из списка подписчиков
   unsubscribe(observer) {
     this.observerList = this.observerList.filter((item) => item !== observer);
   }
 
+  // Вызывает все подписанные методы из списка
   notify(...arg) {
     this.observerList.forEach((observer) => observer(...arg));
   }

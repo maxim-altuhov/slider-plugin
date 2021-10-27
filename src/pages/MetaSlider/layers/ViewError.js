@@ -1,4 +1,5 @@
 class ViewError {
+  // Рендерим ошибку
   renderError(message, options) {
     const {
       $selector,
@@ -19,22 +20,25 @@ class ViewError {
     }
   }
 
+  // Собираем селекторы
   getInfoAboutError() {
     this.$elemErrorInfo = this.$selector.find('.js-error-info');
     this.$elemErrorText = this.$selector.find('.js-error-info__text');
     this.$btnErrorClose = this.$selector.find('.js-error-info__close');
   }
 
+  // Устанавливаем обработчик на кнопку закрытия окна с ошибкой
+  setEventErrorClose() {
+    if (this.$btnErrorClose) this.$btnErrorClose.on('click.btnErrorClose', this.handleRemoveErrorWindow.bind(this));
+  }
+
+  // Удаляем сообщение с ошибкой
   handleRemoveErrorWindow() {
     this.$btnErrorClose.off('click.btnErrorClose');
     this.$elemErrorInfo.remove();
     this.$elemErrorInfo = null;
     this.$elemErrorText = null;
     this.$btnErrorClose = null;
-  }
-
-  setEventErrorClose() {
-    if (this.$btnErrorClose) this.$btnErrorClose.on('click.btnErrorClose', this.handleRemoveErrorWindow.bind(this));
   }
 }
 

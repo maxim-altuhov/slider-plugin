@@ -6,9 +6,12 @@ class Model extends Observer {
     super();
     this.opt = options;
     this.opt.$selector = selector;
+
+    // Экземпляр Observer для вывода инф. об ошибках
     this.errorEvent = new Observer();
   }
 
+  // Первичная инициализация модели
   init() {
     this.opt.key = 'init';
     this.getInfoAboutSlider();
@@ -17,279 +20,17 @@ class Model extends Observer {
     this.notify(this.opt);
   }
 
+  // Метод вызываемый при обновлении модели снаружи
   update() {
     this.checkingIncomingProp();
     this.calcValueInPrecentage();
     this.notify(this.opt);
   }
 
-  getInfoAboutSlider() {
-    const { $selector } = this.opt;
-
-    this.opt.$elemSlider = $selector.find('.js-meta-slider');
-    this.opt.$sliderProgress = $selector.find('.js-meta-slider__progress');
-    this.opt.$elemThumbs = $selector.find('.js-meta-slider__thumb');
-    this.opt.$elemMarkers = $selector.find('.js-meta-slider__marker');
-    this.opt.$elemScale = $selector.find('.js-meta-slider__scale');
-  }
-
-  getNumberOfDecimalPlaces() {
-    const propToCheck = [
-      'minValue',
-      'maxValue',
-      'step',
-    ];
-
-    const resultArr = propToCheck.map((prop) => {
-      return this.opt[prop].toString().includes('.') ? this.opt[prop].toString().match(/\.(\d+)/)[1].length : 0;
-    });
-
-    this.opt.numberOfDecimalPlaces = Math.max(...resultArr);
-  }
-
-  checkingIsVerticalSlider() {
-    const { key, isVertical } = this.opt;
-    const verticalSliderVerifKeys = (key === 'init' || key === 'isVertical');
-
-    if (verticalSliderVerifKeys && isVertical) this.opt.initAutoMargins = false;
-  }
-
-  checkingNumberOfDecimalPlaces() {
-    const { key, calcNumberOfDecimalPlaces, numberOfDecimalPlaces } = this.opt;
-    const calcNumberVerifKeys = (
-      key === 'init'
-      || key === 'calcNumberOfDecimalPlaces'
-      || key === 'initValueFirst'
-      || key === 'initValueSecond'
-      || key === 'minValue'
-      || key === 'maxValue'
-      || key === 'step'
-    );
-
-    if (calcNumberVerifKeys && calcNumberOfDecimalPlaces) this.getNumberOfDecimalPlaces();
-
-    if (key === 'init' || key === 'numberOfDecimalPlaces') {
-      if (numberOfDecimalPlaces < 0) this.opt.numberOfDecimalPlaces = 0;
-
-      if (!Number.isInteger(numberOfDecimalPlaces)) {
-        this.opt.numberOfDecimalPlaces = Number(this.opt.numberOfDecimalPlaces).toFixed();
-      }
-    }
-  }
-
-  checkingMinMaxValues(errMessage) {
-    const {
-      key,
-      minValue,
-      maxValue,
-      numberOfDecimalPlaces,
-    } = this.opt;
-
-    const verifKeys = (
-      key === 'init'
-      || key === 'minValue'
-      || key === 'maxValue'
-      || key === 'numberOfDecimalPlaces'
-    );
-
-    if (verifKeys) {
-      this.opt.minValue = Number(minValue.toFixed(numberOfDecimalPlaces));
-      this.opt.maxValue = Number(maxValue.toFixed(numberOfDecimalPlaces));
-
-      if (minValue > maxValue || minValue === maxValue) {
-        this.opt.minValue = 0;
-        this.opt.maxValue = 100;
-        this.errorEvent.notify(errMessage.minAndMaxValue, this.opt);
-      }
-    }
-  }
-
-  checkingIsIntegerSizeScale() {
-    const {
-      maxValue,
-      minValue,
-      stepSizeForScale,
-    } = this.opt;
-
-    return Number.isInteger((maxValue - minValue) / stepSizeForScale);
-  }
-
-  checkingCorrectStepSizeForScale(errorMessage) {
-    const isIntegerStepSizeForScale = Number.isInteger(this.opt.stepSizeForScale);
-
-    while (!this.checkingIsIntegerSizeScale()) {
-      if (this.opt.stepSizeForScale > 1 && isIntegerStepSizeForScale) {
-        this.opt.stepSizeForScale += 1;
-      } else if (!isIntegerStepSizeForScale) {
-        this.opt.stepSizeForScale += 0.1;
-        this.opt.stepSizeForScale = Number(this.opt.stepSizeForScale.toFixed(1));
-      } else {
-        break;
-      }
-
-      this.errorEvent.notify(errorMessage.stepSizeForScale, this.opt);
-    }
-  }
-
-  checkingStepSize(errMessage) {
-    const {
-      key,
-      initAutoScaleCreation,
-      step,
-      stepSizeForScale,
-      maxValue,
-      minValue,
-      numberOfDecimalPlaces,
-    } = this.opt;
-
-    const verifKeys = (
-      key === 'init'
-      || key === 'initAutoScaleCreation'
-      || key === 'step'
-      || key === 'stepSizeForScale'
-      || key === 'maxValue'
-      || key === 'minValue'
-      || key === 'numberOfDecimalPlaces'
-    );
-
-    const differenceMinAndMax = maxValue - minValue;
-
-    if (verifKeys) {
-      this.opt.step = Number(step.toFixed(numberOfDecimalPlaces));
-
-      if (initAutoScaleCreation) {
-        this.opt.checkingStepSizeForScale = false;
-        this.opt.stepSizeForScale = this.opt.step;
-      }
-
-      if (step <= 0 || step > differenceMinAndMax) {
-        this.opt.step = differenceMinAndMax;
-        this.errorEvent.notify(errMessage.step, this.opt);
-      }
-
-      if (stepSizeForScale <= 0 || stepSizeForScale > differenceMinAndMax) {
-        this.opt.stepSizeForScale = differenceMinAndMax;
-        this.errorEvent.notify(errMessage.stepSizeForScale, this.opt);
-      }
-
-      if (this.opt.checkingStepSizeForScale && !initAutoScaleCreation) {
-        this.checkingCorrectStepSizeForScale(errMessage);
-      }
-    }
-  }
-
-  initCustomValues() {
-    const { customValues } = this.opt;
-
-    this.opt.minValue = 0;
-    this.opt.initValueFirst = this.opt.initValueFirst || this.opt.minValue;
-    this.opt.initAutoScaleCreation = false;
-    this.opt.checkingStepSizeForScale = false;
-    this.opt.initFormatted = false;
-    this.opt.calcNumberOfDecimalPlaces = false;
-    this.opt.numberOfDecimalPlaces = 0;
-    this.opt.step = 1;
-    this.opt.stepSizeForScale = 1;
-
-    if (customValues.length === 1) customValues.push(customValues[0]);
-
-    this.opt.maxValue = customValues.length - 1;
-    this.opt.initValueSecond = this.opt.initValueSecond || this.opt.maxValue;
-  }
-
-  checkingCustomValues() {
-    const { key, customValues } = this.opt;
-
-    if (key === 'init' || key === 'customValues') {
-      this.opt.customValues = (typeof customValues === 'string') ? customValues.split(',') : customValues;
-      this.opt.customValues = this.opt.customValues.filter((elem) => (elem !== '' && elem !== ' '));
-
-      if (this.opt.customValues.length > 0) this.initCustomValues();
-    }
-  }
-
-  checkingInitValues(errMessage) {
-    const {
-      key,
-      initValueFirst,
-      initValueSecond,
-      minValue,
-      maxValue,
-      isRange,
-      customValues,
-    } = this.opt;
-
-    const verifKeys = (
-      key === 'init'
-      || key === 'initValueFirst'
-      || key === 'initValueSecond'
-      || key === 'minValue'
-      || key === 'maxValue'
-      || key === 'isRange'
-      || key === 'step'
-      || key === 'numberOfDecimalPlaces'
-      || key === 'customValues'
-    );
-
-    const checkingKeys = (
-      initValueFirst > initValueSecond
-      || initValueFirst > maxValue
-      || initValueFirst < minValue
-      || initValueSecond > maxValue
-      || initValueSecond < minValue
-    );
-
-    if (verifKeys) {
-      if (checkingKeys) {
-        this.opt.initValueFirst = minValue;
-        this.opt.initValueSecond = maxValue;
-        this.errorEvent.notify(errMessage.initValue, this.opt);
-      }
-
-      this.opt.initValueFirst = isRange ? this.opt.initValueFirst : minValue;
-      this.opt.initValueFirst = this.calcTargetValue(null, this.opt.initValueFirst, true);
-      this.opt.initValueSecond = this.calcTargetValue(null, this.opt.initValueSecond, true);
-
-      if (customValues.length > 0) {
-        this.opt.textValueFirst = customValues[this.opt.initValueFirst];
-        this.opt.textValueSecond = customValues[this.opt.initValueSecond];
-      } else {
-        this.opt.textValueFirst = '';
-        this.opt.textValueSecond = '';
-      }
-    }
-  }
-
-  checkingIncomingProp() {
-    const errMessage = {
-      initValue: 'Ошибка во входящих данных для бегунков слайдера. Установлены значения по-умолчанию.',
-      minAndMaxValue: 'Max значение установленное для слайдера меньше или равно его Min значению. Установлены значения по-умолчанию.',
-      stepSizeForScale: 'Установите корректное значение шага для шкалы с делениями. Установлено ближайщее оптимальное значение.',
-      step: 'Значение шага слайдера не может быть больше разницы между макс. и мин. значением, а также меньше или равно 0.',
-    };
-
-    this.checkingIsVerticalSlider();
-    this.checkingNumberOfDecimalPlaces();
-    this.checkingMinMaxValues(errMessage);
-    this.checkingStepSize(errMessage);
-    this.checkingCustomValues();
-    this.checkingInitValues(errMessage);
-
-    this.opt.initValuesArray = [this.opt.initValueFirst, this.opt.initValueSecond];
-  }
-
-  calcValueInPrecentage() {
-    const {
-      initValuesArray,
-      minValue,
-      maxValue,
-    } = this.opt;
-
-    this.opt.valuesAsPercentageArray = initValuesArray.map((currentValue) => {
-      return ((currentValue - minValue) / (maxValue - minValue)) * 100;
-    });
-  }
-
+  /**
+   * Проверка рассчитанных значений слайдера на выполнение различных условий
+   * и определение какой бегунок у слайдера должен быть перемещён
+   */
   checkingTargetValue(targetValue, event) {
     const {
       initValueFirst,
@@ -370,6 +111,7 @@ class Model extends Observer {
     this.notify(this.opt);
   }
 
+  // Расчёт значений позиций бегунков слайдера
   calcTargetValue(event, initValue, onlyReturn = false) {
     const {
       $elemSlider,
@@ -414,6 +156,280 @@ class Model extends Observer {
     this.checkingTargetValue(targetValue, event);
 
     return undefined;
+  }
+
+  // Расчёт значений бегунков слайдера в процентах
+  calcValueInPrecentage() {
+    const {
+      initValuesArray,
+      minValue,
+      maxValue,
+    } = this.opt;
+
+    this.opt.valuesAsPercentageArray = initValuesArray.map((currentValue) => {
+      return ((currentValue - minValue) / (maxValue - minValue)) * 100;
+    });
+  }
+
+  // Проверка входящих настроек для слайдера
+  checkingIncomingProp() {
+    const errMessage = {
+      initValue: 'Ошибка во входящих данных для бегунков слайдера. Установлены значения по-умолчанию.',
+      minAndMaxValue: 'Max значение установленное для слайдера меньше или равно его Min значению. Установлены значения по-умолчанию.',
+      stepSizeForScale: 'Установите корректное значение шага для шкалы с делениями. Установлено ближайщее оптимальное значение.',
+      step: 'Значение шага слайдера не может быть больше разницы между макс. и мин. значением, а также меньше или равно 0.',
+    };
+
+    this.checkingIsVerticalSlider();
+    this.checkingNumberOfDecimalPlaces();
+    this.checkingMinMaxValues(errMessage);
+    this.checkingStepSize(errMessage);
+    this.checkingCustomValues();
+    this.checkingInitValues(errMessage);
+
+    this.opt.initValuesArray = [this.opt.initValueFirst, this.opt.initValueSecond];
+  }
+
+  // Получение селекторов слайдера
+  getInfoAboutSlider() {
+    const { $selector } = this.opt;
+
+    this.opt.$elemSlider = $selector.find('.js-meta-slider');
+    this.opt.$sliderProgress = $selector.find('.js-meta-slider__progress');
+    this.opt.$elemThumbs = $selector.find('.js-meta-slider__thumb');
+    this.opt.$elemMarkers = $selector.find('.js-meta-slider__marker');
+    this.opt.$elemScale = $selector.find('.js-meta-slider__scale');
+  }
+
+  checkingIsVerticalSlider() {
+    const { key, isVertical } = this.opt;
+    const verticalSliderVerifKeys = (key === 'init' || key === 'isVertical');
+
+    if (verticalSliderVerifKeys && isVertical) this.opt.initAutoMargins = false;
+  }
+
+  checkingNumberOfDecimalPlaces() {
+    const { key, calcNumberOfDecimalPlaces, numberOfDecimalPlaces } = this.opt;
+    const calcNumberVerifKeys = (
+      key === 'init'
+      || key === 'calcNumberOfDecimalPlaces'
+      || key === 'initValueFirst'
+      || key === 'initValueSecond'
+      || key === 'minValue'
+      || key === 'maxValue'
+      || key === 'step'
+    );
+
+    if (calcNumberVerifKeys && calcNumberOfDecimalPlaces) this.getNumberOfDecimalPlaces();
+
+    if (key === 'init' || key === 'numberOfDecimalPlaces') {
+      if (numberOfDecimalPlaces < 0) this.opt.numberOfDecimalPlaces = 0;
+
+      if (!Number.isInteger(numberOfDecimalPlaces)) {
+        this.opt.numberOfDecimalPlaces = Number(this.opt.numberOfDecimalPlaces).toFixed();
+      }
+    }
+  }
+
+  // Автоматический рассчёт кол-ва знаков после запятой у значений слайдера
+  getNumberOfDecimalPlaces() {
+    const propToCheck = [
+      'minValue',
+      'maxValue',
+      'step',
+    ];
+
+    const resultArr = propToCheck.map((prop) => {
+      return this.opt[prop].toString().includes('.') ? this.opt[prop].toString().match(/\.(\d+)/)[1].length : 0;
+    });
+
+    this.opt.numberOfDecimalPlaces = Math.max(...resultArr);
+  }
+
+  checkingMinMaxValues(errMessage) {
+    const {
+      key,
+      minValue,
+      maxValue,
+      numberOfDecimalPlaces,
+    } = this.opt;
+
+    const verifKeys = (
+      key === 'init'
+      || key === 'minValue'
+      || key === 'maxValue'
+      || key === 'numberOfDecimalPlaces'
+    );
+
+    if (verifKeys) {
+      this.opt.minValue = Number(minValue.toFixed(numberOfDecimalPlaces));
+      this.opt.maxValue = Number(maxValue.toFixed(numberOfDecimalPlaces));
+
+      if (minValue > maxValue || minValue === maxValue) {
+        this.opt.minValue = 0;
+        this.opt.maxValue = 100;
+        this.errorEvent.notify(errMessage.minAndMaxValue, this.opt);
+      }
+    }
+  }
+
+  checkingStepSize(errMessage) {
+    const {
+      key,
+      initAutoScaleCreation,
+      step,
+      stepSizeForScale,
+      maxValue,
+      minValue,
+      numberOfDecimalPlaces,
+    } = this.opt;
+
+    const verifKeys = (
+      key === 'init'
+      || key === 'initAutoScaleCreation'
+      || key === 'step'
+      || key === 'stepSizeForScale'
+      || key === 'maxValue'
+      || key === 'minValue'
+      || key === 'numberOfDecimalPlaces'
+    );
+
+    const differenceMinAndMax = maxValue - minValue;
+
+    if (verifKeys) {
+      this.opt.step = Number(step.toFixed(numberOfDecimalPlaces));
+
+      if (initAutoScaleCreation) {
+        this.opt.checkingStepSizeForScale = false;
+        this.opt.stepSizeForScale = this.opt.step;
+      }
+
+      if (step <= 0 || step > differenceMinAndMax) {
+        this.opt.step = differenceMinAndMax;
+        this.errorEvent.notify(errMessage.step, this.opt);
+      }
+
+      if (stepSizeForScale <= 0 || stepSizeForScale > differenceMinAndMax) {
+        this.opt.stepSizeForScale = differenceMinAndMax;
+        this.errorEvent.notify(errMessage.stepSizeForScale, this.opt);
+      }
+
+      if (this.opt.checkingStepSizeForScale && !initAutoScaleCreation) {
+        this.checkingCorrectStepSizeForScale(errMessage);
+      }
+    }
+  }
+
+  // Проверка делится ли шкала без остатка на установленный шаг шкалы
+  checkingIsIntegerSizeScale() {
+    const {
+      maxValue,
+      minValue,
+      stepSizeForScale,
+    } = this.opt;
+
+    return Number.isInteger((maxValue - minValue) / stepSizeForScale);
+  }
+
+  // Корректировка шага шкалы, если не выполняется условие в методе checkingIsIntegerSizeScale()
+  checkingCorrectStepSizeForScale(errorMessage) {
+    const isIntegerStepSizeForScale = Number.isInteger(this.opt.stepSizeForScale);
+
+    while (!this.checkingIsIntegerSizeScale()) {
+      if (this.opt.stepSizeForScale > 1 && isIntegerStepSizeForScale) {
+        this.opt.stepSizeForScale += 1;
+      } else if (!isIntegerStepSizeForScale) {
+        this.opt.stepSizeForScale += 0.1;
+        this.opt.stepSizeForScale = Number(this.opt.stepSizeForScale.toFixed(1));
+      } else {
+        break;
+      }
+
+      this.errorEvent.notify(errorMessage.stepSizeForScale, this.opt);
+    }
+  }
+
+  checkingCustomValues() {
+    const { key, customValues } = this.opt;
+
+    if (key === 'init' || key === 'customValues') {
+      this.opt.customValues = (typeof customValues === 'string') ? customValues.split(',') : customValues;
+      this.opt.customValues = this.opt.customValues.filter((elem) => (elem !== '' && elem !== ' '));
+
+      if (this.opt.customValues.length > 0) this.initCustomValues();
+    }
+  }
+
+  // Сброс опций при установке кастомных значений
+  initCustomValues() {
+    const { customValues } = this.opt;
+
+    this.opt.minValue = 0;
+    this.opt.initValueFirst = this.opt.initValueFirst || this.opt.minValue;
+    this.opt.initAutoScaleCreation = false;
+    this.opt.checkingStepSizeForScale = false;
+    this.opt.initFormatted = false;
+    this.opt.calcNumberOfDecimalPlaces = false;
+    this.opt.numberOfDecimalPlaces = 0;
+    this.opt.step = 1;
+    this.opt.stepSizeForScale = 1;
+
+    if (customValues.length === 1) customValues.push(customValues[0]);
+
+    this.opt.maxValue = customValues.length - 1;
+    this.opt.initValueSecond = this.opt.initValueSecond || this.opt.maxValue;
+  }
+
+  checkingInitValues(errMessage) {
+    const {
+      key,
+      initValueFirst,
+      initValueSecond,
+      minValue,
+      maxValue,
+      isRange,
+      customValues,
+    } = this.opt;
+
+    const verifKeys = (
+      key === 'init'
+      || key === 'initValueFirst'
+      || key === 'initValueSecond'
+      || key === 'minValue'
+      || key === 'maxValue'
+      || key === 'isRange'
+      || key === 'step'
+      || key === 'numberOfDecimalPlaces'
+      || key === 'customValues'
+    );
+
+    const checkingKeys = (
+      initValueFirst > initValueSecond
+      || initValueFirst > maxValue
+      || initValueFirst < minValue
+      || initValueSecond > maxValue
+      || initValueSecond < minValue
+    );
+
+    if (verifKeys) {
+      if (checkingKeys) {
+        this.opt.initValueFirst = minValue;
+        this.opt.initValueSecond = maxValue;
+        this.errorEvent.notify(errMessage.initValue, this.opt);
+      }
+
+      this.opt.initValueFirst = isRange ? this.opt.initValueFirst : minValue;
+      this.opt.initValueFirst = this.calcTargetValue(null, this.opt.initValueFirst, true);
+      this.opt.initValueSecond = this.calcTargetValue(null, this.opt.initValueSecond, true);
+
+      if (customValues.length > 0) {
+        this.opt.textValueFirst = customValues[this.opt.initValueFirst];
+        this.opt.textValueSecond = customValues[this.opt.initValueSecond];
+      } else {
+        this.opt.textValueFirst = '';
+        this.opt.textValueSecond = '';
+      }
+    }
   }
 }
 

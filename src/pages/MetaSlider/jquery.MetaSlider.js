@@ -40,6 +40,10 @@ import Presenter from './layers/Presenter';
         textValueSecond: '',
       };
 
+      /**
+       * Объединяем пользовательские настройки и настройки по умолчанию,
+       * делаем проверку некоторых опций слайдера
+       */
       const inputOptions = $.extend({}, initSettings, settings);
       const {
         customValues,
@@ -58,9 +62,11 @@ import Presenter from './layers/Presenter';
         inputOptions.initValueSecond = initValueSecond || maxValue;
       }
 
+      // Возращаем объект JQuery
       return this.each(() => {
         const data = this.data('metaSlider');
 
+        // Если слайдер ещё не ициализирован на этом селекторе, делаем это
         if (!data) {
           const model = new Model(this, inputOptions);
           const view = new View();
@@ -101,6 +107,7 @@ import Presenter from './layers/Presenter';
     },
   };
 
+  // Проверяем вызываемый метод нашего плагина на наличие и тип передаваемого аргумента
   $.fn.metaSlider = function (method, ...prop) {
     if (methods[method]) return methods[method].apply(this, prop);
     if (typeof method === 'object' || !method) return methods.init.call(this, method);

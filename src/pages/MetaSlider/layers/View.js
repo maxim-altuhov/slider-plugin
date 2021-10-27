@@ -15,12 +15,14 @@ class View {
     };
   }
 
+  // Вызываем метод update() в subview
   update(options) {
     Object.keys(this.views).forEach((view) => {
       if ('update' in this.views[view]) this.views[view].update(options);
     });
   }
 
+  // Первоначальный рендер слайдера и его основных элементов
   renderSlider(initSelector) {
     this.views.viewSlider.renderSlider(initSelector);
   }
