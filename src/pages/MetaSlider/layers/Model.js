@@ -105,6 +105,7 @@ class Model extends Observer {
     if (customValues.length > 0) {
       this.opt.textValueFirst = customValues[this.opt.initValueFirst];
       this.opt.textValueSecond = customValues[this.opt.initValueSecond];
+      this.opt.textValuesArray = [this.opt.textValueFirst, this.opt.textValueSecond];
     }
 
     this.opt.key = 'changedValue';
@@ -425,9 +426,11 @@ class Model extends Observer {
       if (customValues.length > 0) {
         this.opt.textValueFirst = customValues[this.opt.initValueFirst];
         this.opt.textValueSecond = customValues[this.opt.initValueSecond];
+        this.opt.textValuesArray = [this.opt.textValueFirst, this.opt.textValueSecond];
       } else {
         this.opt.textValueFirst = '';
         this.opt.textValueSecond = '';
+        this.opt.textValuesArray = [];
       }
     }
   }

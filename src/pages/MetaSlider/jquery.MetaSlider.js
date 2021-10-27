@@ -80,10 +80,10 @@ import Presenter from './layers/Presenter';
       });
     },
     setProp(prop, value) {
-      const data = this.data('metaSlider');
-      data.model.opt[prop] = value;
-      data.model.opt.key = prop;
-      data.model.update();
+      const model = this.data('metaSlider').model;
+      model.opt[prop] = value;
+      model.opt.key = prop;
+      model.update();
 
       return this;
     },
@@ -92,6 +92,18 @@ import Presenter from './layers/Presenter';
     },
     getOptionsObj() {
       return this.data('metaSlider').model.opt;
+    },
+    getCurrentValues() {
+      const modelOptions = this.data('metaSlider').model.opt;
+      let currentValues = '';
+
+      if (modelOptions.customValues.length > 0) {
+        currentValues = modelOptions.textValuesArray;
+      } else {
+        currentValues = modelOptions.initValuesArray;
+      }
+
+      return currentValues;
     },
     destroy() {
       return this.each(() => {
