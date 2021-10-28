@@ -234,6 +234,7 @@ module.exports = {
       '@scss': path.resolve(__dirname, 'src/base/scss'),
       '@fonts': path.resolve(__dirname, 'src/base/fonts'),
       '@pages': path.resolve(__dirname, 'src/pages'),
+      '@comp': path.resolve(__dirname, 'src/components'),
     },
   },
   optimization: optimization(),

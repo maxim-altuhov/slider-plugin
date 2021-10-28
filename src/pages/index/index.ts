@@ -1,7 +1,9 @@
+/// <reference path='index.d.ts' />
+
 import './index.scss';
 
 import $ from 'jquery';
-import ControlPanel from './components/control/ts/ControlPanel';
+import ControlPanel from '../../components/control/ts/ControlPanel';
 import '../MetaSlider/MetaSlider';
 
 $(() => {
