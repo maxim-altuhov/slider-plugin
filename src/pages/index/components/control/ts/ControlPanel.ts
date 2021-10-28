@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import '@pages/MetaSlider/jquery.MetaSlider';
+import '@pages/MetaSlider/MetaSlider';
 
 class ControlPanel {
   constructor(panelSelector, sliderSelector) {

@@ -10,25 +10,30 @@ const TerserWebpackPlugin = require('terser-webpack-plugin');
 const postcssFlexbugs = require('postcss-flexbugs-fixes');
 const ESLintPlugin = require('eslint-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+
+// объект с путями к директориям проекта
 const pathDir = {
   src: path.join(__dirname, './src'),
   dist: path.join(__dirname, './dist'),
   base: path.join(__dirname, './src/base'),
-  comp: path.join(__dirname, './src/components'),
   pages: path.join(__dirname, './src/pages'),
 };
-const pagesDir = pathDir.pages;
-const allPages = fs.readdirSync(pagesDir);
+const allPages = fs.readdirSync(pathDir.pages);
 const isDev = process.env.NODE_ENV === 'development';
 const isDevServer = process.env.SECOND_ENV === 'devserver';
 const isProd = !isDev;
-let inputTypeFile = 'pug'; // либо pug
+
+// настройка ставить ли хеш файлу при выгрузки в продакшен
+const setHash = false;
+
+// настройка типа входящего файла html или pug
+const inputTypeFile = 'pug';
 
 // формируем имя файла в зависимости от режима сборки
-const filename = ext => isDev ? `[name].${ext}` : `[name].[fullhash].${ext}`;
+const filename = (ext) => ((isProd && setHash) ? `[name].[fullhash].${ext}` : `[name].${ext}`);
 
 // лоадеры
-const cssLoaders = add => {
+const cssLoaders = (add) => {
   const loaders = [
     {
       loader: MiniCssExtractPlugin.loader,
@@ -65,11 +70,12 @@ const cssLoaders = add => {
   if (add) {
     loaders.push(add);
   }
+
   return loaders;
 };
 
 // настройки для babel
-const babelOptions = presets => {
+const babelOptions = (presets) => {
   const option = {
     presets: [
       ['@babel/preset-env', {
@@ -78,18 +84,20 @@ const babelOptions = presets => {
       }],
     ],
   };
+
   if (presets) {
     option.presets.push(presets);
   }
+
   return option;
 };
 
 // плагины
 const plugins = () => {
   const base = [
-    ...allPages.map(page => new HTMLWebpackPlugin({
+    ...allPages.map((page) => new HTMLWebpackPlugin({
       filename: `${page}.html`,
-      template: `${pagesDir}/${page}/${page}.${inputTypeFile}`,
+      template: `${pathDir.pages}/${page}/${page}.${inputTypeFile}`,
       chunks: [`${page}`],
       minify: {
         collapseWhitespace: isProd,
@@ -113,6 +121,7 @@ const plugins = () => {
       'window.jQuery': 'jquery',
     }),
   ];
+
   if (isDev && !isDevServer) {
     base.push(new ESLintPlugin());
   } else if (isProd) {
@@ -136,6 +145,7 @@ const plugins = () => {
       },
     }));
   }
+
   return base;
 };
 
@@ -146,6 +156,7 @@ const optimization = () => {
       // chunks: 'all',
     },
   };
+
   if (isProd) {
     config.minimize = true;
     config.minimizer = [new CssMinimizerPlugin(), new TerserWebpackPlugin()];
@@ -189,19 +200,22 @@ const optimization = () => {
       },
     })];
   }
+
   return config;
 };
 
 // определение входных точек
 const entryPoint = () => {
   const obj = {};
-  allPages.forEach(page => {
+
+  allPages.forEach((page) => {
     obj[`${page}`] = `./pages/${page}/${page}`;
   });
+
   return obj;
 };
 
-// модули и настройки
+// модуль с настройками
 module.exports = {
   context: path.resolve(__dirname, 'src'),
   stats: {

@@ -18,6 +18,8 @@
     "@babel/preset-react": "^7.14.5",
     "@babel/preset-typescript": "^7.14.5",
     "@types/jquery": "^3.5.6",
+    "@typescript-eslint/eslint-plugin": "^5.2.0",
+    "@typescript-eslint/parser": "^5.2.0",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.2.2",
     "babel-preset-airbnb": "^5.0.0",
@@ -27,7 +29,7 @@
     "cross-env": "^7.0.3",
     "css-loader": "^5.0.2",
     "css-minimizer-webpack-plugin": "^1.2.0",
-    "eslint": "^7.20.0",
+    "eslint": "^7.32.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-fsd": "^1.0.1",
     "eslint-plugin-import": "^2.22.1",
@@ -52,11 +54,13 @@
     "sass-loader": "^11.0.1",
     "style-loader": "^2.0.0",
     "terser-webpack-plugin": "^5.1.1",
+    "typescript": "^4.4.4",
     "webpack": "^5.21.2",
     "webpack-cli": "^4.5.0",
     "webpack-dev-server": "^3.11.2"
   },
   "dependencies": {
+    "eslint-config-airbnb-typescript": "^14.0.1",
     "jquery": "^3.6.0"
   },
   "main": "webpack.config.js",
