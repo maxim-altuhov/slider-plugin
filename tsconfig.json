@@ -44,6 +44,8 @@
   "include": [
     "./webpack.config.js",
     "src/components/**/*.ts",
+    "src/components/**/*.js",
     "src/pages/**/*.ts",
+    "src/pages/**/*.js",
   ]
 }

@@ -1,13 +1,9 @@
 import $ from 'jquery';
-import '@pages/MetaSlider/MetaSlider';
 
 class ControlPanel {
   $selector: JQuery<HTMLElement>;
-
   $sliderSelector: JQuery<HTMLElement>;
-
   selectorsObj: {};
-
   propertyList: string[];
 
   constructor(panelSelector: string, sliderSelector: JQuery<HTMLElement>) {

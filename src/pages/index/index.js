@@ -1,10 +1,8 @@
-/// <reference path='index.d.ts' />
-
 import './index.scss';
 
 import $ from 'jquery';
-import ControlPanel from '../../components/control/ts/ControlPanel';
 import '../MetaSlider/MetaSlider';
+import ControlPanel from '../../components/control/ts/ControlPanel';
 
 $(() => {
   const slider1 = $('#slider-1');
@@ -12,9 +10,10 @@ $(() => {
 
   slider1.metaSlider({
     step: 10,
-    initValueFirst: 10,
+    initValueFirst: 0,
     initValueSecond: 80,
     showScale: true,
+    minValue: -10,
     // customValues: ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ'],
   });
 

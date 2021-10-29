@@ -1,11 +1,13 @@
+/// <reference path='MetaSlider.d.ts' />
+
 import Model from './layers/Model';
 import View from './layers/View';
 import Presenter from './layers/Presenter';
 
 (function ($) {
-  const methods = {
+  const methods: PluginMethods = {
     init(settings) {
-      let initSettings = {
+      const initSettings: PluginProps = {
         mainColor: '#6d6dff',
         secondColor: '#e4e4e4',
         colorMarker: '',
@@ -29,13 +31,13 @@ import Presenter from './layers/Presenter';
         step: 1,
         minValue: 0,
         maxValue: 100,
-        stepSizeForScale: '',
+        stepSizeForScale: null,
         numberOfDecimalPlaces: 0,
         preFix: '',
         postFix: '',
         customValues: [],
-        initValueFirst: '',
-        initValueSecond: '',
+        initValueFirst: null,
+        initValueSecond: null,
         textValueFirst: '',
         textValueSecond: '',
       };
@@ -55,11 +57,11 @@ import Presenter from './layers/Presenter';
         step,
       } = inputOptions;
 
-      inputOptions.stepSizeForScale = stepSizeForScale || step;
+      inputOptions.stepSizeForScale = stepSizeForScale ?? step;
 
       if (customValues.length === 0) {
-        inputOptions.initValueFirst = initValueFirst || minValue;
-        inputOptions.initValueSecond = initValueSecond || maxValue;
+        inputOptions.initValueFirst = initValueFirst ?? minValue;
+        inputOptions.initValueSecond = initValueSecond ?? maxValue;
       }
 
       // Возращаем объект JQuery
@@ -75,12 +77,12 @@ import Presenter from './layers/Presenter';
           view.renderSlider(this);
           presenter.setObservers();
           model.init();
-          this.data('metaSlider', { model: model });
+          this.data('metaSlider', { model });
         }
       });
     },
     setProp(prop, value) {
-      const model = this.data('metaSlider').model;
+      const { model } = this.data('metaSlider').model;
       model.opt[prop] = value;
       model.opt.key = prop;
       model.update();
@@ -126,4 +128,4 @@ import Presenter from './layers/Presenter';
 
     return $.error(`A method named ${method} does not exist for jQuery.MetaSlider`);
   };
-}(jQuery));
+})(jQuery);

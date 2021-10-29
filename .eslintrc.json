@@ -30,7 +30,7 @@
     "max-len": ["warn"],
     "comma-dangle": ["warn", "always-multiline"],
     "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
-    "lines-between-class-members": ["error", "always", { "exceptAfterSingleLine": true }],
+    // "lines-between-class-members": ["error", "always", { "exceptAfterSingleLine": true }],
     "no-use-before-define": "warn",
     "no-param-reassign": ["error", { "props": false }],
     "no-unused-vars": ["warn", { "args": "none" }],
@@ -44,6 +44,8 @@
     "fsd/jq-cache-dom-elements": "error",
     "fsd/jq-use-js-prefix-in-selector": "error",
     "fsd/no-function-declaration-in-event-listener": "error",
-    "fsd/split-conditionals": "error"
+    "fsd/split-conditionals": "error",
+    "lines-between-class-members": "off",
+    "@typescript-eslint/lines-between-class-members": ["error", "off", { "exceptAfterOverload": true }]
   }
 }

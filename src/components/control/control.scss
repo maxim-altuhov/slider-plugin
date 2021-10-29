@@ -30,13 +30,13 @@
 
   &__checkbox:checked+&__checkbox-title:before,
   &__checkbox:not(:checked)+&__checkbox-title:before {
-    content: "";
+    content: '';
     position: absolute;
     right: 0;
     top: 0;
     width: 30px;
     height: 30px;
-    background: #FFFFFF;
+    background: #ffffff;
     border: 1px solid #afafaf;
     border-radius: 5px;
     box-shadow: 1px 1px 5px 1px rgba(138, 138, 138, 0.2);
@@ -49,7 +49,7 @@
   }
 
   &__checkbox:checked+&__checkbox-title:after {
-    content: "";
+    content: '';
     position: absolute;
     right: 0;
     top: 0;

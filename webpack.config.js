@@ -78,10 +78,13 @@ const cssLoaders = (add) => {
 const babelOptions = (presets) => {
   const option = {
     presets: [
-      ['@babel/preset-env', {
-        useBuiltIns: 'usage',
-        corejs: 3,
-      }],
+      [
+        '@babel/preset-env',
+        {
+          useBuiltIns: 'usage',
+          corejs: 3,
+        },
+      ],
     ],
   };
 
@@ -107,10 +110,12 @@ const plugins = () => {
     })),
     new CleanWebpackPlugin(),
     new CopyWebpackPlugin({
-      patterns: [{
-        from: path.resolve(__dirname, `${pathDir.base}/assets/`),
-        to: path.resolve(__dirname, 'dist/assets/'),
-      }],
+      patterns: [
+        {
+          from: path.resolve(__dirname, `${pathDir.base}/assets/`),
+          to: path.resolve(__dirname, 'dist/assets/'),
+        },
+      ],
     }),
     new MiniCssExtractPlugin({
       filename: `css/${filename('css')}`,
@@ -162,43 +167,45 @@ const optimization = () => {
     config.minimizer = [new CssMinimizerPlugin(), new TerserWebpackPlugin()];
   } else if (isDev) {
     config.minimize = true;
-    config.minimizer = [new CssMinimizerPlugin({
-      minimizerOptions: {
-        preset: [
-          'default',
-          {
-            discardDuplicates: true,
-            normalizeWhitespace: false,
-            cssDeclarationSorter: false,
-            calc: false,
-            colormin: false,
-            convertValues: false,
-            discardComments: false,
-            discardEmpty: false,
-            discardOverridden: false,
-            mergeLonghand: false,
-            mergeRules: false,
-            minifyFontValues: false,
-            minifyGradients: false,
-            minifyParams: false,
-            minifySelectors: false,
-            normalizeCharset: false,
-            normalizeDisplayValues: false,
-            normalizePositions: false,
-            normalizeRepeatStyle: false,
-            normalizeString: false,
-            normalizeTimingFunctions: false,
-            normalizeUnicode: false,
-            normalizeUrl: false,
-            orderedValues: false,
-            reduceInitial: false,
-            reduceTransforms: false,
-            svgo: false,
-            uniqueSelectors: false,
-          },
-        ],
-      },
-    })];
+    config.minimizer = [
+      new CssMinimizerPlugin({
+        minimizerOptions: {
+          preset: [
+            'default',
+            {
+              discardDuplicates: true,
+              normalizeWhitespace: false,
+              cssDeclarationSorter: false,
+              calc: false,
+              colormin: false,
+              convertValues: false,
+              discardComments: false,
+              discardEmpty: false,
+              discardOverridden: false,
+              mergeLonghand: false,
+              mergeRules: false,
+              minifyFontValues: false,
+              minifyGradients: false,
+              minifyParams: false,
+              minifySelectors: false,
+              normalizeCharset: false,
+              normalizeDisplayValues: false,
+              normalizePositions: false,
+              normalizeRepeatStyle: false,
+              normalizeString: false,
+              normalizeTimingFunctions: false,
+              normalizeUnicode: false,
+              normalizeUrl: false,
+              orderedValues: false,
+              reduceInitial: false,
+              reduceTransforms: false,
+              svgo: false,
+              uniqueSelectors: false,
+            },
+          ],
+        },
+      }),
+    ];
   }
 
   return config;
@@ -312,9 +319,7 @@ module.exports = {
       {
         test: /\.(woff|woff2|eot|ttf|otf|svg)$/i,
         type: 'asset/resource',
-        include: [
-          path.resolve(__dirname, 'src/base/fonts'),
-        ],
+        include: [path.resolve(__dirname, 'src/base/fonts')],
         generator: {
           filename: 'fonts/[name][ext]',
         },
