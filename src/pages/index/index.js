@@ -6,7 +6,7 @@ import ControlPanel from '../../components/control/ts/ControlPanel';
 
 $(() => {
   const slider1 = $('#slider-1');
-  const controlPanel1 = new ControlPanel('#config-slider-1', slider1);
+  const controlPanel1 = new ControlPanel('#config-slider-1', '#slider-1');
 
   slider1.metaSlider({
     step: 10,

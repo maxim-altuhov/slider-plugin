@@ -1,11 +1,15 @@
 class Observer {
+  observerList: Function[];
+
   constructor() {
     this.observerList = [];
   }
 
   // Добавляет метод в список подписчиков
-  subscribe(observer) {
-    if (typeof observer !== 'function') throw new Error('Add observer must be a function');
+  subscribe(observer: Function) {
+    if (typeof observer !== 'function') {
+      throw new Error('Add observer must be a function');
+    }
 
     this.observerList.forEach((item) => {
       if (item === observer) throw new Error('Observer already in the list');
@@ -15,12 +19,12 @@ class Observer {
   }
 
   // Удаляет метод из списка подписчиков
-  unsubscribe(observer) {
+  unsubscribe(observer: Function) {
     this.observerList = this.observerList.filter((item) => item !== observer);
   }
 
   // Вызывает все подписанные методы из списка
-  notify(...arg) {
+  notify(...arg: any[]) {
     this.observerList.forEach((observer) => observer(...arg));
   }
 }

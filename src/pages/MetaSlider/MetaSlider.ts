@@ -4,9 +4,15 @@ import Model from './layers/Model';
 import View from './layers/View';
 import Presenter from './layers/Presenter';
 
-(function ($) {
-  const methods: PluginMethods = {
-    init(settings) {
+(($) => {
+  class MetaSlider {
+    jqueryObj;
+
+    constructor(jqueryObj: JQuery) {
+      this.jqueryObj = jqueryObj;
+    }
+
+    init(settings?: object): JQuery {
       const initSettings: PluginProps = {
         mainColor: '#6d6dff',
         secondColor: '#e4e4e4',
@@ -42,62 +48,74 @@ import Presenter from './layers/Presenter';
         textValueSecond: '',
       };
 
-      /**
-       * Объединяем пользовательские настройки и настройки по умолчанию,
-       * делаем проверку некоторых опций слайдера
-       */
-      const inputOptions = $.extend({}, initSettings, settings);
-      const {
-        customValues,
-        initValueFirst,
-        initValueSecond,
-        minValue,
-        maxValue,
-        stepSizeForScale,
-        step,
-      } = inputOptions;
+      // Если слайдер ещё не инициализирован, делаем это
+      const data = this.jqueryObj.data('metaSlider');
 
-      inputOptions.stepSizeForScale = stepSizeForScale ?? step;
+      if (!data) {
+        /**
+         * Объединяем пользовательские настройки и настройки по умолчанию,
+         * делаем проверку некоторых опций слайдера
+         */
+        const inputOptions = $.extend({}, initSettings, settings);
+        const {
+          customValues,
+          initValueFirst,
+          initValueSecond,
+          minValue,
+          maxValue,
+          stepSizeForScale,
+          step,
+        } = inputOptions;
 
-      if (customValues.length === 0) {
-        inputOptions.initValueFirst = initValueFirst ?? minValue;
-        inputOptions.initValueSecond = initValueSecond ?? maxValue;
+        inputOptions.stepSizeForScale = stepSizeForScale ?? step;
+
+        if (customValues.length === 0) {
+          inputOptions.initValueFirst = initValueFirst ?? minValue;
+          inputOptions.initValueSecond = initValueSecond ?? maxValue;
+        }
+
+        // инициализация плагина
+        const model = new Model(this.jqueryObj, inputOptions);
+        const view = new View();
+        const presenter = new Presenter(view, model);
+
+        view.renderSlider(this.jqueryObj);
+        presenter.setObservers();
+        model.init();
+        this.jqueryObj.data('metaSlider', { model });
       }
 
-      // Возращаем объект JQuery
-      return this.each(() => {
-        const data = this.data('metaSlider');
+      return this.jqueryObj;
+    }
 
-        // Если слайдер ещё не ициализирован на этом селекторе, делаем это
-        if (!data) {
-          const model = new Model(this, inputOptions);
-          const view = new View();
-          const presenter = new Presenter(view, model);
+    setProp(
+      prop: string,
+      value: string | number | (string | number)[],
+    ): JQuery {
+      const { model } = this.jqueryObj.data('metaSlider');
 
-          view.renderSlider(this);
-          presenter.setObservers();
-          model.init();
-          this.data('metaSlider', { model });
-        }
-      });
-    },
-    setProp(prop, value) {
-      const { model } = this.data('metaSlider').model;
       model.opt[prop] = value;
       model.opt.key = prop;
       model.update();
 
-      return this;
-    },
-    getProp(prop) {
-      return this.data('metaSlider').model.opt[prop];
-    },
-    getOptionsObj() {
-      return this.data('metaSlider').model.opt;
-    },
-    getCurrentValues() {
-      const modelOptions = this.data('metaSlider').model.opt;
-      let currentValues = '';
+      return this.jqueryObj;
+    }
+
+    getProp(prop: string): string | number | (string | number)[] {
+      const { model } = this.jqueryObj.data('metaSlider');
+
+      return model.opt[prop];
+    }
+
+    getOptionsObj(): object {
+      const { model } = this.jqueryObj.data('metaSlider');
+
+      return model.opt;
+    }
+
+    getCurrentValues(): [string, string] | [number, number] {
+      const modelOptions = this.jqueryObj.data('metaSlider').model.opt;
+      let currentValues = [];
 
       if (modelOptions.customValues.length > 0) {
         currentValues = modelOptions.textValuesArray;
@@ -106,26 +124,41 @@ import Presenter from './layers/Presenter';
       }
 
       return currentValues;
-    },
-    destroy() {
-      return this.each(() => {
-        this.removeData('metaSlider');
-        this.empty();
-      });
-    },
-    subscribe(observer) {
-      this.data('metaSlider').model.subscribe(observer);
-    },
-    unsubscribe(observer) {
-      this.data('metaSlider').model.unsubscribe(observer);
-    },
-  };
+    }
 
-  // Проверяем вызываемый метод нашего плагина на наличие и тип передаваемого аргумента
-  $.fn.metaSlider = function (method, ...prop) {
-    if (methods[method]) return methods[method].apply(this, prop);
-    if (typeof method === 'object' || !method) return methods.init.call(this, method);
+    destroy(): JQuery {
+      this.jqueryObj.removeData('metaSlider');
+      this.jqueryObj.empty();
 
-    return $.error(`A method named ${method} does not exist for jQuery.MetaSlider`);
+      return this.jqueryObj;
+    }
+
+    subscribe(observer: Function): void {
+      const { model } = this.jqueryObj.data('metaSlider');
+
+      model.subscribe(observer);
+    }
+
+    unsubscribe(observer: Function): void {
+      const { model } = this.jqueryObj.data('metaSlider');
+
+      model.unsubscribe(observer);
+    }
+  }
+
+  let slider: Slider;
+
+  $.fn.metaSlider = function (initParam, ...prop) {
+    if (typeof initParam === 'object' || !initParam) {
+      slider = new MetaSlider(this);
+
+      return slider['init'](initParam);
+    }
+
+    if (initParam && initParam in slider) return slider[initParam](...prop);
+
+    return $.error(
+      `A method named ${initParam} does not exist for jQuery.MetaSlider`,
+    );
   };
 })(jQuery);

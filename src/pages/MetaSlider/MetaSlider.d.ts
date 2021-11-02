@@ -1,16 +1,9 @@
 interface JQuery {
-  metaSlider();
+  metaSlider(initParam?: string | object, ...prop: any): any;
 }
 
-interface PluginMethods {
-  init(settings: object): JQuery<Object>;
-  setProp(prop: string, value: string | number | (string | number)[]): JQuery<Object>;
-  getProp(prop: string);
-  getOptionsObj();
-  getCurrentValues();
-  destroy();
-  subscribe(observer);
-  unsubscribe(observer);
+interface Slider {
+  [index: string]: any;
 }
 
 interface PluginProps {
