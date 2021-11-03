@@ -1,11 +1,7 @@
 class ViewError {
   // Рендерим ошибку
   renderError(message, options) {
-    const {
-      $selector,
-      $elemSlider,
-      showError,
-    } = options;
+    const { $selector, $elemSlider, showError } = options;
 
     if (!this.$selector) this.$selector = $selector;
 
@@ -29,7 +25,12 @@ class ViewError {
 
   // Устанавливаем обработчик на кнопку закрытия окна с ошибкой
   setEventErrorClose() {
-    if (this.$btnErrorClose) this.$btnErrorClose.on('click.btnErrorClose', this.handleRemoveErrorWindow.bind(this));
+    if (this.$btnErrorClose) {
+      this.$btnErrorClose.on(
+        'click.btnErrorClose',
+        this.handleRemoveErrorWindow.bind(this),
+      );
+    }
   }
 
   // Удаляем сообщение с ошибкой

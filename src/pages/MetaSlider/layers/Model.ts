@@ -1,8 +1,12 @@
+/// <reference path='../interfaces/Model.d.ts' />
 import $ from 'jquery';
 import Observer from '../patterns/Observer';
 
 class Model extends Observer {
-  constructor(selector, options) {
+  opt;
+  errorEvent: Observer;
+
+  constructor(selector: JQuery, options: PluginOptions) {
     super();
     this.opt = options;
     this.opt.$selector = selector;
@@ -42,12 +46,17 @@ class Model extends Observer {
       customValues,
     } = this.opt;
     const firstThumbDiff = Math.abs((targetValue - initValueFirst).toFixed(2));
-    const secondThumbDiff = Math.abs((targetValue - initValueSecond).toFixed(2));
+    const secondThumbDiff = Math.abs(
+      (targetValue - initValueSecond).toFixed(2),
+    );
     let clickInRange = false;
 
-    if (isRange) clickInRange = targetValue > initValueFirst && targetValue < initValueSecond;
+    if (isRange)
+      clickInRange =
+        targetValue > initValueFirst && targetValue < initValueSecond;
     if (targetValue <= initValueFirst) initValuesArray[0] = targetValue;
-    if (targetValue >= initValueSecond || !isRange) initValuesArray[1] = targetValue;
+    if (targetValue >= initValueSecond || !isRange)
+      initValuesArray[1] = targetValue;
 
     if (clickInRange && firstThumbDiff < secondThumbDiff) {
       initValuesArray[0] = targetValue;
@@ -56,13 +65,13 @@ class Model extends Observer {
     }
 
     const [firstThumb, secondThumb] = $elemThumbs;
-    const isIdenticalDistanceInRange = (clickInRange && firstThumbDiff === secondThumbDiff);
-    const isEventMoveKeypress = (
-      event.code === 'ArrowLeft'
-      || event.code === 'ArrowRight'
-      || event.code === 'ArrowUp'
-      || event.code === 'ArrowDown'
-    );
+    const isIdenticalDistanceInRange =
+      clickInRange && firstThumbDiff === secondThumbDiff;
+    const isEventMoveKeypress =
+      event.code === 'ArrowLeft' ||
+      event.code === 'ArrowRight' ||
+      event.code === 'ArrowUp' ||
+      event.code === 'ArrowDown';
     let eventPosition;
     let firstThumbPosition;
     let secondThumbPosition;
@@ -105,7 +114,10 @@ class Model extends Observer {
     if (customValues.length > 0) {
       this.opt.textValueFirst = customValues[this.opt.initValueFirst];
       this.opt.textValueSecond = customValues[this.opt.initValueSecond];
-      this.opt.textValuesArray = [this.opt.textValueFirst, this.opt.textValueSecond];
+      this.opt.textValuesArray = [
+        this.opt.textValueFirst,
+        this.opt.textValueSecond,
+      ];
     }
 
     this.opt.key = 'changedValue';
@@ -139,19 +151,24 @@ class Model extends Observer {
       valueInEventPosition = eventPosition - sliderOffset;
     }
 
-    const calcForInitValue = ((initValue - minValue) / (maxValue - minValue)) * 100;
+    const calcForInitValue =
+      ((initValue - minValue) / (maxValue - minValue)) * 100;
     const calcForEventValue = (valueInEventPosition / sliderSize) * 100;
-    const valueAsPercentage = (initValue === undefined) ? calcForEventValue : calcForInitValue;
+    const valueAsPercentage =
+      initValue === undefined ? calcForEventValue : calcForInitValue;
     const stepCounter = (maxValue - minValue) / step;
     const stepAsPercent = 100 / stepCounter;
 
-    let totalPercent = Math.round(valueAsPercentage / stepAsPercent) * stepAsPercent;
+    let totalPercent =
+      Math.round(valueAsPercentage / stepAsPercent) * stepAsPercent;
 
     if (totalPercent < 0) totalPercent = 0;
     if (totalPercent > 100) totalPercent = 100;
 
     const resultValue = (totalPercent / stepAsPercent) * step;
-    const targetValue = Number((resultValue + minValue).toFixed(numberOfDecimalPlaces));
+    const targetValue = Number(
+      (resultValue + minValue).toFixed(numberOfDecimalPlaces),
+    );
 
     if (onlyReturn) return targetValue;
     this.checkingTargetValue(targetValue, event);
@@ -161,11 +178,7 @@ class Model extends Observer {
 
   // Расчёт значений бегунков слайдера в процентах
   calcValueInPrecentage() {
-    const {
-      initValuesArray,
-      minValue,
-      maxValue,
-    } = this.opt;
+    const { initValuesArray, minValue, maxValue } = this.opt;
 
     this.opt.valuesAsPercentageArray = initValuesArray.map((currentValue) => {
       return ((currentValue - minValue) / (maxValue - minValue)) * 100;
@@ -175,9 +188,12 @@ class Model extends Observer {
   // Проверка входящих настроек для слайдера
   checkingIncomingProp() {
     const errMessage = {
-      initValue: 'Ошибка во входящих данных для бегунков слайдера. Установлены значения по-умолчанию.',
-      minAndMaxValue: 'Max значение установленное для слайдера меньше или равно его Min значению. Установлены значения по-умолчанию.',
-      stepSizeForScale: 'Установите корректное значение шага для шкалы с делениями. Установлено ближайщее оптимальное значение.',
+      initValue:
+        'Ошибка во входящих данных для бегунков слайдера. Установлены значения по-умолчанию.',
+      minAndMaxValue:
+        'Max значение установленное для слайдера меньше или равно его Min значению. Установлены значения по-умолчанию.',
+      stepSizeForScale:
+        'Установите корректное значение шага для шкалы с делениями. Установлено ближайщее оптимальное значение.',
       step: 'Значение шага слайдера не может быть больше разницы между макс. и мин. значением, а также меньше или равно 0.',
     };
 
@@ -188,7 +204,10 @@ class Model extends Observer {
     this.checkingCustomValues();
     this.checkingInitValues(errMessage);
 
-    this.opt.initValuesArray = [this.opt.initValueFirst, this.opt.initValueSecond];
+    this.opt.initValuesArray = [
+      this.opt.initValueFirst,
+      this.opt.initValueSecond,
+    ];
   }
 
   // Получение селекторов слайдера
@@ -204,63 +223,57 @@ class Model extends Observer {
 
   checkingIsVerticalSlider() {
     const { key, isVertical } = this.opt;
-    const verticalSliderVerifKeys = (key === 'init' || key === 'isVertical');
+    const verticalSliderVerifKeys = key === 'init' || key === 'isVertical';
 
     if (verticalSliderVerifKeys && isVertical) this.opt.initAutoMargins = false;
   }
 
   checkingNumberOfDecimalPlaces() {
     const { key, calcNumberOfDecimalPlaces, numberOfDecimalPlaces } = this.opt;
-    const calcNumberVerifKeys = (
-      key === 'init'
-      || key === 'calcNumberOfDecimalPlaces'
-      || key === 'initValueFirst'
-      || key === 'initValueSecond'
-      || key === 'minValue'
-      || key === 'maxValue'
-      || key === 'step'
-    );
+    const calcNumberVerifKeys =
+      key === 'init' ||
+      key === 'calcNumberOfDecimalPlaces' ||
+      key === 'initValueFirst' ||
+      key === 'initValueSecond' ||
+      key === 'minValue' ||
+      key === 'maxValue' ||
+      key === 'step';
 
-    if (calcNumberVerifKeys && calcNumberOfDecimalPlaces) this.getNumberOfDecimalPlaces();
+    if (calcNumberVerifKeys && calcNumberOfDecimalPlaces)
+      this.getNumberOfDecimalPlaces();
 
     if (key === 'init' || key === 'numberOfDecimalPlaces') {
       if (numberOfDecimalPlaces < 0) this.opt.numberOfDecimalPlaces = 0;
 
       if (!Number.isInteger(numberOfDecimalPlaces)) {
-        this.opt.numberOfDecimalPlaces = Number(this.opt.numberOfDecimalPlaces).toFixed();
+        this.opt.numberOfDecimalPlaces = Number(
+          this.opt.numberOfDecimalPlaces,
+        ).toFixed();
       }
     }
   }
 
   // Автоматический рассчёт кол-ва знаков после запятой у значений слайдера
   getNumberOfDecimalPlaces() {
-    const propToCheck = [
-      'minValue',
-      'maxValue',
-      'step',
-    ];
+    const propToCheck = ['minValue', 'maxValue', 'step'];
 
     const resultArr = propToCheck.map((prop) => {
-      return this.opt[prop].toString().includes('.') ? this.opt[prop].toString().match(/\.(\d+)/)[1].length : 0;
+      return this.opt[prop].toString().includes('.')
+        ? this.opt[prop].toString().match(/\.(\d+)/)[1].length
+        : 0;
     });
 
     this.opt.numberOfDecimalPlaces = Math.max(...resultArr);
   }
 
   checkingMinMaxValues(errMessage) {
-    const {
-      key,
-      minValue,
-      maxValue,
-      numberOfDecimalPlaces,
-    } = this.opt;
+    const { key, minValue, maxValue, numberOfDecimalPlaces } = this.opt;
 
-    const verifKeys = (
-      key === 'init'
-      || key === 'minValue'
-      || key === 'maxValue'
-      || key === 'numberOfDecimalPlaces'
-    );
+    const verifKeys =
+      key === 'init' ||
+      key === 'minValue' ||
+      key === 'maxValue' ||
+      key === 'numberOfDecimalPlaces';
 
     if (verifKeys) {
       this.opt.minValue = Number(minValue.toFixed(numberOfDecimalPlaces));
@@ -285,15 +298,14 @@ class Model extends Observer {
       numberOfDecimalPlaces,
     } = this.opt;
 
-    const verifKeys = (
-      key === 'init'
-      || key === 'initAutoScaleCreation'
-      || key === 'step'
-      || key === 'stepSizeForScale'
-      || key === 'maxValue'
-      || key === 'minValue'
-      || key === 'numberOfDecimalPlaces'
-    );
+    const verifKeys =
+      key === 'init' ||
+      key === 'initAutoScaleCreation' ||
+      key === 'step' ||
+      key === 'stepSizeForScale' ||
+      key === 'maxValue' ||
+      key === 'minValue' ||
+      key === 'numberOfDecimalPlaces';
 
     const differenceMinAndMax = maxValue - minValue;
 
@@ -323,25 +335,25 @@ class Model extends Observer {
 
   // Проверка делится ли шкала без остатка на установленный шаг шкалы
   checkingIsIntegerSizeScale() {
-    const {
-      maxValue,
-      minValue,
-      stepSizeForScale,
-    } = this.opt;
+    const { maxValue, minValue, stepSizeForScale } = this.opt;
 
     return Number.isInteger((maxValue - minValue) / stepSizeForScale);
   }
 
   // Корректировка шага шкалы, если не выполняется условие в методе checkingIsIntegerSizeScale()
   checkingCorrectStepSizeForScale(errorMessage) {
-    const isIntegerStepSizeForScale = Number.isInteger(this.opt.stepSizeForScale);
+    const isIntegerStepSizeForScale = Number.isInteger(
+      this.opt.stepSizeForScale,
+    );
 
     while (!this.checkingIsIntegerSizeScale()) {
       if (this.opt.stepSizeForScale > 1 && isIntegerStepSizeForScale) {
         this.opt.stepSizeForScale += 1;
       } else if (!isIntegerStepSizeForScale) {
         this.opt.stepSizeForScale += 0.1;
-        this.opt.stepSizeForScale = Number(this.opt.stepSizeForScale.toFixed(1));
+        this.opt.stepSizeForScale = Number(
+          this.opt.stepSizeForScale.toFixed(1),
+        );
       } else {
         break;
       }
@@ -354,8 +366,13 @@ class Model extends Observer {
     const { key, customValues } = this.opt;
 
     if (key === 'init' || key === 'customValues') {
-      this.opt.customValues = (typeof customValues === 'string') ? customValues.split(',') : customValues;
-      this.opt.customValues = this.opt.customValues.filter((elem) => (elem !== '' && elem !== ' '));
+      this.opt.customValues =
+        typeof customValues === 'string'
+          ? customValues.split(',')
+          : customValues;
+      this.opt.customValues = this.opt.customValues.filter(
+        (elem) => elem !== '' && elem !== ' ',
+      );
 
       if (this.opt.customValues.length > 0) this.initCustomValues();
     }
@@ -392,25 +409,23 @@ class Model extends Observer {
       customValues,
     } = this.opt;
 
-    const verifKeys = (
-      key === 'init'
-      || key === 'initValueFirst'
-      || key === 'initValueSecond'
-      || key === 'minValue'
-      || key === 'maxValue'
-      || key === 'isRange'
-      || key === 'step'
-      || key === 'numberOfDecimalPlaces'
-      || key === 'customValues'
-    );
+    const verifKeys =
+      key === 'init' ||
+      key === 'initValueFirst' ||
+      key === 'initValueSecond' ||
+      key === 'minValue' ||
+      key === 'maxValue' ||
+      key === 'isRange' ||
+      key === 'step' ||
+      key === 'numberOfDecimalPlaces' ||
+      key === 'customValues';
 
-    const checkingKeys = (
-      initValueFirst > initValueSecond
-      || initValueFirst > maxValue
-      || initValueFirst < minValue
-      || initValueSecond > maxValue
-      || initValueSecond < minValue
-    );
+    const checkingKeys =
+      initValueFirst > initValueSecond ||
+      initValueFirst > maxValue ||
+      initValueFirst < minValue ||
+      initValueSecond > maxValue ||
+      initValueSecond < minValue;
 
     if (verifKeys) {
       if (checkingKeys) {
@@ -420,13 +435,24 @@ class Model extends Observer {
       }
 
       this.opt.initValueFirst = isRange ? this.opt.initValueFirst : minValue;
-      this.opt.initValueFirst = this.calcTargetValue(null, this.opt.initValueFirst, true);
-      this.opt.initValueSecond = this.calcTargetValue(null, this.opt.initValueSecond, true);
+      this.opt.initValueFirst = this.calcTargetValue(
+        null,
+        this.opt.initValueFirst,
+        true,
+      );
+      this.opt.initValueSecond = this.calcTargetValue(
+        null,
+        this.opt.initValueSecond,
+        true,
+      );
 
       if (customValues.length > 0) {
         this.opt.textValueFirst = customValues[this.opt.initValueFirst];
         this.opt.textValueSecond = customValues[this.opt.initValueSecond];
-        this.opt.textValuesArray = [this.opt.textValueFirst, this.opt.textValueSecond];
+        this.opt.textValuesArray = [
+          this.opt.textValueFirst,
+          this.opt.textValueSecond,
+        ];
       } else {
         this.opt.textValueFirst = '';
         this.opt.textValueSecond = '';

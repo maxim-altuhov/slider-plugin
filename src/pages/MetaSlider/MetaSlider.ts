@@ -1,19 +1,12 @@
-/// <reference path='MetaSlider.d.ts' />
-
+/// <reference path='./interfaces/MetaSlider.d.ts' />
 import Model from './layers/Model';
 import View from './layers/View';
 import Presenter from './layers/Presenter';
 
 (($) => {
-  class MetaSlider {
-    jqueryObj;
-
-    constructor(jqueryObj: JQuery) {
-      this.jqueryObj = jqueryObj;
-    }
-
-    init(settings?: object): JQuery {
-      const initSettings: PluginProps = {
+  const methods: PluginMethods = {
+    init(settings) {
+      const initSettings: PluginOptions = {
         mainColor: '#6d6dff',
         secondColor: '#e4e4e4',
         colorMarker: '',
@@ -48,15 +41,19 @@ import Presenter from './layers/Presenter';
         textValueSecond: '',
       };
 
-      // Если слайдер ещё не инициализирован, делаем это
-      const data = this.jqueryObj.data('metaSlider');
+      // Если слайдер ещё не инициализирован
+      const data = this.data('metaSlider');
 
       if (!data) {
         /**
          * Объединяем пользовательские настройки и настройки по умолчанию,
          * делаем проверку некоторых опций слайдера
          */
-        const inputOptions = $.extend({}, initSettings, settings);
+        const inputOptions: PluginOptions = $.extend(
+          {},
+          initSettings,
+          settings,
+        );
         const {
           customValues,
           initValueFirst,
@@ -75,46 +72,39 @@ import Presenter from './layers/Presenter';
         }
 
         // инициализация плагина
-        const model = new Model(this.jqueryObj, inputOptions);
+        const model = new Model(this, inputOptions);
         const view = new View();
         const presenter = new Presenter(view, model);
 
-        view.renderSlider(this.jqueryObj);
+        view.renderSlider(this);
         presenter.setObservers();
         model.init();
-        this.jqueryObj.data('metaSlider', { model });
+        this.data('metaSlider', { model });
       }
 
-      return this.jqueryObj;
-    }
-
-    setProp(
-      prop: string,
-      value: string | number | (string | number)[],
-    ): JQuery {
-      const { model } = this.jqueryObj.data('metaSlider');
+      return this;
+    },
+    setProp(prop, value) {
+      const { model } = this.data('metaSlider');
 
       model.opt[prop] = value;
       model.opt.key = prop;
       model.update();
 
-      return this.jqueryObj;
-    }
-
-    getProp(prop: string): string | number | (string | number)[] {
-      const { model } = this.jqueryObj.data('metaSlider');
+      return this;
+    },
+    getProp(prop) {
+      const { model } = this.data('metaSlider');
 
       return model.opt[prop];
-    }
-
-    getOptionsObj(): object {
-      const { model } = this.jqueryObj.data('metaSlider');
+    },
+    getOptionsObj() {
+      const { model } = this.data('metaSlider');
 
       return model.opt;
-    }
-
-    getCurrentValues(): [string, string] | [number, number] {
-      const modelOptions = this.jqueryObj.data('metaSlider').model.opt;
+    },
+    getCurrentValues() {
+      const modelOptions = this.data('metaSlider').model.opt;
       let currentValues = [];
 
       if (modelOptions.customValues.length > 0) {
@@ -124,38 +114,31 @@ import Presenter from './layers/Presenter';
       }
 
       return currentValues;
-    }
+    },
+    destroy() {
+      this.removeData('metaSlider');
+      this.empty();
 
-    destroy(): JQuery {
-      this.jqueryObj.removeData('metaSlider');
-      this.jqueryObj.empty();
-
-      return this.jqueryObj;
-    }
-
-    subscribe(observer: Function): void {
-      const { model } = this.jqueryObj.data('metaSlider');
+      return this;
+    },
+    subscribe(observer) {
+      const { model } = this.data('metaSlider');
 
       model.subscribe(observer);
-    }
-
-    unsubscribe(observer: Function): void {
-      const { model } = this.jqueryObj.data('metaSlider');
+    },
+    unsubscribe(observer) {
+      const { model } = this.data('metaSlider');
 
       model.unsubscribe(observer);
-    }
-  }
+    },
+  };
 
-  let slider: Slider;
-
+  // Проверяем вызываемый метод нашего плагина на наличие и тип передаваемого аргумента
   $.fn.metaSlider = function (initParam, ...prop) {
+    if (methods[initParam]) return methods[initParam].apply(this, prop);
     if (typeof initParam === 'object' || !initParam) {
-      slider = new MetaSlider(this);
-
-      return slider['init'](initParam);
+      return methods.init.call(this, initParam);
     }
-
-    if (initParam && initParam in slider) return slider[initParam](...prop);
 
     return $.error(
       `A method named ${initParam} does not exist for jQuery.MetaSlider`,

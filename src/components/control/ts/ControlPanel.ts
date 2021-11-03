@@ -1,10 +1,9 @@
-/// <reference path='ControlPanel.d.ts' />
 import $ from 'jquery';
 
 class ControlPanel {
   $selector: JQuery;
   $sliderSelector: JQuery;
-  selectorsObj: ISelectorsObj;
+  selectorsObj: IObjectOrClass;
   propertyList: string[];
 
   constructor(panelSelector: string, sliderSelector: string) {
