@@ -249,8 +249,8 @@ module.exports = {
     port: 4200,
     open: true,
   },
-  target: isDev === true ? 'web' : 'browserslist',
-  devtool: isDev === true ? 'source-map' : false,
+  target: (isDev === true) ? 'web' : 'browserslist',
+  devtool: (isDev === true) ? 'source-map' : false,
   plugins: plugins(),
   module: {
     rules: [

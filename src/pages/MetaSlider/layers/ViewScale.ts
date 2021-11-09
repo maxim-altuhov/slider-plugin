@@ -1,47 +1,57 @@
 import $ from 'jquery';
 import Observer from '../patterns/Observer';
+
 class ViewScale extends Observer {
+  isFirstInit: boolean;
+  $selector: JQuery;
+  $elemSlider: JQuery;
+  $elemScale: JQuery;
+  $elemScalePoints: JQuery;
+  scalePointsSize: number;
+  mapSkipScalePoints: Map<number, JQuery[]>;
+  skipScalePointsArray: JQuery[];
+
   constructor() {
     super();
     this.isFirstInit = true;
   }
 
   // Первоначальная инициализация
-  init(options) {
+  init(options: PluginOptions) {
     this.$selector = options.$selector;
     this.$elemSlider = options.$elemSlider;
     this.$elemScale = options.$elemScale;
   }
 
   // Обновление view
-  update(options) {
+  update(options: PluginOptions) {
     if (this.isFirstInit) {
       this.init(options);
       this.isFirstInit = false;
     }
 
     const { key } = options;
+
+    // prettier-ignore
     const renderScaleVerifKeys = (
-      key === 'init'
-      || key === 'showScale'
-      || key === 'initAutoScaleCreation'
-      || key === 'step'
-      || key === 'stepSizeForScale'
-      || key === 'minValue'
-      || key === 'maxValue'
-      || key === 'calcNumberOfDecimalPlaces'
-      || key === 'numberOfDecimalPlaces'
-      || key === 'customValues'
-      || key === 'initFormatted'
-      || key === 'preFix'
-      || key === 'postFix'
-      || key === 'initScaleAdjustment'
+      key === 'init' ||
+      key === 'showScale' ||
+      key === 'initAutoScaleCreation' ||
+      key === 'step' ||
+      key === 'stepSizeForScale' ||
+      key === 'minValue' ||
+      key === 'maxValue' ||
+      key === 'calcNumberOfDecimalPlaces' ||
+      key === 'numberOfDecimalPlaces' ||
+      key === 'customValues' ||
+      key === 'initFormatted' ||
+      key === 'preFix' ||
+      key === 'postFix' ||
+      key === 'initScaleAdjustment'
     );
-    const styleVerifKeys = (
-      key === 'init'
-      || key === 'colorForScale'
-      || key === 'showScale'
-    );
+
+    // prettier-ignore
+    const styleVerifKeys = (key === 'init' || key === 'colorForScale' || key === 'showScale');
 
     if (renderScaleVerifKeys) {
       this.createScale(options);
@@ -53,7 +63,7 @@ class ViewScale extends Observer {
   }
 
   // Рендер шкалы значений
-  createScale(options) {
+  createScale(options: PluginOptions) {
     if (options.showScale) {
       this.$elemScale.empty();
 
@@ -78,7 +88,8 @@ class ViewScale extends Observer {
         const convertedValue = initFormatted ? currentValue.toLocaleString() : currentValue;
         const resultValue = isCustomValue ? customValues[currentValue] : convertedValue;
 
-        const elemScalePoint = `<button type="button" class="meta-slider__scale-point js-meta-slider__scale-point" style="color: inherit" data-value="${currentValue}">${preFix}${resultValue}${postFix}</button>`;
+        const elemScalePoint = `<button type="button" class="meta-slider__scale-point js-meta-slider__scale-point" 
+        style="color: inherit" data-value="${currentValue}">${preFix}${resultValue}${postFix}</button>`;
 
         $fragmentWithScale.append(elemScalePoint);
       }
@@ -109,7 +120,7 @@ class ViewScale extends Observer {
   }
 
   // Устанавливаем стили для шкалы
-  setStyleForScale(options) {
+  setStyleForScale(options: PluginOptions) {
     const { colorForScale, showScale } = options;
 
     if (showScale) {
@@ -130,7 +141,7 @@ class ViewScale extends Observer {
    * Метод, который проверяет помещаются ли все деления шкалы на данной длине слайдера.
    * Если нет, то этот метод делает авто-подстройку делений шкалы и скрывает лишние значения
    */
-  checkingScaleSize(options) {
+  checkingScaleSize(options: PluginOptions) {
     const { showScale, initScaleAdjustment } = options;
 
     if (showScale && initScaleAdjustment) {
@@ -140,7 +151,9 @@ class ViewScale extends Observer {
       while (this.scalePointsSize + MARGIN_PX > sliderSize) {
         const totalSizeScalePoints = this.scalePointsSize + MARGIN_PX;
         this.skipScalePointsArray = [];
-        this.$elemScalePoints = this.$selector.find('.js-meta-slider__scale-point:not(.meta-slider__scale-point_skip)');
+        this.$elemScalePoints = this.$selector.find(
+          '.js-meta-slider__scale-point:not(.meta-slider__scale-point_skip)',
+        );
         this.scalePointsSize = 0;
 
         const sizeScalePointsArray = this.$elemScalePoints.length;
@@ -149,18 +162,19 @@ class ViewScale extends Observer {
 
         this.$elemScalePoints.each((index, scalePoint) => {
           const $currentScalePoint = $(scalePoint);
-          const firstOrLastIndex = (index === 0) || (index === (sizeScalePointsArray - 1));
+          const firstOrLastIndex = index === 0 || index === sizeScalePointsArray - 1;
           const intervalWithoutFirstAndLastIndex = !firstOrLastIndex && sizeScalePointsArray <= 6;
 
           if (index % 2 !== 0 && sizeScalePointsArray > 6) {
             this.setPropForSkipScalePoint($currentScalePoint);
-          } else if ((sizeScalePointsArray % 2 !== 0) && sizeScalePointsArray <= 6) {
+          } else if (sizeScalePointsArray % 2 !== 0 && sizeScalePointsArray <= 6) {
             this.setPropForSkipScalePoint($currentScalePoint);
-          } else if ((sizeScalePointsArray % 2 === 0) && intervalWithoutFirstAndLastIndex) {
+          } else if (sizeScalePointsArray % 2 === 0 && intervalWithoutFirstAndLastIndex) {
             this.setPropForSkipScalePoint($currentScalePoint);
           }
 
-          if (!$currentScalePoint.hasClass('meta-slider__scale-point_skip')) this.scalePointsSize += $currentScalePoint.outerWidth();
+          if (!$currentScalePoint.hasClass('meta-slider__scale-point_skip'))
+            this.scalePointsSize += $currentScalePoint.outerWidth();
         });
 
         this.mapSkipScalePoints.set(totalSizeScalePoints, [...this.skipScalePointsArray]);
@@ -171,8 +185,9 @@ class ViewScale extends Observer {
   }
 
   // Установка стилей для пропущенных делений шкалы
-  setPropForSkipScalePoint($scalePoint) {
-    $scalePoint.addClass('meta-slider__scale-point_skip')
+  setPropForSkipScalePoint($scalePoint: JQuery) {
+    $scalePoint
+      .addClass('meta-slider__scale-point_skip')
       .attr('tabindex', -1)
       .css({ color: 'transparent', borderColor: 'inherit' });
 
@@ -183,11 +198,12 @@ class ViewScale extends Observer {
    * Метод отслеживает размер слайдера и возвращает скрытые деления шкалы,
    * если они уже помещаются на шкале
    */
-  checkingSkipScalePointSize(sliderSize, margin) {
+  checkingSkipScalePointSize(sliderSize: number, margin: number) {
     this.mapSkipScalePoints.forEach((scalePointSkipArray, controlSize) => {
-      if (sliderSize > controlSize + (margin / 3)) {
+      if (sliderSize > controlSize + margin / 3) {
         scalePointSkipArray.forEach(($scalePoint) => {
-          $scalePoint.removeAttr('tabindex')
+          $scalePoint
+            .removeAttr('tabindex')
             .removeClass('meta-slider__scale-point_skip')
             .css({ color: 'inherit', borderColor: '' });
 
@@ -200,7 +216,7 @@ class ViewScale extends Observer {
   }
 
   // Обработчик события отслеживающий размер окна браузера для метода checkingScaleSize()
-  setEventsWindow(options) {
+  setEventsWindow(options: PluginOptions) {
     const { showScale, initScaleAdjustment } = options;
 
     if (showScale && initScaleAdjustment) {
@@ -211,7 +227,7 @@ class ViewScale extends Observer {
   }
 
   // Отслеживает ширину слайдера
-  handleCheckingScaleSize(options) {
+  handleCheckingScaleSize(options: PluginOptions) {
     this.checkingScaleSize(options);
   }
 
@@ -223,10 +239,10 @@ class ViewScale extends Observer {
   }
 
   // Получает значения при клике на шкалу слайдера
-  handleGetValueInScalePoint(event) {
+  handleGetValueInScalePoint(event: { preventDefault: () => void; target: any }) {
     event.preventDefault();
     const $target = $(event.target);
-    let targetValue = Number($target.attr('data-value'));
+    const targetValue = Number($target.attr('data-value'));
 
     this.notify(event, targetValue);
   }

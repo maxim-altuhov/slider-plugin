@@ -55,7 +55,7 @@ class ControlPanel {
    * установка обработчика событий на инпуты и подписка на обновление модели слайдера
    */
   init() {
-    Object.entries(this.selectorsObj).forEach((valuesArray) => {
+    Object.entries(this.selectorsObj).forEach((valuesArray: [string, JQuery]) => {
       const [prop, $selector] = valuesArray;
       this.getProp(prop);
       this.initCheckingDependencies(prop);
@@ -63,10 +63,7 @@ class ControlPanel {
       $selector.on('change.input', this.handleInputChanges.bind(this));
     });
 
-    this.$sliderSelector.metaSlider(
-      'subscribe',
-      this.watchTheSlider.bind(this),
-    );
+    this.$sliderSelector.metaSlider('subscribe', this.watchTheSlider.bind(this));
   }
 
   // Метод для установки новых значений для слайдера
@@ -103,10 +100,13 @@ class ControlPanel {
    */
   watchTheSlider() {
     const key = this.$sliderSelector.metaSlider('getProp', 'key');
-    const changeValuesVerifKeys =
+
+    // prettier-ignore
+    const changeValuesVerifKeys = (
       key === 'changedValue' ||
       key === 'initValueFirst' ||
-      key === 'initValueSecond';
+      key === 'initValueSecond'
+    );
 
     if (changeValuesVerifKeys) {
       this.getProp('initValueFirst');

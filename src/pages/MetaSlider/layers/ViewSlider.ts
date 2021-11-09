@@ -2,13 +2,20 @@ import $ from 'jquery';
 import Observer from '../patterns/Observer';
 
 class ViewSlider extends Observer {
+  isFirstInit: boolean;
+  $selector: JQuery;
+  $elemSlider: JQuery;
+  $sliderProgress: JQuery;
+  $elemThumbs: JQuery;
+  $elemMarkers: JQuery;
+
   constructor() {
     super();
     this.isFirstInit = true;
   }
 
   // Первоначальная инициализация
-  init(options) {
+  init(options: PluginOptions) {
     this.$elemSlider = options.$elemSlider;
     this.$sliderProgress = options.$sliderProgress;
     this.$elemThumbs = options.$elemThumbs;
@@ -17,40 +24,46 @@ class ViewSlider extends Observer {
   }
 
   // Обновление view
-  update(options) {
+  update(options: PluginOptions) {
     if (this.isFirstInit) {
       this.init(options);
       this.isFirstInit = false;
     }
 
     const { key } = options;
+
+    // prettier-ignore
     const setValueVerifKeys = (
-      key === 'init'
-      || key === 'showBackground'
-      || key === 'mainColor'
-      || key === 'changedValue'
-      || key === 'initValueFirst'
-      || key === 'initValueSecond'
-      || key === 'isRange'
-      || key === 'minValue'
-      || key === 'maxValue'
-      || key === 'customValues'
-      || key === 'step'
-      || key === 'calcNumberOfDecimalPlaces'
-      || key === 'numberOfDecimalPlaces'
+      key === 'init' ||
+      key === 'showBackground' ||
+      key === 'mainColor' ||
+      key === 'changedValue' ||
+      key === 'initValueFirst' ||
+      key === 'initValueSecond' ||
+      key === 'isRange' ||
+      key === 'minValue' ||
+      key === 'maxValue' ||
+      key === 'customValues' ||
+      key === 'step' ||
+      key === 'calcNumberOfDecimalPlaces' ||
+      key === 'numberOfDecimalPlaces'
     );
+
+    // prettier-ignore
     const autoMarginVerifKeys = (
-      key === 'init'
-      || key === 'initAutoMargins'
-      || key === 'showMarkers'
-      || key === 'showScale'
-      || key === 'isVertical'
+      key === 'init' ||
+      key === 'initAutoMargins' ||
+      key === 'showMarkers' ||
+      key === 'showScale' ||
+      key === 'isVertical'
     );
+
+    // prettier-ignore
     const minAndMaxVerifKeys = (
-      key === 'init'
-      || key === 'minValue'
-      || key === 'maxValue'
-      || key === 'customValues'
+      key === 'init' ||
+      key === 'minValue' ||
+      key === 'maxValue' ||
+      key === 'customValues'
     );
 
     if (setValueVerifKeys) this.setBackgroundTheRange(options);
@@ -61,7 +74,7 @@ class ViewSlider extends Observer {
   }
 
   // Первоначальный рендер слайдера
-  renderSlider(initSelector) {
+  renderSlider(initSelector: JQuery) {
     if (!this.$selector) this.$selector = initSelector;
 
     const $fragmentWithASlider = $(document.createDocumentFragment());
@@ -84,12 +97,8 @@ class ViewSlider extends Observer {
   }
 
   // Устанвливает data-атрибуты с мин. и макс. значениями слайдера
-  setMinAndMaxVal(options) {
-    const {
-      minValue,
-      maxValue,
-      customValues,
-    } = options;
+  setMinAndMaxVal(options: PluginOptions) {
+    const { minValue, maxValue, customValues } = options;
 
     this.$elemSlider.attr({ 'data-min': minValue, 'data-max': maxValue });
 
@@ -103,20 +112,21 @@ class ViewSlider extends Observer {
   }
 
   // Проверка и установка отступов у слайдера
-  setAutoMargins(options) {
-    const {
+  setAutoMargins(options: PluginOptions) {
+    // prettier-ignore
+    const { 
       initAutoMargins,
       showMarkers,
       showScale,
       isVertical,
     } = options;
-    const verifProp = (initAutoMargins && !isVertical);
+    const verifProp = initAutoMargins && !isVertical;
 
     if (verifProp && showMarkers) {
       const heightMarker = this.$elemMarkers.eq(-1).outerHeight();
       const heightThumb = this.$elemThumbs.eq(-1).outerHeight();
 
-      this.$elemSlider.css('margin-top', `${heightMarker + (heightThumb / 1.5)}px`);
+      this.$elemSlider.css('margin-top', `${heightMarker + heightThumb / 1.5}px`);
     } else {
       this.$elemSlider.css('margin-top', '');
     }
@@ -130,12 +140,12 @@ class ViewSlider extends Observer {
   }
 
   // Установка фонового цвета для слайдера
-  setBackgroundForSlider(options) {
+  setBackgroundForSlider(options: PluginOptions) {
     this.$elemSlider.css('background-color', options.secondColor);
   }
 
   // Сброс или установка вертикальной ориентации слайдера
-  setVerticalOrientation(options) {
+  setVerticalOrientation(options: PluginOptions) {
     if (options.isVertical) {
       this.$elemSlider.addClass('meta-slider_vertical');
       this.$selector.addClass('ms-vertical');
@@ -146,12 +156,16 @@ class ViewSlider extends Observer {
   }
 
   // Проверка и установка цвета заливки интервала между бегунками
-  setBackgroundTheRange(options) {
+  setBackgroundTheRange(options: PluginOptions) {
     if (options.showBackground) {
       const { valuesAsPercentageArray, mainColor } = options;
       const [firstPosition, secondPosition] = valuesAsPercentageArray;
 
-      const settingForRange = { left: `${firstPosition}%`, right: `${100 - secondPosition}%`, background: mainColor };
+      const settingForRange = {
+        left: `${firstPosition}%`,
+        right: `${100 - secondPosition}%`,
+        background: mainColor,
+      };
       this.$sliderProgress.css(settingForRange);
     } else {
       this.$sliderProgress.css('background', 'none');
@@ -164,7 +178,7 @@ class ViewSlider extends Observer {
   }
 
   // Получает значения при клике внутри слайдера
-  handleSetSliderValues(event) {
+  handleSetSliderValues(event: { preventDefault: () => void; target: any }) {
     event.preventDefault();
     const $target = $(event.target);
 

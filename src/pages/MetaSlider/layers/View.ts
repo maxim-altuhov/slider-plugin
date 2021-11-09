@@ -18,7 +18,7 @@ class View {
   }
 
   // Вызываем метод update() в subview
-  update(options: object) {
+  update(options: PluginOptions) {
     Object.keys(this.views).forEach((view) => {
       if ('update' in this.views[view]) this.views[view].update(options);
     });

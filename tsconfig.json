@@ -15,8 +15,8 @@
     "noImplicitAny": true,
 
     //strict
-    "strictNullChecks": true,
-    "strictPropertyInitialization": true,
+    // "strictNullChecks": true,
+    // "strictPropertyInitialization": true,
     "strictFunctionTypes": true,
     "noImplicitThis": true,
     "strictBindCallApply": true,

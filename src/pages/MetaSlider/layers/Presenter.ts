@@ -1,21 +1,31 @@
+import Model from './Model';
+import View from './View';
+
 class Presenter {
-  constructor(view, model) {
+  view;
+  model;
+
+  constructor(view: View, model: Model) {
     this.view = view;
     this.model = model;
   }
 
   // Передаем новые данные из модели и обновляем view и subview
-  updateViews(options) {
+  updateViews(options: PluginOptions) {
     this.view.update(options);
   }
 
   // Вывод ошибки при наличии некорректных значений в настройках слайдера
-  renderError(message, options) {
+  renderError(message: string, options: PluginOptions) {
     this.getView('viewError').renderError(message, options);
   }
 
   // Вызов метода в модели для расчёта значений позиций бегунков слайдера
-  calcTargetValue(event, initValue, onlyReturn) {
+  calcTargetValue(
+    event: { code: string; clientY: number; clientX: number; target: any },
+    initValue: number,
+    onlyReturn?: boolean,
+  ) {
     this.model.calcTargetValue(event, initValue, onlyReturn);
   }
 
@@ -30,7 +40,7 @@ class Presenter {
   }
 
   // Получаем нужный subview через главный view
-  getView(view) {
+  getView(view: string) {
     return this.view.views[view];
   }
 }

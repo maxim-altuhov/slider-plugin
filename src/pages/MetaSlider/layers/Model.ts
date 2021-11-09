@@ -35,7 +35,10 @@ class Model extends Observer {
    * Проверка рассчитанных значений слайдера на выполнение различных условий
    * и определение какой бегунок у слайдера должен быть перемещён
    */
-  checkingTargetValue(targetValue, event) {
+  checkingTargetValue(
+    targetValue: number,
+    event: { code: string; clientY: number; clientX: number; target: any },
+  ) {
     const {
       initValueFirst,
       initValueSecond,
@@ -45,18 +48,13 @@ class Model extends Observer {
       isVertical,
       customValues,
     } = this.opt;
-    const firstThumbDiff = Math.abs((targetValue - initValueFirst).toFixed(2));
-    const secondThumbDiff = Math.abs(
-      (targetValue - initValueSecond).toFixed(2),
-    );
+    const firstThumbDiff = Math.abs(Number((targetValue - initValueFirst).toFixed(2)));
+    const secondThumbDiff = Math.abs(Number((targetValue - initValueSecond).toFixed(2)));
     let clickInRange = false;
 
-    if (isRange)
-      clickInRange =
-        targetValue > initValueFirst && targetValue < initValueSecond;
+    if (isRange) clickInRange = targetValue > initValueFirst && targetValue < initValueSecond;
     if (targetValue <= initValueFirst) initValuesArray[0] = targetValue;
-    if (targetValue >= initValueSecond || !isRange)
-      initValuesArray[1] = targetValue;
+    if (targetValue >= initValueSecond || !isRange) initValuesArray[1] = targetValue;
 
     if (clickInRange && firstThumbDiff < secondThumbDiff) {
       initValuesArray[0] = targetValue;
@@ -65,13 +63,15 @@ class Model extends Observer {
     }
 
     const [firstThumb, secondThumb] = $elemThumbs;
-    const isIdenticalDistanceInRange =
-      clickInRange && firstThumbDiff === secondThumbDiff;
-    const isEventMoveKeypress =
+    const isIdenticalDistanceInRange = clickInRange && firstThumbDiff === secondThumbDiff;
+
+    // prettier-ignore
+    const isEventMoveKeypress = (
       event.code === 'ArrowLeft' ||
       event.code === 'ArrowRight' ||
       event.code === 'ArrowUp' ||
-      event.code === 'ArrowDown';
+      event.code === 'ArrowDown'
+    );
     let eventPosition;
     let firstThumbPosition;
     let secondThumbPosition;
@@ -108,16 +108,14 @@ class Model extends Observer {
     }
 
     this.calcValueInPrecentage();
-    this.opt.initValueFirst = initValuesArray[0];
-    this.opt.initValueSecond = initValuesArray[1];
+    const [firstValue, secondValue] = initValuesArray;
+    this.opt.initValueFirst = firstValue;
+    this.opt.initValueSecond = secondValue;
 
     if (customValues.length > 0) {
       this.opt.textValueFirst = customValues[this.opt.initValueFirst];
       this.opt.textValueSecond = customValues[this.opt.initValueSecond];
-      this.opt.textValuesArray = [
-        this.opt.textValueFirst,
-        this.opt.textValueSecond,
-      ];
+      this.opt.textValuesArray = [this.opt.textValueFirst, this.opt.textValueSecond];
     }
 
     this.opt.key = 'changedValue';
@@ -125,13 +123,18 @@ class Model extends Observer {
   }
 
   // Расчёт значений позиций бегунков слайдера
-  calcTargetValue(event, initValue, onlyReturn = false) {
-    const {
-      $elemSlider,
-      isVertical,
-      minValue,
-      maxValue,
-      step,
+  calcTargetValue(
+    event: { code: string; clientY: number; clientX: number; target: any },
+    initValue: number,
+    onlyReturn = false,
+  ) {
+    // prettier-ignore
+    const { 
+      $elemSlider, 
+      isVertical, 
+      minValue, 
+      maxValue, 
+      step, 
       numberOfDecimalPlaces,
     } = this.opt;
     let eventPosition;
@@ -151,24 +154,19 @@ class Model extends Observer {
       valueInEventPosition = eventPosition - sliderOffset;
     }
 
-    const calcForInitValue =
-      ((initValue - minValue) / (maxValue - minValue)) * 100;
+    const calcForInitValue = ((initValue - minValue) / (maxValue - minValue)) * 100;
     const calcForEventValue = (valueInEventPosition / sliderSize) * 100;
-    const valueAsPercentage =
-      initValue === undefined ? calcForEventValue : calcForInitValue;
+    const valueAsPercentage = initValue === undefined ? calcForEventValue : calcForInitValue;
     const stepCounter = (maxValue - minValue) / step;
     const stepAsPercent = 100 / stepCounter;
 
-    let totalPercent =
-      Math.round(valueAsPercentage / stepAsPercent) * stepAsPercent;
+    let totalPercent = Math.round(valueAsPercentage / stepAsPercent) * stepAsPercent;
 
     if (totalPercent < 0) totalPercent = 0;
     if (totalPercent > 100) totalPercent = 100;
 
     const resultValue = (totalPercent / stepAsPercent) * step;
-    const targetValue = Number(
-      (resultValue + minValue).toFixed(numberOfDecimalPlaces),
-    );
+    const targetValue = Number((resultValue + minValue).toFixed(numberOfDecimalPlaces));
 
     if (onlyReturn) return targetValue;
     this.checkingTargetValue(targetValue, event);
@@ -180,21 +178,22 @@ class Model extends Observer {
   calcValueInPrecentage() {
     const { initValuesArray, minValue, maxValue } = this.opt;
 
-    this.opt.valuesAsPercentageArray = initValuesArray.map((currentValue) => {
-      return ((currentValue - minValue) / (maxValue - minValue)) * 100;
-    });
+    this.opt.valuesAsPercentageArray = initValuesArray.map(
+      (currentValue) => ((currentValue - minValue) / (maxValue - minValue)) * 100,
+    );
   }
 
   // Проверка входящих настроек для слайдера
   checkingIncomingProp() {
-    const errMessage = {
-      initValue:
-        'Ошибка во входящих данных для бегунков слайдера. Установлены значения по-умолчанию.',
-      minAndMaxValue:
-        'Max значение установленное для слайдера меньше или равно его Min значению. Установлены значения по-умолчанию.',
-      stepSizeForScale:
-        'Установите корректное значение шага для шкалы с делениями. Установлено ближайщее оптимальное значение.',
-      step: 'Значение шага слайдера не может быть больше разницы между макс. и мин. значением, а также меньше или равно 0.',
+    const errMessage: IErrMessage = {
+      initValue: `Ошибка во входящих данных для бегунков слайдера. Установлены 
+      значения по-умолчанию.`,
+      minAndMaxValue: `Max значение установленное для слайдера меньше или равно его Min значению. 
+      Установлены значения по-умолчанию.`,
+      stepSizeForScale: `Установите корректное значение шага для шкалы с делениями. 
+      Установлено ближайщее оптимальное значение.`,
+      step: `Значение шага слайдера не может быть больше разницы между макс. и мин. значением, 
+      а также меньше или равно 0.`,
     };
 
     this.checkingIsVerticalSlider();
@@ -204,10 +203,7 @@ class Model extends Observer {
     this.checkingCustomValues();
     this.checkingInitValues(errMessage);
 
-    this.opt.initValuesArray = [
-      this.opt.initValueFirst,
-      this.opt.initValueSecond,
-    ];
+    this.opt.initValuesArray = [this.opt.initValueFirst, this.opt.initValueSecond];
   }
 
   // Получение селекторов слайдера
@@ -223,32 +219,34 @@ class Model extends Observer {
 
   checkingIsVerticalSlider() {
     const { key, isVertical } = this.opt;
-    const verticalSliderVerifKeys = key === 'init' || key === 'isVertical';
+
+    // prettier-ignore
+    const verticalSliderVerifKeys = (key === 'init' || key === 'isVertical');
 
     if (verticalSliderVerifKeys && isVertical) this.opt.initAutoMargins = false;
   }
 
   checkingNumberOfDecimalPlaces() {
     const { key, calcNumberOfDecimalPlaces, numberOfDecimalPlaces } = this.opt;
-    const calcNumberVerifKeys =
+
+    // prettier-ignore
+    const calcNumberVerifKeys = (
       key === 'init' ||
       key === 'calcNumberOfDecimalPlaces' ||
       key === 'initValueFirst' ||
       key === 'initValueSecond' ||
       key === 'minValue' ||
       key === 'maxValue' ||
-      key === 'step';
+      key === 'step'
+    );
 
-    if (calcNumberVerifKeys && calcNumberOfDecimalPlaces)
-      this.getNumberOfDecimalPlaces();
+    if (calcNumberVerifKeys && calcNumberOfDecimalPlaces) this.getNumberOfDecimalPlaces();
 
     if (key === 'init' || key === 'numberOfDecimalPlaces') {
       if (numberOfDecimalPlaces < 0) this.opt.numberOfDecimalPlaces = 0;
 
       if (!Number.isInteger(numberOfDecimalPlaces)) {
-        this.opt.numberOfDecimalPlaces = Number(
-          this.opt.numberOfDecimalPlaces,
-        ).toFixed();
+        this.opt.numberOfDecimalPlaces = Number(this.opt.numberOfDecimalPlaces.toFixed());
       }
     }
   }
@@ -257,23 +255,30 @@ class Model extends Observer {
   getNumberOfDecimalPlaces() {
     const propToCheck = ['minValue', 'maxValue', 'step'];
 
-    const resultArr = propToCheck.map((prop) => {
-      return this.opt[prop].toString().includes('.')
-        ? this.opt[prop].toString().match(/\.(\d+)/)[1].length
-        : 0;
-    });
+    // prettier-ignore
+    const resultArr = propToCheck.map((prop) =>
+      this.opt[prop].toString().includes('.') ? this.opt[prop].toString().match(/\.(\d+)/)[1].length : 0,
+    );
 
     this.opt.numberOfDecimalPlaces = Math.max(...resultArr);
   }
 
-  checkingMinMaxValues(errMessage) {
-    const { key, minValue, maxValue, numberOfDecimalPlaces } = this.opt;
+  checkingMinMaxValues(errMessage: IErrMessage) {
+    // prettier-ignore
+    const { 
+      key,
+      minValue,
+      maxValue,
+      numberOfDecimalPlaces,
+    } = this.opt;
 
-    const verifKeys =
+    // prettier-ignore
+    const verifKeys = (
       key === 'init' ||
       key === 'minValue' ||
       key === 'maxValue' ||
-      key === 'numberOfDecimalPlaces';
+      key === 'numberOfDecimalPlaces'
+    );
 
     if (verifKeys) {
       this.opt.minValue = Number(minValue.toFixed(numberOfDecimalPlaces));
@@ -287,7 +292,7 @@ class Model extends Observer {
     }
   }
 
-  checkingStepSize(errMessage) {
+  checkingStepSize(errMessage: IErrMessage) {
     const {
       key,
       initAutoScaleCreation,
@@ -298,14 +303,16 @@ class Model extends Observer {
       numberOfDecimalPlaces,
     } = this.opt;
 
-    const verifKeys =
+    // prettier-ignore
+    const verifKeys = (
       key === 'init' ||
       key === 'initAutoScaleCreation' ||
       key === 'step' ||
       key === 'stepSizeForScale' ||
       key === 'maxValue' ||
       key === 'minValue' ||
-      key === 'numberOfDecimalPlaces';
+      key === 'numberOfDecimalPlaces'
+    );
 
     const differenceMinAndMax = maxValue - minValue;
 
@@ -341,24 +348,20 @@ class Model extends Observer {
   }
 
   // Корректировка шага шкалы, если не выполняется условие в методе checkingIsIntegerSizeScale()
-  checkingCorrectStepSizeForScale(errorMessage) {
-    const isIntegerStepSizeForScale = Number.isInteger(
-      this.opt.stepSizeForScale,
-    );
+  checkingCorrectStepSizeForScale(errMessage: IErrMessage) {
+    const isIntegerStepSizeForScale = Number.isInteger(this.opt.stepSizeForScale);
 
     while (!this.checkingIsIntegerSizeScale()) {
       if (this.opt.stepSizeForScale > 1 && isIntegerStepSizeForScale) {
         this.opt.stepSizeForScale += 1;
       } else if (!isIntegerStepSizeForScale) {
         this.opt.stepSizeForScale += 0.1;
-        this.opt.stepSizeForScale = Number(
-          this.opt.stepSizeForScale.toFixed(1),
-        );
+        this.opt.stepSizeForScale = Number(this.opt.stepSizeForScale.toFixed(1));
       } else {
         break;
       }
 
-      this.errorEvent.notify(errorMessage.stepSizeForScale, this.opt);
+      this.errorEvent.notify(errMessage.stepSizeForScale, this.opt);
     }
   }
 
@@ -366,13 +369,9 @@ class Model extends Observer {
     const { key, customValues } = this.opt;
 
     if (key === 'init' || key === 'customValues') {
-      this.opt.customValues =
-        typeof customValues === 'string'
-          ? customValues.split(',')
-          : customValues;
-      this.opt.customValues = this.opt.customValues.filter(
-        (elem) => elem !== '' && elem !== ' ',
-      );
+      // prettier-ignore
+      this.opt.customValues = (typeof customValues === 'string') ? (customValues as string).split(',') : customValues;
+      this.opt.customValues = this.opt.customValues.filter((elem) => elem !== '' && elem !== ' ');
 
       if (this.opt.customValues.length > 0) this.initCustomValues();
     }
@@ -398,8 +397,9 @@ class Model extends Observer {
     this.opt.initValueSecond = this.opt.initValueSecond || this.opt.maxValue;
   }
 
-  checkingInitValues(errMessage) {
-    const {
+  checkingInitValues(errMessage: IErrMessage) {
+    // prettier-ignore
+    const { 
       key,
       initValueFirst,
       initValueSecond,
@@ -409,7 +409,8 @@ class Model extends Observer {
       customValues,
     } = this.opt;
 
-    const verifKeys =
+    // prettier-ignore
+    const verifKeys = (
       key === 'init' ||
       key === 'initValueFirst' ||
       key === 'initValueSecond' ||
@@ -418,14 +419,17 @@ class Model extends Observer {
       key === 'isRange' ||
       key === 'step' ||
       key === 'numberOfDecimalPlaces' ||
-      key === 'customValues';
+      key === 'customValues'
+    );
 
-    const checkingKeys =
+    // prettier-ignore
+    const checkingKeys = (
       initValueFirst > initValueSecond ||
       initValueFirst > maxValue ||
       initValueFirst < minValue ||
       initValueSecond > maxValue ||
-      initValueSecond < minValue;
+      initValueSecond < minValue
+    );
 
     if (verifKeys) {
       if (checkingKeys) {
@@ -435,24 +439,13 @@ class Model extends Observer {
       }
 
       this.opt.initValueFirst = isRange ? this.opt.initValueFirst : minValue;
-      this.opt.initValueFirst = this.calcTargetValue(
-        null,
-        this.opt.initValueFirst,
-        true,
-      );
-      this.opt.initValueSecond = this.calcTargetValue(
-        null,
-        this.opt.initValueSecond,
-        true,
-      );
+      this.opt.initValueFirst = this.calcTargetValue(null, this.opt.initValueFirst, true);
+      this.opt.initValueSecond = this.calcTargetValue(null, this.opt.initValueSecond, true);
 
       if (customValues.length > 0) {
         this.opt.textValueFirst = customValues[this.opt.initValueFirst];
         this.opt.textValueSecond = customValues[this.opt.initValueSecond];
-        this.opt.textValuesArray = [
-          this.opt.textValueFirst,
-          this.opt.textValueSecond,
-        ];
+        this.opt.textValuesArray = [this.opt.textValueFirst, this.opt.textValueSecond];
       } else {
         this.opt.textValueFirst = '';
         this.opt.textValueSecond = '';

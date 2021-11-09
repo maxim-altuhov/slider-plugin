@@ -2,44 +2,52 @@ import $ from 'jquery';
 import Observer from '../patterns/Observer';
 
 class ViewThumbs extends Observer {
+  isFirstInit: boolean;
+  $selector: JQuery;
+  $elemThumbs: JQuery;
+
   constructor() {
     super();
     this.isFirstInit = true;
   }
 
   // Первоначальная инициализация
-  init(options) {
+  init(options: PluginOptions) {
     this.$selector = options.$selector;
     this.$elemThumbs = options.$elemThumbs;
     this.setEventsThumbs(options);
   }
 
   // Обновление view
-  update(options) {
+  update(options: PluginOptions) {
     if (this.isFirstInit) {
       this.init(options);
       this.isFirstInit = false;
     }
 
     const { key } = options;
+
+    // prettier-ignore
     const setValueVerifKeys = (
-      key === 'init'
-      || key === 'changedValue'
-      || key === 'initValueFirst'
-      || key === 'initValueSecond'
-      || key === 'customValues'
-      || key === 'calcNumberOfDecimalPlaces'
-      || key === 'numberOfDecimalPlaces'
-      || key === 'isRange'
-      || key === 'minValue'
-      || key === 'maxValue'
-      || key === 'step'
+      key === 'init' ||
+      key === 'changedValue' ||
+      key === 'initValueFirst' ||
+      key === 'initValueSecond' ||
+      key === 'customValues' ||
+      key === 'calcNumberOfDecimalPlaces' ||
+      key === 'numberOfDecimalPlaces' ||
+      key === 'isRange' ||
+      key === 'minValue' ||
+      key === 'maxValue' ||
+      key === 'step'
     );
+
+    // prettier-ignore
     const styleVerifKeys = (
-      key === 'init'
-      || key === 'mainColor'
-      || key === 'colorThumb'
-      || key === 'colorBorderForThumb'
+      key === 'init' ||
+      key === 'mainColor' ||
+      key === 'colorThumb' ||
+      key === 'colorBorderForThumb'
     );
 
     if (setValueVerifKeys) this.setValueInThumbs(options);
@@ -48,12 +56,8 @@ class ViewThumbs extends Observer {
   }
 
   //  Установка стиля для бегунков
-  setStyleForThumbs(options) {
-    const {
-      mainColor,
-      colorThumb,
-      colorBorderForThumb,
-    } = options;
+  setStyleForThumbs(options: PluginOptions) {
+    const { mainColor, colorThumb, colorBorderForThumb } = options;
 
     const backgroundColor = colorThumb || mainColor;
 
@@ -63,8 +67,9 @@ class ViewThumbs extends Observer {
   }
 
   // Установка бегунков в нужные позиции и добавление data-атрибутов для слайдера
-  setValueInThumbs(options) {
-    const {
+  setValueInThumbs(options: PluginOptions) {
+    // prettier-ignore
+    const { 
       initValuesArray,
       valuesAsPercentageArray,
       numberOfDecimalPlaces,
@@ -72,7 +77,10 @@ class ViewThumbs extends Observer {
     } = options;
 
     initValuesArray.forEach((currentValue, index) => {
-      this.$elemThumbs.eq(index).css('left', `${valuesAsPercentageArray[index]}%`).attr('data-value', currentValue.toFixed(numberOfDecimalPlaces));
+      this.$elemThumbs
+        .eq(index)
+        .css('left', `${valuesAsPercentageArray[index]}%`)
+        .attr('data-value', currentValue.toFixed(numberOfDecimalPlaces));
 
       if (customValues.length > 0) {
         this.$elemThumbs.eq(index).attr('data-text', customValues[currentValue]);
@@ -83,7 +91,7 @@ class ViewThumbs extends Observer {
   }
 
   // Проверка опции "IsRange" у слайдера и показ/скрытие первого бегунка
-  checkIsRange(options) {
+  checkIsRange(options: PluginOptions) {
     if (options.isRange) {
       this.$elemThumbs.eq(0).css('display', '');
     } else {
@@ -92,7 +100,7 @@ class ViewThumbs extends Observer {
   }
 
   // Установка обработчиков событий на бегунки слайдера
-  setEventsThumbs(options) {
+  setEventsThumbs(options: PluginOptions) {
     this.$elemThumbs.each((index, thumb) => {
       const $currentThumb = $(thumb);
       $currentThumb.on('pointerdown.thumb', this.handleSetEventListenerForThumbs.bind(this));
@@ -102,12 +110,13 @@ class ViewThumbs extends Observer {
   }
 
   // Изменение позиции бегунков слайдера при использовании клавиатуры
-  handleChangeThumbPosition(options, event) {
+  handleChangeThumbPosition(options: PluginOptions, event: any) {
+    // prettier-ignore
     const configEventCode = (
-      event.code === 'ArrowLeft'
-      || event.code === 'ArrowRight'
-      || event.code === 'ArrowUp'
-      || event.code === 'ArrowDown'
+      event.code === 'ArrowLeft' ||
+      event.code === 'ArrowRight' ||
+      event.code === 'ArrowUp' ||
+      event.code === 'ArrowDown'
     );
     const $target = $(event.target);
 
@@ -124,7 +133,10 @@ class ViewThumbs extends Observer {
   }
 
   // Установка обработчиков событий движения/прекращения движения бегунков слайдера
-  handleSetEventListenerForThumbs(event) {
+  handleSetEventListenerForThumbs(event: {
+    target: { setPointerCapture: (arg0: any) => void };
+    pointerId: any;
+  }) {
     const $target = $(event.target);
     event.target.setPointerCapture(event.pointerId);
     $target.on('pointermove.thumb', this.handleInitPointerMove.bind(this));
@@ -132,12 +144,12 @@ class ViewThumbs extends Observer {
   }
 
   // Отслеживание перемещение бегунков слайдера
-  handleInitPointerMove(event) {
+  handleInitPointerMove(event: any) {
     this.notify(event);
   }
 
   // Отслеживание прекращения движения бегунков слайдера
-  static handleInitPointerUp(event) {
+  static handleInitPointerUp(event: { target: any }) {
     const $target = $(event.target);
     $target.off('pointermove.thumb');
     $target.off('pointerup.thumb');

@@ -1,12 +1,20 @@
 class ViewError {
+  $selector: JQuery;
+  $elemErrorInfo: JQuery;
+  $elemErrorText: JQuery;
+  $btnErrorClose: JQuery;
+
   // Рендерим ошибку
-  renderError(message, options) {
+  renderError(message: string, options: PluginOptions) {
     const { $selector, $elemSlider, showError } = options;
 
     if (!this.$selector) this.$selector = $selector;
 
     if (showError && !this.$elemErrorInfo) {
-      const HTMLBlockError = `<div class="error-info js-error-info"><p class="error-info__text js-error-info__text">${message}</p><button type="button" class="error-info__close js-error-info__close">X</button></div>`;
+      const HTMLBlockError = `<div class="error-info js-error-info">
+      <p class="error-info__text js-error-info__text">${message}</p>
+      <button type="button" class="error-info__close js-error-info__close">X</button>
+      </div>`;
       $elemSlider.after(HTMLBlockError);
 
       this.getInfoAboutError();
@@ -26,10 +34,7 @@ class ViewError {
   // Устанавливаем обработчик на кнопку закрытия окна с ошибкой
   setEventErrorClose() {
     if (this.$btnErrorClose) {
-      this.$btnErrorClose.on(
-        'click.btnErrorClose',
-        this.handleRemoveErrorWindow.bind(this),
-      );
+      this.$btnErrorClose.on('click.btnErrorClose', this.handleRemoveErrorWindow.bind(this));
     }
   }
 

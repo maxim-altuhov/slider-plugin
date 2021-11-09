@@ -1,46 +1,55 @@
 import $ from 'jquery';
+
 class ViewMarkers {
+  isFirstInit: boolean;
+  $elemMarkers: JQuery;
+  $elemThumbs: JQuery;
+
   constructor() {
     this.isFirstInit = true;
   }
 
   // Первоначальная инициализация
-  init(options) {
+  init(options: PluginOptions) {
     this.$elemThumbs = options.$elemThumbs;
     this.$elemMarkers = options.$elemMarkers;
   }
 
   // Обновление view
-  update(options) {
+  update(options: PluginOptions) {
     if (this.isFirstInit) {
       this.init(options);
       this.isFirstInit = false;
     }
 
     const { key } = options;
+
+    // prettier-ignore
     const setValueVerifKeys = (
-      key === 'init'
-      || key === 'changedValue'
-      || key === 'initValueFirst'
-      || key === 'initValueSecond'
-      || key === 'customValues'
-      || key === 'preFix'
-      || key === 'postFix'
-      || key === 'calcNumberOfDecimalPlaces'
-      || key === 'numberOfDecimalPlaces'
-      || key === 'initFormatted'
-      || key === 'isRange'
-      || key === 'minValue'
-      || key === 'maxValue'
-      || key === 'step'
+      key === 'init' ||
+      key === 'changedValue' ||
+      key === 'initValueFirst' ||
+      key === 'initValueSecond' ||
+      key === 'customValues' ||
+      key === 'preFix' ||
+      key === 'postFix' ||
+      key === 'calcNumberOfDecimalPlaces' ||
+      key === 'numberOfDecimalPlaces' ||
+      key === 'initFormatted' ||
+      key === 'isRange' ||
+      key === 'minValue' ||
+      key === 'maxValue' ||
+      key === 'step'
     );
+
+    // prettier-ignore
     const styleVerifKeys = (
-      key === 'init'
-      || key === 'showMarkers'
-      || key === 'mainColor'
-      || key === 'colorMarker'
-      || key === 'colorTextForMarker'
-      || key === 'colorBorderForMarker'
+      key === 'init' ||
+      key === 'showMarkers' ||
+      key === 'mainColor' ||
+      key === 'colorMarker' ||
+      key === 'colorTextForMarker' ||
+      key === 'colorBorderForMarker'
     );
 
     if (setValueVerifKeys) this.setValueInMarkers(options);
@@ -48,9 +57,10 @@ class ViewMarkers {
   }
 
   // Устанавливаем значения в маркеры
-  setValueInMarkers(options) {
+  setValueInMarkers(options: PluginOptions) {
     if (options.showMarkers) {
-      const {
+      // prettier-ignore
+      const { 
         customValues,
         preFix,
         postFix,
@@ -75,7 +85,8 @@ class ViewMarkers {
   }
 
   // Устанавливаем стили для маркеров
-  setStyleForMarkers(options) {
+  setStyleForMarkers(options: PluginOptions) {
+    // prettier-ignore
     const {
       mainColor,
       showMarkers,

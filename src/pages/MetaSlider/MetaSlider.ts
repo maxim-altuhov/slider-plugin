@@ -7,6 +7,13 @@ import Presenter from './layers/Presenter';
   const methods: PluginMethods = {
     init(settings) {
       const initSettings: PluginOptions = {
+        key: '',
+        $selector: null,
+        $elemSlider: null,
+        $sliderProgress: null,
+        $elemMarkers: null,
+        $elemScale: null,
+        $elemThumbs: null,
         mainColor: '#6d6dff',
         secondColor: '#e4e4e4',
         colorMarker: '',
@@ -37,8 +44,11 @@ import Presenter from './layers/Presenter';
         customValues: [],
         initValueFirst: null,
         initValueSecond: null,
+        initValuesArray: null,
         textValueFirst: '',
         textValueSecond: '',
+        textValuesArray: [''],
+        valuesAsPercentageArray: null,
       };
 
       // Если слайдер ещё не инициализирован
@@ -49,11 +59,7 @@ import Presenter from './layers/Presenter';
          * Объединяем пользовательские настройки и настройки по умолчанию,
          * делаем проверку некоторых опций слайдера
          */
-        const inputOptions: PluginOptions = $.extend(
-          {},
-          initSettings,
-          settings,
-        );
+        const inputOptions: PluginOptions = $.extend({}, initSettings, settings);
         const {
           customValues,
           initValueFirst,
@@ -136,12 +142,8 @@ import Presenter from './layers/Presenter';
   // Проверяем вызываемый метод нашего плагина на наличие и тип передаваемого аргумента
   $.fn.metaSlider = function (initParam, ...prop) {
     if (methods[initParam]) return methods[initParam].apply(this, prop);
-    if (typeof initParam === 'object' || !initParam) {
-      return methods.init.call(this, initParam);
-    }
+    if (typeof initParam === 'object' || !initParam) return methods.init.call(this, initParam);
 
-    return $.error(
-      `A method named ${initParam} does not exist for jQuery.MetaSlider`,
-    );
+    return $.error(`A method named ${initParam} does not exist for jQuery.MetaSlider`);
   };
 })(jQuery);
