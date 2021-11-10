@@ -12,14 +12,14 @@ class ViewThumbs extends Observer {
   }
 
   // Первоначальная инициализация
-  init(options: PluginOptions) {
+  init(options: IPluginOptions) {
     this.$selector = options.$selector;
     this.$elemThumbs = options.$elemThumbs;
     this.setEventsThumbs(options);
   }
 
   // Обновление view
-  update(options: PluginOptions) {
+  update(options: IPluginOptions) {
     if (this.isFirstInit) {
       this.init(options);
       this.isFirstInit = false;
@@ -56,7 +56,7 @@ class ViewThumbs extends Observer {
   }
 
   //  Установка стиля для бегунков
-  setStyleForThumbs(options: PluginOptions) {
+  setStyleForThumbs(options: IPluginOptions) {
     const { mainColor, colorThumb, colorBorderForThumb } = options;
 
     const backgroundColor = colorThumb || mainColor;
@@ -67,7 +67,7 @@ class ViewThumbs extends Observer {
   }
 
   // Установка бегунков в нужные позиции и добавление data-атрибутов для слайдера
-  setValueInThumbs(options: PluginOptions) {
+  setValueInThumbs(options: IPluginOptions) {
     // prettier-ignore
     const { 
       initValuesArray,
@@ -91,7 +91,7 @@ class ViewThumbs extends Observer {
   }
 
   // Проверка опции "IsRange" у слайдера и показ/скрытие первого бегунка
-  checkIsRange(options: PluginOptions) {
+  checkIsRange(options: IPluginOptions) {
     if (options.isRange) {
       this.$elemThumbs.eq(0).css('display', '');
     } else {
@@ -100,7 +100,7 @@ class ViewThumbs extends Observer {
   }
 
   // Установка обработчиков событий на бегунки слайдера
-  setEventsThumbs(options: PluginOptions) {
+  setEventsThumbs(options: IPluginOptions) {
     this.$elemThumbs.each((index, thumb) => {
       const $currentThumb = $(thumb);
       $currentThumb.on('pointerdown.thumb', this.handleSetEventListenerForThumbs.bind(this));
@@ -110,7 +110,7 @@ class ViewThumbs extends Observer {
   }
 
   // Изменение позиции бегунков слайдера при использовании клавиатуры
-  handleChangeThumbPosition(options: PluginOptions, event: any) {
+  handleChangeThumbPosition(options: IPluginOptions, event: IEvent) {
     // prettier-ignore
     const configEventCode = (
       event.code === 'ArrowLeft' ||
@@ -133,10 +133,7 @@ class ViewThumbs extends Observer {
   }
 
   // Установка обработчиков событий движения/прекращения движения бегунков слайдера
-  handleSetEventListenerForThumbs(event: {
-    target: { setPointerCapture: (arg0: any) => void };
-    pointerId: any;
-  }) {
+  handleSetEventListenerForThumbs(event: IEvent) {
     const $target = $(event.target);
     event.target.setPointerCapture(event.pointerId);
     $target.on('pointermove.thumb', this.handleInitPointerMove.bind(this));
@@ -144,12 +141,12 @@ class ViewThumbs extends Observer {
   }
 
   // Отслеживание перемещение бегунков слайдера
-  handleInitPointerMove(event: any) {
+  handleInitPointerMove(event: Event) {
     this.notify(event);
   }
 
   // Отслеживание прекращения движения бегунков слайдера
-  static handleInitPointerUp(event: { target: any }) {
+  static handleInitPointerUp(event: IEvent) {
     const $target = $(event.target);
     $target.off('pointermove.thumb');
     $target.off('pointerup.thumb');

@@ -1,4 +1,3 @@
-/// <reference path='../interfaces/Model.d.ts' />
 import $ from 'jquery';
 import Observer from '../patterns/Observer';
 
@@ -6,7 +5,7 @@ class Model extends Observer {
   opt;
   errorEvent: Observer;
 
-  constructor(selector: JQuery, options: PluginOptions) {
+  constructor(selector: JQuery, options: IPluginOptions) {
     super();
     this.opt = options;
     this.opt.$selector = selector;
@@ -35,10 +34,7 @@ class Model extends Observer {
    * Проверка рассчитанных значений слайдера на выполнение различных условий
    * и определение какой бегунок у слайдера должен быть перемещён
    */
-  checkingTargetValue(
-    targetValue: number,
-    event: { code: string; clientY: number; clientX: number; target: any },
-  ) {
+  checkingTargetValue(targetValue: number, event: IEvent) {
     const {
       initValueFirst,
       initValueSecond,
@@ -72,9 +68,9 @@ class Model extends Observer {
       event.code === 'ArrowUp' ||
       event.code === 'ArrowDown'
     );
-    let eventPosition;
-    let firstThumbPosition;
-    let secondThumbPosition;
+    let eventPosition: number;
+    let firstThumbPosition: number;
+    let secondThumbPosition: number;
 
     if (isVertical) {
       eventPosition = event.clientY;
@@ -123,11 +119,7 @@ class Model extends Observer {
   }
 
   // Расчёт значений позиций бегунков слайдера
-  calcTargetValue(
-    event: { code: string; clientY: number; clientX: number; target: any },
-    initValue: number,
-    onlyReturn = false,
-  ) {
+  calcTargetValue(event: IEvent, initValue?: number, onlyReturn = false) {
     // prettier-ignore
     const { 
       $elemSlider, 
@@ -137,10 +129,11 @@ class Model extends Observer {
       step, 
       numberOfDecimalPlaces,
     } = this.opt;
-    let eventPosition;
-    let sliderOffset;
-    let sliderSize;
-    let valueInEventPosition;
+    let eventPosition: number;
+    let sliderOffset: number;
+    let sliderSize: number;
+    let valueInEventPosition: number;
+    let valueAsPercentage: number;
 
     if (isVertical && event) {
       eventPosition = event.clientY;
@@ -154,12 +147,14 @@ class Model extends Observer {
       valueInEventPosition = eventPosition - sliderOffset;
     }
 
-    const calcForInitValue = ((initValue - minValue) / (maxValue - minValue)) * 100;
-    const calcForEventValue = (valueInEventPosition / sliderSize) * 100;
-    const valueAsPercentage = initValue === undefined ? calcForEventValue : calcForInitValue;
+    if (initValue !== undefined) {
+      valueAsPercentage = ((initValue - minValue) / (maxValue - minValue)) * 100;
+    } else {
+      valueAsPercentage = (valueInEventPosition / sliderSize) * 100;
+    }
+
     const stepCounter = (maxValue - minValue) / step;
     const stepAsPercent = 100 / stepCounter;
-
     let totalPercent = Math.round(valueAsPercentage / stepAsPercent) * stepAsPercent;
 
     if (totalPercent < 0) totalPercent = 0;

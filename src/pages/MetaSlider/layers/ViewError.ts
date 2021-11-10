@@ -1,11 +1,11 @@
 class ViewError {
-  $selector: JQuery;
-  $elemErrorInfo: JQuery;
-  $elemErrorText: JQuery;
-  $btnErrorClose: JQuery;
+  $selector: undefined | JQuery;
+  $elemErrorInfo: null | JQuery;
+  $elemErrorText: null | JQuery;
+  $btnErrorClose: null | JQuery;
 
   // Рендерим ошибку
-  renderError(message: string, options: PluginOptions) {
+  renderError(message: string, options: IPluginOptions) {
     const { $selector, $elemSlider, showError } = options;
 
     if (!this.$selector) this.$selector = $selector;

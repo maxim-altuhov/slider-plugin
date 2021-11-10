@@ -4,9 +4,9 @@ import View from './layers/View';
 import Presenter from './layers/Presenter';
 
 (($) => {
-  const methods: PluginMethods = {
+  const methods: IPluginMethods = {
     init(settings) {
-      const initSettings: PluginOptions = {
+      const initSettings: IPluginOptions = {
         key: '',
         $selector: null,
         $elemSlider: null,
@@ -44,11 +44,11 @@ import Presenter from './layers/Presenter';
         customValues: [],
         initValueFirst: null,
         initValueSecond: null,
-        initValuesArray: null,
+        initValuesArray: [],
         textValueFirst: '',
         textValueSecond: '',
-        textValuesArray: [''],
-        valuesAsPercentageArray: null,
+        textValuesArray: [],
+        valuesAsPercentageArray: [],
       };
 
       // Если слайдер ещё не инициализирован
@@ -59,7 +59,7 @@ import Presenter from './layers/Presenter';
          * Объединяем пользовательские настройки и настройки по умолчанию,
          * делаем проверку некоторых опций слайдера
          */
-        const inputOptions: PluginOptions = $.extend({}, initSettings, settings);
+        const inputOptions: IPluginOptions = $.extend({}, initSettings, settings);
         const {
           customValues,
           initValueFirst,
@@ -85,6 +85,7 @@ import Presenter from './layers/Presenter';
         view.renderSlider(this);
         presenter.setObservers();
         model.init();
+
         this.data('metaSlider', { model });
       }
 
@@ -100,14 +101,10 @@ import Presenter from './layers/Presenter';
       return this;
     },
     getProp(prop) {
-      const { model } = this.data('metaSlider');
-
-      return model.opt[prop];
+      return this.data('metaSlider').model.opt[prop];
     },
     getOptionsObj() {
-      const { model } = this.data('metaSlider');
-
-      return model.opt;
+      return this.data('metaSlider').model.opt;
     },
     getCurrentValues() {
       const modelOptions = this.data('metaSlider').model.opt;
@@ -128,20 +125,16 @@ import Presenter from './layers/Presenter';
       return this;
     },
     subscribe(observer) {
-      const { model } = this.data('metaSlider');
-
-      model.subscribe(observer);
+      this.data('metaSlider').model.subscribe(observer);
     },
     unsubscribe(observer) {
-      const { model } = this.data('metaSlider');
-
-      model.unsubscribe(observer);
+      this.data('metaSlider').model.unsubscribe(observer);
     },
   };
 
-  // Проверяем вызываемый метод нашего плагина на наличие и тип передаваемого аргумента
+  // Вызываем нужный метод плагина, проверяем наличие и тип передаваемого аргумента
   $.fn.metaSlider = function (initParam, ...prop) {
-    if (methods[initParam]) return methods[initParam].apply(this, prop);
+    if (methods[initParam as string]) return methods[initParam as string].apply(this, prop);
     if (typeof initParam === 'object' || !initParam) return methods.init.call(this, initParam);
 
     return $.error(`A method named ${initParam} does not exist for jQuery.MetaSlider`);

@@ -17,14 +17,14 @@ class ViewScale extends Observer {
   }
 
   // Первоначальная инициализация
-  init(options: PluginOptions) {
+  init(options: IPluginOptions) {
     this.$selector = options.$selector;
     this.$elemSlider = options.$elemSlider;
     this.$elemScale = options.$elemScale;
   }
 
   // Обновление view
-  update(options: PluginOptions) {
+  update(options: IPluginOptions) {
     if (this.isFirstInit) {
       this.init(options);
       this.isFirstInit = false;
@@ -63,7 +63,7 @@ class ViewScale extends Observer {
   }
 
   // Рендер шкалы значений
-  createScale(options: PluginOptions) {
+  createScale(options: IPluginOptions) {
     if (options.showScale) {
       this.$elemScale.empty();
 
@@ -120,7 +120,7 @@ class ViewScale extends Observer {
   }
 
   // Устанавливаем стили для шкалы
-  setStyleForScale(options: PluginOptions) {
+  setStyleForScale(options: IPluginOptions) {
     const { colorForScale, showScale } = options;
 
     if (showScale) {
@@ -141,7 +141,7 @@ class ViewScale extends Observer {
    * Метод, который проверяет помещаются ли все деления шкалы на данной длине слайдера.
    * Если нет, то этот метод делает авто-подстройку делений шкалы и скрывает лишние значения
    */
-  checkingScaleSize(options: PluginOptions) {
+  checkingScaleSize(options: IPluginOptions) {
     const { showScale, initScaleAdjustment } = options;
 
     if (showScale && initScaleAdjustment) {
@@ -216,7 +216,7 @@ class ViewScale extends Observer {
   }
 
   // Обработчик события отслеживающий размер окна браузера для метода checkingScaleSize()
-  setEventsWindow(options: PluginOptions) {
+  setEventsWindow(options: IPluginOptions) {
     const { showScale, initScaleAdjustment } = options;
 
     if (showScale && initScaleAdjustment) {
@@ -227,7 +227,7 @@ class ViewScale extends Observer {
   }
 
   // Отслеживает ширину слайдера
-  handleCheckingScaleSize(options: PluginOptions) {
+  handleCheckingScaleSize(options: IPluginOptions) {
     this.checkingScaleSize(options);
   }
 
@@ -239,7 +239,7 @@ class ViewScale extends Observer {
   }
 
   // Получает значения при клике на шкалу слайдера
-  handleGetValueInScalePoint(event: { preventDefault: () => void; target: any }) {
+  handleGetValueInScalePoint(event: IEvent) {
     event.preventDefault();
     const $target = $(event.target);
     const targetValue = Number($target.attr('data-value'));

@@ -3,7 +3,9 @@ import $ from 'jquery';
 class ControlPanel {
   $selector: JQuery;
   $sliderSelector: JQuery;
-  selectorsObj: IObjectOrClass;
+  selectorsObj: {
+    [index: string]: JQuery;
+  };
   propertyList: string[];
 
   constructor(panelSelector: string, sliderSelector: string) {
@@ -74,18 +76,18 @@ class ControlPanel {
   // Метод для получения текущих свойств слайдера и установки новых значений в контр.панели
   getProp(prop: string) {
     const resultProp = this.$sliderSelector.metaSlider('getProp', prop);
-    const target = this.selectorsObj[prop];
+    const $target = this.selectorsObj[prop];
 
-    if (target.attr('type') === 'checkbox') {
-      target.prop('checked', resultProp);
+    if ($target.attr('type') === 'checkbox') {
+      $target.prop('checked', resultProp);
     } else {
-      target.val(resultProp);
+      $target.val(resultProp);
     }
 
     return resultProp;
   }
 
-  // Получаем в виде объекта все инпуты по имени свойств слайдера
+  // Формируем объект со всеми инпутами, поиск по имени свойства слайдера
   getSelectors() {
     this.propertyList.forEach((prop) => {
       this.selectorsObj[prop] = this.$selector.find(`[name = ${prop}]`);
@@ -227,25 +229,25 @@ class ControlPanel {
    * и установка атрибута disabled зависимым от него инпутам
    */
   checkTheProp(initProp: string, checkingOptions: string[], isReverse = false) {
-    const target = this.selectorsObj[initProp];
+    const $target = this.selectorsObj[initProp];
     let verifyingKey;
 
-    if (target.attr('type') === 'checkbox') {
-      verifyingKey = target.prop('checked');
+    if ($target.attr('type') === 'checkbox') {
+      verifyingKey = $target.prop('checked');
     } else {
-      verifyingKey = target.val();
+      verifyingKey = $target.val();
     }
 
     verifyingKey = isReverse ? !verifyingKey : verifyingKey;
 
     if (verifyingKey) {
-      target.attr('data-link', true);
+      $target.attr('data-dependency', 'true');
 
       checkingOptions.forEach((prop) => {
         this.togglePropDisable(prop, true);
       });
-    } else if (target.attr('data-link')) {
-      target.attr('data-link', false);
+    } else if ($target.attr('data-dependency')) {
+      $target.attr('data-dependency', 'false');
 
       checkingOptions.forEach((prop) => {
         this.togglePropDisable(prop, false);
@@ -255,22 +257,22 @@ class ControlPanel {
 
   // Метод переключения атрибута disabled у инпутов
   togglePropDisable(prop: string, option: boolean) {
-    const target = this.selectorsObj[prop];
-    target.prop('disabled', option);
+    const $target = this.selectorsObj[prop];
+    $target.prop('disabled', option);
   }
 
   // Установка новых значений свойств слайдера при изменении инпутов контр. панели
-  handleInputChanges(event: { target: any }) {
-    const target = $(event.target);
-    const prop = target.attr('name');
+  handleInputChanges(event: IEvent) {
+    const $target = $(event.target);
+    const prop = $target.attr('name');
     let value = null;
 
-    if (target.attr('type') === 'checkbox') {
-      value = target.prop('checked');
-    } else if (target.attr('type') === 'text') {
-      value = target.val();
+    if ($target.attr('type') === 'checkbox') {
+      value = $target.prop('checked');
+    } else if ($target.attr('type') === 'text') {
+      value = $target.val();
     } else {
-      value = Number(target.val());
+      value = Number($target.val());
     }
 
     this.setProp(prop!, value);

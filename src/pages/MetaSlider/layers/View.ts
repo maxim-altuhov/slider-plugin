@@ -5,7 +5,9 @@ import ViewThumbs from './ViewThumbs';
 import ViewError from './ViewError';
 
 class View {
-  views: IObjectOrClass;
+  views: {
+    [index: string]: any;
+  };
 
   constructor() {
     this.views = {
@@ -18,7 +20,7 @@ class View {
   }
 
   // Вызываем метод update() в subview
-  update(options: PluginOptions) {
+  update(options: IPluginOptions) {
     Object.keys(this.views).forEach((view) => {
       if ('update' in this.views[view]) this.views[view].update(options);
     });

@@ -15,7 +15,7 @@ class ViewSlider extends Observer {
   }
 
   // Первоначальная инициализация
-  init(options: PluginOptions) {
+  init(options: IPluginOptions) {
     this.$elemSlider = options.$elemSlider;
     this.$sliderProgress = options.$sliderProgress;
     this.$elemThumbs = options.$elemThumbs;
@@ -24,7 +24,7 @@ class ViewSlider extends Observer {
   }
 
   // Обновление view
-  update(options: PluginOptions) {
+  update(options: IPluginOptions) {
     if (this.isFirstInit) {
       this.init(options);
       this.isFirstInit = false;
@@ -97,7 +97,7 @@ class ViewSlider extends Observer {
   }
 
   // Устанвливает data-атрибуты с мин. и макс. значениями слайдера
-  setMinAndMaxVal(options: PluginOptions) {
+  setMinAndMaxVal(options: IPluginOptions) {
     const { minValue, maxValue, customValues } = options;
 
     this.$elemSlider.attr({ 'data-min': minValue, 'data-max': maxValue });
@@ -112,7 +112,7 @@ class ViewSlider extends Observer {
   }
 
   // Проверка и установка отступов у слайдера
-  setAutoMargins(options: PluginOptions) {
+  setAutoMargins(options: IPluginOptions) {
     // prettier-ignore
     const { 
       initAutoMargins,
@@ -120,6 +120,7 @@ class ViewSlider extends Observer {
       showScale,
       isVertical,
     } = options;
+
     const verifProp = initAutoMargins && !isVertical;
 
     if (verifProp && showMarkers) {
@@ -140,12 +141,12 @@ class ViewSlider extends Observer {
   }
 
   // Установка фонового цвета для слайдера
-  setBackgroundForSlider(options: PluginOptions) {
+  setBackgroundForSlider(options: IPluginOptions) {
     this.$elemSlider.css('background-color', options.secondColor);
   }
 
   // Сброс или установка вертикальной ориентации слайдера
-  setVerticalOrientation(options: PluginOptions) {
+  setVerticalOrientation(options: IPluginOptions) {
     if (options.isVertical) {
       this.$elemSlider.addClass('meta-slider_vertical');
       this.$selector.addClass('ms-vertical');
@@ -156,7 +157,7 @@ class ViewSlider extends Observer {
   }
 
   // Проверка и установка цвета заливки интервала между бегунками
-  setBackgroundTheRange(options: PluginOptions) {
+  setBackgroundTheRange(options: IPluginOptions) {
     if (options.showBackground) {
       const { valuesAsPercentageArray, mainColor } = options;
       const [firstPosition, secondPosition] = valuesAsPercentageArray;
@@ -178,7 +179,7 @@ class ViewSlider extends Observer {
   }
 
   // Получает значения при клике внутри слайдера
-  handleSetSliderValues(event: { preventDefault: () => void; target: any }) {
+  handleSetSliderValues(event: IEvent) {
     event.preventDefault();
     const $target = $(event.target);
 

@@ -10,13 +10,13 @@ class ViewMarkers {
   }
 
   // Первоначальная инициализация
-  init(options: PluginOptions) {
+  init(options: IPluginOptions) {
     this.$elemThumbs = options.$elemThumbs;
     this.$elemMarkers = options.$elemMarkers;
   }
 
   // Обновление view
-  update(options: PluginOptions) {
+  update(options: IPluginOptions) {
     if (this.isFirstInit) {
       this.init(options);
       this.isFirstInit = false;
@@ -57,7 +57,7 @@ class ViewMarkers {
   }
 
   // Устанавливаем значения в маркеры
-  setValueInMarkers(options: PluginOptions) {
+  setValueInMarkers(options: IPluginOptions) {
     if (options.showMarkers) {
       // prettier-ignore
       const { 
@@ -85,7 +85,7 @@ class ViewMarkers {
   }
 
   // Устанавливаем стили для маркеров
-  setStyleForMarkers(options: PluginOptions) {
+  setStyleForMarkers(options: IPluginOptions) {
     // prettier-ignore
     const {
       mainColor,
