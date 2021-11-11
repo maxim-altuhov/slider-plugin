@@ -14,19 +14,10 @@ class ViewSlider extends Observer {
     this.isFirstInit = true;
   }
 
-  // Первоначальная инициализация
-  init(options: IPluginOptions) {
-    this.$elemSlider = options.$elemSlider;
-    this.$sliderProgress = options.$sliderProgress;
-    this.$elemThumbs = options.$elemThumbs;
-    this.$elemMarkers = options.$elemMarkers;
-    this.setEventsSlider();
-  }
-
   // Обновление view
   update(options: IPluginOptions) {
     if (this.isFirstInit) {
-      this.init(options);
+      this._init(options);
       this.isFirstInit = false;
     }
 
@@ -66,11 +57,11 @@ class ViewSlider extends Observer {
       key === 'customValues'
     );
 
-    if (setValueVerifKeys) this.setBackgroundTheRange(options);
-    if (key === 'secondColor' || key === 'init') this.setBackgroundForSlider(options);
-    if (key === 'isVertical' || key === 'init') this.setVerticalOrientation(options);
-    if (autoMarginVerifKeys) this.setAutoMargins(options);
-    if (minAndMaxVerifKeys) this.setMinAndMaxVal(options);
+    if (setValueVerifKeys) this._setBackgroundTheRange(options);
+    if (key === 'secondColor' || key === 'init') this._setBackgroundForSlider(options);
+    if (key === 'isVertical' || key === 'init') this._setVerticalOrientation(options);
+    if (autoMarginVerifKeys) this._setAutoMargins(options);
+    if (minAndMaxVerifKeys) this._setMinAndMaxVal(options);
   }
 
   // Первоначальный рендер слайдера
@@ -96,8 +87,17 @@ class ViewSlider extends Observer {
     this.$selector.append($fragmentWithASlider);
   }
 
+  // Первоначальная инициализация
+  private _init(options: IPluginOptions) {
+    this.$elemSlider = options.$elemSlider;
+    this.$sliderProgress = options.$sliderProgress;
+    this.$elemThumbs = options.$elemThumbs;
+    this.$elemMarkers = options.$elemMarkers;
+    this._setEventsSlider();
+  }
+
   // Устанвливает data-атрибуты с мин. и макс. значениями слайдера
-  setMinAndMaxVal(options: IPluginOptions) {
+  private _setMinAndMaxVal(options: IPluginOptions) {
     const { minValue, maxValue, customValues } = options;
 
     this.$elemSlider.attr({ 'data-min': minValue, 'data-max': maxValue });
@@ -112,7 +112,7 @@ class ViewSlider extends Observer {
   }
 
   // Проверка и установка отступов у слайдера
-  setAutoMargins(options: IPluginOptions) {
+  private _setAutoMargins(options: IPluginOptions) {
     // prettier-ignore
     const { 
       initAutoMargins,
@@ -141,12 +141,12 @@ class ViewSlider extends Observer {
   }
 
   // Установка фонового цвета для слайдера
-  setBackgroundForSlider(options: IPluginOptions) {
+  private _setBackgroundForSlider(options: IPluginOptions) {
     this.$elemSlider.css('background-color', options.secondColor);
   }
 
   // Сброс или установка вертикальной ориентации слайдера
-  setVerticalOrientation(options: IPluginOptions) {
+  private _setVerticalOrientation(options: IPluginOptions) {
     if (options.isVertical) {
       this.$elemSlider.addClass('meta-slider_vertical');
       this.$selector.addClass('ms-vertical');
@@ -157,7 +157,7 @@ class ViewSlider extends Observer {
   }
 
   // Проверка и установка цвета заливки интервала между бегунками
-  setBackgroundTheRange(options: IPluginOptions) {
+  private _setBackgroundTheRange(options: IPluginOptions) {
     if (options.showBackground) {
       const { valuesAsPercentageArray, mainColor } = options;
       const [firstPosition, secondPosition] = valuesAsPercentageArray;
@@ -167,6 +167,7 @@ class ViewSlider extends Observer {
         right: `${100 - secondPosition}%`,
         background: mainColor,
       };
+
       this.$sliderProgress.css(settingForRange);
     } else {
       this.$sliderProgress.css('background', 'none');
@@ -174,12 +175,12 @@ class ViewSlider extends Observer {
   }
 
   // Обработчик события клика внутри слайдера
-  setEventsSlider() {
-    this.$elemSlider.on('pointerdown.slider', this.handleSetSliderValues.bind(this));
+  private _setEventsSlider() {
+    this.$elemSlider.on('pointerdown.slider', this._handleSetSliderValues.bind(this));
   }
 
   // Получает значения при клике внутри слайдера
-  handleSetSliderValues(event: IEvent) {
+  private _handleSetSliderValues(event: IEvent) {
     event.preventDefault();
     const $target = $(event.target);
 

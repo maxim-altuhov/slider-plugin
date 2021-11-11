@@ -17,24 +17,75 @@ class Model extends Observer {
   // Первичная инициализация модели
   init() {
     this.opt.key = 'init';
-    this.getInfoAboutSlider();
-    this.checkingIncomingProp();
-    this.calcValueInPrecentage();
+    this._getInfoAboutSlider();
+    this._checkingIncomingProp();
+    this._calcValueInPrecentage();
     this.notify(this.opt);
   }
 
   // Метод вызываемый при обновлении модели снаружи
   update() {
-    this.checkingIncomingProp();
-    this.calcValueInPrecentage();
+    this._checkingIncomingProp();
+    this._calcValueInPrecentage();
     this.notify(this.opt);
+  }
+
+  // Расчёт значений позиций бегунков слайдера
+  calcTargetValue(event: IEvent, initValue?: number, onlyReturn = false) {
+    // prettier-ignore
+    const { 
+        $elemSlider, 
+        isVertical, 
+        minValue, 
+        maxValue, 
+        step, 
+        numberOfDecimalPlaces,
+    } = this.opt;
+    let eventPosition: number;
+    let sliderOffset: number;
+    let sliderSize: number;
+    let valueInEventPosition: number;
+    let valueAsPercentage: number;
+
+    if (isVertical && event) {
+      eventPosition = event.clientY;
+      sliderOffset = $elemSlider[0].getBoundingClientRect().bottom;
+      sliderSize = $elemSlider[0].getBoundingClientRect().height;
+      valueInEventPosition = sliderOffset - eventPosition;
+    } else if (!isVertical && event) {
+      eventPosition = event.clientX;
+      sliderOffset = $elemSlider.offset().left;
+      sliderSize = $elemSlider.outerWidth();
+      valueInEventPosition = eventPosition - sliderOffset;
+    }
+
+    if (initValue !== undefined) {
+      valueAsPercentage = ((initValue - minValue) / (maxValue - minValue)) * 100;
+    } else {
+      valueAsPercentage = (valueInEventPosition / sliderSize) * 100;
+    }
+
+    const stepCounter = (maxValue - minValue) / step;
+    const stepAsPercent = 100 / stepCounter;
+    let totalPercent = Math.round(valueAsPercentage / stepAsPercent) * stepAsPercent;
+
+    if (totalPercent < 0) totalPercent = 0;
+    if (totalPercent > 100) totalPercent = 100;
+
+    const resultValue = (totalPercent / stepAsPercent) * step;
+    const targetValue = Number((resultValue + minValue).toFixed(numberOfDecimalPlaces));
+
+    if (onlyReturn) return targetValue;
+    this._checkingTargetValue(targetValue, event);
+
+    return undefined;
   }
 
   /**
    * Проверка рассчитанных значений слайдера на выполнение различных условий
    * и определение какой бегунок у слайдера должен быть перемещён
    */
-  checkingTargetValue(targetValue: number, event: IEvent) {
+  private _checkingTargetValue(targetValue: number, event: IEvent) {
     const {
       initValueFirst,
       initValueSecond,
@@ -103,7 +154,7 @@ class Model extends Observer {
       }
     }
 
-    this.calcValueInPrecentage();
+    this._calcValueInPrecentage();
     const [firstValue, secondValue] = initValuesArray;
     this.opt.initValueFirst = firstValue;
     this.opt.initValueSecond = secondValue;
@@ -118,59 +169,8 @@ class Model extends Observer {
     this.notify(this.opt);
   }
 
-  // Расчёт значений позиций бегунков слайдера
-  calcTargetValue(event: IEvent, initValue?: number, onlyReturn = false) {
-    // prettier-ignore
-    const { 
-      $elemSlider, 
-      isVertical, 
-      minValue, 
-      maxValue, 
-      step, 
-      numberOfDecimalPlaces,
-    } = this.opt;
-    let eventPosition: number;
-    let sliderOffset: number;
-    let sliderSize: number;
-    let valueInEventPosition: number;
-    let valueAsPercentage: number;
-
-    if (isVertical && event) {
-      eventPosition = event.clientY;
-      sliderOffset = $elemSlider[0].getBoundingClientRect().bottom;
-      sliderSize = $elemSlider[0].getBoundingClientRect().height;
-      valueInEventPosition = sliderOffset - eventPosition;
-    } else if (!isVertical && event) {
-      eventPosition = event.clientX;
-      sliderOffset = $elemSlider.offset().left;
-      sliderSize = $elemSlider.outerWidth();
-      valueInEventPosition = eventPosition - sliderOffset;
-    }
-
-    if (initValue !== undefined) {
-      valueAsPercentage = ((initValue - minValue) / (maxValue - minValue)) * 100;
-    } else {
-      valueAsPercentage = (valueInEventPosition / sliderSize) * 100;
-    }
-
-    const stepCounter = (maxValue - minValue) / step;
-    const stepAsPercent = 100 / stepCounter;
-    let totalPercent = Math.round(valueAsPercentage / stepAsPercent) * stepAsPercent;
-
-    if (totalPercent < 0) totalPercent = 0;
-    if (totalPercent > 100) totalPercent = 100;
-
-    const resultValue = (totalPercent / stepAsPercent) * step;
-    const targetValue = Number((resultValue + minValue).toFixed(numberOfDecimalPlaces));
-
-    if (onlyReturn) return targetValue;
-    this.checkingTargetValue(targetValue, event);
-
-    return undefined;
-  }
-
   // Расчёт значений бегунков слайдера в процентах
-  calcValueInPrecentage() {
+  private _calcValueInPrecentage() {
     const { initValuesArray, minValue, maxValue } = this.opt;
 
     this.opt.valuesAsPercentageArray = initValuesArray.map(
@@ -179,7 +179,7 @@ class Model extends Observer {
   }
 
   // Проверка входящих настроек для слайдера
-  checkingIncomingProp() {
+  private _checkingIncomingProp() {
     const errMessage: IErrMessage = {
       initValue: `Ошибка во входящих данных для бегунков слайдера. Установлены 
       значения по-умолчанию.`,
@@ -191,18 +191,18 @@ class Model extends Observer {
       а также меньше или равно 0.`,
     };
 
-    this.checkingIsVerticalSlider();
-    this.checkingNumberOfDecimalPlaces();
-    this.checkingMinMaxValues(errMessage);
-    this.checkingStepSize(errMessage);
-    this.checkingCustomValues();
-    this.checkingInitValues(errMessage);
+    this._checkingIsVerticalSlider();
+    this._checkingNumberOfDecimalPlaces();
+    this._checkingMinMaxValues(errMessage);
+    this._checkingStepSize(errMessage);
+    this._checkingCustomValues();
+    this._checkingInitValues(errMessage);
 
     this.opt.initValuesArray = [this.opt.initValueFirst, this.opt.initValueSecond];
   }
 
   // Получение селекторов слайдера
-  getInfoAboutSlider() {
+  private _getInfoAboutSlider() {
     const { $selector } = this.opt;
 
     this.opt.$elemSlider = $selector.find('.js-meta-slider');
@@ -212,7 +212,7 @@ class Model extends Observer {
     this.opt.$elemScale = $selector.find('.js-meta-slider__scale');
   }
 
-  checkingIsVerticalSlider() {
+  private _checkingIsVerticalSlider() {
     const { key, isVertical } = this.opt;
 
     // prettier-ignore
@@ -221,7 +221,7 @@ class Model extends Observer {
     if (verticalSliderVerifKeys && isVertical) this.opt.initAutoMargins = false;
   }
 
-  checkingNumberOfDecimalPlaces() {
+  private _checkingNumberOfDecimalPlaces() {
     const { key, calcNumberOfDecimalPlaces, numberOfDecimalPlaces } = this.opt;
 
     // prettier-ignore
@@ -235,7 +235,7 @@ class Model extends Observer {
       key === 'step'
     );
 
-    if (calcNumberVerifKeys && calcNumberOfDecimalPlaces) this.getNumberOfDecimalPlaces();
+    if (calcNumberVerifKeys && calcNumberOfDecimalPlaces) this._getNumberOfDecimalPlaces();
 
     if (key === 'init' || key === 'numberOfDecimalPlaces') {
       if (numberOfDecimalPlaces < 0) this.opt.numberOfDecimalPlaces = 0;
@@ -247,7 +247,7 @@ class Model extends Observer {
   }
 
   // Автоматический рассчёт кол-ва знаков после запятой у значений слайдера
-  getNumberOfDecimalPlaces() {
+  private _getNumberOfDecimalPlaces() {
     const propToCheck = ['minValue', 'maxValue', 'step'];
 
     // prettier-ignore
@@ -258,7 +258,7 @@ class Model extends Observer {
     this.opt.numberOfDecimalPlaces = Math.max(...resultArr);
   }
 
-  checkingMinMaxValues(errMessage: IErrMessage) {
+  private _checkingMinMaxValues(errMessage: IErrMessage) {
     // prettier-ignore
     const { 
       key,
@@ -287,7 +287,7 @@ class Model extends Observer {
     }
   }
 
-  checkingStepSize(errMessage: IErrMessage) {
+  private _checkingStepSize(errMessage: IErrMessage) {
     const {
       key,
       initAutoScaleCreation,
@@ -330,23 +330,23 @@ class Model extends Observer {
       }
 
       if (this.opt.checkingStepSizeForScale && !initAutoScaleCreation) {
-        this.checkingCorrectStepSizeForScale(errMessage);
+        this._checkingCorrectStepSizeForScale(errMessage);
       }
     }
   }
 
   // Проверка делится ли шкала без остатка на установленный шаг шкалы
-  checkingIsIntegerSizeScale() {
+  private _checkingIsIntegerSizeScale() {
     const { maxValue, minValue, stepSizeForScale } = this.opt;
 
     return Number.isInteger((maxValue - minValue) / stepSizeForScale);
   }
 
   // Корректировка шага шкалы, если не выполняется условие в методе checkingIsIntegerSizeScale()
-  checkingCorrectStepSizeForScale(errMessage: IErrMessage) {
+  private _checkingCorrectStepSizeForScale(errMessage: IErrMessage) {
     const isIntegerStepSizeForScale = Number.isInteger(this.opt.stepSizeForScale);
 
-    while (!this.checkingIsIntegerSizeScale()) {
+    while (!this._checkingIsIntegerSizeScale()) {
       if (this.opt.stepSizeForScale > 1 && isIntegerStepSizeForScale) {
         this.opt.stepSizeForScale += 1;
       } else if (!isIntegerStepSizeForScale) {
@@ -360,7 +360,7 @@ class Model extends Observer {
     }
   }
 
-  checkingCustomValues() {
+  private _checkingCustomValues() {
     const { key, customValues } = this.opt;
 
     if (key === 'init' || key === 'customValues') {
@@ -368,12 +368,12 @@ class Model extends Observer {
       this.opt.customValues = (typeof customValues === 'string') ? (customValues as string).split(',') : customValues;
       this.opt.customValues = this.opt.customValues.filter((elem) => elem !== '' && elem !== ' ');
 
-      if (this.opt.customValues.length > 0) this.initCustomValues();
+      if (this.opt.customValues.length > 0) this._initCustomValues();
     }
   }
 
   // Сброс опций при установке кастомных значений
-  initCustomValues() {
+  private _initCustomValues() {
     const { customValues } = this.opt;
 
     this.opt.minValue = 0;
@@ -392,7 +392,7 @@ class Model extends Observer {
     this.opt.initValueSecond = this.opt.initValueSecond || this.opt.maxValue;
   }
 
-  checkingInitValues(errMessage: IErrMessage) {
+  private _checkingInitValues(errMessage: IErrMessage) {
     // prettier-ignore
     const { 
       key,

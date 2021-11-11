@@ -82,7 +82,7 @@ import Presenter from './layers/Presenter';
         const view = new View();
         const presenter = new Presenter(view, model);
 
-        view.renderSlider(this);
+        presenter.renderSlider(this);
         presenter.setObservers();
         model.init();
 
@@ -92,11 +92,29 @@ import Presenter from './layers/Presenter';
       return this;
     },
     setProp(prop, value) {
-      const { model } = this.data('metaSlider');
+      // prettier-ignore
+      const limitedProp = (
+        prop === 'key' ||
+        prop === '$selector' ||
+        prop === '$elemSlider' ||
+        prop === '$sliderProgress' ||
+        prop === '$elemMarkers' ||
+        prop === '$elemScale' ||
+        prop === '$elemThumbs' ||
+        prop === 'initValuesArray' ||
+        prop === 'textValuesArray' ||
+        prop === 'valuesAsPercentageArray'
+      );
 
-      model.opt[prop] = value;
-      model.opt.key = prop;
-      model.update();
+      if (!limitedProp) {
+        const { model } = this.data('metaSlider');
+
+        model.opt[prop] = value;
+        model.opt.key = prop;
+        model.update();
+      } else {
+        return $.error(`Property '${prop}' cannot be changed.`);
+      }
 
       return this;
     },

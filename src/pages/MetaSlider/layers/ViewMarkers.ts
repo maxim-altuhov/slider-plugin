@@ -9,16 +9,10 @@ class ViewMarkers {
     this.isFirstInit = true;
   }
 
-  // Первоначальная инициализация
-  init(options: IPluginOptions) {
-    this.$elemThumbs = options.$elemThumbs;
-    this.$elemMarkers = options.$elemMarkers;
-  }
-
   // Обновление view
   update(options: IPluginOptions) {
     if (this.isFirstInit) {
-      this.init(options);
+      this._init(options);
       this.isFirstInit = false;
     }
 
@@ -52,12 +46,18 @@ class ViewMarkers {
       key === 'colorBorderForMarker'
     );
 
-    if (setValueVerifKeys) this.setValueInMarkers(options);
-    if (styleVerifKeys) this.setStyleForMarkers(options);
+    if (setValueVerifKeys) this._setValueInMarkers(options);
+    if (styleVerifKeys) this._setStyleForMarkers(options);
+  }
+
+  // Первоначальная инициализация
+  private _init(options: IPluginOptions) {
+    this.$elemThumbs = options.$elemThumbs;
+    this.$elemMarkers = options.$elemMarkers;
   }
 
   // Устанавливаем значения в маркеры
-  setValueInMarkers(options: IPluginOptions) {
+  private _setValueInMarkers(options: IPluginOptions) {
     if (options.showMarkers) {
       // prettier-ignore
       const { 
@@ -85,7 +85,7 @@ class ViewMarkers {
   }
 
   // Устанавливаем стили для маркеров
-  setStyleForMarkers(options: IPluginOptions) {
+  private _setStyleForMarkers(options: IPluginOptions) {
     // prettier-ignore
     const {
       mainColor,

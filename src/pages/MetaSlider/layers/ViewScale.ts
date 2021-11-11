@@ -16,17 +16,10 @@ class ViewScale extends Observer {
     this.isFirstInit = true;
   }
 
-  // Первоначальная инициализация
-  init(options: IPluginOptions) {
-    this.$selector = options.$selector;
-    this.$elemSlider = options.$elemSlider;
-    this.$elemScale = options.$elemScale;
-  }
-
   // Обновление view
   update(options: IPluginOptions) {
     if (this.isFirstInit) {
-      this.init(options);
+      this._init(options);
       this.isFirstInit = false;
     }
 
@@ -54,16 +47,24 @@ class ViewScale extends Observer {
     const styleVerifKeys = (key === 'init' || key === 'colorForScale' || key === 'showScale');
 
     if (renderScaleVerifKeys) {
-      this.createScale(options);
-      this.checkingScaleSize(options);
+      this._createScale(options);
+      this._checkingScaleSize(options);
 
-      if (key === 'initScaleAdjustment' || key === 'init') this.setEventsWindow(options);
+      if (key === 'initScaleAdjustment' || key === 'init') this._setEventsWindow(options);
     }
-    if (styleVerifKeys) this.setStyleForScale(options);
+
+    if (styleVerifKeys) this._setStyleForScale(options);
+  }
+
+  // Первоначальная инициализация
+  private _init(options: IPluginOptions) {
+    this.$selector = options.$selector;
+    this.$elemSlider = options.$elemSlider;
+    this.$elemScale = options.$elemScale;
   }
 
   // Рендер шкалы значений
-  createScale(options: IPluginOptions) {
+  private _createScale(options: IPluginOptions) {
     if (options.showScale) {
       this.$elemScale.empty();
 
@@ -115,12 +116,12 @@ class ViewScale extends Observer {
         this.mapSkipScalePoints = new Map();
       }
 
-      this.setEventsScalePoints();
+      this._setEventsScalePoints();
     }
   }
 
   // Устанавливаем стили для шкалы
-  setStyleForScale(options: IPluginOptions) {
+  private _setStyleForScale(options: IPluginOptions) {
     const { colorForScale, showScale } = options;
 
     if (showScale) {
@@ -130,6 +131,7 @@ class ViewScale extends Observer {
         opacity: 1,
         'pointer-events': '',
       });
+
       this.$elemScale.children().removeAttr('tabindex');
     } else {
       this.$elemScale.css({ opacity: 0, 'pointer-events': 'none' });
@@ -141,7 +143,7 @@ class ViewScale extends Observer {
    * Метод, который проверяет помещаются ли все деления шкалы на данной длине слайдера.
    * Если нет, то этот метод делает авто-подстройку делений шкалы и скрывает лишние значения
    */
-  checkingScaleSize(options: IPluginOptions) {
+  private _checkingScaleSize(options: IPluginOptions) {
     const { showScale, initScaleAdjustment } = options;
 
     if (showScale && initScaleAdjustment) {
@@ -154,8 +156,8 @@ class ViewScale extends Observer {
         this.$elemScalePoints = this.$selector.find(
           '.js-meta-slider__scale-point:not(.meta-slider__scale-point_skip)',
         );
-        this.scalePointsSize = 0;
 
+        this.scalePointsSize = 0;
         const sizeScalePointsArray = this.$elemScalePoints.length;
 
         if (sizeScalePointsArray <= 2) break;
@@ -166,11 +168,11 @@ class ViewScale extends Observer {
           const intervalWithoutFirstAndLastIndex = !firstOrLastIndex && sizeScalePointsArray <= 6;
 
           if (index % 2 !== 0 && sizeScalePointsArray > 6) {
-            this.setPropForSkipScalePoint($currentScalePoint);
+            this._setPropForSkipScalePoint($currentScalePoint);
           } else if (sizeScalePointsArray % 2 !== 0 && sizeScalePointsArray <= 6) {
-            this.setPropForSkipScalePoint($currentScalePoint);
+            this._setPropForSkipScalePoint($currentScalePoint);
           } else if (sizeScalePointsArray % 2 === 0 && intervalWithoutFirstAndLastIndex) {
-            this.setPropForSkipScalePoint($currentScalePoint);
+            this._setPropForSkipScalePoint($currentScalePoint);
           }
 
           if (!$currentScalePoint.hasClass('meta-slider__scale-point_skip'))
@@ -180,12 +182,12 @@ class ViewScale extends Observer {
         this.mapSkipScalePoints.set(totalSizeScalePoints, [...this.skipScalePointsArray]);
       }
 
-      this.checkingSkipScalePointSize(sliderSize, MARGIN_PX);
+      this._checkingSkipScalePointSize(sliderSize, MARGIN_PX);
     }
   }
 
   // Установка стилей для пропущенных делений шкалы
-  setPropForSkipScalePoint($scalePoint: JQuery) {
+  private _setPropForSkipScalePoint($scalePoint: JQuery) {
     $scalePoint
       .addClass('meta-slider__scale-point_skip')
       .attr('tabindex', -1)
@@ -198,7 +200,7 @@ class ViewScale extends Observer {
    * Метод отслеживает размер слайдера и возвращает скрытые деления шкалы,
    * если они уже помещаются на шкале
    */
-  checkingSkipScalePointSize(sliderSize: number, margin: number) {
+  private _checkingSkipScalePointSize(sliderSize: number, margin: number) {
     this.mapSkipScalePoints.forEach((scalePointSkipArray, controlSize) => {
       if (sliderSize > controlSize + margin / 3) {
         scalePointSkipArray.forEach(($scalePoint) => {
@@ -216,30 +218,30 @@ class ViewScale extends Observer {
   }
 
   // Обработчик события отслеживающий размер окна браузера для метода checkingScaleSize()
-  setEventsWindow(options: IPluginOptions) {
+  private _setEventsWindow(options: IPluginOptions) {
     const { showScale, initScaleAdjustment } = options;
 
     if (showScale && initScaleAdjustment) {
-      $(window).on('resize.scale', this.handleCheckingScaleSize.bind(this, options));
+      $(window).on('resize.scale', this._handleCheckingScaleSize.bind(this, options));
     } else {
       $(window).off('resize.scale');
     }
   }
 
   // Отслеживает ширину слайдера
-  handleCheckingScaleSize(options: IPluginOptions) {
-    this.checkingScaleSize(options);
+  private _handleCheckingScaleSize(options: IPluginOptions) {
+    this._checkingScaleSize(options);
   }
 
   // Обрабочик событий кликов на значения шкалы
-  setEventsScalePoints() {
+  private _setEventsScalePoints() {
     this.$elemScalePoints.each((index, elemPoint) => {
-      $(elemPoint).on('click.scalePoint', this.handleGetValueInScalePoint.bind(this));
+      $(elemPoint).on('click.scalePoint', this._handleGetValueInScalePoint.bind(this));
     });
   }
 
   // Получает значения при клике на шкалу слайдера
-  handleGetValueInScalePoint(event: IEvent) {
+  private _handleGetValueInScalePoint(event: IEvent) {
     event.preventDefault();
     const $target = $(event.target);
     const targetValue = Number($target.attr('data-value'));

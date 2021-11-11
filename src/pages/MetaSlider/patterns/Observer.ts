@@ -1,5 +1,5 @@
 class Observer {
-  observerList: Function[];
+  protected observerList: Function[];
 
   constructor() {
     this.observerList = [];

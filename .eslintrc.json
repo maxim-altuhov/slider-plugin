@@ -45,6 +45,7 @@
     "fsd/no-function-declaration-in-event-listener": "error",
     "fsd/split-conditionals": "error",
     "lines-between-class-members": "off",
-    "@typescript-eslint/lines-between-class-members": ["error", "off", { "exceptAfterOverload": true }]
+    "@typescript-eslint/lines-between-class-members": ["error", "off", { "exceptAfterOverload": true }],
+    "no-underscore-dangle": ["off"]
   }
 }

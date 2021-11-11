@@ -1,12 +1,12 @@
 import $ from 'jquery';
 
 class ControlPanel {
-  $selector: JQuery;
-  $sliderSelector: JQuery;
-  selectorsObj: {
+  private $selector: JQuery;
+  private $sliderSelector: JQuery;
+  private selectorsObj: {
     [index: string]: JQuery;
   };
-  propertyList: string[];
+  private readonly propertyList: string[];
 
   constructor(panelSelector: string, sliderSelector: string) {
     this.$selector = $(panelSelector);
@@ -49,7 +49,7 @@ class ControlPanel {
       'checkingStepSizeForScale',
     ];
 
-    this.getSelectors();
+    this._getSelectors();
   }
 
   /**
@@ -59,22 +59,22 @@ class ControlPanel {
   init() {
     Object.entries(this.selectorsObj).forEach((valuesArray: [string, JQuery]) => {
       const [prop, $selector] = valuesArray;
-      this.getProp(prop);
-      this.initCheckingDependencies(prop);
+      this._getProp(prop);
+      this._initCheckingDependencies(prop);
 
-      $selector.on('change.input', this.handleInputChanges.bind(this));
+      $selector.on('change.input', this._handleInputChanges.bind(this));
     });
 
-    this.$sliderSelector.metaSlider('subscribe', this.watchTheSlider.bind(this));
+    this.$sliderSelector.metaSlider('subscribe', this._watchTheSlider.bind(this));
   }
 
   // Метод для установки новых значений для слайдера
-  setProp(prop: string, value: string | number | (string | number)[]) {
+  private _setProp(prop: string, value: string | number | (string | number)[]) {
     this.$sliderSelector.metaSlider('setProp', prop, value);
   }
 
   // Метод для получения текущих свойств слайдера и установки новых значений в контр.панели
-  getProp(prop: string) {
+  private _getProp(prop: string) {
     const resultProp = this.$sliderSelector.metaSlider('getProp', prop);
     const $target = this.selectorsObj[prop];
 
@@ -88,7 +88,7 @@ class ControlPanel {
   }
 
   // Формируем объект со всеми инпутами, поиск по имени свойства слайдера
-  getSelectors() {
+  private _getSelectors() {
     this.propertyList.forEach((prop) => {
       this.selectorsObj[prop] = this.$selector.find(`[name = ${prop}]`);
     });
@@ -100,7 +100,7 @@ class ControlPanel {
    * в зависимости от того, какое свойство слайдера изменилось.
    * Здесь также происходит инициализация метода проверки зависимости свойств слайдера друг от друга
    */
-  watchTheSlider() {
+  private _watchTheSlider() {
     const key = this.$sliderSelector.metaSlider('getProp', 'key');
 
     // prettier-ignore
@@ -111,79 +111,79 @@ class ControlPanel {
     );
 
     if (changeValuesVerifKeys) {
-      this.getProp('initValueFirst');
-      this.getProp('initValueSecond');
-      this.getProp('textValueFirst');
-      this.getProp('textValueSecond');
+      this._getProp('initValueFirst');
+      this._getProp('initValueSecond');
+      this._getProp('textValueFirst');
+      this._getProp('textValueSecond');
     }
 
     if (key === 'maxValue' || key === 'minValue') {
-      this.getProp('minValue');
-      this.getProp('maxValue');
-      this.getProp('initValueFirst');
-      this.getProp('initValueSecond');
-      this.getProp('numberOfDecimalPlaces');
+      this._getProp('minValue');
+      this._getProp('maxValue');
+      this._getProp('initValueFirst');
+      this._getProp('initValueSecond');
+      this._getProp('numberOfDecimalPlaces');
     }
 
     if (key === 'step') {
-      this.getProp('step');
-      this.getProp('initValueFirst');
-      this.getProp('initValueSecond');
-      this.getProp('numberOfDecimalPlaces');
-      this.getProp('stepSizeForScale');
+      this._getProp('step');
+      this._getProp('initValueFirst');
+      this._getProp('initValueSecond');
+      this._getProp('numberOfDecimalPlaces');
+      this._getProp('stepSizeForScale');
     }
 
     if (key === 'stepSizeForScale') {
-      this.getProp('stepSizeForScale');
+      this._getProp('stepSizeForScale');
     }
 
     if (key === 'customValues') {
-      this.getProp('customValues');
-      this.getProp('initValueFirst');
-      this.getProp('initValueSecond');
-      this.getProp('textValueFirst');
-      this.getProp('textValueSecond');
-      this.getProp('minValue');
-      this.getProp('maxValue');
-      this.getProp('step');
-      this.getProp('stepSizeForScale');
-      this.getProp('numberOfDecimalPlaces');
-      this.getProp('initFormatted');
-      this.getProp('calcNumberOfDecimalPlaces');
-      this.getProp('initAutoScaleCreation');
-      this.getProp('checkingStepSizeForScale');
+      this._getProp('customValues');
+      this._getProp('initValueFirst');
+      this._getProp('initValueSecond');
+      this._getProp('textValueFirst');
+      this._getProp('textValueSecond');
+      this._getProp('minValue');
+      this._getProp('maxValue');
+      this._getProp('step');
+      this._getProp('stepSizeForScale');
+      this._getProp('numberOfDecimalPlaces');
+      this._getProp('initFormatted');
+      this._getProp('calcNumberOfDecimalPlaces');
+      this._getProp('initAutoScaleCreation');
+      this._getProp('checkingStepSizeForScale');
     }
 
     if (key === 'calcNumberOfDecimalPlaces') {
-      this.getProp('numberOfDecimalPlaces');
+      this._getProp('numberOfDecimalPlaces');
     }
 
     if (key === 'numberOfDecimalPlaces') {
-      this.getProp('numberOfDecimalPlaces');
-      this.getProp('initValueFirst');
-      this.getProp('initValueSecond');
-      this.getProp('minValue');
-      this.getProp('maxValue');
-      this.getProp('step');
+      this._getProp('numberOfDecimalPlaces');
+      this._getProp('initValueFirst');
+      this._getProp('initValueSecond');
+      this._getProp('minValue');
+      this._getProp('maxValue');
+      this._getProp('step');
     }
 
     if (key === 'isRange') {
-      this.getProp('initValueFirst');
-      this.getProp('textValueFirst');
+      this._getProp('initValueFirst');
+      this._getProp('textValueFirst');
     }
 
     if (key === 'isVertical') {
-      this.getProp('initAutoMargins');
+      this._getProp('initAutoMargins');
     }
 
     if (key === 'initAutoScaleCreation' || key === 'checkingStepSizeForScale') {
-      this.getProp('initAutoScaleCreation');
-      this.getProp('checkingStepSizeForScale');
-      this.getProp('stepSizeForScale');
+      this._getProp('initAutoScaleCreation');
+      this._getProp('checkingStepSizeForScale');
+      this._getProp('stepSizeForScale');
     }
 
     // Инициализация проверки зависимости свойств слайдера друг от друга
-    this.initCheckingDependencies(key);
+    this._initCheckingDependencies(key);
   }
 
   /**
@@ -191,20 +191,20 @@ class ControlPanel {
    * и установка инпутам в контр.панели с этими свойствами заданного атрибута
    */
   //
-  initCheckingDependencies(prop: string) {
-    if (prop === 'isRange') this.checkTheProp(prop, ['initValueFirst'], true);
-    if (prop === 'isVertical') this.checkTheProp(prop, ['initAutoMargins']);
+  private _initCheckingDependencies(prop: string) {
+    if (prop === 'isRange') this._checkTheProp(prop, ['initValueFirst'], true);
+    if (prop === 'isVertical') this._checkTheProp(prop, ['initAutoMargins']);
 
     if (prop === 'initAutoScaleCreation') {
-      this.checkTheProp(prop, ['stepSizeForScale', 'checkingStepSizeForScale']);
+      this._checkTheProp(prop, ['stepSizeForScale', 'checkingStepSizeForScale']);
     }
 
     if (prop === 'checkingStepSizeForScale') {
-      this.checkTheProp(prop, ['initAutoScaleCreation']);
+      this._checkTheProp(prop, ['initAutoScaleCreation']);
     }
 
     if (prop === 'calcNumberOfDecimalPlaces') {
-      this.checkTheProp(prop, ['numberOfDecimalPlaces']);
+      this._checkTheProp(prop, ['numberOfDecimalPlaces']);
     }
 
     if (prop === 'customValues') {
@@ -220,7 +220,7 @@ class ControlPanel {
         'initFormatted',
       ];
 
-      this.checkTheProp(prop, customValuesDependencies);
+      this._checkTheProp(prop, customValuesDependencies);
     }
   }
 
@@ -228,7 +228,7 @@ class ControlPanel {
    * Проверка инпута с определенным свойством слайдера на наличие в нём значения
    * и установка атрибута disabled зависимым от него инпутам
    */
-  checkTheProp(initProp: string, checkingOptions: string[], isReverse = false) {
+  private _checkTheProp(initProp: string, checkingOptions: string[], isReverse = false) {
     const $target = this.selectorsObj[initProp];
     let verifyingKey;
 
@@ -244,25 +244,25 @@ class ControlPanel {
       $target.attr('data-dependency', 'true');
 
       checkingOptions.forEach((prop) => {
-        this.togglePropDisable(prop, true);
+        this._togglePropDisable(prop, true);
       });
     } else if ($target.attr('data-dependency')) {
       $target.attr('data-dependency', 'false');
 
       checkingOptions.forEach((prop) => {
-        this.togglePropDisable(prop, false);
+        this._togglePropDisable(prop, false);
       });
     }
   }
 
   // Метод переключения атрибута disabled у инпутов
-  togglePropDisable(prop: string, option: boolean) {
+  private _togglePropDisable(prop: string, option: boolean) {
     const $target = this.selectorsObj[prop];
     $target.prop('disabled', option);
   }
 
   // Установка новых значений свойств слайдера при изменении инпутов контр. панели
-  handleInputChanges(event: IEvent) {
+  private _handleInputChanges(event: IEvent) {
     const $target = $(event.target);
     const prop = $target.attr('name');
     let value = null;
@@ -275,7 +275,7 @@ class ControlPanel {
       value = Number($target.val());
     }
 
-    this.setProp(prop!, value);
+    this._setProp(prop, value);
   }
 }
 

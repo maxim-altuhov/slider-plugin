@@ -4,7 +4,7 @@ class ViewError {
   $elemErrorText: null | JQuery;
   $btnErrorClose: null | JQuery;
 
-  // Рендерим ошибку
+  // Метод для рендеринга ошибки
   renderError(message: string, options: IPluginOptions) {
     const { $selector, $elemSlider, showError } = options;
 
@@ -17,29 +17,29 @@ class ViewError {
       </div>`;
       $elemSlider.after(HTMLBlockError);
 
-      this.getInfoAboutError();
-      this.setEventErrorClose();
+      this._getInfoAboutError();
+      this._setEventErrorClose();
     } else if (showError && this.$elemErrorInfo) {
       this.$elemErrorText.text(message);
     }
   }
 
   // Собираем селекторы
-  getInfoAboutError() {
+  private _getInfoAboutError() {
     this.$elemErrorInfo = this.$selector.find('.js-error-info');
     this.$elemErrorText = this.$selector.find('.js-error-info__text');
     this.$btnErrorClose = this.$selector.find('.js-error-info__close');
   }
 
   // Устанавливаем обработчик на кнопку закрытия окна с ошибкой
-  setEventErrorClose() {
+  private _setEventErrorClose() {
     if (this.$btnErrorClose) {
-      this.$btnErrorClose.on('click.btnErrorClose', this.handleRemoveErrorWindow.bind(this));
+      this.$btnErrorClose.on('click.btnErrorClose', this._handleRemoveErrorWindow.bind(this));
     }
   }
 
   // Удаляем сообщение с ошибкой
-  handleRemoveErrorWindow() {
+  private _handleRemoveErrorWindow() {
     this.$btnErrorClose.off('click.btnErrorClose');
     this.$elemErrorInfo.remove();
     this.$elemErrorInfo = null;
