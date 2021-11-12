@@ -11,11 +11,9 @@ $(() => {
   const controlPanel2 = new ControlPanel('#config-slider-2', '#slider-2');
 
   slider1.metaSlider({
-    step: 10,
-    initValueFirst: 0,
+    step: 1,
+    initValueFirst: 20,
     initValueSecond: 80,
-    showScale: true,
-    minValue: -10,
     // customValues: ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ'],
   });
 

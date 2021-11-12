@@ -136,7 +136,11 @@ class ViewThumbs extends Observer {
   private _handleSetEventListenerForThumbs(event: IEvent) {
     const $target = $(event.target);
     event.target.setPointerCapture(event.pointerId);
-    $target.on('pointermove.thumb', this._handleInitPointerMove.bind(this));
+
+    $target.on(
+      'pointermove.thumb',
+      ViewThumbs._makeThrottlingHandler(this._handleInitPointerMove.bind(this), 50),
+    );
     $target.on('pointerup.thumb', ViewThumbs._handleInitPointerUp.bind(this));
   }
 
@@ -150,6 +154,21 @@ class ViewThumbs extends Observer {
     const $target = $(event.target);
     $target.off('pointermove.thumb');
     $target.off('pointerup.thumb');
+  }
+
+  // throttling декоратор
+  private static _makeThrottlingHandler(fn: Function, timeout: number) {
+    let timer: NodeJS.Timeout = null;
+
+    return (...args: any[]) => {
+      if (timer) return;
+
+      timer = setTimeout(() => {
+        fn(...args);
+        clearTimeout(timer);
+        timer = null;
+      }, timeout);
+    };
   }
 }
 

@@ -70,7 +70,10 @@ class ViewSlider extends Observer {
 
     const $fragmentWithASlider = $(document.createDocumentFragment());
     const $blockSlider = $(document.createElement('div'));
+    const sliderID = Math.floor(Math.random() * 1_000_000);
+
     $blockSlider.addClass('meta-slider js-meta-slider');
+    $blockSlider.attr('data-id', sliderID);
 
     const HTMLBlock = `<div class="meta-slider__progress js-meta-slider__progress"></div>
     <button type="button" class="meta-slider__thumb js-meta-slider__thumb meta-slider__thumb_left" data-value="">

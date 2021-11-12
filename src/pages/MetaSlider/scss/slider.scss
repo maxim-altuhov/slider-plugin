@@ -9,5 +9,6 @@
     height: 100%;
     border-radius: 5px;
     pointer-events: none;
+    transition: left 0.1s linear, right 0.1s linear;
   }
 }

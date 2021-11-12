@@ -220,11 +220,15 @@ class ViewScale extends Observer {
   // Обработчик события отслеживающий размер окна браузера для метода checkingScaleSize()
   private _setEventsWindow(options: IPluginOptions) {
     const { showScale, initScaleAdjustment } = options;
+    const sliderID = this.$elemSlider.attr('data-id');
 
     if (showScale && initScaleAdjustment) {
-      $(window).on('resize.scale', this._handleCheckingScaleSize.bind(this, options));
+      $(window).on(
+        `resize.scale-${sliderID}`,
+        ViewScale._makeThrottlingHandler(this._handleCheckingScaleSize.bind(this, options), 250),
+      );
     } else {
-      $(window).off('resize.scale');
+      $(window).off(`resize.scale-${sliderID}`);
     }
   }
 
@@ -247,6 +251,21 @@ class ViewScale extends Observer {
     const targetValue = Number($target.attr('data-value'));
 
     this.notify(event, targetValue);
+  }
+
+  // throttling декоратор
+  private static _makeThrottlingHandler(fn: Function, timeout: number) {
+    let timer: NodeJS.Timeout = null;
+
+    return (...args: any[]) => {
+      if (timer) return;
+
+      timer = setTimeout(() => {
+        fn(...args);
+        clearTimeout(timer);
+        timer = null;
+      }, timeout);
+    };
   }
 }
 
