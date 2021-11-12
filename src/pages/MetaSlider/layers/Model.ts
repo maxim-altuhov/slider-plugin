@@ -19,14 +19,14 @@ class Model extends Observer {
     this.opt.key = 'init';
     this._getInfoAboutSlider();
     this._checkingIncomingProp();
-    this._calcValueInPrecentage();
+    this._calcValueInPercentage();
     this.notify(this.opt);
   }
 
   // Метод вызываемый при обновлении модели снаружи
   update() {
     this._checkingIncomingProp();
-    this._calcValueInPrecentage();
+    this._calcValueInPercentage();
     this.notify(this.opt);
   }
 
@@ -151,7 +151,7 @@ class Model extends Observer {
       }
     }
 
-    this._calcValueInPrecentage();
+    this._calcValueInPercentage();
     const [firstValue, secondValue] = initValuesArray;
     this.opt.initValueFirst = firstValue;
     this.opt.initValueSecond = secondValue;
@@ -167,12 +167,31 @@ class Model extends Observer {
   }
 
   // Расчёт значений бегунков слайдера в процентах
-  private _calcValueInPrecentage() {
+  private _calcValueInPercentage() {
     const { initValuesArray, minValue, maxValue } = this.opt;
 
     this.opt.valuesAsPercentageArray = initValuesArray.map(
       (currentValue) => ((currentValue - minValue) / (maxValue - minValue)) * 100,
     );
+  }
+
+  // Расчёт значений шага слайдера в процентах
+  private _calcStepAsPercentage() {
+    const { key } = this.opt;
+
+    // prettier-ignore
+    const calcStepAsPercentVerifKeys = (
+      key === 'init' ||
+      key === 'step' ||
+      key === 'maxValue' ||
+      key === 'minValue' ||
+      key === 'numberOfDecimalPlaces'
+    );
+
+    if (calcStepAsPercentVerifKeys) {
+      const { maxValue, minValue, step } = this.opt;
+      this.opt.stepAsPercent = 100 / ((maxValue - minValue) / step);
+    }
   }
 
   // Проверка входящих настроек для слайдера
@@ -193,6 +212,7 @@ class Model extends Observer {
     this._checkingMinMaxValues(errMessage);
     this._checkingStepSize(errMessage);
     this._checkingCustomValues();
+    this._calcStepAsPercentage();
     this._checkingInitValues(errMessage);
 
     this.opt.initValuesArray = [this.opt.initValueFirst, this.opt.initValueSecond];
@@ -306,15 +326,6 @@ class Model extends Observer {
       key === 'numberOfDecimalPlaces'
     );
 
-    // prettier-ignore
-    const calcStepAsPercentVerifKeys = (
-      key === 'init' ||
-      key === 'step' ||
-      key === 'maxValue' ||
-      key === 'minValue' ||
-      key === 'numberOfDecimalPlaces'
-    );
-
     const differenceMinAndMax = maxValue - minValue;
 
     if (initVerifKeys) {
@@ -338,10 +349,6 @@ class Model extends Observer {
       if (this.opt.checkingStepSizeForScale && !initAutoScaleCreation) {
         this._checkingCorrectStepSizeForScale(errMessage);
       }
-    }
-
-    if (calcStepAsPercentVerifKeys) {
-      this.opt.stepAsPercent = 100 / ((maxValue - minValue) / step);
     }
   }
 
