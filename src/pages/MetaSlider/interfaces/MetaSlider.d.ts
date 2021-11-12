@@ -28,6 +28,7 @@ interface IPluginOptions {
   initAutoScaleCreation: boolean;
   checkingStepSizeForScale: boolean;
   step: number;
+  stepAsPercent: number;
   minValue: number;
   maxValue: number;
   stepSizeForScale: null | number;

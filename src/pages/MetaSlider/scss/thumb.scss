@@ -12,12 +12,10 @@
     transition: left 0.1s linear;
 
     &_left {
-      left: 0%;
       z-index: 1;
     }
 
     &_right {
-      left: 100%;
       z-index: 99;
     }
   }

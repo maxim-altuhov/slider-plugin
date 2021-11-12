@@ -35,6 +35,7 @@ import Presenter from './layers/Presenter';
         initAutoScaleCreation: true,
         checkingStepSizeForScale: false,
         step: 1,
+        stepAsPercent: null,
         minValue: 0,
         maxValue: 100,
         stepSizeForScale: null,
@@ -103,7 +104,8 @@ import Presenter from './layers/Presenter';
         prop === '$elemThumbs' ||
         prop === 'initValuesArray' ||
         prop === 'textValuesArray' ||
-        prop === 'valuesAsPercentageArray'
+        prop === 'valuesAsPercentageArray'||
+        prop === 'stepAsPercent'
       );
 
       if (!limitedProp) {

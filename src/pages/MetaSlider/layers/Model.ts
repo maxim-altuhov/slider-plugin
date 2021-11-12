@@ -31,14 +31,15 @@ class Model extends Observer {
   }
 
   // Расчёт значений позиций бегунков слайдера
-  calcTargetValue(event: IEvent, initValue?: number, onlyReturn = false) {
+  calcTargetValue(event: IEvent, initValue?: number, onlyReturn = false): number | undefined {
     // prettier-ignore
     const { 
-        $elemSlider, 
-        isVertical, 
-        minValue, 
-        maxValue, 
-        step, 
+        $elemSlider,
+        isVertical,
+        minValue,
+        maxValue,
+        step,
+        stepAsPercent,
         numberOfDecimalPlaces,
     } = this.opt;
     let eventPosition: number;
@@ -65,8 +66,6 @@ class Model extends Observer {
       valueAsPercentage = (valueInEventPosition / sliderSize) * 100;
     }
 
-    const stepCounter = (maxValue - minValue) / step;
-    const stepAsPercent = 100 / stepCounter;
     let totalPercent = Math.round(valueAsPercentage / stepAsPercent) * stepAsPercent;
 
     if (totalPercent < 0) totalPercent = 0;
@@ -76,7 +75,7 @@ class Model extends Observer {
     const targetValue = Number((resultValue + minValue).toFixed(numberOfDecimalPlaces));
 
     if (onlyReturn) return targetValue;
-    this._checkingTargetValue(targetValue, event);
+    this._checkingTargetValue(targetValue, event, eventPosition);
 
     return undefined;
   }
@@ -85,7 +84,7 @@ class Model extends Observer {
    * Проверка рассчитанных значений слайдера на выполнение различных условий
    * и определение какой бегунок у слайдера должен быть перемещён
    */
-  private _checkingTargetValue(targetValue: number, event: IEvent) {
+  private _checkingTargetValue(targetValue: number, event: IEvent, eventPosition: number) {
     const {
       initValueFirst,
       initValueSecond,
@@ -95,6 +94,7 @@ class Model extends Observer {
       isVertical,
       customValues,
     } = this.opt;
+
     const firstThumbDiff = Math.abs(Number((targetValue - initValueFirst).toFixed(2)));
     const secondThumbDiff = Math.abs(Number((targetValue - initValueSecond).toFixed(2)));
     let clickInRange = false;
@@ -109,7 +109,6 @@ class Model extends Observer {
       initValuesArray[1] = targetValue;
     }
 
-    const [firstThumb, secondThumb] = $elemThumbs;
     const isIdenticalDistanceInRange = clickInRange && firstThumbDiff === secondThumbDiff;
 
     // prettier-ignore
@@ -119,16 +118,14 @@ class Model extends Observer {
       event.code === 'ArrowUp' ||
       event.code === 'ArrowDown'
     );
-    let eventPosition: number;
+    const [firstThumb, secondThumb] = $elemThumbs;
     let firstThumbPosition: number;
     let secondThumbPosition: number;
 
     if (isVertical) {
-      eventPosition = event.clientY;
       firstThumbPosition = firstThumb.getBoundingClientRect().bottom;
       secondThumbPosition = secondThumb.getBoundingClientRect().top;
     } else if (!isVertical) {
-      eventPosition = event.clientX;
       firstThumbPosition = firstThumb.getBoundingClientRect().left;
       secondThumbPosition = secondThumb.getBoundingClientRect().right;
     }
@@ -149,7 +146,7 @@ class Model extends Observer {
 
       if ($target.hasClass('meta-slider__thumb_left')) {
         initValuesArray[0] = targetValue;
-      } else if ($target.hasClass('meta-slider__thumb_right')) {
+      } else {
         initValuesArray[1] = targetValue;
       }
     }
@@ -299,7 +296,7 @@ class Model extends Observer {
     } = this.opt;
 
     // prettier-ignore
-    const verifKeys = (
+    const initVerifKeys = (
       key === 'init' ||
       key === 'initAutoScaleCreation' ||
       key === 'step' ||
@@ -309,9 +306,18 @@ class Model extends Observer {
       key === 'numberOfDecimalPlaces'
     );
 
+    // prettier-ignore
+    const calcStepAsPercentVerifKeys = (
+      key === 'init' ||
+      key === 'step' ||
+      key === 'maxValue' ||
+      key === 'minValue' ||
+      key === 'numberOfDecimalPlaces'
+    );
+
     const differenceMinAndMax = maxValue - minValue;
 
-    if (verifKeys) {
+    if (initVerifKeys) {
       this.opt.step = Number(step.toFixed(numberOfDecimalPlaces));
 
       if (initAutoScaleCreation) {
@@ -332,6 +338,10 @@ class Model extends Observer {
       if (this.opt.checkingStepSizeForScale && !initAutoScaleCreation) {
         this._checkingCorrectStepSizeForScale(errMessage);
       }
+    }
+
+    if (calcStepAsPercentVerifKeys) {
+      this.opt.stepAsPercent = 100 / ((maxValue - minValue) / step);
     }
   }
 
