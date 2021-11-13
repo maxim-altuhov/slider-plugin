@@ -9,6 +9,8 @@ html {
 }
 
 .container {
+  min-width: 320px;
+
   &__wrapper {
     display: flex;
     background-color: #ffffff;

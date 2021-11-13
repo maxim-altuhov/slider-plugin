@@ -70,7 +70,7 @@ class ViewSlider extends Observer {
 
     const $fragmentWithASlider = $(document.createDocumentFragment());
     const $blockSlider = $(document.createElement('div'));
-    const sliderID = Math.floor(Math.random() * 1_000_000);
+    const sliderID = ViewSlider._createUniqueID();
 
     $blockSlider.addClass('meta-slider js-meta-slider');
     $blockSlider.attr('data-id', sliderID);
@@ -88,6 +88,14 @@ class ViewSlider extends Observer {
 
     $fragmentWithASlider.append($blockSlider);
     this.$selector.append($fragmentWithASlider);
+  }
+
+  // создаём уникальный ID для слайдера
+  private static _createUniqueID() {
+    const IDPartOne = Date.now().toString(36);
+    const IDPartTwo = Math.random().toString(36).substring(2);
+
+    return IDPartOne + IDPartTwo;
   }
 
   // Первоначальная инициализация

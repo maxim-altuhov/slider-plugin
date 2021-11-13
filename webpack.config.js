@@ -83,6 +83,7 @@ const babelOptions = (presets) => {
         {
           useBuiltIns: 'usage',
           corejs: 3,
+          targets: { node: 'current' },
         },
       ],
     ],
@@ -128,7 +129,7 @@ const plugins = () => {
   ];
 
   if (isDev && !isDevServer) {
-    base.push(new ESLintPlugin());
+    base.push(new ESLintPlugin({ extensions: ['js', 'jsx', 'ts', 'tsx'] }));
   } else if (isProd) {
     base.push(new ImageMinimizerPlugin({
       minimizerOptions: {
