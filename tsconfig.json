@@ -1,14 +1,13 @@
 {
   "compilerOptions": {
-    "target": "ES2021",
-    "module": "ES2020",
+    "target": "ES6",
     "lib": [
       "DOM",
-      "ES2021"
+      "ES6"
     ],
-    "typeRoots": ["node_modules/@types"],
     "outDir": "./dist/js/",
-    "moduleResolution": "node",
+    "rootDir": "./src",
+    "moduleResolution": "Node",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "alwaysStrict": true,
@@ -42,10 +41,9 @@
     "noStrictGenericChecks": false
   },
   "include": [
-    "./webpack.config.js",
-    "src/components/**/**/*.ts",
-    "src/components/**/**/*.js",
-    "src/pages/**/*.ts",
-    "src/pages/**/*.js",
+    "webpack.config.js",
+    "src/components/**/**/*",
+    "src/pages/**/*",
+    "src/**/*",
   ]
 }
