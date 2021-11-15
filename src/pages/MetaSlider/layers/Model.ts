@@ -4,6 +4,7 @@ import Observer from '../patterns/Observer';
 class Model extends Observer {
   opt;
   errorEvent: Observer;
+  propSavedStatus: { [index: string]: any } = {};
 
   constructor(selector: JQuery, options: IPluginOptions) {
     super();
@@ -42,11 +43,11 @@ class Model extends Observer {
         stepAsPercent,
         numberOfDecimalPlaces,
     } = this.opt;
-    let eventPosition: number;
-    let sliderOffset: number;
-    let sliderSize: number;
-    let valueInEventPosition: number;
-    let valueAsPercentage: number;
+    let eventPosition: number | undefined;
+    let sliderOffset: number | undefined;
+    let sliderSize: number | undefined;
+    let valueInEventPosition: number | undefined;
+    let valueAsPercentage: number | undefined;
 
     if (isVertical && event) {
       eventPosition = event.clientY;
@@ -84,7 +85,11 @@ class Model extends Observer {
    * Проверка рассчитанных значений слайдера на выполнение различных условий
    * и определение какой бегунок у слайдера должен быть перемещён
    */
-  private _checkingTargetValue(targetValue: number, event: IEvent, eventPosition: number) {
+  private _checkingTargetValue(
+    targetValue: number,
+    event: IEvent,
+    eventPosition: number | undefined,
+  ) {
     const {
       initValueFirst,
       initValueSecond,
@@ -235,6 +240,14 @@ class Model extends Observer {
     // prettier-ignore
     const verticalSliderVerifKeys = (key === 'init' || key === 'isVertical');
 
+    if (key === 'init' || key === 'initAutoMargins') {
+      this.propSavedStatus['autoMargins'] = this.opt.initAutoMargins;
+    }
+
+    if (verticalSliderVerifKeys && !isVertical) {
+      this.opt.initAutoMargins = this.propSavedStatus['autoMargins'];
+    }
+
     if (verticalSliderVerifKeys && isVertical) this.opt.initAutoMargins = false;
   }
 
@@ -299,7 +312,7 @@ class Model extends Observer {
       if (minValue > maxValue || minValue === maxValue) {
         this.opt.minValue = 0;
         this.opt.maxValue = 100;
-        this.errorEvent.notify(errMessage.minAndMaxValue, this.opt);
+        this.errorEvent.notify(errMessage['minAndMaxValue'], this.opt);
       }
     }
   }
@@ -338,12 +351,12 @@ class Model extends Observer {
 
       if (step <= 0 || step > differenceMinAndMax) {
         this.opt.step = differenceMinAndMax;
-        this.errorEvent.notify(errMessage.step, this.opt);
+        this.errorEvent.notify(errMessage['step'], this.opt);
       }
 
       if (stepSizeForScale <= 0 || stepSizeForScale > differenceMinAndMax) {
         this.opt.stepSizeForScale = differenceMinAndMax;
-        this.errorEvent.notify(errMessage.stepSizeForScale, this.opt);
+        this.errorEvent.notify(errMessage['stepSizeForScale'], this.opt);
       }
 
       if (this.opt.checkingStepSizeForScale && !initAutoScaleCreation) {
@@ -373,7 +386,7 @@ class Model extends Observer {
         break;
       }
 
-      this.errorEvent.notify(errMessage.stepSizeForScale, this.opt);
+      this.errorEvent.notify(errMessage['stepSizeForScale'], this.opt);
     }
   }
 
@@ -447,7 +460,7 @@ class Model extends Observer {
       if (checkingKeys) {
         this.opt.initValueFirst = minValue;
         this.opt.initValueSecond = maxValue;
-        this.errorEvent.notify(errMessage.initValue, this.opt);
+        this.errorEvent.notify(errMessage['initValue'], this.opt);
       }
 
       this.opt.initValueFirst = isRange ? this.opt.initValueFirst : minValue;

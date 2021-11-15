@@ -126,19 +126,13 @@ class ControlPanel {
     }
 
     if (key === 'step') {
-      this._getProp('step');
       this._getProp('initValueFirst');
       this._getProp('initValueSecond');
       this._getProp('numberOfDecimalPlaces');
       this._getProp('stepSizeForScale');
     }
 
-    if (key === 'stepSizeForScale') {
-      this._getProp('stepSizeForScale');
-    }
-
     if (key === 'customValues') {
-      this._getProp('customValues');
       this._getProp('initValueFirst');
       this._getProp('initValueSecond');
       this._getProp('textValueFirst');
@@ -159,7 +153,6 @@ class ControlPanel {
     }
 
     if (key === 'numberOfDecimalPlaces') {
-      this._getProp('numberOfDecimalPlaces');
       this._getProp('initValueFirst');
       this._getProp('initValueSecond');
       this._getProp('minValue');
@@ -181,6 +174,9 @@ class ControlPanel {
       this._getProp('checkingStepSizeForScale');
       this._getProp('stepSizeForScale');
     }
+
+    // Получение текущего значения изменяемого свойства
+    this._getProp(key);
 
     // Инициализация проверки зависимости свойств слайдера друг от друга
     this._initCheckingDependencies(key);
@@ -262,7 +258,7 @@ class ControlPanel {
   }
 
   // Установка новых значений свойств слайдера при изменении инпутов контр. панели
-  private _handleInputChanges(event: IEvent) {
+  private _handleInputChanges(event: { target: HTMLElement }) {
     const $target = $(event.target);
     const prop = $target.attr('name');
     let value = null;

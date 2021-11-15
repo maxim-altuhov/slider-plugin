@@ -1,9 +1,11 @@
 /// <reference path='./interfaces/MetaSlider.d.ts' />
+import './MetaSlider.scss';
 import Model from './layers/Model';
 import View from './layers/View';
 import Presenter from './layers/Presenter';
 
 (($) => {
+  let inputOptions: IPluginOptions;
   const methods: IPluginMethods = {
     init(settings) {
       const initSettings: IPluginOptions = {
@@ -60,7 +62,7 @@ import Presenter from './layers/Presenter';
          * Объединяем пользовательские настройки и настройки по умолчанию,
          * делаем проверку некоторых опций слайдера
          */
-        const inputOptions: IPluginOptions = $.extend({}, initSettings, settings);
+        inputOptions = $.extend({}, initSettings, settings);
         const {
           customValues,
           initValueFirst,
@@ -102,26 +104,38 @@ import Presenter from './layers/Presenter';
         prop === '$elemMarkers' ||
         prop === '$elemScale' ||
         prop === '$elemThumbs' ||
+        prop === 'textValueFirst' ||
+        prop === 'textValueSecond' ||
         prop === 'initValuesArray' ||
         prop === 'textValuesArray' ||
         prop === 'valuesAsPercentageArray'||
         prop === 'stepAsPercent'
       );
 
-      if (!limitedProp) {
+      if (!limitedProp && prop in inputOptions) {
         const { model } = this.data('metaSlider');
 
-        model.opt[prop] = value;
-        model.opt.key = prop;
-        model.update();
-      } else {
+        if (value !== undefined) {
+          model.opt[prop] = value;
+          model.opt.key = prop;
+          model.update();
+        } else {
+          return $.error('The value parameter cannot be omitted.');
+        }
+      } else if (limitedProp) {
         return $.error(`Property '${prop}' cannot be changed.`);
+      } else {
+        return $.error(`The '${prop}' property does not exist.`);
       }
 
       return this;
     },
     getProp(prop) {
-      return this.data('metaSlider').model.opt[prop];
+      if (prop in inputOptions) {
+        return this.data('metaSlider').model.opt[prop];
+      }
+
+      return $.error(`The '${prop}' property does not exist.`);
     },
     getOptionsObj() {
       return this.data('metaSlider').model.opt;
@@ -154,7 +168,10 @@ import Presenter from './layers/Presenter';
 
   // Вызываем нужный метод плагина, проверяем наличие и тип передаваемого аргумента
   $.fn.metaSlider = function (initParam, ...prop) {
-    if (methods[initParam as string]) return methods[initParam as string].apply(this, prop);
+    if (typeof initParam === 'string' && methods[initParam]) {
+      return methods[initParam].apply(this, prop);
+    }
+
     if (typeof initParam === 'object' || !initParam) return methods.init.call(this, initParam);
 
     return $.error(`A method named ${initParam} does not exist for jQuery.MetaSlider`);

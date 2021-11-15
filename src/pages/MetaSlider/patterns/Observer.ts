@@ -1,9 +1,5 @@
 class Observer {
-  observerList: Function[];
-
-  constructor() {
-    this.observerList = [];
-  }
+  constructor(public observerList: Function[] = []) {}
 
   // Добавляет метод в список подписчиков
   subscribe(observer: Function) {

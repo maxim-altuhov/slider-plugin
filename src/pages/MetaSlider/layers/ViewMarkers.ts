@@ -1,13 +1,10 @@
 import $ from 'jquery';
 
 class ViewMarkers {
-  isFirstInit: boolean;
   $elemMarkers: JQuery;
   $elemThumbs: JQuery;
 
-  constructor() {
-    this.isFirstInit = true;
-  }
+  constructor(public isFirstInit: boolean = true) {}
 
   // Обновление view
   update(options: IPluginOptions) {

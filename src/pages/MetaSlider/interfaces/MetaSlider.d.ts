@@ -28,7 +28,7 @@ interface IPluginOptions {
   initAutoScaleCreation: boolean;
   checkingStepSizeForScale: boolean;
   step: number;
-  stepAsPercent: number;
+  stepAsPercent: null | number;
   minValue: number;
   maxValue: number;
   stepSizeForScale: null | number;
@@ -46,7 +46,7 @@ interface IPluginOptions {
 }
 
 interface IPluginMethods {
-  [index: string]: any;
+  [index: string]: Function;
   init(this: JQuery, settings?: Object): JQuery;
   setProp(this: JQuery, prop: string, value: string | number | (string | number)[]): JQuery;
   getProp(this: JQuery, prop: string): string | number | (string | number)[];
@@ -58,10 +58,7 @@ interface IPluginMethods {
 }
 
 interface IErrMessage {
-  initValue: string;
-  minAndMaxValue: string;
-  stepSizeForScale: string;
-  step: string;
+  [key: string]: string;
 }
 
 interface IEvent {

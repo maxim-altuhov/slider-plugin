@@ -2,16 +2,14 @@ import $ from 'jquery';
 import Observer from '../patterns/Observer';
 
 class ViewSlider extends Observer {
-  isFirstInit: boolean;
   $selector: JQuery;
   $elemSlider: JQuery;
   $sliderProgress: JQuery;
   $elemThumbs: JQuery;
   $elemMarkers: JQuery;
 
-  constructor() {
+  constructor(public isFirstInit: boolean = true) {
     super();
-    this.isFirstInit = true;
   }
 
   // Обновление view

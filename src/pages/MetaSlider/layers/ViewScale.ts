@@ -2,7 +2,6 @@ import $ from 'jquery';
 import Observer from '../patterns/Observer';
 
 class ViewScale extends Observer {
-  isFirstInit: boolean;
   $selector: JQuery;
   $elemSlider: JQuery;
   $elemScale: JQuery;
@@ -11,9 +10,8 @@ class ViewScale extends Observer {
   mapSkipScalePoints: Map<number, JQuery[]>;
   skipScalePointsArray: JQuery[];
 
-  constructor() {
+  constructor(public isFirstInit: boolean = true) {
     super();
-    this.isFirstInit = true;
   }
 
   // Обновление view

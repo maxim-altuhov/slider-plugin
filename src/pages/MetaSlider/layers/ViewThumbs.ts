@@ -2,13 +2,11 @@ import $ from 'jquery';
 import Observer from '../patterns/Observer';
 
 class ViewThumbs extends Observer {
-  isFirstInit: boolean;
   $selector: JQuery;
   $elemThumbs: JQuery;
 
-  constructor() {
+  constructor(public isFirstInit: boolean = true) {
     super();
-    this.isFirstInit = true;
   }
 
   // Обновление view

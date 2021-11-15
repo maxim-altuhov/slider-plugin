@@ -30,7 +30,12 @@ const setHash = false;
 const inputTypeFile = 'pug';
 
 // формируем имя файла в зависимости от режима сборки
-const filename = (ext) => ((isProd && setHash) ? `[name].[fullhash].${ext}` : `[name].${ext}`);
+const filename = (ext) => {
+  if (isProd && setHash) return `[name].[fullhash].min.${ext}`;
+  if (isProd) return `[name].min.${ext}`;
+
+  return `[name].${ext}`;
+};
 
 // лоадеры
 const cssLoaders = (add) => {
