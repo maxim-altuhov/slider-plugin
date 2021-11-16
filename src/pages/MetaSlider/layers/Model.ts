@@ -100,13 +100,13 @@ class Model extends Observer {
       customValues,
     } = this.opt;
 
-    const firstThumbDiff = Math.abs(Number((targetValue - initValueFirst).toFixed(2)));
-    const secondThumbDiff = Math.abs(Number((targetValue - initValueSecond).toFixed(2)));
+    const firstThumbDiff = Math.abs(Number((targetValue - initValueFirst!).toFixed(2)));
+    const secondThumbDiff = Math.abs(Number((targetValue - initValueSecond!).toFixed(2)));
     let clickInRange = false;
 
-    if (isRange) clickInRange = targetValue > initValueFirst && targetValue < initValueSecond;
-    if (targetValue <= initValueFirst) initValuesArray[0] = targetValue;
-    if (targetValue >= initValueSecond || !isRange) initValuesArray[1] = targetValue;
+    if (isRange) clickInRange = targetValue > initValueFirst! && targetValue < initValueSecond!;
+    if (targetValue <= initValueFirst!) initValuesArray[0] = targetValue;
+    if (targetValue >= initValueSecond! || !isRange) initValuesArray[1] = targetValue;
 
     if (clickInRange && firstThumbDiff < secondThumbDiff) {
       initValuesArray[0] = targetValue;
@@ -192,6 +192,7 @@ class Model extends Observer {
       key === 'step' ||
       key === 'maxValue' ||
       key === 'minValue' ||
+      key === 'customValues' ||
       key === 'numberOfDecimalPlaces'
     );
 
@@ -222,7 +223,7 @@ class Model extends Observer {
     this._calcStepAsPercentage();
     this._checkingInitValues(errMessage);
 
-    this.opt.initValuesArray = [this.opt.initValueFirst, this.opt.initValueSecond];
+    this.opt.initValuesArray = [this.opt.initValueFirst!, this.opt.initValueSecond!];
   }
 
   // Получение селекторов слайдера
@@ -356,7 +357,7 @@ class Model extends Observer {
         this.errorEvent.notify(errMessage['step'], this.opt);
       }
 
-      if (stepSizeForScale <= 0 || stepSizeForScale > differenceMinAndMax) {
+      if (stepSizeForScale! <= 0 || stepSizeForScale! > differenceMinAndMax) {
         this.opt.stepSizeForScale = differenceMinAndMax;
         this.errorEvent.notify(errMessage['stepSizeForScale'], this.opt);
       }
@@ -371,7 +372,7 @@ class Model extends Observer {
   private _checkingIsIntegerSizeScale() {
     const { maxValue, minValue, stepSizeForScale } = this.opt;
 
-    return Number.isInteger((maxValue - minValue) / stepSizeForScale);
+    return Number.isInteger((maxValue - minValue) / stepSizeForScale!);
   }
 
   // Корректировка шага шкалы, если не выполняется условие в методе checkingIsIntegerSizeScale()
@@ -379,11 +380,11 @@ class Model extends Observer {
     const isIntegerStepSizeForScale = Number.isInteger(this.opt.stepSizeForScale);
 
     while (!this._checkingIsIntegerSizeScale()) {
-      if (this.opt.stepSizeForScale > 1 && isIntegerStepSizeForScale) {
-        this.opt.stepSizeForScale += 1;
+      if (this.opt.stepSizeForScale! > 1 && isIntegerStepSizeForScale) {
+        this.opt.stepSizeForScale! += 1;
       } else if (!isIntegerStepSizeForScale) {
-        this.opt.stepSizeForScale += 0.1;
-        this.opt.stepSizeForScale = Number(this.opt.stepSizeForScale.toFixed(1));
+        this.opt.stepSizeForScale! += 0.1;
+        this.opt.stepSizeForScale = Number(this.opt.stepSizeForScale!.toFixed(1));
       } else {
         break;
       }
@@ -408,8 +409,10 @@ class Model extends Observer {
   private _initCustomValues() {
     const { customValues } = this.opt;
 
+    if (customValues.length === 1) customValues.push(customValues[0]);
+
     this.opt.minValue = 0;
-    this.opt.initValueFirst = this.opt.initValueFirst || this.opt.minValue;
+    this.opt.maxValue = customValues.length - 1;
     this.opt.initAutoScaleCreation = false;
     this.opt.checkingStepSizeForScale = false;
     this.opt.initFormatted = false;
@@ -418,10 +421,8 @@ class Model extends Observer {
     this.opt.step = 1;
     this.opt.stepSizeForScale = 1;
 
-    if (customValues.length === 1) customValues.push(customValues[0]);
-
-    this.opt.maxValue = customValues.length - 1;
-    this.opt.initValueSecond = this.opt.initValueSecond || this.opt.maxValue;
+    this.opt.initValueFirst = this.opt.initValueFirst ?? this.opt.minValue;
+    this.opt.initValueSecond = this.opt.initValueSecond ?? this.opt.maxValue;
   }
 
   private _checkingInitValues(errMessage: IErrMessage) {
@@ -451,11 +452,11 @@ class Model extends Observer {
 
     // prettier-ignore
     const checkingKeys = (
-      initValueFirst > initValueSecond ||
-      initValueFirst > maxValue ||
-      initValueFirst < minValue ||
-      initValueSecond > maxValue ||
-      initValueSecond < minValue
+      initValueFirst! > initValueSecond! ||
+      initValueFirst! > maxValue ||
+      initValueFirst! < minValue ||
+      initValueSecond! > maxValue ||
+      initValueSecond! < minValue
     );
 
     if (verifKeys) {
@@ -466,8 +467,8 @@ class Model extends Observer {
       }
 
       this.opt.initValueFirst = isRange ? this.opt.initValueFirst : minValue;
-      this.opt.initValueFirst = this.calcTargetValue(null!, this.opt.initValueFirst, true)!;
-      this.opt.initValueSecond = this.calcTargetValue(null!, this.opt.initValueSecond, true)!;
+      this.opt.initValueFirst = this.calcTargetValue(null!, this.opt.initValueFirst!, true)!;
+      this.opt.initValueSecond = this.calcTargetValue(null!, this.opt.initValueSecond!, true)!;
 
       if (customValues.length > 0) {
         this.opt.textValueFirst = customValues[this.opt.initValueFirst];

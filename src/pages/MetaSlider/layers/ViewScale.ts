@@ -82,7 +82,7 @@ class ViewScale extends Observer {
       const stepSizeValue = initAutoScaleCreation ? step : stepSizeForScale;
       let currentValue = minValue;
 
-      for (; currentValue <= maxValue; currentValue += stepSizeValue) {
+      for (; currentValue <= maxValue; currentValue += stepSizeValue!) {
         const isCustomValue = customValues.length > 0;
         const convertedValue = initFormatted ? currentValue.toLocaleString() : currentValue;
         const resultValue = isCustomValue ? customValues[currentValue] : convertedValue;

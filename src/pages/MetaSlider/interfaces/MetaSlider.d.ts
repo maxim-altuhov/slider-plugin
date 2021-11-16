@@ -31,13 +31,13 @@ interface IPluginOptions {
   stepAsPercent: number;
   minValue: number;
   maxValue: number;
-  stepSizeForScale: number;
+  stepSizeForScale: number | null;
   numberOfDecimalPlaces: number;
   preFix: string;
   postFix: string;
   customValues: string[];
-  initValueFirst: number;
-  initValueSecond: number;
+  initValueFirst: number | null;
+  initValueSecond: number | null;
   initValuesArray: number[];
   textValueFirst: string;
   textValueSecond: string;
