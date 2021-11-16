@@ -2,13 +2,13 @@ import $ from 'jquery';
 import Observer from '../patterns/Observer';
 
 class ViewScale extends Observer {
-  $selector: JQuery;
-  $elemSlider: JQuery;
-  $elemScale: JQuery;
-  $elemScalePoints: JQuery;
-  scalePointsSize: number;
-  mapSkipScalePoints: Map<number, JQuery[]>;
-  skipScalePointsArray: JQuery[];
+  $selector!: JQuery;
+  $elemSlider!: JQuery;
+  $elemScale!: JQuery;
+  $elemScalePoints!: JQuery;
+  scalePointsSize!: number;
+  mapSkipScalePoints!: Map<number, JQuery[]>;
+  skipScalePointsArray!: JQuery[];
 
   constructor(public isFirstInit: boolean = true) {
     super();
@@ -98,12 +98,12 @@ class ViewScale extends Observer {
       this.$elemScalePoints = this.$selector.find('.js-meta-slider__scale-point');
       this.scalePointsSize = 0;
 
-      this.$elemScalePoints.each((index, scalePoint) => {
+      this.$elemScalePoints.each((_, scalePoint) => {
         const $scalePoint = $(scalePoint);
         const valueInScalePoint = Number($scalePoint.attr('data-value'));
 
         const resultValue = (valueInScalePoint - minValue) / (maxValue - minValue);
-        this.scalePointsSize += $scalePoint.outerWidth();
+        this.scalePointsSize += $scalePoint.outerWidth()!;
 
         $scalePoint.css('left', `${resultValue * 100}%`);
       });
@@ -146,7 +146,7 @@ class ViewScale extends Observer {
 
     if (showScale && initScaleAdjustment) {
       const MARGIN_PX = 100;
-      const sliderSize = this.$elemSlider.outerWidth();
+      const sliderSize = this.$elemSlider.outerWidth()!;
 
       while (this.scalePointsSize + MARGIN_PX > sliderSize) {
         const totalSizeScalePoints = this.scalePointsSize + MARGIN_PX;
@@ -174,7 +174,7 @@ class ViewScale extends Observer {
           }
 
           if (!$currentScalePoint.hasClass('meta-slider__scale-point_skip'))
-            this.scalePointsSize += $currentScalePoint.outerWidth();
+            this.scalePointsSize += $currentScalePoint.outerWidth()!;
         });
 
         this.mapSkipScalePoints.set(totalSizeScalePoints, [...this.skipScalePointsArray]);
@@ -207,7 +207,7 @@ class ViewScale extends Observer {
             .removeClass('meta-slider__scale-point_skip')
             .css({ color: 'inherit', borderColor: '' });
 
-          this.scalePointsSize += $scalePoint.outerWidth();
+          this.scalePointsSize += $scalePoint.outerWidth()!;
         });
 
         this.mapSkipScalePoints.delete(controlSize);
@@ -237,15 +237,15 @@ class ViewScale extends Observer {
 
   // Обрабочик событий кликов на значения шкалы
   private _setEventsScalePoints() {
-    this.$elemScalePoints.each((index, elemPoint) => {
+    this.$elemScalePoints.each((_, elemPoint) => {
       $(elemPoint).on('click.scalePoint', this._handleGetValueInScalePoint.bind(this));
     });
   }
 
   // Получает значения при клике на шкалу слайдера
-  private _handleGetValueInScalePoint(event: IEvent) {
+  private _handleGetValueInScalePoint(event: Event) {
     event.preventDefault();
-    const $target = $(event.target);
+    const $target = $(event.target as HTMLButtonElement);
     const targetValue = Number($target.attr('data-value'));
 
     this.notify(event, targetValue);
@@ -253,14 +253,14 @@ class ViewScale extends Observer {
 
   // throttling декоратор
   private static _makeThrottlingHandler(fn: Function, timeout: number) {
-    let timer: NodeJS.Timeout = null;
+    let timer: NodeJS.Timeout | null = null;
 
     return (...args: any[]) => {
       if (timer) return;
 
       timer = setTimeout(() => {
         fn(...args);
-        clearTimeout(timer);
+        clearTimeout(timer!);
         timer = null;
       }, timeout);
     };

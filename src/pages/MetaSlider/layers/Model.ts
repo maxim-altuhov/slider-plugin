@@ -32,7 +32,7 @@ class Model extends Observer {
   }
 
   // Расчёт значений позиций бегунков слайдера
-  calcTargetValue(event: IEvent, initValue?: number, onlyReturn = false): number | undefined {
+  calcTargetValue(event: Event, initValue?: number, onlyReturn = false): number | undefined {
     // prettier-ignore
     const { 
         $elemSlider,
@@ -50,13 +50,13 @@ class Model extends Observer {
     let valueAsPercentage: number | undefined;
 
     if (isVertical && event) {
-      eventPosition = event.clientY;
+      eventPosition = (event as MouseEvent).clientY;
       sliderOffset = $elemSlider[0].getBoundingClientRect().bottom;
       sliderSize = $elemSlider[0].getBoundingClientRect().height;
       valueInEventPosition = sliderOffset - eventPosition;
     } else if (!isVertical && event) {
-      eventPosition = event.clientX;
-      sliderOffset = $elemSlider.offset().left;
+      eventPosition = (event as MouseEvent).clientX;
+      sliderOffset = $elemSlider.offset()!.left;
       sliderSize = $elemSlider.outerWidth();
       valueInEventPosition = eventPosition - sliderOffset;
     }
@@ -64,7 +64,7 @@ class Model extends Observer {
     if (initValue !== undefined) {
       valueAsPercentage = ((initValue - minValue) / (maxValue - minValue)) * 100;
     } else {
-      valueAsPercentage = (valueInEventPosition / sliderSize) * 100;
+      valueAsPercentage = (valueInEventPosition! / sliderSize!) * 100;
     }
 
     let totalPercent = Math.round(valueAsPercentage / stepAsPercent) * stepAsPercent;
@@ -87,7 +87,7 @@ class Model extends Observer {
    */
   private _checkingTargetValue(
     targetValue: number,
-    event: IEvent,
+    event: Event,
     eventPosition: number | undefined,
   ) {
     const {
@@ -116,12 +116,14 @@ class Model extends Observer {
 
     const isIdenticalDistanceInRange = clickInRange && firstThumbDiff === secondThumbDiff;
 
+    const { code } = event as KeyboardEvent;
+
     // prettier-ignore
     const isEventMoveKeypress = (
-      event.code === 'ArrowLeft' ||
-      event.code === 'ArrowRight' ||
-      event.code === 'ArrowUp' ||
-      event.code === 'ArrowDown'
+      code === 'ArrowLeft' ||
+      code === 'ArrowRight' ||
+      code === 'ArrowUp' ||
+      code === 'ArrowDown'
     );
     const [firstThumb, secondThumb] = $elemThumbs;
     let firstThumbPosition: number;
@@ -136,8 +138,8 @@ class Model extends Observer {
     }
 
     if (isIdenticalDistanceInRange && !isEventMoveKeypress) {
-      const firstValuePosition = Math.abs(eventPosition - firstThumbPosition);
-      const secondValuePosition = Math.abs(eventPosition - secondThumbPosition);
+      const firstValuePosition = Math.abs(eventPosition! - firstThumbPosition!);
+      const secondValuePosition = Math.abs(eventPosition! - secondThumbPosition!);
 
       if (Math.round(secondValuePosition - firstValuePosition) >= 0) {
         initValuesArray[0] = targetValue;
@@ -147,7 +149,7 @@ class Model extends Observer {
     }
 
     if (isIdenticalDistanceInRange && isEventMoveKeypress) {
-      const $target = $(event.target);
+      const $target = $(event.target as HTMLElement);
 
       if ($target.hasClass('meta-slider__thumb_left')) {
         initValuesArray[0] = targetValue;
@@ -464,8 +466,8 @@ class Model extends Observer {
       }
 
       this.opt.initValueFirst = isRange ? this.opt.initValueFirst : minValue;
-      this.opt.initValueFirst = this.calcTargetValue(null, this.opt.initValueFirst, true);
-      this.opt.initValueSecond = this.calcTargetValue(null, this.opt.initValueSecond, true);
+      this.opt.initValueFirst = this.calcTargetValue(null!, this.opt.initValueFirst, true)!;
+      this.opt.initValueSecond = this.calcTargetValue(null!, this.opt.initValueSecond, true)!;
 
       if (customValues.length > 0) {
         this.opt.textValueFirst = customValues[this.opt.initValueFirst];

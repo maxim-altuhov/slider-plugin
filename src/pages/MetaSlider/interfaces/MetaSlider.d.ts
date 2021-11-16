@@ -1,12 +1,12 @@
 interface IPluginOptions {
-  [index: string]: any;
+  [key: string]: any;
   key: string;
-  $selector: null | JQuery;
-  $elemSlider: null | JQuery;
-  $sliderProgress: null | JQuery;
-  $elemMarkers: null | JQuery;
-  $elemScale: null | JQuery;
-  $elemThumbs: null | JQuery;
+  $selector: JQuery;
+  $elemSlider: JQuery;
+  $sliderProgress: JQuery;
+  $elemMarkers: JQuery;
+  $elemScale: JQuery;
+  $elemThumbs: JQuery;
   mainColor: string;
   secondColor: string;
   colorMarker: string;
@@ -28,16 +28,16 @@ interface IPluginOptions {
   initAutoScaleCreation: boolean;
   checkingStepSizeForScale: boolean;
   step: number;
-  stepAsPercent: null | number;
+  stepAsPercent: number;
   minValue: number;
   maxValue: number;
-  stepSizeForScale: null | number;
+  stepSizeForScale: number;
   numberOfDecimalPlaces: number;
   preFix: string;
   postFix: string;
   customValues: string[];
-  initValueFirst: null | number;
-  initValueSecond: null | number;
+  initValueFirst: number;
+  initValueSecond: number;
   initValuesArray: number[];
   textValueFirst: string;
   textValueSecond: string;
@@ -46,8 +46,8 @@ interface IPluginOptions {
 }
 
 interface IPluginMethods {
-  [index: string]: Function;
-  init(this: JQuery, settings?: Object): JQuery;
+  [key: string]: Function;
+  init(this: JQuery, settings?: object): JQuery;
   setProp(this: JQuery, prop: string, value: string | number | (string | number)[]): JQuery;
   getProp(this: JQuery, prop: string): string | number | (string | number)[];
   getOptionsObj(this: JQuery): IPluginOptions;
@@ -59,13 +59,4 @@ interface IPluginMethods {
 
 interface IErrMessage {
   [key: string]: string;
-}
-
-interface IEvent {
-  code?: string;
-  clientY?: number;
-  clientX?: number;
-  target?: HTMLElement;
-  pointerId?: number;
-  preventDefault?: () => void;
 }

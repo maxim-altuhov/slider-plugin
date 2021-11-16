@@ -10,12 +10,12 @@ import Presenter from './layers/Presenter';
     init(settings) {
       const initSettings: IPluginOptions = {
         key: '',
-        $selector: null,
-        $elemSlider: null,
-        $sliderProgress: null,
-        $elemMarkers: null,
-        $elemScale: null,
-        $elemThumbs: null,
+        $selector: $(),
+        $elemSlider: $(),
+        $sliderProgress: $(),
+        $elemMarkers: $(),
+        $elemScale: $(),
+        $elemThumbs: $(),
         mainColor: '#6d6dff',
         secondColor: '#e4e4e4',
         colorMarker: '',
@@ -37,16 +37,16 @@ import Presenter from './layers/Presenter';
         initAutoScaleCreation: true,
         checkingStepSizeForScale: false,
         step: 1,
-        stepAsPercent: null,
+        stepAsPercent: 0,
         minValue: 0,
         maxValue: 100,
-        stepSizeForScale: null,
+        stepSizeForScale: NaN,
         numberOfDecimalPlaces: 0,
         preFix: '',
         postFix: '',
         customValues: [],
-        initValueFirst: null,
-        initValueSecond: null,
+        initValueFirst: NaN,
+        initValueSecond: NaN,
         initValuesArray: [],
         textValueFirst: '',
         textValueSecond: '',
@@ -172,7 +172,9 @@ import Presenter from './layers/Presenter';
       return methods[initParam].apply(this, prop);
     }
 
-    if (typeof initParam === 'object' || !initParam) return methods.init.call(this, initParam);
+    if (typeof initParam === 'object' || !initParam) {
+      return methods.init.call(this, initParam as object);
+    }
 
     return $.error(`A method named ${initParam} does not exist for jQuery.MetaSlider`);
   };

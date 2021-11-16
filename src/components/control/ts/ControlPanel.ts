@@ -4,7 +4,7 @@ class ControlPanel {
   private $selector: JQuery;
   private $sliderSelector: JQuery;
   private selectorsObj: {
-    [index: string]: JQuery;
+    [key: string]: JQuery;
   };
   private readonly propertyList: string[];
 
@@ -176,7 +176,7 @@ class ControlPanel {
     }
 
     // Получение текущего значения изменяемого свойства
-    this._getProp(key);
+    if (key !== 'changedValue') this._getProp(key);
 
     // Инициализация проверки зависимости свойств слайдера друг от друга
     this._initCheckingDependencies(key);
@@ -258,8 +258,8 @@ class ControlPanel {
   }
 
   // Установка новых значений свойств слайдера при изменении инпутов контр. панели
-  private _handleInputChanges(event: { target: HTMLElement }) {
-    const $target = $(event.target);
+  private _handleInputChanges(event: Event) {
+    const $target = $(event.target as HTMLInputElement);
     const prop = $target.attr('name');
     let value = null;
 
@@ -271,7 +271,7 @@ class ControlPanel {
       value = Number($target.val());
     }
 
-    this._setProp(prop, value);
+    this._setProp(prop!, value);
   }
 }
 

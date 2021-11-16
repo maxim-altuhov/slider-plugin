@@ -2,8 +2,8 @@ import $ from 'jquery';
 import Observer from '../patterns/Observer';
 
 class ViewThumbs extends Observer {
-  $selector: JQuery;
-  $elemThumbs: JQuery;
+  $selector!: JQuery;
+  $elemThumbs!: JQuery;
 
   constructor(public isFirstInit: boolean = true) {
     super();
@@ -58,7 +58,7 @@ class ViewThumbs extends Observer {
     const { mainColor, colorThumb, colorBorderForThumb } = options;
     const backgroundColor = colorThumb || mainColor;
 
-    this.$elemThumbs.each((index, thumb) => {
+    this.$elemThumbs.each((_, thumb) => {
       $(thumb).css({ 'background-color': backgroundColor, 'border-color': colorBorderForThumb });
     });
   }
@@ -98,7 +98,7 @@ class ViewThumbs extends Observer {
 
   // Установка обработчиков событий на бегунки слайдера
   private _setEventsThumbs(options: IPluginOptions) {
-    this.$elemThumbs.each((index, thumb) => {
+    this.$elemThumbs.each((_, thumb) => {
       const $currentThumb = $(thumb);
 
       $currentThumb.on('pointerdown.thumb', this._handleSetEventListenerForThumbs.bind(this));
@@ -108,33 +108,38 @@ class ViewThumbs extends Observer {
   }
 
   // Изменение позиции бегунков слайдера при использовании клавиатуры
-  private _handleChangeThumbPosition(options: IPluginOptions, event: IEvent) {
+  private _handleChangeThumbPosition(options: IPluginOptions, event: Event) {
+    const { code } = event as KeyboardEvent;
+
     // prettier-ignore
     const configEventCode = (
-      event.code === 'ArrowLeft' ||
-      event.code === 'ArrowRight' ||
-      event.code === 'ArrowUp' ||
-      event.code === 'ArrowDown'
+      code === 'ArrowLeft' ||
+      code === 'ArrowRight' ||
+      code === 'ArrowUp' ||
+      code === 'ArrowDown'
     );
-    const $target = $(event.target);
+
+    const $target = $(event.target as HTMLButtonElement);
 
     if (configEventCode) {
       const { step } = options;
       let eventTargetValue = Number($target.attr('data-value'));
 
-      if (event.code === 'ArrowUp' || event.code === 'ArrowDown') event.preventDefault();
-      if (event.code === 'ArrowLeft' || event.code === 'ArrowDown') eventTargetValue -= step;
-      if (event.code === 'ArrowRight' || event.code === 'ArrowUp') eventTargetValue += step;
+      if (code === 'ArrowUp' || code === 'ArrowDown') event.preventDefault();
+      if (code === 'ArrowLeft' || code === 'ArrowDown') eventTargetValue -= step;
+      if (code === 'ArrowRight' || code === 'ArrowUp') eventTargetValue += step;
 
       this.notify(event, eventTargetValue);
     }
   }
 
   // Установка обработчиков событий движения/прекращения движения бегунков слайдера
-  private _handleSetEventListenerForThumbs(event: IEvent) {
-    const $target = $(event.target);
-    event.target.setPointerCapture(event.pointerId);
+  private _handleSetEventListenerForThumbs(event: Event) {
+    const target = event.target as HTMLButtonElement;
 
+    if (target) target.setPointerCapture((event as PointerEvent).pointerId);
+
+    const $target = $(target);
     $target.on(
       'pointermove.thumb',
       ViewThumbs._makeThrottlingHandler(this._handleInitPointerMove.bind(this), 50),
@@ -148,7 +153,7 @@ class ViewThumbs extends Observer {
   }
 
   // Отслеживание прекращения движения бегунков слайдера
-  private static _handleInitPointerUp(event: IEvent) {
+  private static _handleInitPointerUp(event: { target: HTMLButtonElement }) {
     const $target = $(event.target);
     $target.off('pointermove.thumb');
     $target.off('pointerup.thumb');
@@ -156,14 +161,14 @@ class ViewThumbs extends Observer {
 
   // throttling декоратор
   private static _makeThrottlingHandler(fn: Function, timeout: number) {
-    let timer: NodeJS.Timeout = null;
+    let timer: NodeJS.Timeout | null = null;
 
     return (...args: any[]) => {
       if (timer) return;
 
       timer = setTimeout(() => {
         fn(...args);
-        clearTimeout(timer);
+        clearTimeout(timer!);
         timer = null;
       }, timeout);
     };

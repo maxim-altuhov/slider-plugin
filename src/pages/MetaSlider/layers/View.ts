@@ -6,7 +6,7 @@ import ViewError from './ViewError';
 
 class View {
   views: {
-    [index: string]: any;
+    [key: string]: any;
   };
 
   constructor() {

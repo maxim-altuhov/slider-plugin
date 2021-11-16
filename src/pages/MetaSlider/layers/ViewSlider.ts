@@ -2,11 +2,11 @@ import $ from 'jquery';
 import Observer from '../patterns/Observer';
 
 class ViewSlider extends Observer {
-  $selector: JQuery;
-  $elemSlider: JQuery;
-  $sliderProgress: JQuery;
-  $elemThumbs: JQuery;
-  $elemMarkers: JQuery;
+  $selector!: JQuery;
+  $elemSlider!: JQuery;
+  $sliderProgress!: JQuery;
+  $elemThumbs!: JQuery;
+  $elemMarkers!: JQuery;
 
   constructor(public isFirstInit: boolean = true) {
     super();
@@ -133,8 +133,8 @@ class ViewSlider extends Observer {
     const verifProp = initAutoMargins && !isVertical;
 
     if (verifProp && showMarkers) {
-      const heightMarker = this.$elemMarkers.eq(-1).outerHeight();
-      const heightThumb = this.$elemThumbs.eq(-1).outerHeight();
+      const heightMarker = this.$elemMarkers.eq(-1).outerHeight()!;
+      const heightThumb = this.$elemThumbs.eq(-1).outerHeight()!;
 
       this.$elemSlider.css('margin-top', `${heightMarker + heightThumb / 1.5}px`);
     } else {
@@ -142,8 +142,8 @@ class ViewSlider extends Observer {
     }
 
     if (verifProp && showScale) {
-      const elemScalePoints = this.$selector.find('.js-meta-slider__scale-point');
-      this.$elemSlider.css('margin-bottom', `${elemScalePoints.eq(0).outerHeight() * 3}px`);
+      const elemScalePoints = this.$selector!.find('.js-meta-slider__scale-point');
+      this.$elemSlider.css('margin-bottom', `${elemScalePoints.eq(0).outerHeight()! * 3}px`);
     } else {
       this.$elemSlider.css('margin-bottom', '');
     }
@@ -158,10 +158,10 @@ class ViewSlider extends Observer {
   private _setVerticalOrientation(options: IPluginOptions) {
     if (options.isVertical) {
       this.$elemSlider.addClass('meta-slider_vertical');
-      this.$selector.addClass('ms-vertical');
+      this.$selector!.addClass('ms-vertical');
     } else {
       this.$elemSlider.removeClass('meta-slider_vertical');
-      this.$selector.removeClass('ms-vertical');
+      this.$selector!.removeClass('ms-vertical');
     }
   }
 
@@ -189,9 +189,9 @@ class ViewSlider extends Observer {
   }
 
   // Получает значения при клике внутри слайдера
-  private _handleSetSliderValues(event: IEvent) {
+  private _handleSetSliderValues(event: Event) {
     event.preventDefault();
-    const $target = $(event.target);
+    const $target = $(event.target as HTMLElement);
 
     if ($target.hasClass('js-meta-slider')) {
       this.notify(event);

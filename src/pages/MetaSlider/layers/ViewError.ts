@@ -1,8 +1,8 @@
 class ViewError {
-  $selector: undefined | JQuery;
-  $elemErrorInfo: null | JQuery;
-  $elemErrorText: null | JQuery;
-  $btnErrorClose: null | JQuery;
+  $selector!: JQuery;
+  $elemErrorInfo!: null | JQuery;
+  $elemErrorText!: null | JQuery;
+  $btnErrorClose!: null | JQuery;
 
   // Метод для рендеринга ошибки
   renderError(message: string, options: IPluginOptions) {
@@ -20,15 +20,17 @@ class ViewError {
       this._getInfoAboutError();
       this._setEventErrorClose();
     } else if (showError && this.$elemErrorInfo) {
-      this.$elemErrorText.text(message);
+      this.$elemErrorText!.text(message);
     }
   }
 
   // Собираем селекторы
   private _getInfoAboutError() {
-    this.$elemErrorInfo = this.$selector.find('.js-error-info');
-    this.$elemErrorText = this.$selector.find('.js-error-info__text');
-    this.$btnErrorClose = this.$selector.find('.js-error-info__close');
+    if (this.$selector) {
+      this.$elemErrorInfo = this.$selector.find('.js-error-info');
+      this.$elemErrorText = this.$selector.find('.js-error-info__text');
+      this.$btnErrorClose = this.$selector.find('.js-error-info__close');
+    }
   }
 
   // Устанавливаем обработчик на кнопку закрытия окна с ошибкой
@@ -40,8 +42,8 @@ class ViewError {
 
   // Удаляем сообщение с ошибкой
   private _handleRemoveErrorWindow() {
-    this.$btnErrorClose.off('click.btnErrorClose');
-    this.$elemErrorInfo.remove();
+    this.$btnErrorClose!.off('click.btnErrorClose');
+    this.$elemErrorInfo!.remove();
     this.$elemErrorInfo = null;
     this.$elemErrorText = null;
     this.$btnErrorClose = null;

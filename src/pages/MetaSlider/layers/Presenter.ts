@@ -35,7 +35,7 @@ class Presenter {
   }
 
   // Вызов метода в модели для расчёта значений позиций бегунков слайдера
-  private _calcTargetValue(event: IEvent, initValue?: number, onlyReturn?: boolean) {
+  private _calcTargetValue(event: Event, initValue?: number, onlyReturn?: boolean) {
     this.model.calcTargetValue(event, initValue, onlyReturn);
   }
 }

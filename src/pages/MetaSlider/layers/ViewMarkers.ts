@@ -1,8 +1,8 @@
 import $ from 'jquery';
 
 class ViewMarkers {
-  $elemMarkers: JQuery;
-  $elemThumbs: JQuery;
+  $elemMarkers!: JQuery;
+  $elemThumbs!: JQuery;
 
   constructor(public isFirstInit: boolean = true) {}
 
@@ -94,7 +94,7 @@ class ViewMarkers {
 
     const backgroundColor = colorMarker || mainColor;
 
-    this.$elemMarkers.each((index, marker) => {
+    this.$elemMarkers.each((_, marker) => {
       const $currentMarker = $(marker);
       const styleProp = {
         display: '',
