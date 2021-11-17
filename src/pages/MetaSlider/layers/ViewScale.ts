@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import Observer from '../patterns/Observer';
 
 class ViewScale extends Observer {
@@ -160,21 +159,20 @@ class ViewScale extends Observer {
 
         if (sizeScalePointsArray <= 2) break;
 
-        this.$elemScalePoints.each((index, scalePoint) => {
-          const $currentScalePoint = $(scalePoint);
+        this.$elemScalePoints.each((index, currentScalePoint) => {
           const firstOrLastIndex = index === 0 || index === sizeScalePointsArray - 1;
           const intervalWithoutFirstAndLastIndex = !firstOrLastIndex && sizeScalePointsArray <= 6;
 
           if (index % 2 !== 0 && sizeScalePointsArray > 6) {
-            this._setPropForSkipScalePoint($currentScalePoint);
+            this._setPropForSkipScalePoint(currentScalePoint);
           } else if (sizeScalePointsArray % 2 !== 0 && sizeScalePointsArray <= 6) {
-            this._setPropForSkipScalePoint($currentScalePoint);
+            this._setPropForSkipScalePoint(currentScalePoint);
           } else if (sizeScalePointsArray % 2 === 0 && intervalWithoutFirstAndLastIndex) {
-            this._setPropForSkipScalePoint($currentScalePoint);
+            this._setPropForSkipScalePoint(currentScalePoint);
           }
 
-          if (!$currentScalePoint.hasClass('meta-slider__scale-point_skip'))
-            this.scalePointsSize += $currentScalePoint.outerWidth()!;
+          if (!currentScalePoint.classList.contains('meta-slider__scale-point_skip'))
+            this.scalePointsSize += currentScalePoint.offsetWidth;
         });
 
         this.mapSkipScalePoints.set(totalSizeScalePoints, [...this.skipScalePointsArray]);
@@ -185,13 +183,14 @@ class ViewScale extends Observer {
   }
 
   // Установка стилей для пропущенных делений шкалы
-  private _setPropForSkipScalePoint($scalePoint: JQuery) {
-    $scalePoint
+  private _setPropForSkipScalePoint(currentScalePoint: HTMLElement) {
+    const $currentScalePoint = $(currentScalePoint);
+    $currentScalePoint
       .addClass('meta-slider__scale-point_skip')
       .attr('tabindex', -1)
       .css({ color: 'transparent', borderColor: 'inherit' });
 
-    this.skipScalePointsArray.push($scalePoint);
+    this.skipScalePointsArray.push($currentScalePoint);
   }
 
   /**

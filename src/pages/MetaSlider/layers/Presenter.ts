@@ -5,12 +5,12 @@ class Presenter {
   constructor(public view: View, public model: Model) {}
 
   // Первоначальный рендер слайдера и его основных элементов главным View
-  public renderSlider(initSelector: JQuery) {
+  renderSlider(initSelector: JQuery) {
     this.view.renderSlider(initSelector);
   }
 
   // Добавляем методы в Observer
-  public setObservers() {
+  setObservers() {
     this.model.subscribe(this._updateViews.bind(this));
     this.model.errorEvent.subscribe(this._renderError.bind(this));
 

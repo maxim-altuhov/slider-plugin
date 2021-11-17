@@ -1,5 +1,3 @@
-import $ from 'jquery';
-
 class ControlPanel {
   private $selector: JQuery;
   private $sliderSelector: JQuery;

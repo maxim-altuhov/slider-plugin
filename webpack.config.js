@@ -265,7 +265,7 @@ module.exports = {
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
-          options: babelOptions(),
+          options: babelOptions('airbnb'),
         },
       },
       {

@@ -1,5 +1,3 @@
-import $ from 'jquery';
-
 class ViewMarkers {
   $elemMarkers!: JQuery;
   $elemThumbs!: JQuery;

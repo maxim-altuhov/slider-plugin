@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import Observer from '../patterns/Observer';
 
 class ViewSlider extends Observer {
