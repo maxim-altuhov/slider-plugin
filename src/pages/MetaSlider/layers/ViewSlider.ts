@@ -62,8 +62,8 @@ class ViewSlider extends Observer {
   }
 
   // Первоначальный рендер слайдера
-  renderSlider(initSelector: JQuery) {
-    if (!this.$selector) this.$selector = initSelector;
+  renderSlider($initSelector: JQuery) {
+    if (!this.$selector) this.$selector = $initSelector;
 
     const $fragmentWithASlider = $(document.createDocumentFragment());
     const $blockSlider = $(document.createElement('div'));

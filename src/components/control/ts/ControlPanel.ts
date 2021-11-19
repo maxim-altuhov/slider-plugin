@@ -63,33 +63,7 @@ class ControlPanel {
       $selector.on('change.input', this._handleInputChanges.bind(this));
     });
 
-    this.$sliderSelector.metaSlider('subscribe', this._watchTheSlider.bind(this));
-  }
-
-  // Метод для установки новых значений для слайдера
-  private _setProp(prop: string, value: string | number | (string | number)[]) {
-    this.$sliderSelector.metaSlider('setProp', prop, value);
-  }
-
-  // Метод для получения текущих свойств слайдера и установки новых значений в контр.панели
-  private _getProp(prop: string) {
-    const resultProp = this.$sliderSelector.metaSlider('getProp', prop);
-    const $target = this.selectorsObj[prop];
-
-    if ($target.attr('type') === 'checkbox') {
-      $target.prop('checked', resultProp);
-    } else {
-      $target.val(resultProp);
-    }
-
-    return resultProp;
-  }
-
-  // Формируем объект со всеми инпутами, поиск по имени свойства слайдера
-  private _getSelectors() {
-    this.propertyList.forEach((prop) => {
-      this.selectorsObj[prop] = this.$selector.find(`[name = ${prop}]`);
-    });
+    this.$sliderSelector.metaSlider('subscribe', this.watchTheSlider.bind(this));
   }
 
   /**
@@ -98,15 +72,15 @@ class ControlPanel {
    * в зависимости от того, какое свойство слайдера изменилось.
    * Здесь также происходит инициализация метода проверки зависимости свойств слайдера друг от друга
    */
-  private _watchTheSlider() {
+  watchTheSlider() {
     const key = this.$sliderSelector.metaSlider('getProp', 'key');
 
     // prettier-ignore
     const changeValuesVerifKeys = (
-      key === 'changedValue' ||
-      key === 'initValueFirst' ||
-      key === 'initValueSecond'
-    );
+        key === 'changedValue' ||
+        key === 'initValueFirst' ||
+        key === 'initValueSecond'
+      );
 
     if (changeValuesVerifKeys) {
       this._getProp('initValueFirst');
@@ -178,6 +152,32 @@ class ControlPanel {
 
     // Инициализация проверки зависимости свойств слайдера друг от друга
     this._initCheckingDependencies(key);
+  }
+
+  // Метод для установки новых значений для слайдера
+  private _setProp(prop: string, value: string | number | (string | number)[]) {
+    this.$sliderSelector.metaSlider('setProp', prop, value);
+  }
+
+  // Метод для получения текущих свойств слайдера и установки новых значений в контр.панели
+  private _getProp(prop: string) {
+    const resultProp = this.$sliderSelector.metaSlider('getProp', prop);
+    const $target = this.selectorsObj[prop];
+
+    if ($target.attr('type') === 'checkbox') {
+      $target.prop('checked', resultProp);
+    } else {
+      $target.val(resultProp);
+    }
+
+    return resultProp;
+  }
+
+  // Формируем объект со всеми инпутами, поиск по имени свойства слайдера
+  private _getSelectors() {
+    this.propertyList.forEach((prop) => {
+      this.selectorsObj[prop] = this.$selector.find(`[name = ${prop}]`);
+    });
   }
 
   /**

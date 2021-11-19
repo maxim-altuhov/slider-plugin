@@ -27,8 +27,8 @@ class View {
   }
 
   // Первоначальный рендер слайдера и его основных элементов
-  renderSlider(initSelector: JQuery) {
-    this.views['viewSlider'].renderSlider(initSelector);
+  renderSlider($initSelector: JQuery) {
+    this.views['viewSlider'].renderSlider($initSelector);
   }
 }
 
