@@ -1,18 +1,15 @@
 import Observer from '../patterns/Observer';
 
 class ViewThumbs extends Observer {
-  $selector!: JQuery;
-  $elemThumbs!: JQuery;
-
-  constructor(public isFirstInit: boolean = true) {
+  constructor(private _isFirstInit: boolean = true, private _$elemThumbs: JQuery = $()) {
     super();
   }
 
   // Обновление view
   update(options: IPluginOptions) {
-    if (this.isFirstInit) {
+    if (this._isFirstInit) {
       this._init(options);
-      this.isFirstInit = false;
+      this._isFirstInit = false;
     }
 
     const { key } = options;
@@ -47,8 +44,7 @@ class ViewThumbs extends Observer {
 
   // Первоначальная инициализация
   private _init(options: IPluginOptions) {
-    this.$selector = options.$selector;
-    this.$elemThumbs = options.$elemThumbs;
+    this._$elemThumbs = options.$elemThumbs;
     this._setEventsThumbs(options);
   }
 
@@ -57,7 +53,7 @@ class ViewThumbs extends Observer {
     const { mainColor, colorThumb, colorBorderForThumb } = options;
     const backgroundColor = colorThumb || mainColor;
 
-    this.$elemThumbs.each((_, thumb) => {
+    this._$elemThumbs.each((_, thumb) => {
       $(thumb).css({ 'background-color': backgroundColor, 'border-color': colorBorderForThumb });
     });
   }
@@ -73,15 +69,15 @@ class ViewThumbs extends Observer {
     } = options;
 
     initValuesArray.forEach((currentValue, index) => {
-      this.$elemThumbs
+      this._$elemThumbs
         .eq(index)
         .css('left', `${valuesAsPercentageArray[index]}%`)
         .attr('data-value', currentValue.toFixed(numberOfDecimalPlaces));
 
       if (customValues.length > 0) {
-        this.$elemThumbs.eq(index).attr('data-text', customValues[currentValue]);
+        this._$elemThumbs.eq(index).attr('data-text', customValues[currentValue]);
       } else {
-        this.$elemThumbs.eq(index).removeAttr('data-text');
+        this._$elemThumbs.eq(index).removeAttr('data-text');
       }
     });
   }
@@ -89,15 +85,15 @@ class ViewThumbs extends Observer {
   // Проверка опции "IsRange" у слайдера и показ/скрытие первого бегунка
   private _checkIsRange(options: IPluginOptions) {
     if (options.isRange) {
-      this.$elemThumbs.eq(0).css('display', '');
+      this._$elemThumbs.eq(0).css('display', '');
     } else {
-      this.$elemThumbs.eq(0).css('display', 'none');
+      this._$elemThumbs.eq(0).css('display', 'none');
     }
   }
 
   // Установка обработчиков событий на бегунки слайдера
   private _setEventsThumbs(options: IPluginOptions) {
-    this.$elemThumbs.each((_, thumb) => {
+    this._$elemThumbs.each((_, thumb) => {
       const $currentThumb = $(thumb);
 
       $currentThumb.on('pointerdown.thumb', this._handleSetEventListenerForThumbs.bind(this));
@@ -167,8 +163,11 @@ class ViewThumbs extends Observer {
 
       timer = setTimeout(() => {
         fn(...args);
-        clearTimeout(timer!);
-        timer = null;
+
+        if (timer) {
+          clearTimeout(timer);
+          timer = null;
+        }
       }, timeout);
     };
   }

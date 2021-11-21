@@ -172,9 +172,8 @@ import Presenter from './layers/Presenter';
       return methods[initParam].apply(this, prop);
     }
 
-    if (typeof initParam === 'object' || !initParam) {
-      return methods.init.call(this, initParam as object);
-    }
+    if (!initParam) return methods.init.call(this);
+    if (typeof initParam === 'object') return methods.init.call(this, initParam);
 
     return $.error(`A method named ${initParam} does not exist for jQuery.MetaSlider`);
   };

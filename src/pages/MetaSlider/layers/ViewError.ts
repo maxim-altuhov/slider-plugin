@@ -1,16 +1,16 @@
 class ViewError {
-  $selector!: JQuery;
-  $elemErrorInfo!: null | JQuery;
-  $elemErrorText!: null | JQuery;
-  $btnErrorClose!: null | JQuery;
+  private _$selector: undefined | JQuery;
+  private _$elemErrorInfo: null | JQuery | undefined;
+  private _$elemErrorText: null | JQuery | undefined;
+  private _$btnErrorClose: null | JQuery | undefined;
 
   // Метод для рендеринга ошибки
   renderError(message: string, options: IPluginOptions) {
     const { $selector, $elemSlider, showError } = options;
 
-    if (!this.$selector) this.$selector = $selector;
+    if (!this._$selector) this._$selector = $selector;
 
-    if (showError && !this.$elemErrorInfo) {
+    if (showError && !this._$elemErrorInfo) {
       const HTMLBlockError = `<div class="error-info js-error-info">
       <p class="error-info__text js-error-info__text">${message}</p>
       <button type="button" class="error-info__close js-error-info__close">X</button>
@@ -19,34 +19,38 @@ class ViewError {
 
       this._getInfoAboutError();
       this._setEventErrorClose();
-    } else if (showError && this.$elemErrorInfo) {
-      this.$elemErrorText!.text(message);
+    } else if (showError && this._$elemErrorText) {
+      this._$elemErrorText.text(message);
     }
   }
 
   // Собираем селекторы
   private _getInfoAboutError() {
-    if (this.$selector) {
-      this.$elemErrorInfo = this.$selector.find('.js-error-info');
-      this.$elemErrorText = this.$selector.find('.js-error-info__text');
-      this.$btnErrorClose = this.$selector.find('.js-error-info__close');
+    if (this._$selector) {
+      this._$elemErrorInfo = this._$selector.find('.js-error-info');
+      this._$elemErrorText = this._$selector.find('.js-error-info__text');
+      this._$btnErrorClose = this._$selector.find('.js-error-info__close');
+    } else {
+      $.error('this._$selector - This object jQuery is empty.');
     }
   }
 
   // Устанавливаем обработчик на кнопку закрытия окна с ошибкой
   private _setEventErrorClose() {
-    if (this.$btnErrorClose) {
-      this.$btnErrorClose.on('click.btnErrorClose', this._handleRemoveErrorWindow.bind(this));
+    if (this._$btnErrorClose) {
+      this._$btnErrorClose.on('click.btnErrorClose', this._handleRemoveErrorWindow.bind(this));
     }
   }
 
   // Удаляем сообщение с ошибкой
   private _handleRemoveErrorWindow() {
-    this.$btnErrorClose!.off('click.btnErrorClose');
-    this.$elemErrorInfo!.remove();
-    this.$elemErrorInfo = null;
-    this.$elemErrorText = null;
-    this.$btnErrorClose = null;
+    if (this._$btnErrorClose && this._$elemErrorInfo) {
+      this._$btnErrorClose.off('click.btnErrorClose');
+      this._$elemErrorInfo.remove();
+      this._$elemErrorInfo = null;
+      this._$elemErrorText = null;
+      this._$btnErrorClose = null;
+    }
   }
 }
 

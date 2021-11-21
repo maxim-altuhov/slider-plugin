@@ -5,9 +5,7 @@ import ViewThumbs from './ViewThumbs';
 import ViewError from './ViewError';
 
 class View {
-  views: {
-    [key: string]: any;
-  };
+  readonly views: Record<string, any>;
 
   constructor() {
     this.views = {

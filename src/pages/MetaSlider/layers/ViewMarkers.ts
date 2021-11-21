@@ -1,14 +1,17 @@
 class ViewMarkers {
-  $elemMarkers!: JQuery;
-  $elemThumbs!: JQuery;
+  private _$elemMarkers: JQuery;
+  private _$elemThumbs: JQuery;
 
-  constructor(public isFirstInit: boolean = true) {}
+  constructor(private _isFirstInit: boolean = true) {
+    this._$elemMarkers = $();
+    this._$elemThumbs = $();
+  }
 
   // Обновление view
   update(options: IPluginOptions) {
-    if (this.isFirstInit) {
+    if (this._isFirstInit) {
       this._init(options);
-      this.isFirstInit = false;
+      this._isFirstInit = false;
     }
 
     const { key } = options;
@@ -47,8 +50,9 @@ class ViewMarkers {
 
   // Первоначальная инициализация
   private _init(options: IPluginOptions) {
-    this.$elemThumbs = options.$elemThumbs;
-    this.$elemMarkers = options.$elemMarkers;
+    const { $elemThumbs, $elemMarkers } = options;
+    this._$elemThumbs = $elemThumbs;
+    this._$elemMarkers = $elemMarkers;
   }
 
   // Устанавливаем значения в маркеры
@@ -63,13 +67,15 @@ class ViewMarkers {
         initFormatted,
       } = options;
 
-      this.$elemMarkers.each((index, marker) => {
+      this._$elemMarkers.each((index, marker) => {
         const $currentMarker = $(marker);
 
         if (customValues.length > 0) {
-          $currentMarker.text(`${preFix}${this.$elemThumbs.eq(index).attr('data-text')}${postFix}`);
+          $currentMarker.text(
+            `${preFix}${this._$elemThumbs.eq(index).attr('data-text')}${postFix}`,
+          );
         } else {
-          const currentValue = Number(this.$elemThumbs.eq(index).attr('data-value'));
+          const currentValue = Number(this._$elemThumbs.eq(index).attr('data-value'));
           const checkedValue = Number(currentValue.toFixed(numberOfDecimalPlaces));
           const convertedValue = initFormatted ? checkedValue.toLocaleString() : checkedValue;
 
@@ -92,7 +98,7 @@ class ViewMarkers {
 
     const backgroundColor = colorMarker || mainColor;
 
-    this.$elemMarkers.each((_, marker) => {
+    this._$elemMarkers.each((_, marker) => {
       const $currentMarker = $(marker);
       const styleProp = {
         display: '',

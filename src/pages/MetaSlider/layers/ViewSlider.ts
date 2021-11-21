@@ -1,21 +1,25 @@
 import Observer from '../patterns/Observer';
 
 class ViewSlider extends Observer {
-  $selector!: JQuery;
-  $elemSlider!: JQuery;
-  $sliderProgress!: JQuery;
-  $elemThumbs!: JQuery;
-  $elemMarkers!: JQuery;
+  private _$selector: undefined | JQuery;
+  private _$elemSlider: JQuery;
+  private _$sliderProgress: JQuery;
+  private _$elemThumbs: JQuery;
+  private _$elemMarkers: JQuery;
 
-  constructor(public isFirstInit: boolean = true) {
+  constructor(private _isFirstInit: boolean = true) {
     super();
+    this._$elemSlider = $();
+    this._$sliderProgress = $();
+    this._$elemThumbs = $();
+    this._$elemMarkers = $();
   }
 
   // Обновление view
   update(options: IPluginOptions) {
-    if (this.isFirstInit) {
+    if (this._isFirstInit) {
       this._init(options);
-      this.isFirstInit = false;
+      this._isFirstInit = false;
     }
 
     const { key } = options;
@@ -63,7 +67,7 @@ class ViewSlider extends Observer {
 
   // Первоначальный рендер слайдера
   renderSlider($initSelector: JQuery) {
-    if (!this.$selector) this.$selector = $initSelector;
+    if (!this._$selector) this._$selector = $initSelector;
 
     const $fragmentWithASlider = $(document.createDocumentFragment());
     const $blockSlider = $(document.createElement('div'));
@@ -84,7 +88,7 @@ class ViewSlider extends Observer {
     $blockSlider.html(HTMLBlock);
 
     $fragmentWithASlider.append($blockSlider);
-    this.$selector.append($fragmentWithASlider);
+    this._$selector.append($fragmentWithASlider);
   }
 
   // создаём уникальный ID для слайдера
@@ -97,10 +101,18 @@ class ViewSlider extends Observer {
 
   // Первоначальная инициализация
   private _init(options: IPluginOptions) {
-    this.$elemSlider = options.$elemSlider;
-    this.$sliderProgress = options.$sliderProgress;
-    this.$elemThumbs = options.$elemThumbs;
-    this.$elemMarkers = options.$elemMarkers;
+    // prettier-ignore
+    const { 
+      $elemSlider,
+      $sliderProgress,
+      $elemThumbs,
+      $elemMarkers,
+    } = options;
+
+    this._$elemSlider = $elemSlider;
+    this._$sliderProgress = $sliderProgress;
+    this._$elemThumbs = $elemThumbs;
+    this._$elemMarkers = $elemMarkers;
     this._setEventsSlider();
   }
 
@@ -108,14 +120,14 @@ class ViewSlider extends Observer {
   private _setMinAndMaxVal(options: IPluginOptions) {
     const { minValue, maxValue, customValues } = options;
 
-    this.$elemSlider.attr({ 'data-min': minValue, 'data-max': maxValue });
+    this._$elemSlider.attr({ 'data-min': minValue, 'data-max': maxValue });
 
     if (customValues.length > 0) {
       const firstCustomElem = customValues[0];
       const lastCustomElem = customValues[customValues.length - 1];
-      this.$elemSlider.attr({ 'data-min_text': firstCustomElem, 'data-max_text': lastCustomElem });
+      this._$elemSlider.attr({ 'data-min_text': firstCustomElem, 'data-max_text': lastCustomElem });
     } else {
-      this.$elemSlider.removeAttr('data-min_text data-max_text');
+      this._$elemSlider.removeAttr('data-min_text data-max_text');
     }
   }
 
@@ -132,35 +144,36 @@ class ViewSlider extends Observer {
     const verifProp = initAutoMargins && !isVertical;
 
     if (verifProp && showMarkers) {
-      const heightMarker = this.$elemMarkers.eq(-1).outerHeight()!;
-      const heightThumb = this.$elemThumbs.eq(-1).outerHeight()!;
+      const heightMarker = this._$elemMarkers.eq(-1).outerHeight() || 0;
+      const heightThumb = this._$elemThumbs.eq(-1).outerHeight() || 0;
 
-      this.$elemSlider.css('margin-top', `${heightMarker + heightThumb / 1.5}px`);
+      this._$elemSlider.css('margin-top', `${heightMarker + heightThumb / 1.5}px`);
     } else {
-      this.$elemSlider.css('margin-top', '');
+      this._$elemSlider.css('margin-top', '');
     }
 
     if (verifProp && showScale) {
-      const elemScalePoints = this.$selector!.find('.js-meta-slider__scale-point');
-      this.$elemSlider.css('margin-bottom', `${elemScalePoints.eq(0).outerHeight()! * 3}px`);
+      const elemScalePoints = this._$selector!.find('.js-meta-slider__scale-point');
+      const elemScalePointsHeight = elemScalePoints.outerHeight() || 0;
+      this._$elemSlider.css('margin-bottom', `${elemScalePointsHeight * 3}px`);
     } else {
-      this.$elemSlider.css('margin-bottom', '');
+      this._$elemSlider.css('margin-bottom', '');
     }
   }
 
   // Установка фонового цвета для слайдера
   private _setBackgroundForSlider(options: IPluginOptions) {
-    this.$elemSlider.css('background-color', options.secondColor);
+    this._$elemSlider.css('background-color', options.secondColor);
   }
 
   // Сброс или установка вертикальной ориентации слайдера
   private _setVerticalOrientation(options: IPluginOptions) {
     if (options.isVertical) {
-      this.$elemSlider.addClass('meta-slider_vertical');
-      this.$selector!.addClass('ms-vertical');
+      this._$elemSlider.addClass('meta-slider_vertical');
+      this._$selector!.addClass('ms-vertical');
     } else {
-      this.$elemSlider.removeClass('meta-slider_vertical');
-      this.$selector!.removeClass('ms-vertical');
+      this._$elemSlider.removeClass('meta-slider_vertical');
+      this._$selector!.removeClass('ms-vertical');
     }
   }
 
@@ -176,15 +189,15 @@ class ViewSlider extends Observer {
         background: mainColor,
       };
 
-      this.$sliderProgress.css(settingForRange);
+      this._$sliderProgress.css(settingForRange);
     } else {
-      this.$sliderProgress.css('background', 'none');
+      this._$sliderProgress.css('background', 'none');
     }
   }
 
   // Обработчик события клика внутри слайдера
   private _setEventsSlider() {
-    this.$elemSlider.on('pointerdown.slider', this._handleSetSliderValues.bind(this));
+    this._$elemSlider.on('pointerdown.slider', this._handleSetSliderValues.bind(this));
   }
 
   // Получает значения при клике внутри слайдера

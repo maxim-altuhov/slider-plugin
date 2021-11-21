@@ -3,12 +3,13 @@ import Observer from '../patterns/Observer';
 class Model extends Observer {
   opt;
   errorEvent: Observer;
-  propSavedStatus: { [index: string]: any } = {};
+  private _propSavedStatus: { [index: string]: any };
 
   constructor(selector: JQuery, options: IPluginOptions) {
     super();
     this.opt = options;
     this.opt.$selector = selector;
+    this._propSavedStatus = {};
 
     // Экземпляр Observer для вывода инф. об ошибках
     this.errorEvent = new Observer();
@@ -42,11 +43,11 @@ class Model extends Observer {
         stepAsPercent,
         numberOfDecimalPlaces,
     } = this.opt;
-    let eventPosition: number | undefined;
-    let sliderOffset: number | undefined;
-    let sliderSize: number | undefined;
-    let valueInEventPosition: number | undefined;
-    let valueAsPercentage: number | undefined;
+    let eventPosition = 0;
+    let sliderOffset = 0;
+    let sliderSize = 0;
+    let valueInEventPosition = 0;
+    let valueAsPercentage = 0;
 
     if (isVertical && event) {
       eventPosition = (event as MouseEvent).clientY;
@@ -56,14 +57,14 @@ class Model extends Observer {
     } else if (!isVertical && event) {
       eventPosition = (event as MouseEvent).clientX;
       sliderOffset = $elemSlider.offset()!.left;
-      sliderSize = $elemSlider.outerWidth();
+      sliderSize = $elemSlider.outerWidth() || 0;
       valueInEventPosition = eventPosition - sliderOffset;
     }
 
     if (initValue !== undefined) {
       valueAsPercentage = ((initValue - minValue) / (maxValue - minValue)) * 100;
     } else {
-      valueAsPercentage = (valueInEventPosition! / sliderSize!) * 100;
+      valueAsPercentage = (valueInEventPosition / sliderSize) * 100;
     }
 
     let totalPercent = Math.round(valueAsPercentage / stepAsPercent) * stepAsPercent;
@@ -84,11 +85,7 @@ class Model extends Observer {
    * Проверка рассчитанных значений слайдера на выполнение различных условий
    * и определение какой бегунок у слайдера должен быть перемещён
    */
-  private _checkingTargetValue(
-    targetValue: number,
-    event: Event,
-    eventPosition: number | undefined,
-  ) {
+  private _checkingTargetValue(targetValue: number, event: Event, eventPosition: number) {
     const {
       initValueFirst,
       initValueSecond,
@@ -125,8 +122,8 @@ class Model extends Observer {
       code === 'ArrowDown'
     );
     const [firstThumb, secondThumb] = $elemThumbs;
-    let firstThumbPosition: number;
-    let secondThumbPosition: number;
+    let firstThumbPosition = 0;
+    let secondThumbPosition = 0;
 
     if (isVertical) {
       firstThumbPosition = firstThumb.getBoundingClientRect().bottom;
@@ -137,8 +134,8 @@ class Model extends Observer {
     }
 
     if (isIdenticalDistanceInRange && !isEventMoveKeypress) {
-      const firstValuePosition = Math.abs(eventPosition! - firstThumbPosition!);
-      const secondValuePosition = Math.abs(eventPosition! - secondThumbPosition!);
+      const firstValuePosition = Math.abs(eventPosition - firstThumbPosition);
+      const secondValuePosition = Math.abs(eventPosition - secondThumbPosition);
 
       if (Math.round(secondValuePosition - firstValuePosition) >= 0) {
         initValuesArray[0] = targetValue;
@@ -237,17 +234,17 @@ class Model extends Observer {
   }
 
   private _checkingIsVerticalSlider() {
-    const { key, isVertical } = this.opt;
+    const { key, isVertical, initAutoMargins } = this.opt;
 
     // prettier-ignore
     const verticalSliderVerifKeys = (key === 'init' || key === 'isVertical');
 
     if (key === 'init' || key === 'initAutoMargins') {
-      this.propSavedStatus['autoMargins'] = this.opt.initAutoMargins;
+      this._propSavedStatus['autoMargins'] = initAutoMargins;
     }
 
     if (verticalSliderVerifKeys && !isVertical) {
-      this.opt.initAutoMargins = this.propSavedStatus['autoMargins'];
+      this.opt.initAutoMargins = this._propSavedStatus['autoMargins'];
     }
 
     if (verticalSliderVerifKeys && isVertical) this.opt.initAutoMargins = false;
