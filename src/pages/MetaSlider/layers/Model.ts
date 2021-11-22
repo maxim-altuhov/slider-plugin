@@ -317,6 +317,8 @@ class Model extends Observer {
   }
 
   private _checkingStepSize(errMessage: IErrMessage) {
+    this.opt.stepSizeForScale = this.opt.stepSizeForScale ?? this.opt.step;
+
     const {
       key,
       initAutoScaleCreation,
@@ -353,7 +355,7 @@ class Model extends Observer {
         this.errorEvent.notify(errMessage['step'], this.opt);
       }
 
-      if (stepSizeForScale! <= 0 || stepSizeForScale! > differenceMinAndMax) {
+      if (stepSizeForScale <= 0 || stepSizeForScale > differenceMinAndMax) {
         this.opt.stepSizeForScale = differenceMinAndMax;
         this.errorEvent.notify(errMessage['stepSizeForScale'], this.opt);
       }
@@ -416,12 +418,12 @@ class Model extends Observer {
     this.opt.numberOfDecimalPlaces = 0;
     this.opt.step = 1;
     this.opt.stepSizeForScale = 1;
-
-    this.opt.initValueFirst = this.opt.initValueFirst ?? this.opt.minValue;
-    this.opt.initValueSecond = this.opt.initValueSecond ?? this.opt.maxValue;
   }
 
   private _checkingInitValues(errMessage: IErrMessage) {
+    this.opt.initValueFirst = this.opt.initValueFirst ?? this.opt.minValue;
+    this.opt.initValueSecond = this.opt.initValueSecond ?? this.opt.maxValue;
+
     // prettier-ignore
     const { 
       key,
@@ -448,11 +450,11 @@ class Model extends Observer {
 
     // prettier-ignore
     const checkingKeys = (
-      initValueFirst! > initValueSecond! ||
-      initValueFirst! > maxValue ||
-      initValueFirst! < minValue ||
-      initValueSecond! > maxValue ||
-      initValueSecond! < minValue
+      initValueFirst > initValueSecond ||
+      initValueFirst > maxValue ||
+      initValueFirst < minValue ||
+      initValueSecond > maxValue ||
+      initValueSecond < minValue
     );
 
     if (verifKeys) {
@@ -463,8 +465,8 @@ class Model extends Observer {
       }
 
       this.opt.initValueFirst = isRange ? this.opt.initValueFirst : minValue;
-      this.opt.initValueFirst = this.calcTargetValue(null!, this.opt.initValueFirst!, true)!;
-      this.opt.initValueSecond = this.calcTargetValue(null!, this.opt.initValueSecond!, true)!;
+      this.opt.initValueFirst = this.calcTargetValue(null!, this.opt.initValueFirst, true)!;
+      this.opt.initValueSecond = this.calcTargetValue(null!, this.opt.initValueSecond, true)!;
 
       if (customValues.length > 0) {
         this.opt.textValueFirst = customValues[this.opt.initValueFirst];

@@ -58,27 +58,8 @@ import Presenter from './layers/Presenter';
       const data = this.data('metaSlider');
 
       if (!data) {
-        /**
-         * Объединяем пользовательские настройки и настройки по умолчанию,
-         * делаем проверку некоторых опций слайдера
-         */
+        //  Объединяем пользовательские настройки и настройки по умолчанию
         inputOptions = $.extend({}, initSettings, settings);
-        const {
-          customValues,
-          initValueFirst,
-          initValueSecond,
-          minValue,
-          maxValue,
-          stepSizeForScale,
-          step,
-        } = inputOptions;
-
-        inputOptions.stepSizeForScale = stepSizeForScale ?? step;
-
-        if (customValues.length === 0) {
-          inputOptions.initValueFirst = initValueFirst ?? minValue;
-          inputOptions.initValueSecond = initValueSecond ?? maxValue;
-        }
 
         // инициализация плагина
         const model = new Model(this, inputOptions);
