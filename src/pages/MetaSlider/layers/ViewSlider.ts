@@ -15,7 +15,6 @@ class ViewSlider extends Observer {
     this._$elemMarkers = $();
   }
 
-  // Обновление view
   update(options: IPluginOptions) {
     if (this._isFirstInit) {
       this._init(options);
@@ -24,8 +23,7 @@ class ViewSlider extends Observer {
 
     const { key } = options;
 
-    // prettier-ignore
-    const setValueVerifKeys = (
+    const setValueVerifKeys =
       key === 'init' ||
       key === 'showBackground' ||
       key === 'mainColor' ||
@@ -38,25 +36,21 @@ class ViewSlider extends Observer {
       key === 'customValues' ||
       key === 'step' ||
       key === 'calcNumberOfDecimalPlaces' ||
-      key === 'numberOfDecimalPlaces'
-    );
+      key === 'numberOfDecimalPlaces';
 
-    // prettier-ignore
-    const autoMarginVerifKeys = (
+    const autoMarginVerifKeys =
       key === 'init' ||
       key === 'initAutoMargins' ||
       key === 'showMarkers' ||
       key === 'showScale' ||
-      key === 'isVertical'
-    );
+      key === 'isVertical';
 
     // prettier-ignore
-    const minAndMaxVerifKeys = (
+    const minAndMaxVerifKeys =
       key === 'init' ||
       key === 'minValue' ||
       key === 'maxValue' ||
-      key === 'customValues'
-    );
+      key === 'customValues';
 
     if (setValueVerifKeys) this._setBackgroundTheRange(options);
     if (key === 'secondColor' || key === 'init') this._setBackgroundForSlider(options);
@@ -161,12 +155,10 @@ class ViewSlider extends Observer {
     }
   }
 
-  // Установка фонового цвета для слайдера
   private _setBackgroundForSlider(options: IPluginOptions) {
     this._$elemSlider.css('background-color', options.secondColor);
   }
 
-  // Сброс или установка вертикальной ориентации слайдера
   private _setVerticalOrientation(options: IPluginOptions) {
     if (options.isVertical) {
       this._$elemSlider.addClass('meta-slider_vertical');

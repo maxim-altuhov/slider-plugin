@@ -10,38 +10,35 @@ class Model extends Observer {
     this.opt = options;
     this.opt.$selector = selector;
     this._propSavedStatus = {};
-
-    // Экземпляр Observer для вывода инф. об ошибках
     this.errorEvent = new Observer();
   }
 
   // Первичная инициализация модели
   init() {
     this.opt.key = 'init';
-    this._getInfoAboutSlider();
+    this._getSliderSelectors();
     this._checkingIncomingProp();
-    this._calcValueInPercentage();
+    this._calcValuesInPercentage();
     this.notify(this.opt);
   }
 
   // Метод вызываемый при обновлении модели снаружи
   update() {
     this._checkingIncomingProp();
-    this._calcValueInPercentage();
+    this._calcValuesInPercentage();
     this.notify(this.opt);
   }
 
   // Расчёт значений позиций бегунков слайдера
   calcTargetValue(event: Event, initValue?: number, onlyReturn = false): number | undefined {
-    // prettier-ignore
-    const { 
-        $elemSlider,
-        isVertical,
-        minValue,
-        maxValue,
-        step,
-        stepAsPercent,
-        numberOfDecimalPlaces,
+    const {
+      $elemSlider,
+      isVertical,
+      minValue,
+      maxValue,
+      step,
+      stepAsPercent,
+      numberOfDecimalPlaces,
     } = this.opt;
     let eventPosition = 0;
     let sliderOffset = 0;
@@ -86,14 +83,14 @@ class Model extends Observer {
    * и определение какой бегунок у слайдера должен быть перемещён
    */
   private _checkingTargetValue(targetValue: number, event: Event, eventPosition: number) {
-    const {
-      initValueFirst,
-      initValueSecond,
-      isRange,
-      initValuesArray,
-      $elemThumbs,
+    // prettier-ignore
+    const { 
+      initValueFirst, 
+      initValueSecond, 
+      isRange, 
+      initValuesArray, 
+      $elemThumbs, 
       isVertical,
-      customValues,
     } = this.opt;
 
     const firstThumbDiff = Math.abs(Number((targetValue - initValueFirst!).toFixed(2)));
@@ -115,12 +112,11 @@ class Model extends Observer {
     const { code } = event as KeyboardEvent;
 
     // prettier-ignore
-    const isEventMoveKeypress = (
+    const isEventMoveKeypress = 
       code === 'ArrowLeft' ||
       code === 'ArrowRight' ||
       code === 'ArrowUp' ||
-      code === 'ArrowDown'
-    );
+      code === 'ArrowDown';
     const [firstThumb, secondThumb] = $elemThumbs;
     let firstThumbPosition = 0;
     let secondThumbPosition = 0;
@@ -154,7 +150,20 @@ class Model extends Observer {
       }
     }
 
-    this._calcValueInPercentage();
+    this._calcValuesInPercentage();
+    this._setCurrentValues();
+  }
+
+  private _calcValuesInPercentage() {
+    const { initValuesArray, minValue, maxValue } = this.opt;
+
+    this.opt.valuesAsPercentageArray = initValuesArray.map(
+      (currentValue) => ((currentValue - minValue) / (maxValue - minValue)) * 100,
+    );
+  }
+
+  private _setCurrentValues() {
+    const { initValuesArray, customValues } = this.opt;
     const [firstValue, secondValue] = initValuesArray;
     this.opt.initValueFirst = firstValue;
     this.opt.initValueSecond = secondValue;
@@ -169,28 +178,16 @@ class Model extends Observer {
     this.notify(this.opt);
   }
 
-  // Расчёт значений бегунков слайдера в процентах
-  private _calcValueInPercentage() {
-    const { initValuesArray, minValue, maxValue } = this.opt;
-
-    this.opt.valuesAsPercentageArray = initValuesArray.map(
-      (currentValue) => ((currentValue - minValue) / (maxValue - minValue)) * 100,
-    );
-  }
-
-  // Расчёт значений шага слайдера в процентах
   private _calcStepAsPercentage() {
     const { key } = this.opt;
 
-    // prettier-ignore
-    const calcStepAsPercentVerifKeys = (
+    const calcStepAsPercentVerifKeys =
       key === 'init' ||
       key === 'step' ||
       key === 'maxValue' ||
       key === 'minValue' ||
       key === 'customValues' ||
-      key === 'numberOfDecimalPlaces'
-    );
+      key === 'numberOfDecimalPlaces';
 
     if (calcStepAsPercentVerifKeys) {
       const { maxValue, minValue, step } = this.opt;
@@ -222,8 +219,7 @@ class Model extends Observer {
     this.opt.initValuesArray = [this.opt.initValueFirst!, this.opt.initValueSecond!];
   }
 
-  // Получение селекторов слайдера
-  private _getInfoAboutSlider() {
+  private _getSliderSelectors() {
     const { $selector } = this.opt;
 
     this.opt.$elemSlider = $selector.find('.js-meta-slider');
@@ -235,9 +231,7 @@ class Model extends Observer {
 
   private _checkingIsVerticalSlider() {
     const { key, isVertical, initAutoMargins } = this.opt;
-
-    // prettier-ignore
-    const verticalSliderVerifKeys = (key === 'init' || key === 'isVertical');
+    const verticalSliderVerifKeys = key === 'init' || key === 'isVertical';
 
     if (key === 'init' || key === 'initAutoMargins') {
       this._propSavedStatus['autoMargins'] = initAutoMargins;
@@ -253,16 +247,14 @@ class Model extends Observer {
   private _checkingNumberOfDecimalPlaces() {
     const { key, calcNumberOfDecimalPlaces, numberOfDecimalPlaces } = this.opt;
 
-    // prettier-ignore
-    const calcNumberVerifKeys = (
+    const calcNumberVerifKeys =
       key === 'init' ||
       key === 'calcNumberOfDecimalPlaces' ||
       key === 'initValueFirst' ||
       key === 'initValueSecond' ||
       key === 'minValue' ||
       key === 'maxValue' ||
-      key === 'step'
-    );
+      key === 'step';
 
     if (calcNumberVerifKeys && calcNumberOfDecimalPlaces) this._getNumberOfDecimalPlaces();
 
@@ -297,12 +289,11 @@ class Model extends Observer {
     } = this.opt;
 
     // prettier-ignore
-    const verifKeys = (
+    const verifKeys =
       key === 'init' ||
       key === 'minValue' ||
       key === 'maxValue' ||
-      key === 'numberOfDecimalPlaces'
-    );
+      key === 'numberOfDecimalPlaces';
 
     if (verifKeys) {
       this.opt.minValue = Number(minValue.toFixed(numberOfDecimalPlaces));
@@ -329,16 +320,14 @@ class Model extends Observer {
       numberOfDecimalPlaces,
     } = this.opt;
 
-    // prettier-ignore
-    const initVerifKeys = (
+    const initVerifKeys =
       key === 'init' ||
       key === 'initAutoScaleCreation' ||
       key === 'step' ||
       key === 'stepSizeForScale' ||
       key === 'maxValue' ||
       key === 'minValue' ||
-      key === 'numberOfDecimalPlaces'
-    );
+      key === 'numberOfDecimalPlaces';
 
     const differenceMinAndMax = maxValue - minValue;
 
@@ -403,7 +392,7 @@ class Model extends Observer {
     }
   }
 
-  // Сброс опций при установке кастомных значений
+  // Сброс опций по-умолчанию при установке кастомных значений
   private _initCustomValues() {
     const { customValues } = this.opt;
 
@@ -435,8 +424,7 @@ class Model extends Observer {
       customValues,
     } = this.opt;
 
-    // prettier-ignore
-    const verifKeys = (
+    const verifKeys =
       key === 'init' ||
       key === 'initValueFirst' ||
       key === 'initValueSecond' ||
@@ -445,8 +433,7 @@ class Model extends Observer {
       key === 'isRange' ||
       key === 'step' ||
       key === 'numberOfDecimalPlaces' ||
-      key === 'customValues'
-    );
+      key === 'customValues';
 
     // prettier-ignore
     const checkingKeys = (

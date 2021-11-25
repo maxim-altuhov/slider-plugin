@@ -1,5 +1,5 @@
-/// <reference path='./interfaces/MetaSlider.d.ts' />
-import './MetaSlider.scss';
+/// <reference path='./interfaces/metaSlider.d.ts' />
+import './metaSlider.scss';
 import Model from './layers/Model';
 import View from './layers/View';
 import Presenter from './layers/Presenter';
@@ -76,8 +76,7 @@ import Presenter from './layers/Presenter';
       return this;
     },
     setProp(prop, value) {
-      // prettier-ignore
-      const limitedProp = (
+      const limitedProp =
         prop === 'key' ||
         prop === '$selector' ||
         prop === '$elemSlider' ||
@@ -89,20 +88,17 @@ import Presenter from './layers/Presenter';
         prop === 'textValueSecond' ||
         prop === 'initValuesArray' ||
         prop === 'textValuesArray' ||
-        prop === 'valuesAsPercentageArray'||
-        prop === 'stepAsPercent'
-      );
+        prop === 'valuesAsPercentageArray' ||
+        prop === 'stepAsPercent';
 
       if (!limitedProp && prop in inputOptions) {
         const { model } = this.data('metaSlider');
 
-        if (value !== undefined) {
-          model.opt[prop] = value;
-          model.opt.key = prop;
-          model.update();
-        } else {
-          return $.error('The value parameter cannot be omitted.');
-        }
+        if (value === undefined) return $.error('The value parameter cannot be omitted.');
+
+        model.opt[prop] = value;
+        model.opt.key = prop;
+        model.update();
       } else if (limitedProp) {
         return $.error(`Property '${prop}' cannot be changed.`);
       } else {
@@ -112,9 +108,7 @@ import Presenter from './layers/Presenter';
       return this;
     },
     getProp(prop) {
-      if (prop in inputOptions) {
-        return this.data('metaSlider').model.opt[prop];
-      }
+      if (prop in inputOptions) return this.data('metaSlider').model.opt[prop];
 
       return $.error(`The '${prop}' property does not exist.`);
     },
@@ -123,12 +117,13 @@ import Presenter from './layers/Presenter';
     },
     getCurrentValues() {
       const modelOptions = this.data('metaSlider').model.opt;
+      const { customValues, textValuesArray } = modelOptions;
       let currentValues = [];
 
-      if (modelOptions.customValues.length > 0) {
-        currentValues = modelOptions.textValuesArray;
+      if (customValues.length > 0) {
+        currentValues = textValuesArray;
       } else {
-        currentValues = modelOptions.initValuesArray;
+        currentValues = textValuesArray;
       }
 
       return currentValues;
@@ -156,6 +151,6 @@ import Presenter from './layers/Presenter';
     if (!initParam) return methods.init.call(this);
     if (typeof initParam === 'object') return methods.init.call(this, initParam);
 
-    return $.error(`A method named ${initParam} does not exist for jQuery.MetaSlider`);
+    return $.error(`A method named ${initParam} does not exist for jQuery.metaSlider`);
   };
 })(jQuery);

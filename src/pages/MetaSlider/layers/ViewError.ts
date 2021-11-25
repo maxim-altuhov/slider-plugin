@@ -17,7 +17,7 @@ class ViewError {
       </div>`;
       $elemSlider.after(HTMLBlockError);
 
-      this._getInfoAboutError();
+      this._getErrorBlockSelectors();
       this._setEventErrorClose();
     } else if (showError && this._$elemErrorText) {
       this._$elemErrorText.text(message);
@@ -25,7 +25,7 @@ class ViewError {
   }
 
   // Собираем селекторы
-  private _getInfoAboutError() {
+  private _getErrorBlockSelectors() {
     if (this._$selector) {
       this._$elemErrorInfo = this._$selector.find('.js-error-info');
       this._$elemErrorText = this._$selector.find('.js-error-info__text');
@@ -38,12 +38,12 @@ class ViewError {
   // Устанавливаем обработчик на кнопку закрытия окна с ошибкой
   private _setEventErrorClose() {
     if (this._$btnErrorClose) {
-      this._$btnErrorClose.on('click.btnErrorClose', this._handleRemoveErrorWindow.bind(this));
+      this._$btnErrorClose.on('click.btnErrorClose', this._handleRemoveErrorBlock.bind(this));
     }
   }
 
   // Удаляем сообщение с ошибкой
-  private _handleRemoveErrorWindow() {
+  private _handleRemoveErrorBlock() {
     if (this._$btnErrorClose && this._$elemErrorInfo) {
       this._$btnErrorClose.off('click.btnErrorClose');
       this._$elemErrorInfo.remove();

@@ -7,7 +7,6 @@ class ViewMarkers {
     this._$elemThumbs = $();
   }
 
-  // Обновление view
   update(options: IPluginOptions) {
     if (this._isFirstInit) {
       this._init(options);
@@ -16,8 +15,7 @@ class ViewMarkers {
 
     const { key } = options;
 
-    // prettier-ignore
-    const setValueVerifKeys = (
+    const setValueVerifKeys =
       key === 'init' ||
       key === 'changedValue' ||
       key === 'initValueFirst' ||
@@ -31,18 +29,15 @@ class ViewMarkers {
       key === 'isRange' ||
       key === 'minValue' ||
       key === 'maxValue' ||
-      key === 'step'
-    );
+      key === 'step';
 
-    // prettier-ignore
-    const styleVerifKeys = (
+    const styleVerifKeys =
       key === 'init' ||
       key === 'showMarkers' ||
       key === 'mainColor' ||
       key === 'colorMarker' ||
       key === 'colorTextForMarker' ||
-      key === 'colorBorderForMarker'
-    );
+      key === 'colorBorderForMarker';
 
     if (setValueVerifKeys) this._setValueInMarkers(options);
     if (styleVerifKeys) this._setStyleForMarkers(options);
@@ -55,7 +50,6 @@ class ViewMarkers {
     this._$elemMarkers = $elemMarkers;
   }
 
-  // Устанавливаем значения в маркеры
   private _setValueInMarkers(options: IPluginOptions) {
     if (options.showMarkers) {
       // prettier-ignore
@@ -85,7 +79,6 @@ class ViewMarkers {
     }
   }
 
-  // Устанавливаем стили для маркеров
   private _setStyleForMarkers(options: IPluginOptions) {
     // prettier-ignore
     const {

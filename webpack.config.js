@@ -11,7 +11,7 @@ const postcssFlexbugs = require('postcss-flexbugs-fixes');
 const ESLintPlugin = require('eslint-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
-// объект с путями к директориям проекта
+// Объект с путями к директориям проекта
 const pathDir = {
   src: path.join(__dirname, './src'),
   dist: path.join(__dirname, './dist'),
@@ -23,22 +23,22 @@ const isDev = process.env.NODE_ENV === 'development';
 const isDevServer = process.env.SECOND_ENV === 'devserver';
 const isProd = !isDev;
 
-// настройка ставить ли хеш файлу при выгрузки в продакшен
+// Настройка ставить ли хеш файлу при выгрузке в production
 const setHash = false;
 
-// настройка типа входящего файла html или pug
+// Настройка типа входящего файла html или pug
 const inputTypeFile = 'pug';
 
-// формируем имя файла в зависимости от режима сборки
-const filename = (ext) => {
+// Формируем имя файла в зависимости от режима сборки
+const getFileName = (ext) => {
   if (isProd && setHash) return `[name].[fullhash].min.${ext}`;
   if (isProd) return `[name].min.${ext}`;
 
   return `[name].${ext}`;
 };
 
-// лоадеры
-const cssLoaders = (add) => {
+// Loaders
+const setLoaders = (add) => {
   const loaders = [
     {
       loader: MiniCssExtractPlugin.loader,
@@ -72,16 +72,14 @@ const cssLoaders = (add) => {
     },
   ];
 
-  if (add) {
-    loaders.push(add);
-  }
+  if (add) loaders.push(add);
 
   return loaders;
 };
 
-// настройки для babel
-const babelOptions = (presets) => {
-  const option = {
+// Настройки для babel
+const setBabelOptions = (presets) => {
+  const options = {
     presets: [
       [
         '@babel/preset-env',
@@ -94,16 +92,14 @@ const babelOptions = (presets) => {
     ],
   };
 
-  if (presets) {
-    option.presets.push(presets);
-  }
+  if (presets) options.presets.push(presets);
 
-  return option;
+  return options;
 };
 
-// плагины
-const plugins = () => {
-  const base = [
+// Плагины
+const setPlugins = () => {
+  const basePlugins = [
     ...allPages.map((page) => new HTMLWebpackPlugin({
       filename: `${page}.html`,
       template: `${pathDir.pages}/${page}/${page}.${inputTypeFile}`,
@@ -124,7 +120,7 @@ const plugins = () => {
       ],
     }),
     new MiniCssExtractPlugin({
-      filename: `css/${filename('css')}`,
+      filename: `css/${getFileName('css')}`,
     }),
     new webpack.ProvidePlugin({
       $: 'jquery',
@@ -134,9 +130,9 @@ const plugins = () => {
   ];
 
   if (isDev && !isDevServer) {
-    base.push(new ESLintPlugin({ extensions: ['js', 'jsx', 'ts', 'tsx'] }));
+    basePlugins.push(new ESLintPlugin({ extensions: ['js', 'jsx', 'ts', 'tsx'] }));
   } else if (isProd) {
-    base.push(new ImageMinimizerPlugin({
+    basePlugins.push(new ImageMinimizerPlugin({
       minimizerOptions: {
         plugins: [
           ['gifsicle', { interlaced: true }],
@@ -157,16 +153,12 @@ const plugins = () => {
     }));
   }
 
-  return base;
+  return basePlugins;
 };
 
-// параметры оптимизации
-const optimization = () => {
-  const config = {
-    splitChunks: {
-      // chunks: 'all',
-    },
-  };
+// Параметры оптимизации
+const setOptimization = () => {
+  const config = {};
 
   if (isProd) {
     config.minimize = true;
@@ -217,27 +209,25 @@ const optimization = () => {
   return config;
 };
 
-// определение входных точек
-const entryPoint = () => {
-  const obj = {};
+// Определение входных точек
+const getEntryPoints = () => {
+  const entry = {};
 
   allPages.forEach((page) => {
-    obj[`${page}`] = `./pages/${page}/${page}`;
+    entry[`${page}`] = `./pages/${page}/${page}`;
   });
 
-  return obj;
+  return entry;
 };
 
-// модуль с настройками
+// Модуль с настройками
 module.exports = {
   context: path.resolve(__dirname, 'src'),
-  stats: {
-    children: false,
-  },
+  stats: { children: false },
   mode: 'development',
-  entry: entryPoint(),
+  entry: getEntryPoints(),
   output: {
-    filename: `js/${filename('js')}`,
+    filename: `js/${getFileName('js')}`,
     path: path.resolve(__dirname, 'dist'),
   },
   resolve: {
@@ -250,14 +240,15 @@ module.exports = {
       '@comp': path.resolve(__dirname, 'src/components'),
     },
   },
-  optimization: optimization(),
+  optimization: setOptimization(),
   devServer: {
     port: 4200,
     open: true,
   },
   target: (isDev === true) ? 'web' : 'browserslist',
   devtool: (isDev === true) ? 'source-map' : false,
-  plugins: plugins(),
+  externals: { jquery: 'jQuery' },
+  plugins: setPlugins(),
   module: {
     rules: [
       {
@@ -265,7 +256,7 @@ module.exports = {
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
-          options: babelOptions('airbnb'),
+          options: setBabelOptions('airbnb'),
         },
       },
       {
@@ -273,7 +264,7 @@ module.exports = {
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
-          options: babelOptions('@babel/preset-typescript'),
+          options: setBabelOptions('@babel/preset-typescript'),
         },
       },
       {
@@ -281,7 +272,7 @@ module.exports = {
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
-          options: babelOptions('@babel/preset-react'),
+          options: setBabelOptions('@babel/preset-react'),
         },
       },
       {
@@ -297,11 +288,11 @@ module.exports = {
       },
       {
         test: /\.css$/i,
-        use: cssLoaders(),
+        use: setLoaders(),
       },
       {
         test: /\.(sass|scss)$/i,
-        use: cssLoaders({
+        use: setLoaders({
           loader: 'sass-loader',
           options: {
             sourceMap: true,

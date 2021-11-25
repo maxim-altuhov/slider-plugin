@@ -1,3 +1,4 @@
+import makeThrottlingHandler from '../utils/makeThrottlingHandler';
 import Observer from '../patterns/Observer';
 
 class ViewScale extends Observer {
@@ -20,7 +21,6 @@ class ViewScale extends Observer {
     this._skipScalePointsArray = [];
   }
 
-  // Обновление view
   update(options: IPluginOptions) {
     if (this._isFirstInit) {
       this._init(options);
@@ -29,8 +29,7 @@ class ViewScale extends Observer {
 
     const { key } = options;
 
-    // prettier-ignore
-    const renderScaleVerifKeys = (
+    const renderScaleVerifKeys =
       key === 'init' ||
       key === 'showScale' ||
       key === 'initAutoScaleCreation' ||
@@ -44,11 +43,9 @@ class ViewScale extends Observer {
       key === 'initFormatted' ||
       key === 'preFix' ||
       key === 'postFix' ||
-      key === 'initScaleAdjustment'
-    );
+      key === 'initScaleAdjustment';
 
-    // prettier-ignore
-    const styleVerifKeys = (key === 'init' || key === 'colorForScale' || key === 'showScale');
+    const styleVerifKeys = key === 'init' || key === 'colorForScale' || key === 'showScale';
 
     if (renderScaleVerifKeys) {
       this._createScale(options);
@@ -124,7 +121,6 @@ class ViewScale extends Observer {
     }
   }
 
-  // Устанавливаем стили для шкалы
   private _setStyleForScale(options: IPluginOptions) {
     const { colorForScale, showScale } = options;
 
@@ -189,7 +185,7 @@ class ViewScale extends Observer {
     }
   }
 
-  // Установка стилей для пропущенных делений шкалы
+  // Установка свойств для пропущенных делений шкалы
   private _setPropForSkipScalePoint(currentScalePoint: HTMLElement) {
     const $currentScalePoint = $(currentScalePoint);
     $currentScalePoint
@@ -229,7 +225,7 @@ class ViewScale extends Observer {
     if (showScale && initScaleAdjustment) {
       $(window).on(
         `resize.scale-${sliderID}`,
-        ViewScale._makeThrottlingHandler(this._handleCheckingScaleSize.bind(this, options), 250),
+        makeThrottlingHandler(this._handleCheckingScaleSize.bind(this, options), 250),
       );
     } else {
       $(window).off(`resize.scale-${sliderID}`);
@@ -255,24 +251,6 @@ class ViewScale extends Observer {
     const targetValue = Number($target.attr('data-value'));
 
     this.notify(event, targetValue);
-  }
-
-  // throttling декоратор
-  private static _makeThrottlingHandler(fn: Function, timeout: number) {
-    let timer: NodeJS.Timeout | null = null;
-
-    return (...args: any[]) => {
-      if (timer) return;
-
-      timer = setTimeout(() => {
-        fn(...args);
-
-        if (timer) {
-          clearTimeout(timer);
-          timer = null;
-        }
-      }, timeout);
-    };
   }
 }
 

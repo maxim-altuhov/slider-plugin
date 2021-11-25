@@ -1,3 +1,4 @@
+import makeThrottlingHandler from '../utils/makeThrottlingHandler';
 import Observer from '../patterns/Observer';
 
 class ViewThumbs extends Observer {
@@ -5,7 +6,6 @@ class ViewThumbs extends Observer {
     super();
   }
 
-  // Обновление view
   update(options: IPluginOptions) {
     if (this._isFirstInit) {
       this._init(options);
@@ -14,8 +14,7 @@ class ViewThumbs extends Observer {
 
     const { key } = options;
 
-    // prettier-ignore
-    const setValueVerifKeys = (
+    const setValueVerifKeys =
       key === 'init' ||
       key === 'changedValue' ||
       key === 'initValueFirst' ||
@@ -26,16 +25,13 @@ class ViewThumbs extends Observer {
       key === 'isRange' ||
       key === 'minValue' ||
       key === 'maxValue' ||
-      key === 'step'
-    );
+      key === 'step';
 
-    // prettier-ignore
-    const styleVerifKeys = (
+    const styleVerifKeys =
       key === 'init' ||
       key === 'mainColor' ||
       key === 'colorThumb' ||
-      key === 'colorBorderForThumb'
-    );
+      key === 'colorBorderForThumb';
 
     if (setValueVerifKeys) this._setValueInThumbs(options);
     if (styleVerifKeys) this._setStyleForThumbs(options);
@@ -48,7 +44,6 @@ class ViewThumbs extends Observer {
     this._setEventsThumbs(options);
   }
 
-  //  Установка стиля для бегунков
   private _setStyleForThumbs(options: IPluginOptions) {
     const { mainColor, colorThumb, colorBorderForThumb } = options;
     const backgroundColor = colorThumb || mainColor;
@@ -91,7 +86,6 @@ class ViewThumbs extends Observer {
     }
   }
 
-  // Установка обработчиков событий на бегунки слайдера
   private _setEventsThumbs(options: IPluginOptions) {
     this._$elemThumbs.each((_, thumb) => {
       const $currentThumb = $(thumb);
@@ -107,12 +101,11 @@ class ViewThumbs extends Observer {
     const { code } = event as KeyboardEvent;
 
     // prettier-ignore
-    const configEventCode = (
+    const configEventCode = 
       code === 'ArrowLeft' ||
       code === 'ArrowRight' ||
       code === 'ArrowUp' ||
-      code === 'ArrowDown'
-    );
+      code === 'ArrowDown';
 
     const $target = $(event.target as HTMLButtonElement);
 
@@ -137,7 +130,7 @@ class ViewThumbs extends Observer {
     const $target = $(target);
     $target.on(
       'pointermove.thumb',
-      ViewThumbs._makeThrottlingHandler(this._handleInitPointerMove.bind(this), 50),
+      makeThrottlingHandler(this._handleInitPointerMove.bind(this), 50),
     );
     $target.on('pointerup.thumb', ViewThumbs._handleInitPointerUp.bind(this));
   }
@@ -152,24 +145,6 @@ class ViewThumbs extends Observer {
     const $target = $(event.target);
     $target.off('pointermove.thumb');
     $target.off('pointerup.thumb');
-  }
-
-  // throttling декоратор
-  private static _makeThrottlingHandler(fn: Function, timeout: number) {
-    let timer: NodeJS.Timeout | null = null;
-
-    return (...args: any[]) => {
-      if (timer) return;
-
-      timer = setTimeout(() => {
-        fn(...args);
-
-        if (timer) {
-          clearTimeout(timer);
-          timer = null;
-        }
-      }, timeout);
-    };
   }
 }
 

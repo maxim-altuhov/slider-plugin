@@ -1,6 +1,6 @@
 import './index.scss';
 import $ from 'jquery';
-import '../MetaSlider/MetaSlider';
+import '../metaSlider/metaSlider';
 import ControlPanel from '../../components/control/ts/ControlPanel';
 
 $(() => {

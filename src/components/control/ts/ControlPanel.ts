@@ -76,11 +76,10 @@ class ControlPanel {
     const key = this._$sliderSelector.metaSlider('getProp', 'key');
 
     // prettier-ignore
-    const changeValuesVerifKeys = (
-        key === 'changedValue' ||
-        key === 'initValueFirst' ||
-        key === 'initValueSecond'
-      );
+    const changeValuesVerifKeys = 
+      key === 'changedValue' ||
+      key === 'initValueFirst' ||
+      key === 'initValueSecond';
 
     if (changeValuesVerifKeys) {
       this._getProp('initValueFirst');
@@ -154,7 +153,7 @@ class ControlPanel {
     this._initCheckingDependencies(key);
   }
 
-  // Метод для установки новых значений для слайдера
+  // Метод установки новых значений для слайдера
   private _setProp(prop: string, value: string | number | (string | number)[]) {
     this._$sliderSelector.metaSlider('setProp', prop, value);
   }
@@ -184,7 +183,6 @@ class ControlPanel {
    * Проверка наличия зависимости входящего свойства от других заранее определенных свойств слайдера
    * и установка инпутам в контр.панели с этими свойствами заданного атрибута
    */
-  //
   private _initCheckingDependencies(prop: string) {
     if (prop === 'isRange') this._checkTheProp(prop, ['initValueFirst'], true);
     if (prop === 'isVertical') this._checkTheProp(prop, ['initAutoMargins']);
@@ -222,7 +220,7 @@ class ControlPanel {
    * Проверка инпута с определенным свойством слайдера на наличие в нём значения
    * и установка атрибута disabled зависимым от него инпутам
    */
-  private _checkTheProp(initProp: string, checkingOptions: string[], isReverse = false) {
+  private _checkTheProp(initProp: string, checkingOptions: string[], isReverseDependency = false) {
     const $target = this._selectorsObj[initProp];
     let verifyingKey;
 
@@ -232,7 +230,7 @@ class ControlPanel {
       verifyingKey = $target.val();
     }
 
-    verifyingKey = isReverse ? !verifyingKey : verifyingKey;
+    verifyingKey = isReverseDependency ? !verifyingKey : verifyingKey;
 
     if (verifyingKey) {
       $target.attr('data-dependency', 'true');
