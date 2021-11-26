@@ -36,7 +36,7 @@ class Presenter {
 
   // Получаем нужный subview через главный view
   private _getView(view: string) {
-    return this._view.views[view];
+    return this._view.viewList[view];
   }
 }
 

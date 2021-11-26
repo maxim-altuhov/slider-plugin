@@ -5,10 +5,10 @@ import ViewThumbs from './ViewThumbs';
 import ViewError from './ViewError';
 
 class View {
-  readonly views: Record<string, any>;
+  readonly viewList: Record<string, any>;
 
   constructor() {
-    this.views = {
+    this.viewList = {
       viewError: new ViewError(),
       viewScale: new ViewScale(),
       viewSlider: new ViewSlider(),
@@ -19,14 +19,14 @@ class View {
 
   // Вызываем метод update() в subview
   update(options: IPluginOptions) {
-    Object.keys(this.views).forEach((view) => {
-      if ('update' in this.views[view]) this.views[view].update(options);
+    Object.keys(this.viewList).forEach((view) => {
+      if ('update' in this.viewList[view]) this.viewList[view].update(options);
     });
   }
 
   // Первоначальный рендер слайдера и его основных элементов
   renderSlider($initSelector: JQuery) {
-    this.views['viewSlider'].renderSlider($initSelector);
+    this.viewList['viewSlider'].renderSlider($initSelector);
   }
 }
 
