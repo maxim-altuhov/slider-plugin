@@ -1,7 +1,7 @@
 import './index.scss';
 import $ from 'jquery';
 import '../metaSlider/metaSlider';
-import ControlPanel from '../../components/control/ts/ControlPanel';
+import ControlPanel from '../../components/control/ControlPanel';
 
 $(() => {
   const slider1 = $('#slider-1');

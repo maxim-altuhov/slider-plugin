@@ -1,4 +1,5 @@
 class ControlPanel {
+  public savedWatchFn: Function;
   private _$selector: JQuery;
   private _$sliderSelector: JQuery;
   private _selectorsObj: {
@@ -7,6 +8,7 @@ class ControlPanel {
   private readonly _propertyList: string[];
 
   constructor(panelSelector: string, sliderSelector: string) {
+    this.savedWatchFn = this.watchTheSlider.bind(this);
     this._$selector = $(panelSelector);
     this._$sliderSelector = $(sliderSelector);
     this._selectorsObj = {};
@@ -55,15 +57,25 @@ class ControlPanel {
    * установка обработчика событий на инпуты и подписка на обновление модели слайдера
    */
   init() {
-    Object.entries(this._selectorsObj).forEach((valuesArray: [string, JQuery]) => {
-      const [prop, $selector] = valuesArray;
+    Object.entries(this._selectorsObj).forEach((_selectorsObjArr: [string, JQuery]) => {
+      const [prop, $selector] = _selectorsObjArr;
       this._getProp(prop);
       this._initCheckingDependencies(prop);
 
       $selector.on('change.input', this._handleInputChanges.bind(this));
     });
 
-    this._$sliderSelector.metaSlider('subscribe', this.watchTheSlider.bind(this));
+    this._setOptionsForInputs();
+    this._$sliderSelector.metaSlider('subscribe', this.savedWatchFn);
+  }
+
+  unbind() {
+    Object.entries(this._selectorsObj).forEach((_selectorsObjArr: [string, JQuery]) => {
+      const $selector = _selectorsObjArr[1];
+      $selector.off('change.input');
+    });
+
+    this._$sliderSelector.metaSlider('unsubscribe', this.savedWatchFn);
   }
 
   /**
@@ -151,6 +163,34 @@ class ControlPanel {
 
     // Инициализация проверки зависимости свойств слайдера друг от друга
     this._initCheckingDependencies(key);
+
+    // Устанавливает корректный шаг для инпутов
+    this._setOptionsForInputs();
+  }
+
+  private _setOptionsForInputs() {
+    const {
+      initValueFirst: inputValueFirst,
+      initValueSecond: inputValueSecond,
+      minValue: inputMinValue,
+      maxValue: inputMaxValue,
+      step: inputStep,
+    } = this._selectorsObj;
+
+    const maxValueForFirstThumbs = Number(inputValueSecond.val()) - Number(inputStep.val());
+    const minValueForSecondThumbs = Number(inputValueFirst.val()) + Number(inputStep.val());
+
+    inputValueFirst.attr({
+      min: inputMinValue.val(),
+      max: maxValueForFirstThumbs,
+      step: inputStep.val(),
+    });
+
+    inputValueSecond.attr({
+      min: minValueForSecondThumbs,
+      max: inputMaxValue.val(),
+      step: inputStep.val(),
+    });
   }
 
   // Метод установки новых значений для слайдера

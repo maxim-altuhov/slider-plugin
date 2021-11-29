@@ -8,12 +8,12 @@ html {
 }
 
 .container {
-  min-width: 320px;
+  min-width: 305px;
 
   &__wrapper {
     display: flex;
     background-color: #ffffff;
-    margin: 15px;
+    margin: 25px auto;
     padding: 30px;
     border-radius: 10px;
     min-height: 250px;

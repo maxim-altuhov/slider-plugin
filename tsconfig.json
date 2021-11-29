@@ -6,7 +6,7 @@
       "ES6"
     ],
     "outDir": "./dist/js/",
-    "rootDir": "./src",
+    "rootDirs": ["./src", "./__test__"],
     "moduleResolution": "Node",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
@@ -43,8 +43,9 @@
   },
   "include": [
     "webpack.config.js",
-    "src/components/**/**/*",
+    "src/components/**/*",
     "src/pages/**/*",
     "src/**/*",
+    "__tests__",
   ]
 }

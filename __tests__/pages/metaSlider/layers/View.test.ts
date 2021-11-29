@@ -1,4 +1,4 @@
-import View from '../../pages/metaSlider/layers/View';
+import View from '../../../../src/pages/metaSlider/layers/View';
 
 const classView = new View();
 

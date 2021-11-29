@@ -12,12 +12,12 @@
   }
 
   &__input {
-    max-width: 100px;
+    width: 100px;
     height: 30px;
     border: 1px solid #afafaf;
     border-radius: 5px;
     box-shadow: 1px 1px 5px 1px rgba(138, 138, 138, 0.2);
-    margin-left: 25px;
+    margin-left: 15px;
     padding: 0 15px;
     font-weight: 700;
 
@@ -83,6 +83,6 @@
     align-items: center;
     position: relative;
     min-height: 32px;
-    padding-right: 55px;
+    padding-right: 40px;
   }
 }
