@@ -1,5 +1,6 @@
 /// <reference path='./interfaces/metaSlider.d.ts' />
 import './metaSlider.scss';
+import initSettings from './data/initSettings';
 import Model from './layers/Model';
 import View from './layers/View';
 import Presenter from './layers/Presenter';
@@ -8,52 +9,6 @@ import Presenter from './layers/Presenter';
   let inputOptions: IPluginOptions;
   const methods: IPluginMethods = {
     init(settings) {
-      const initSettings: IPluginOptions = {
-        key: '',
-        $selector: $(),
-        $elemSlider: $(),
-        $sliderProgress: $(),
-        $elemMarkers: $(),
-        $elemScale: $(),
-        $elemThumbs: $(),
-        mainColor: '#6d6dff',
-        secondColor: '#e4e4e4',
-        colorMarker: '',
-        colorThumb: '',
-        colorTextForMarker: '#ffffff',
-        colorBorderForMarker: '#ffffff',
-        colorBorderForThumb: '#ffffff',
-        colorForScale: '#000000',
-        initFormatted: true,
-        initAutoMargins: true,
-        initScaleAdjustment: true,
-        calcNumberOfDecimalPlaces: true,
-        showError: false,
-        showScale: true,
-        showMarkers: true,
-        showBackground: true,
-        isRange: true,
-        isVertical: false,
-        initAutoScaleCreation: true,
-        checkingStepSizeForScale: false,
-        step: 1,
-        stepAsPercent: 0,
-        minValue: 0,
-        maxValue: 100,
-        stepSizeForScale: null,
-        numberOfDecimalPlaces: 0,
-        preFix: '',
-        postFix: '',
-        customValues: [],
-        initValueFirst: null,
-        initValueSecond: null,
-        initValuesArray: [],
-        textValueFirst: '',
-        textValueSecond: '',
-        textValuesArray: [],
-        valuesAsPercentageArray: [],
-      };
-
       // Если слайдер ещё не инициализирован
       const data = this.data('metaSlider');
 

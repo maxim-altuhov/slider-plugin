@@ -1,59 +1,15 @@
 import View from '../../../../src/pages/metaSlider/layers/View';
+import initSettings from '../../../../src/pages/metaSlider/data/initSettings';
 
 const classView = new View();
 
 describe('Test of the "View" layer, method "update"', () => {
-  const initSettings: IPluginOptions = {
-    key: '',
-    $selector: $(),
-    $elemSlider: $(),
-    $sliderProgress: $(),
-    $elemMarkers: $(),
-    $elemScale: $(),
-    $elemThumbs: $(),
-    mainColor: '#6d6dff',
-    secondColor: '#e4e4e4',
-    colorMarker: '',
-    colorThumb: '',
-    colorTextForMarker: '#ffffff',
-    colorBorderForMarker: '#ffffff',
-    colorBorderForThumb: '#ffffff',
-    colorForScale: '#000000',
-    initFormatted: true,
-    initAutoMargins: true,
-    initScaleAdjustment: true,
-    calcNumberOfDecimalPlaces: true,
-    showError: false,
-    showScale: true,
-    showMarkers: true,
-    showBackground: true,
-    isRange: true,
-    isVertical: false,
-    initAutoScaleCreation: true,
-    checkingStepSizeForScale: false,
-    step: 1,
-    stepAsPercent: 0,
-    minValue: 0,
-    maxValue: 100,
-    stepSizeForScale: null,
-    numberOfDecimalPlaces: 0,
-    preFix: '',
-    postFix: '',
-    customValues: [],
-    initValueFirst: null,
-    initValueSecond: null,
-    initValuesArray: [],
-    textValueFirst: '',
-    textValueSecond: '',
-    textValuesArray: [],
-    valuesAsPercentageArray: [],
-  };
-  const viewList: string[] = [];
+  const viewListForTest: string[] = [];
 
   Object.keys(classView.viewList).forEach((view) => {
     if ('update' in classView.viewList[view]) {
       classView.viewList[view].update = jest.fn();
-      viewList.push(view);
+      viewListForTest.push(view);
     }
   });
 
@@ -61,24 +17,18 @@ describe('Test of the "View" layer, method "update"', () => {
     classView.update(initSettings);
   });
 
-  test.each(viewList)(
-    'When the "update" method is performed at the "View" level, an update occurs in the dependent subview from "ViewList"-> %s',
+  test.each(viewListForTest)(
+    'When the "update" method is performed at the "View" level, an update occurs in the dependent subview from "ViewList"-> %s and an object with options is passed to the "update"',
     (view) => {
-      expect(classView.viewList[view].update).toBeCalled();
-    },
-  );
-
-  test.each(viewList)(
-    'An object with options is passed to the "update" method for the subview from the "View List" when called -> %s',
-    (view) => {
-      expect(classView.viewList[view].update).toBeCalledWith(initSettings);
+      expect(classView.viewList[view].update).toHaveBeenCalled();
+      expect(classView.viewList[view].update).toHaveBeenCalledWith(initSettings);
     },
   );
 });
 
 describe('Test of the "View" layer, method "renderSlider"', () => {
   const TARGET_VIEW = 'viewSlider';
-  const $FAKE_SELECTOR = $();
+  const $FAKE_SELECTOR = $('.fake-selector');
 
   classView.viewList[TARGET_VIEW].renderSlider = jest.fn();
   const mockRenderSlider = classView.viewList[TARGET_VIEW].renderSlider;
@@ -87,11 +37,8 @@ describe('Test of the "View" layer, method "renderSlider"', () => {
     classView.renderSlider($FAKE_SELECTOR);
   });
 
-  test('When the slider render method is initialized, the required method is called in the subview responsible for this', () => {
-    expect(mockRenderSlider).toBeCalled();
-  });
-
-  test('The selector on which the slider is initialized is passed to the arguments of the slider rendering method', () => {
-    expect(mockRenderSlider).toBeCalledWith($FAKE_SELECTOR);
+  test('When the slider rendering method is initialized, the required method is called in the subspecies responsible for it and the selector necessary for rendering the slider is passed there.', () => {
+    expect(mockRenderSlider).toHaveBeenCalled();
+    expect(mockRenderSlider).toHaveBeenCalledWith($FAKE_SELECTOR);
   });
 });
