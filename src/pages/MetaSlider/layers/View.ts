@@ -5,17 +5,17 @@ import ViewThumbs from './ViewThumbs';
 import ViewError from './ViewError';
 
 class View {
-  readonly viewList: Record<string, any>;
-
-  constructor() {
-    this.viewList = {
-      viewError: new ViewError(),
-      viewScale: new ViewScale(),
-      viewSlider: new ViewSlider(),
-      viewThumbs: new ViewThumbs(),
-      viewMarkers: new ViewMarkers(),
-    };
-  }
+  /**
+   * Использую тип any, чтобы была возможность обратиться
+   * к любому методу экземпляра класса в объекте viewList.
+   */
+  readonly viewList: Record<string, any> = {
+    viewError: new ViewError(),
+    viewScale: new ViewScale(),
+    viewSlider: new ViewSlider(),
+    viewThumbs: new ViewThumbs(),
+    viewMarkers: new ViewMarkers(),
+  };
 
   // Вызываем метод update() в subview
   update(options: IPluginOptions) {

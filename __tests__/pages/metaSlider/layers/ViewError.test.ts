@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/dot-notation */
 import ViewError from '../../../../src/pages/metaSlider/layers/ViewError';
 
 /**
@@ -9,10 +10,10 @@ const classViewError = new ViewError();
 
 describe('Test of the "ViewError" layer, method "renderError', () => {
   test('Initial state of class instance variables', () => {
-    expect(classViewError.$selector).toBeUndefined();
-    expect(classViewError.$elemErrorInfo).toBeUndefined();
-    expect(classViewError.$elemErrorText).toBeUndefined();
-    expect(classViewError.$btnErrorClose).toBeUndefined();
+    expect(classViewError['_$selector']).toBeUndefined();
+    expect(classViewError['_$elemErrorInfo']).toBeUndefined();
+    expect(classViewError['_$elemErrorText']).toBeUndefined();
+    expect(classViewError['_$btnErrorClose']).toBeUndefined();
   });
 
   const TEXT_MSG = 'TEXT MESSAGE';
@@ -32,9 +33,9 @@ describe('Test of the "ViewError" layer, method "renderError', () => {
     });
 
     test('When initializing the "Visualization Error" method, data about selectors is collected and an event handler is installed', () => {
-      expect(classViewError.$elemErrorInfo).toBeDefined();
-      expect(classViewError.$elemErrorText).toBeDefined();
-      expect(classViewError.$btnErrorClose).toBeDefined();
+      expect(classViewError['_$elemErrorInfo']).toBeDefined();
+      expect(classViewError['_$elemErrorText']).toBeDefined();
+      expect(classViewError['_$btnErrorClose']).toBeDefined();
     });
 
     test('When initializing the "renderError" method, the error text is output', () => {
@@ -54,8 +55,8 @@ describe('Test of the "ViewError" layer, method "renderError', () => {
     beforeAll(() => {
       document.body.innerHTML = '';
       document.body.innerHTML = HTMLBlockError;
-      classViewError.$elemErrorInfo = $('.js-error-info');
-      classViewError.$elemErrorText = $('.js-error-info__text');
+      classViewError['_$elemErrorInfo'] = $('.js-error-info');
+      classViewError['_$elemErrorText'] = $('.js-error-info__text');
 
       // @ts-ignore
       classViewError.renderError(NEW_TEXT, {
@@ -66,27 +67,28 @@ describe('Test of the "ViewError" layer, method "renderError', () => {
     });
 
     test('When initializing the "renderError" method, just change the error message', () => {
-      classViewError.$elemErrorText = $('.js-error-info__text');
+      classViewError['_$elemErrorText'] = $('.js-error-info__text');
 
-      expect(classViewError.$elemErrorText).toBeDefined();
-      expect(classViewError.$elemErrorText.text()).toEqual(NEW_TEXT);
+      expect(classViewError['_$elemErrorText']).toBeDefined();
+      expect(classViewError['_$elemErrorText'].text()).toEqual(NEW_TEXT);
     });
 
     test('When we click on the button to close the error window, it is deleted and all selectors are reset. The click event handler is removed from the button', () => {
-      const DEFAULT_BLOCK_SLIDER = `<div class="fake-selector"><div class="fake-slider">
+      const defaultSliderBlock = `<div class="fake-selector"><div class="fake-slider">
       </div></div>`;
 
-      expect(classViewError.$elemErrorInfo).not.toBeNull();
-      expect(classViewError.$elemErrorText).not.toBeNull();
-      expect(classViewError.$btnErrorClose).not.toBeNull();
+      expect(classViewError['_$elemErrorInfo']).not.toBeNull();
+      expect(classViewError['_$elemErrorText']).not.toBeNull();
+      expect(classViewError['_$btnErrorClose']).not.toBeNull();
 
-      if (classViewError.$btnErrorClose) classViewError.$btnErrorClose.click();
+      classViewError['_$btnErrorClose']?.click();
+
       expect(document.body.innerHTML.replace(/\s+/g, '')).toEqual(
-        DEFAULT_BLOCK_SLIDER.replace(/\s+/g, ''),
+        defaultSliderBlock.replace(/\s+/g, ''),
       );
-      expect(classViewError.$elemErrorInfo).toBeNull();
-      expect(classViewError.$elemErrorText).toBeNull();
-      expect(classViewError.$btnErrorClose).toBeNull();
+      expect(classViewError['_$elemErrorInfo']).toBeNull();
+      expect(classViewError['_$elemErrorText']).toBeNull();
+      expect(classViewError['_$btnErrorClose']).toBeNull();
     });
   });
 });

@@ -1,7 +1,8 @@
 function makeThrottlingHandler(fn: Function, timeout: number) {
   let timer: NodeJS.Timeout | null = null;
 
-  return (...args: any[]) => {
+  // Использую тип any, чтобы была возможность передавать любые аргументы в вызываемые функции
+  return (...args: any) => {
     if (timer) return;
 
     timer = setTimeout(() => {

@@ -1,3 +1,7 @@
+/**
+ * Использую тип any, чтобы была возможность передавать любые аргументы
+ * в вызываемые методы слайдера. Методы также могут возвращать любые значения.
+ */
 interface JQuery {
-  metaSlider(initParam?: string | object, ...prop: any[]): any;
+  metaSlider(initParam?: string | object, ...prop: any): any;
 }

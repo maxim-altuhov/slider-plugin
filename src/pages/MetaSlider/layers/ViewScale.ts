@@ -2,24 +2,14 @@ import makeThrottlingHandler from '../utils/makeThrottlingHandler';
 import Observer from '../patterns/Observer';
 
 class ViewScale extends Observer {
-  private _$selector: JQuery;
-  private _$elemSlider: JQuery;
-  private _$elemScale: JQuery;
-  private _$elemScalePoints: JQuery;
-  private _scalePointsSize: number;
-  private _mapSkipScalePoints: Map<number, JQuery[]>;
-  private _skipScalePointsArray: JQuery[];
-
-  constructor(private _isFirstInit: boolean = true) {
-    super();
-    this._$selector = $();
-    this._$elemSlider = $();
-    this._$elemScale = $();
-    this._$elemScalePoints = $();
-    this._scalePointsSize = 0;
-    this._mapSkipScalePoints = new Map();
-    this._skipScalePointsArray = [];
-  }
+  private _$selector = $();
+  private _$elemSlider = $();
+  private _$elemScale = $();
+  private _$elemScalePoints = $();
+  private _scalePointsSize = 0;
+  private _mapSkipScalePoints: Map<number, JQuery[]> = new Map();
+  private _skipScalePointsArray: JQuery[] = [];
+  private _isFirstInit = true;
 
   update(options: IPluginOptions) {
     if (this._isFirstInit) {
@@ -83,11 +73,12 @@ class ViewScale extends Observer {
         postFix,
       } = options;
 
+      // prettier-ignore
+      const stepSizeValue = initAutoScaleCreation ? step : (stepSizeForScale ?? step);
       const $fragmentWithScale = $(document.createDocumentFragment());
-      const stepSizeValue = initAutoScaleCreation ? step : stepSizeForScale;
       let currentValue = minValue;
 
-      for (; currentValue <= maxValue; currentValue += stepSizeValue!) {
+      for (; currentValue <= maxValue; currentValue += stepSizeValue) {
         const isCustomValue = customValues.length > 0;
         const convertedValue = initFormatted ? currentValue.toLocaleString() : currentValue;
         const resultValue = isCustomValue ? customValues[currentValue] : convertedValue;
@@ -163,7 +154,8 @@ class ViewScale extends Observer {
         if (sizeScalePointsArray <= 2) break;
 
         this._$elemScalePoints.each((index, currentScalePoint) => {
-          const firstOrLastIndex = index === 0 || index === sizeScalePointsArray - 1;
+          // prettier-ignore
+          const firstOrLastIndex = (index === 0) || (index === sizeScalePointsArray - 1);
           const intervalWithoutFirstAndLastIndex = !firstOrLastIndex && sizeScalePointsArray <= 6;
 
           if (index % 2 !== 0 && sizeScalePointsArray > 6) {
@@ -245,9 +237,9 @@ class ViewScale extends Observer {
   }
 
   // Получает значения при клике на шкалу слайдера
-  private _handleGetValueInScalePoint(event: Event) {
+  private _handleGetValueInScalePoint(event: Event & { target: EventTarget }) {
     event.preventDefault();
-    const $target = $(event.target as HTMLButtonElement);
+    const $target = $(event.target);
     const targetValue = Number($target.attr('data-value'));
 
     this.notify(event, targetValue);

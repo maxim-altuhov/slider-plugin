@@ -1,5 +1,5 @@
 class Observer {
-  constructor(public observerList: Function[] = []) {}
+  public observerList: Function[] = [];
 
   // Добавляет метод в список подписчиков
   subscribe(observer: Function) {
@@ -19,8 +19,11 @@ class Observer {
     this.observerList = this.observerList.filter((item) => item !== observer);
   }
 
-  // Вызывает все подписанные методы из списка
-  notify(...arg: any[]) {
+  /**
+   * Вызывает все подписанные методы из списка.
+   * Тип any, чтобы была возможность передавать любые аргументы в вызываемые методы
+   */
+  notify(...arg: any) {
     this.observerList.forEach((observer) => observer(...arg));
   }
 }

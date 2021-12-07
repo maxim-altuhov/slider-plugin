@@ -2,15 +2,13 @@ import Observer from '../patterns/Observer';
 
 class Model extends Observer {
   opt;
-  errorEvent: Observer;
-  private _propSavedStatus: { [index: string]: any };
+  errorEvent = new Observer();
+  private _propSavedStatus: { [index: string]: boolean } = {};
 
   constructor(selector: JQuery, options: IPluginOptions) {
     super();
     this.opt = options;
     this.opt.$selector = selector;
-    this._propSavedStatus = {};
-    this.errorEvent = new Observer();
   }
 
   // Первичная инициализация модели
@@ -30,7 +28,11 @@ class Model extends Observer {
   }
 
   // Расчёт значений позиций бегунков слайдера
-  calcTargetValue(event: Event, initValue?: number, onlyReturn = false): number | undefined {
+  calcTargetValue(
+    event: (Event & { target: EventTarget; clientY: number; clientX: number }) | null,
+    initValue?: number,
+    onlyReturn = false,
+  ): number | null {
     const {
       $elemSlider,
       isVertical,
@@ -47,13 +49,13 @@ class Model extends Observer {
     let valueAsPercentage = 0;
 
     if (isVertical && event) {
-      eventPosition = (event as MouseEvent).clientY;
+      eventPosition = event.clientY;
       sliderOffset = $elemSlider[0].getBoundingClientRect().bottom;
       sliderSize = $elemSlider[0].getBoundingClientRect().height;
       valueInEventPosition = sliderOffset - eventPosition;
     } else if (!isVertical && event) {
-      eventPosition = (event as MouseEvent).clientX;
-      sliderOffset = $elemSlider.offset()!.left;
+      eventPosition = event.clientX;
+      sliderOffset = $elemSlider.offset()?.left || 0;
       sliderSize = $elemSlider.outerWidth() || 0;
       valueInEventPosition = eventPosition - sliderOffset;
     }
@@ -75,31 +77,38 @@ class Model extends Observer {
     if (onlyReturn) return targetValue;
     this._checkingTargetValue(targetValue, event, eventPosition);
 
-    return undefined;
+    return null;
   }
 
   /**
    * Проверка рассчитанных значений слайдера на выполнение различных условий
    * и определение какой бегунок у слайдера должен быть перемещён
    */
-  private _checkingTargetValue(targetValue: number, event: Event, eventPosition: number) {
+  private _checkingTargetValue(
+    targetValue: number,
+    event: (Event & { target: EventTarget; code?: string }) | null,
+    eventPosition: number,
+  ) {
+    this.opt.initValueFirst = this.opt.initValueFirst ?? this.opt.minValue;
+    this.opt.initValueSecond = this.opt.initValueSecond ?? this.opt.maxValue;
+
     // prettier-ignore
     const { 
-      initValueFirst, 
-      initValueSecond, 
+      initValueFirst,
+      initValueSecond,
       isRange, 
       initValuesArray, 
       $elemThumbs, 
       isVertical,
     } = this.opt;
 
-    const firstThumbDiff = Math.abs(Number((targetValue - initValueFirst!).toFixed(2)));
-    const secondThumbDiff = Math.abs(Number((targetValue - initValueSecond!).toFixed(2)));
+    const firstThumbDiff = Math.abs(Number((targetValue - initValueFirst).toFixed(2)));
+    const secondThumbDiff = Math.abs(Number((targetValue - initValueSecond).toFixed(2)));
     let clickInRange = false;
 
-    if (isRange) clickInRange = targetValue > initValueFirst! && targetValue < initValueSecond!;
-    if (targetValue <= initValueFirst!) initValuesArray[0] = targetValue;
-    if (targetValue >= initValueSecond! || !isRange) initValuesArray[1] = targetValue;
+    if (isRange) clickInRange = targetValue > initValueFirst && targetValue < initValueSecond;
+    if (targetValue <= initValueFirst) initValuesArray[0] = targetValue;
+    if (targetValue >= initValueSecond || !isRange) initValuesArray[1] = targetValue;
 
     if (clickInRange && firstThumbDiff < secondThumbDiff) {
       initValuesArray[0] = targetValue;
@@ -108,15 +117,10 @@ class Model extends Observer {
     }
 
     const isIdenticalDistanceInRange = clickInRange && firstThumbDiff === secondThumbDiff;
-
-    const { code } = event as KeyboardEvent;
+    const code = event?.code;
 
     // prettier-ignore
-    const isEventMoveKeypress = 
-      code === 'ArrowLeft' ||
-      code === 'ArrowRight' ||
-      code === 'ArrowUp' ||
-      code === 'ArrowDown';
+    const isEventMoveKeypress = (code === 'ArrowLeft' || code === 'ArrowRight' || code === 'ArrowUp' || code === 'ArrowDown') && event;
     const [firstThumb, secondThumb] = $elemThumbs;
     let firstThumbPosition = 0;
     let secondThumbPosition = 0;
@@ -141,7 +145,7 @@ class Model extends Observer {
     }
 
     if (isIdenticalDistanceInRange && isEventMoveKeypress) {
-      const $target = $(event.target as HTMLElement);
+      const $target = $(event.target);
 
       if ($target.hasClass('meta-slider__thumb_left')) {
         initValuesArray[0] = targetValue;
@@ -215,8 +219,6 @@ class Model extends Observer {
     this._checkingCustomValues();
     this._calcStepAsPercentage();
     this._checkingInitValues(errMessage);
-
-    this.opt.initValuesArray = [this.opt.initValueFirst!, this.opt.initValueSecond!];
   }
 
   private _getSliderSelectors() {
@@ -356,27 +358,31 @@ class Model extends Observer {
   }
 
   // Проверка делится ли шкала без остатка на установленный шаг шкалы
-  private _checkingIsIntegerSizeScale() {
-    const { maxValue, minValue, stepSizeForScale } = this.opt;
+  private _checkingIsIntegerSizeScale(stepSizeForScale: number) {
+    const { maxValue, minValue } = this.opt;
 
-    return Number.isInteger((maxValue - minValue) / stepSizeForScale!);
+    return Number.isInteger((maxValue - minValue) / stepSizeForScale);
   }
 
   // Корректировка шага шкалы, если не выполняется условие в методе checkingIsIntegerSizeScale()
   private _checkingCorrectStepSizeForScale(errMessage: IErrMessage) {
-    const isIntegerStepSizeForScale = Number.isInteger(this.opt.stepSizeForScale);
+    if (this.opt.stepSizeForScale) {
+      const isIntegerStepSizeForScale = Number.isInteger(this.opt.stepSizeForScale);
 
-    while (!this._checkingIsIntegerSizeScale()) {
-      if (this.opt.stepSizeForScale! > 1 && isIntegerStepSizeForScale) {
-        this.opt.stepSizeForScale! += 1;
-      } else if (!isIntegerStepSizeForScale) {
-        this.opt.stepSizeForScale! += 0.1;
-        this.opt.stepSizeForScale = Number(this.opt.stepSizeForScale!.toFixed(1));
-      } else {
-        break;
+      while (!this._checkingIsIntegerSizeScale(this.opt.stepSizeForScale)) {
+        if (this.opt.stepSizeForScale > 1 && isIntegerStepSizeForScale) {
+          this.opt.stepSizeForScale += 1;
+        } else if (!isIntegerStepSizeForScale) {
+          this.opt.stepSizeForScale += 0.1;
+          this.opt.stepSizeForScale = Number(this.opt.stepSizeForScale.toFixed(1));
+        } else {
+          break;
+        }
+
+        this.errorEvent.notify(errMessage['stepSizeForScale'], this.opt);
       }
-
-      this.errorEvent.notify(errMessage['stepSizeForScale'], this.opt);
+    } else {
+      $.error('A property named "stepSizeForScale" has an empty value');
     }
   }
 
@@ -385,7 +391,7 @@ class Model extends Observer {
 
     if (key === 'init' || key === 'customValues') {
       // prettier-ignore
-      this.opt.customValues = (typeof customValues === 'string') ? (customValues as string).split(',') : customValues;
+      this.opt.customValues = (typeof customValues === 'string') ? customValues.split(',') : customValues;
       this.opt.customValues = this.opt.customValues.filter((elem) => elem !== '' && elem !== ' ');
 
       if (this.opt.customValues.length > 0) this._initCustomValues();
@@ -396,7 +402,9 @@ class Model extends Observer {
   private _initCustomValues() {
     const { customValues } = this.opt;
 
-    if (customValues.length === 1) customValues.push(customValues[0]);
+    if (customValues.length === 1 && Array.isArray(customValues)) {
+      customValues.push(customValues[0]);
+    }
 
     this.opt.minValue = 0;
     this.opt.maxValue = customValues.length - 1;
@@ -452,10 +460,15 @@ class Model extends Observer {
       }
 
       this.opt.initValueFirst = isRange ? this.opt.initValueFirst : minValue;
-      this.opt.initValueFirst = this.calcTargetValue(null!, this.opt.initValueFirst, true)!;
-      this.opt.initValueSecond = this.calcTargetValue(null!, this.opt.initValueSecond, true)!;
+      this.opt.initValueFirst = this.calcTargetValue(null, this.opt.initValueFirst, true);
+      this.opt.initValueSecond = this.calcTargetValue(null, this.opt.initValueSecond, true);
 
-      if (customValues.length > 0) {
+      if (
+        // eslint-disable-next-line fsd/split-conditionals
+        customValues.length > 0 &&
+        this.opt.initValueFirst !== null &&
+        this.opt.initValueSecond !== null
+      ) {
         this.opt.textValueFirst = customValues[this.opt.initValueFirst];
         this.opt.textValueSecond = customValues[this.opt.initValueSecond];
         this.opt.textValuesArray = [this.opt.textValueFirst, this.opt.textValueSecond];
@@ -464,6 +477,10 @@ class Model extends Observer {
         this.opt.textValueSecond = '';
         this.opt.textValuesArray = [];
       }
+    }
+
+    if (this.opt.initValueFirst !== null && this.opt.initValueSecond !== null) {
+      this.opt.initValuesArray = [this.opt.initValueFirst, this.opt.initValueSecond];
     }
   }
 }

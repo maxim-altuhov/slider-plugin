@@ -1,0 +1,30 @@
+.config {
+  &__wrapper {
+    display: grid;
+    gap: 10px;
+    grid-template: auto / repeat(2, auto);
+    justify-items: end;
+    align-items: center;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 25px 15px;
+
+    @media (max-width: 1199px) {
+      grid-template: auto / repeat(3, auto);
+    }
+
+    @media (max-width: 991px) {
+      grid-template: auto / repeat(2, auto);
+      justify-content: space-between;
+    }
+
+    @media (max-width: 767px) {
+      padding: 25px 0px;
+    }
+
+    @media (max-width: 575px) {
+      grid-template: auto / 1fr;
+      justify-items: stretch;
+    }
+  }
+}

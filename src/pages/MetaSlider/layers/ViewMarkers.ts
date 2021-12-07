@@ -1,11 +1,7 @@
 class ViewMarkers {
-  private _$elemMarkers: JQuery;
-  private _$elemThumbs: JQuery;
-
-  constructor(private _isFirstInit: boolean = true) {
-    this._$elemMarkers = $();
-    this._$elemThumbs = $();
-  }
+  private _$elemMarkers = $();
+  private _$elemThumbs = $();
+  private _isFirstInit = true;
 
   update(options: IPluginOptions) {
     if (this._isFirstInit) {
@@ -46,6 +42,7 @@ class ViewMarkers {
   // Первоначальная инициализация
   private _init(options: IPluginOptions) {
     const { $elemThumbs, $elemMarkers } = options;
+
     this._$elemThumbs = $elemThumbs;
     this._$elemMarkers = $elemMarkers;
   }

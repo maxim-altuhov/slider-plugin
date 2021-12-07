@@ -30,7 +30,11 @@ class Presenter {
   }
 
   // Вызов метода в модели для расчёта значений позиций бегунков слайдера
-  calcTargetValue(event: Event, initValue?: number, onlyReturn?: boolean) {
+  calcTargetValue(
+    event: Event & { target: EventTarget; clientY: number; clientX: number },
+    initValue?: number,
+    onlyReturn?: boolean,
+  ) {
     this._model.calcTargetValue(event, initValue, onlyReturn);
   }
 

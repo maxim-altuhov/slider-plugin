@@ -1,3 +1,7 @@
+/**
+ * Использую тип any в [key: string]: any, чтобы была возможность
+ * обратиться к любому свойству в объекте с опциями слайдера.
+ */
 interface IPluginOptions {
   [key: string]: any;
   key: string;
@@ -35,7 +39,7 @@ interface IPluginOptions {
   numberOfDecimalPlaces: number;
   preFix: string;
   postFix: string;
-  customValues: string[];
+  customValues: string[] | string;
   initValueFirst: number | null;
   initValueSecond: number | null;
   initValuesArray: number[];

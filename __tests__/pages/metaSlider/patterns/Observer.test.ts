@@ -6,7 +6,7 @@ import Observer from '../../../../src/pages/metaSlider/patterns/Observer';
  * при передаче в методы некорректных типов данных
  */
 const classObserver = new Observer();
-const sumFnTest = (a: number, b: number) => a + b;
+const sumFnForTest = (a: number, b: number) => a + b;
 
 afterEach(() => {
   classObserver.observerList.length = 0;
@@ -14,10 +14,10 @@ afterEach(() => {
 
 describe('Test of the "Observer" pattern, method "subscribe"', () => {
   test('When the subscribe method is used, the function passed to the method is added to the "observerList" list', () => {
-    classObserver.subscribe(sumFnTest);
+    classObserver.subscribe(sumFnForTest);
 
     expect(classObserver.observerList).toHaveLength(1);
-    expect(classObserver.observerList).toContainEqual(sumFnTest);
+    expect(classObserver.observerList).toContainEqual(sumFnForTest);
   });
 
   test('When a non-function is passed to the subscribe method, an error is thrown', () => {
@@ -43,22 +43,22 @@ describe('Test of the "Observer" pattern, method "subscribe"', () => {
 
   test('When a function that is already in the "observerList" is passed to the subscribe method, an error is thrown', () => {
     expect(() => {
-      classObserver.subscribe(sumFnTest);
+      classObserver.subscribe(sumFnForTest);
     }).not.toThrow();
 
     expect(() => {
-      classObserver.subscribe(sumFnTest);
+      classObserver.subscribe(sumFnForTest);
     }).toThrow();
   });
 });
 
 describe('Test of the "Observer" pattern, method "unsubscribe"', () => {
   test('When a function that is already in the "observerList" is passed to the unsubscribe method, it is removed from the "observerList"', () => {
-    classObserver.subscribe(sumFnTest);
+    classObserver.subscribe(sumFnForTest);
     expect(classObserver.observerList).toHaveLength(1);
-    expect(classObserver.observerList).toContainEqual(sumFnTest);
+    expect(classObserver.observerList).toContainEqual(sumFnForTest);
 
-    classObserver.unsubscribe(sumFnTest);
+    classObserver.unsubscribe(sumFnForTest);
     expect(classObserver.observerList).toHaveLength(0);
   });
 });

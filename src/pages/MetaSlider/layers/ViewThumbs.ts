@@ -2,9 +2,8 @@ import makeThrottlingHandler from '../utils/makeThrottlingHandler';
 import Observer from '../patterns/Observer';
 
 class ViewThumbs extends Observer {
-  constructor(private _isFirstInit: boolean = true, private _$elemThumbs: JQuery = $()) {
-    super();
-  }
+  private _$elemThumbs = $();
+  private _isFirstInit = true;
 
   update(options: IPluginOptions) {
     if (this._isFirstInit) {
@@ -97,8 +96,11 @@ class ViewThumbs extends Observer {
   }
 
   // Изменение позиции бегунков слайдера при использовании клавиатуры
-  private _handleChangeThumbPosition(options: IPluginOptions, event: Event) {
-    const { code } = event as KeyboardEvent;
+  private _handleChangeThumbPosition(
+    options: IPluginOptions,
+    event: Event & { target: EventTarget; code?: string },
+  ) {
+    const { code, target } = event;
 
     // prettier-ignore
     const configEventCode = 
@@ -107,7 +109,7 @@ class ViewThumbs extends Observer {
       code === 'ArrowUp' ||
       code === 'ArrowDown';
 
-    const $target = $(event.target as HTMLButtonElement);
+    const $target = $(target);
 
     if (configEventCode) {
       const { step } = options;
@@ -122,10 +124,10 @@ class ViewThumbs extends Observer {
   }
 
   // Установка обработчиков событий движения/прекращения движения бегунков слайдера
-  private _handleSetEventListenerForThumbs(event: Event) {
-    const target = event.target as HTMLButtonElement;
+  private _handleSetEventListenerForThumbs(event: Event & { target: Element; pointerId?: number }) {
+    const { target, pointerId } = event;
 
-    if (target) target.setPointerCapture((event as PointerEvent).pointerId);
+    if (target && pointerId) target.setPointerCapture(pointerId);
 
     const $target = $(target);
     $target.on(
@@ -141,7 +143,7 @@ class ViewThumbs extends Observer {
   }
 
   // Отслеживание прекращения движения бегунков слайдера
-  private static _handleInitPointerUp(event: { target: HTMLButtonElement }) {
+  private static _handleInitPointerUp(event: Event & { target: EventTarget }) {
     const $target = $(event.target);
     $target.off('pointermove.thumb');
     $target.off('pointerup.thumb');

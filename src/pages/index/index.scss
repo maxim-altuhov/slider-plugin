@@ -1,94 +1,13 @@
 @import '@base/base.scss';
 @import '@comp/control/control';
+@import './scss/container.scss';
+@import './scss/slider.scss';
+@import './scss/config.scss';
 
 body,
 html {
   background-color: #414d58;
   box-sizing: border-box;
-}
-
-.container {
-  min-width: 305px;
-
-  &__wrapper {
-    display: flex;
-    background-color: #ffffff;
-    margin: 25px auto;
-    padding: 30px;
-    border-radius: 10px;
-    min-height: 250px;
-    text-align: justify;
-
-    @media (max-width: 1199px) {
-      flex-wrap: wrap;
-    }
-
-    @media (max-width: 767px) {
-      padding: 20px;
-    }
-  }
-
-  &__block {
-    flex: 1 0 50%;
-
-    @media (max-width: 1199px) {
-      flex: 1 0 100%;
-    }
-
-    &:first-child {
-      border-right: 2px dashed #b1b1b1;
-
-      @media (max-width: 1199px) {
-        border-right: none;
-        border-bottom: 2px dashed #b1b1b1;
-      }
-    }
-  }
-}
-
-.slider {
-  &__wrapper {
-    padding: 0 30px;
-
-    @media (max-width: 767px) {
-      padding: 0 15px;
-    }
-  }
-
-  &__block {
-    padding: 0 15px;
-  }
-}
-
-.config {
-  &__wrapper {
-    display: grid;
-    gap: 10px;
-    grid-template: auto / repeat(2, auto);
-    justify-items: end;
-    align-items: center;
-    font-size: 13px;
-    font-weight: 700;
-    padding: 25px 15px;
-
-    @media (max-width: 1199px) {
-      grid-template: auto / repeat(3, auto);
-    }
-
-    @media (max-width: 991px) {
-      grid-template: auto / repeat(2, auto);
-      justify-content: space-between;
-    }
-
-    @media (max-width: 767px) {
-      padding: 25px 0px;
-    }
-
-    @media (max-width: 575px) {
-      grid-template: auto / 1fr;
-      justify-items: stretch;
-    }
-  }
 }
 
 .control {

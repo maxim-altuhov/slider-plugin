@@ -20,7 +20,6 @@ describe('Test of the "View" layer, method "update"', () => {
   test.each(viewListForTest)(
     'When the "update" method is performed at the "View" level, an update occurs in the dependent subview from "ViewList"-> %s and an object with options is passed to the "update"',
     (view) => {
-      expect(classView.viewList[view].update).toHaveBeenCalled();
       expect(classView.viewList[view].update).toHaveBeenCalledWith(initSettings);
     },
   );
@@ -38,7 +37,6 @@ describe('Test of the "View" layer, method "renderSlider"', () => {
   });
 
   test('When the slider rendering method is initialized, the required method is called in the subspecies responsible for it and the selector necessary for rendering the slider is passed there.', () => {
-    expect(mockRenderSlider).toHaveBeenCalled();
     expect(mockRenderSlider).toHaveBeenCalledWith($FAKE_SELECTOR);
   });
 });

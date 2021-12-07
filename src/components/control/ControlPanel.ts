@@ -1,20 +1,17 @@
 class ControlPanel {
-  public savedWatchFn: Function;
   private _$selector: JQuery;
   private _$sliderSelector: JQuery;
-  private _selectorsObj: {
-    [key: string]: JQuery;
-  };
-  private readonly _propertyList: string[];
+  private _selectorsObj: { [key: string]: JQuery } = {};
+  readonly propertyList: string[];
 
   constructor(panelSelector: string, sliderSelector: string) {
-    this.savedWatchFn = this.watchTheSlider.bind(this);
+    this.watchTheSlider = this.watchTheSlider.bind(this);
+    this._handleInputChanges = this._handleInputChanges.bind(this);
     this._$selector = $(panelSelector);
     this._$sliderSelector = $(sliderSelector);
-    this._selectorsObj = {};
 
     // список всех доступных свойств слайдера
-    this._propertyList = [
+    this.propertyList = [
       'mainColor',
       'secondColor',
       'colorForScale',
@@ -62,11 +59,11 @@ class ControlPanel {
       this._getProp(prop);
       this._initCheckingDependencies(prop);
 
-      $selector.on('change.input', this._handleInputChanges.bind(this));
+      $selector.on('change.input', this._handleInputChanges);
     });
 
     this._setOptionsForInputs();
-    this._$sliderSelector.metaSlider('subscribe', this.savedWatchFn);
+    this._$sliderSelector.metaSlider('subscribe', this.watchTheSlider);
   }
 
   unbind() {
@@ -75,7 +72,7 @@ class ControlPanel {
       $selector.off('change.input');
     });
 
-    this._$sliderSelector.metaSlider('unsubscribe', this.savedWatchFn);
+    this._$sliderSelector.metaSlider('unsubscribe', this.watchTheSlider);
   }
 
   /**
@@ -214,7 +211,7 @@ class ControlPanel {
 
   // Формируем объект со всеми инпутами, поиск по имени свойства слайдера
   private _getSelectors() {
-    this._propertyList.forEach((prop) => {
+    this.propertyList.forEach((prop) => {
       this._selectorsObj[prop] = this._$selector.find(`[name = ${prop}]`);
     });
   }
@@ -294,8 +291,8 @@ class ControlPanel {
   }
 
   // Установка новых значений свойств слайдера при изменении инпутов контр. панели
-  private _handleInputChanges(event: Event) {
-    const $target = $(event.target as HTMLInputElement);
+  private _handleInputChanges(event: Event & { target: EventTarget }) {
+    const $target = $(event.target);
     const prop = $target.attr('name');
     let value = null;
 

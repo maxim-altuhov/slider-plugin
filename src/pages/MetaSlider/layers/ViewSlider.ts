@@ -1,19 +1,13 @@
+import createUniqueID from '../utils/createUniqueID';
 import Observer from '../patterns/Observer';
 
 class ViewSlider extends Observer {
-  private _$selector: undefined | JQuery;
-  private _$elemSlider: JQuery;
-  private _$sliderProgress: JQuery;
-  private _$elemThumbs: JQuery;
-  private _$elemMarkers: JQuery;
-
-  constructor(private _isFirstInit: boolean = true) {
-    super();
-    this._$elemSlider = $();
-    this._$sliderProgress = $();
-    this._$elemThumbs = $();
-    this._$elemMarkers = $();
-  }
+  private _$selector = $();
+  private _$elemSlider = $();
+  private _$sliderProgress = $();
+  private _$elemThumbs = $();
+  private _$elemMarkers = $();
+  private _isFirstInit = true;
 
   update(options: IPluginOptions) {
     if (this._isFirstInit) {
@@ -61,11 +55,9 @@ class ViewSlider extends Observer {
 
   // Первоначальный рендер слайдера
   renderSlider($initSelector: JQuery) {
-    if (!this._$selector) this._$selector = $initSelector;
-
     const $fragmentWithASlider = $(document.createDocumentFragment());
     const $blockSlider = $(document.createElement('div'));
-    const sliderID = ViewSlider._createUniqueID();
+    const sliderID = createUniqueID;
 
     $blockSlider.addClass('meta-slider js-meta-slider');
     $blockSlider.attr('data-id', sliderID);
@@ -82,15 +74,8 @@ class ViewSlider extends Observer {
     $blockSlider.html(HTMLBlock);
 
     $fragmentWithASlider.append($blockSlider);
+    this._$selector = $initSelector;
     this._$selector.append($fragmentWithASlider);
-  }
-
-  // создаём уникальный ID для слайдера
-  private static _createUniqueID() {
-    const IDPartOne = Date.now().toString(36);
-    const IDPartTwo = Math.random().toString(36).substring(2);
-
-    return IDPartOne + IDPartTwo;
   }
 
   // Первоначальная инициализация
@@ -147,7 +132,7 @@ class ViewSlider extends Observer {
     }
 
     if (verifProp && showScale) {
-      const elemScalePoints = this._$selector!.find('.js-meta-slider__scale-point');
+      const elemScalePoints = this._$selector.find('.js-meta-slider__scale-point');
       const elemScalePointsHeight = elemScalePoints.outerHeight() || 0;
       this._$elemSlider.css('margin-bottom', `${elemScalePointsHeight * 3}px`);
     } else {
@@ -162,10 +147,10 @@ class ViewSlider extends Observer {
   private _setVerticalOrientation(options: IPluginOptions) {
     if (options.isVertical) {
       this._$elemSlider.addClass('meta-slider_vertical');
-      this._$selector!.addClass('ms-vertical');
+      this._$selector.addClass('ms-vertical');
     } else {
       this._$elemSlider.removeClass('meta-slider_vertical');
-      this._$selector!.removeClass('ms-vertical');
+      this._$selector.removeClass('ms-vertical');
     }
   }
 
@@ -193,9 +178,9 @@ class ViewSlider extends Observer {
   }
 
   // Получает значения при клике внутри слайдера
-  private _handleSetSliderValues(event: Event) {
+  private _handleSetSliderValues(event: Event & { target: EventTarget }) {
     event.preventDefault();
-    const $target = $(event.target as HTMLElement);
+    const $target = $(event.target);
 
     if ($target.hasClass('js-meta-slider')) {
       this.notify(event);
