@@ -1,5 +1,5 @@
-import View from '../../../../src/pages/metaSlider/layers/View';
-import initSettings from '../../../../src/pages/metaSlider/data/initSettings';
+import View from '../../layers/View';
+import initSettings from '../../data/initSettings';
 
 const classView = new View();
 

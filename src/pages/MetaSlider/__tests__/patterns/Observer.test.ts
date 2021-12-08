@@ -1,4 +1,4 @@
-import Observer from '../../../../src/pages/metaSlider/patterns/Observer';
+import Observer from '../../patterns/Observer';
 
 /**
  * В тесте используется правило @ts-ignore для возможности

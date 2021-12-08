@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/dot-notation */
-import ViewError from '../../../../src/pages/metaSlider/layers/ViewError';
+import ViewError from '../../layers/ViewError';
 
 /**
  * В тесте используется правило @ts-ignore для возможности передачи

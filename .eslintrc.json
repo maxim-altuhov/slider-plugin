@@ -31,7 +31,7 @@
     "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
     "no-use-before-define": "warn",
     "no-param-reassign": ["error", { "props": false }],
-    "no-unused-vars": ["warn", { "args": "none" }],
+    "no-unused-vars": ["error", { "args": "none" }],
     "semi": ["error", "always"],
     "quotes": ["error", "single"],
     "no-var": "error",
