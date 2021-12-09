@@ -7,5 +7,8 @@ module.exports = {
   moduleFileExtensions: ['ts', 'js'],
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
-  setupFiles: ['./setup-jest.js']
+  setupFiles: ['./setup-jest.js'],
+  moduleNameMapper: {
+    '\\.(css|less|scss)$': './src/__mocks__/styleMock.js'
+  }
 };

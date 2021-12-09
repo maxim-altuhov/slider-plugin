@@ -12,7 +12,7 @@ afterEach(() => {
   classObserver.observerList.length = 0;
 });
 
-describe('Test of the "Observer" pattern, method "subscribe"', () => {
+describe('Checking the "Observer" pattern, the "subscribe" method', () => {
   test('When the subscribe method is used, the function passed to the method is added to the "observerList" list', () => {
     classObserver.subscribe(sumFnForTest);
 
@@ -52,7 +52,7 @@ describe('Test of the "Observer" pattern, method "subscribe"', () => {
   });
 });
 
-describe('Test of the "Observer" pattern, method "unsubscribe"', () => {
+describe('Checking the "Observer" pattern, the "unsubscribe" method', () => {
   test('When a function that is already in the "observerList" is passed to the unsubscribe method, it is removed from the "observerList"', () => {
     classObserver.subscribe(sumFnForTest);
     expect(classObserver.observerList).toHaveLength(1);
@@ -63,7 +63,7 @@ describe('Test of the "Observer" pattern, method "unsubscribe"', () => {
   });
 });
 
-describe('Test of the "Observer" pattern, method "notify"', () => {
+describe('Checking the "Observer" pattern, the "notify" method', () => {
   const mockReturnNum = jest.fn((x: number) => x);
   const mockDoubleNum = jest.fn((num: number) => num ** 2);
 

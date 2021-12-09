@@ -336,14 +336,14 @@ class Model extends Observer {
     if (initVerifKeys) {
       this.opt.step = Number(step.toFixed(numberOfDecimalPlaces));
 
-      if (initAutoScaleCreation) {
-        this.opt.checkingStepSizeForScale = false;
-        this.opt.stepSizeForScale = this.opt.step;
-      }
-
       if (step <= 0 || step > differenceMinAndMax) {
         this.opt.step = differenceMinAndMax;
         this.errorEvent.notify(errMessage['step'], this.opt);
+      }
+
+      if (initAutoScaleCreation) {
+        this.opt.checkingStepSizeForScale = false;
+        this.opt.stepSizeForScale = this.opt.step;
       }
 
       if (stepSizeForScale <= 0 || stepSizeForScale > differenceMinAndMax) {

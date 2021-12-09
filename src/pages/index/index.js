@@ -1,5 +1,5 @@
-import './index.scss';
 import $ from 'jquery';
+import './index.scss';
 import '../metaSlider/metaSlider';
 import ControlPanel from '../../components/control/ControlPanel';
 

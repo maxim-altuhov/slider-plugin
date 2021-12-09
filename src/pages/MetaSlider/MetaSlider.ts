@@ -13,6 +13,10 @@ import Presenter from './layers/Presenter';
       const data = this.data('metaSlider');
 
       if (!data) {
+        if (this.length > 1) {
+          return $.error('The selector for initializing the slider must be unique on the page');
+        }
+
         //  Объединяем пользовательские настройки и настройки по умолчанию
         inputOptions = $.extend({}, initSettings, settings);
 

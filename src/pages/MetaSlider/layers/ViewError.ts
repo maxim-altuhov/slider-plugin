@@ -19,9 +19,15 @@ class ViewError {
 
       this._getErrorBlockSelectors();
       this._setEventErrorClose();
-    } else if (showError && this._$elemErrorText) {
+
+      return HTMLBlockError;
+    }
+
+    if (showError && this._$elemErrorText) {
       this._$elemErrorText.text(message);
     }
+
+    return undefined;
   }
 
   // Собираем селекторы
