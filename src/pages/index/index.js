@@ -10,9 +10,12 @@ $(() => {
   const controlPanel2 = new ControlPanel('#config-slider-2', '#slider-2');
 
   slider1.metaSlider({
-    step: 100,
-    initValueFirst: 1000,
-    initValueSecond: 2000,
+    step: 10,
+    minValue: 0,
+    maxValue: 100,
+    initValueFirst: 20,
+    initValueSecond: 80,
+    showError: true,
   });
 
   slider2.metaSlider({

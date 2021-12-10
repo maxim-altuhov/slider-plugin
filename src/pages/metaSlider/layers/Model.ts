@@ -204,8 +204,8 @@ class Model extends Observer {
     const errMessage: IErrMessage = {
       initValue: `Ошибка во входящих данных для одного или нескольких бегунков слайдера. Установлено 
       значение по-умолчанию.`,
-      minAndMaxValue: `Max значение установленное для слайдера меньше или равно его Min значению. 
-      Установлены значения по-умолчанию.`,
+      minAndMaxValue: `Max значение установленное для слайдера меньше его Min значения. 
+      Установлено значение по-умолчанию.`,
       stepSizeForScale: `Установите корректное значение шага для шкалы с делениями. 
       Установлено ближайщее оптимальное значение.`,
       step: `Значение шага слайдера не может быть больше разницы между макс. и мин. значением, 
@@ -282,20 +282,14 @@ class Model extends Observer {
   }
 
   private _checkingMinMaxValues(errMessage: IErrMessage) {
-    const { key } = this.opt;
-
-    if (key === 'init') {
-      this.opt.minValue = this.opt.initValueFirst ?? 0;
-      this.opt.maxValue = this.opt.initValueSecond ?? 100;
-    }
-
     // prettier-ignore
     const { 
+      key,
+      initValueFirst,
+      initValueSecond,
       minValue,
       maxValue,
       numberOfDecimalPlaces,
-      initValueFirst,
-      initValueSecond,
     } = this.opt;
 
     // prettier-ignore
@@ -309,10 +303,12 @@ class Model extends Observer {
       this.opt.minValue = Number(minValue.toFixed(numberOfDecimalPlaces));
       this.opt.maxValue = Number(maxValue.toFixed(numberOfDecimalPlaces));
 
-      if (this.opt.minValue > this.opt.maxValue || this.opt.minValue === this.opt.maxValue) {
+      if (this.opt.minValue >= this.opt.maxValue) {
         this.opt.minValue = initValueFirst ?? 0;
         this.opt.maxValue = initValueSecond ?? 100;
-        this.errorEvent.notify(errMessage['minAndMaxValue'], this.opt);
+
+        // prettier-ignore
+        if (this.opt.minValue > this.opt.maxValue ) this.errorEvent.notify(errMessage['minAndMaxValue'], this.opt);
       }
     }
   }
@@ -448,17 +444,17 @@ class Model extends Observer {
       key === 'numberOfDecimalPlaces' ||
       key === 'customValues';
 
-    const checkingFirstValue = initValueFirst > maxValue || initValueFirst < minValue;
-    const checkingSecondValue = initValueSecond > maxValue || initValueSecond < minValue;
-    const checkingAllValue = initValueFirst > initValueSecond;
+    const firstValueIsIncorrect = initValueFirst > maxValue || initValueFirst < minValue;
+    const secondValueIsIncorrect = initValueSecond > maxValue || initValueSecond < minValue;
+    const valuesOverlap = initValueFirst > initValueSecond;
 
     if (verifKeys) {
-      if (checkingFirstValue || checkingAllValue) {
+      if (firstValueIsIncorrect || valuesOverlap) {
         this.opt.initValueFirst = minValue;
         this.errorEvent.notify(errMessage['initValue'], this.opt);
       }
 
-      if (checkingSecondValue || checkingAllValue) {
+      if (secondValueIsIncorrect || valuesOverlap) {
         this.opt.initValueSecond = maxValue;
         this.errorEvent.notify(errMessage['initValue'], this.opt);
       }

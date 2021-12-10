@@ -9,7 +9,7 @@
     "build": "cross-env NODE_ENV=production webpack --mode production",
     "start": "cross-env NODE_ENV=development SECOND_ENV=devserver webpack serve --mode development --open",
     "deploy": "gh-pages -d dist",
-    "test": "jest --watch --runInBand",
+    "test": "jest --watchAll",
     "check-types": "tsc --project tsconfig.json --skipLibCheck --noemit",
     "eslint": "eslint --ext .js,.ts src/",
     "lint": "npm run check-types & npm run eslint"

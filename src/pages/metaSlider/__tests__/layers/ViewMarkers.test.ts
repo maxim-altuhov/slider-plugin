@@ -1,25 +1,25 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 import ViewMarkers from '../../layers/ViewMarkers';
-import '../../metaSlider';
+// import '../../metaSlider';
 
-document.body.innerHTML = '<div id="render-selector"></div>';
-$('#render-selector').metaSlider({
-  initValueFirst: 1000,
-  initValueSecond: 2000,
-  numberOfDecimalPlaces: 0,
-  preFix: '',
-  postFix: '',
-  customValues: [],
-  initFormatted: false,
-  showMarkers: true,
-  showScale: false,
-  mainColor: 'red',
-  colorMarker: '',
-  colorTextForMarker: 'white',
-  colorBorderForMarker: 'black',
-});
+// document.body.innerHTML = '<div id="render-selector"></div>';
+// $('#render-selector').metaSlider({
+//   initValueFirst: 1000,
+//   initValueSecond: 2000,
+//   numberOfDecimalPlaces: 0,
+//   preFix: '',
+//   postFix: '',
+//   customValues: [],
+//   initFormatted: false,
+//   showMarkers: true,
+//   showScale: false,
+//   mainColor: 'red',
+//   colorMarker: '',
+//   colorTextForMarker: 'white',
+//   colorBorderForMarker: 'black',
+// });
 
-console.log(document.body.innerHTML);
+// console.log(document.body.innerHTML);
 
 const classViewMarkers = new ViewMarkers();
 const customValueFirst = 'textValueFirst';

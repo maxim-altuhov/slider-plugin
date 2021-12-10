@@ -29,7 +29,7 @@ const initSettings: IPluginOptions = {
   step: 1,
   stepAsPercent: 0,
   minValue: 0,
-  maxValue: 100,
+  maxValue: 0,
   stepSizeForScale: null,
   numberOfDecimalPlaces: 0,
   preFix: '',
