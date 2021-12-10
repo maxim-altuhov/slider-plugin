@@ -1,1 +1,1 @@
-import '../pages/metaSlider/metaSlider.scss';
+module.exports = {};
