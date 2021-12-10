@@ -381,8 +381,6 @@ class Model extends Observer {
 
         this.errorEvent.notify(errMessage['stepSizeForScale'], this.opt);
       }
-    } else {
-      $.error('A property named "stepSizeForScale" has an empty value');
     }
   }
 
