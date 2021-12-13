@@ -31,16 +31,16 @@ class Presenter {
 
   // Вызов метода в модели для расчёта значений позиций бегунков слайдера
   calcTargetValue(
-    event: Event & { target: EventTarget; clientY: number; clientX: number },
+    event: (Event & { target: EventTarget; clientY: number; clientX: number }) | null,
     initValue?: number,
-    onlyReturn?: boolean,
+    onlyReturn = false,
   ) {
     this._model.calcTargetValue(event, initValue, onlyReturn);
   }
 
   // Получаем нужный subview через главный view
-  private _getView(view: string) {
-    return this._view.viewList[view];
+  private _getView(viewName: string) {
+    return this._view.viewList[viewName];
   }
 }
 
