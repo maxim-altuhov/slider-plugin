@@ -2,96 +2,85 @@
 import ViewError from '../../layers/ViewError';
 
 /**
- * В тесте используется fakeRenderOptions и fakeOptions с типом any
- * для возможности передачи в методы класса нестандартного объекта
+ * В тесте используется fakeOptions с типом any
+ * для возможности передачи в методы класс нестандартного объекта
  * с настройками слайдера, которые имеют значение только для тестируемых методов
  */
-const classViewError = new ViewError();
-const TEXT_MSG = 'TEXT MESSAGE';
-
-const fakeClassForTestRender = new ViewError();
-document.body.innerHTML = '<div class="render-selector"><div class="render-slider"></div></div>';
-
-const fakeRenderOptions: any = {
-  $selector: $('.render-selector'),
-  $elemSlider: $('.render-slider'),
-  showError: true,
-};
-const HTMLBlockError = fakeClassForTestRender.renderError(TEXT_MSG, fakeRenderOptions);
-const HTMLBlockWithError = `<div class="fake-selector"><div class="fake-slider"></div>${HTMLBlockError}</div>`;
 
 describe('Checking the "ViewError" layer, the "renderError" method', () => {
-  test('Initial state of class instance variables', () => {
-    expect(classViewError['_$selector']).toBeUndefined();
-    expect(classViewError['_$elemErrorInfo']).toBeUndefined();
-    expect(classViewError['_$elemErrorText']).toBeUndefined();
-    expect(classViewError['_$btnErrorClose']).toBeUndefined();
-  });
+  const initHTMLBlock = '<div class="fake-selector"><div class="fake-slider"></div></div>';
+  const TEXT_MSG = 'TEXT MESSAGE';
+  const NEW_TEXT_MSG = 'NEW TEXT';
 
   describe('If the error block has not yet been created', () => {
+    const classViewError = new ViewError();
+
     beforeAll(() => {
-      document.body.innerHTML = '<div class="fake-selector"><div class="fake-slider"></div></div>';
+      document.body.innerHTML = initHTMLBlock;
+
       const fakeOptions: any = {
         $selector: $('.fake-selector'),
         $elemSlider: $('.fake-slider'),
         showError: true,
       };
-
       classViewError.renderError(TEXT_MSG, fakeOptions);
     });
 
-    test('When initializing the "renderError" method, data about selectors is collected and an event handler is installed', () => {
-      expect(classViewError['_$elemErrorInfo']).toBeDefined();
-      expect(classViewError['_$elemErrorText']).toBeDefined();
-      expect(classViewError['_$btnErrorClose']).toBeDefined();
-    });
-
-    test('When initializing the "renderError" method, the error text is output', () => {
-      expect(classViewError['_$elemErrorText']?.text()).toEqual(TEXT_MSG);
+    test('When initializing the "renderError" method, data about selectors is collected', () => {
+      expect(classViewError['_$selector']).toHaveLength(1);
+      expect(classViewError['_$elemErrorInfo']).toHaveLength(1);
+      expect(classViewError['_$elemErrorText']).toHaveLength(1);
+      expect(classViewError['_$btnErrorClose']).toHaveLength(1);
     });
 
     test('When initializing the "renderError" method, creating block with error', () => {
-      // prettier-ignore
-      expect(document.body.innerHTML.replace(/\s+/g, '')).toEqual(HTMLBlockWithError.replace(/\s+/g, ''));
+      expect(document.body.innerHTML).not.toBe(initHTMLBlock);
+      expect(document.body.innerHTML).toMatch(/js-error-info/);
+      expect(document.body.innerHTML).toMatch(/js-error-info__text/);
+      expect(document.body.innerHTML).toMatch(/js-error-info__close/);
+    });
+
+    test('When initializing the "renderError" method, the error text is output', () => {
+      expect(classViewError['_$elemErrorText']?.text()).toBe(TEXT_MSG);
     });
   });
 
   describe('If the error block has already been created', () => {
-    const NEW_TEXT = 'NEW TEXT';
+    const classViewError = new ViewError();
+    let fakeOptions: any;
 
     beforeAll(() => {
-      document.body.innerHTML = HTMLBlockWithError;
-      classViewError['_$elemErrorInfo'] = $('.js-error-info');
-      classViewError['_$elemErrorText'] = $('.js-error-info__text');
+      document.body.innerHTML = initHTMLBlock;
 
-      const fakeOptions: any = {
+      fakeOptions = {
         $selector: $('.fake-selector'),
         $elemSlider: $('.fake-slider'),
         showError: true,
       };
-
-      classViewError.renderError(NEW_TEXT, fakeOptions);
+      classViewError.renderError(TEXT_MSG, fakeOptions);
     });
 
     test('When initializing the "renderError" method, just change the error message', () => {
-      expect(classViewError['_$elemErrorText']).toBeDefined();
-      expect(classViewError['_$elemErrorText']?.text()).toEqual(NEW_TEXT);
+      expect(classViewError['_$elemErrorText']).toHaveLength(1);
+      expect(classViewError['_$elemErrorText']?.text()).toBe(TEXT_MSG);
+
+      classViewError.renderError(NEW_TEXT_MSG, fakeOptions);
+
+      expect(classViewError['_$elemErrorText']?.text()).toBe(NEW_TEXT_MSG);
     });
 
-    test('When we click on the button to close the error window, it is deleted and all selectors are reset. The click event handler is removed from the button', () => {
-      const defaultSliderBlock = '<div class="fake-selector"><div class="fake-slider"></div></div>';
-
+    test('When we click on the button to close the error window, it is deleted and all selectors are reset', () => {
       expect(classViewError['_$elemErrorInfo']).not.toBeNull();
       expect(classViewError['_$elemErrorText']).not.toBeNull();
       expect(classViewError['_$btnErrorClose']).not.toBeNull();
+      expect(document.body.innerHTML).not.toBe(initHTMLBlock);
 
       classViewError['_$btnErrorClose']?.click();
 
-      // prettier-ignore
-      expect(document.body.innerHTML.replace(/\s+/g, '')).toEqual(defaultSliderBlock.replace(/\s+/g, ''));
       expect(classViewError['_$elemErrorInfo']).toBeNull();
       expect(classViewError['_$elemErrorText']).toBeNull();
       expect(classViewError['_$btnErrorClose']).toBeNull();
+      expect(document.body.innerHTML).toBe(initHTMLBlock);
     });
   });
 });

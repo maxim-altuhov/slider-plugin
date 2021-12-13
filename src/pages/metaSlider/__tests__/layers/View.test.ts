@@ -1,9 +1,8 @@
 import View from '../../layers/View';
 import initSettings from '../../data/initSettings';
 
-const classView = new View();
-
 describe('Checking the "View" layer', () => {
+  const classView = new View();
   const $FAKE_SELECTOR = $('.fake-selector');
   const viewListContainsUpdate: string[] = [];
   let viewContainsRenderSlider = '';

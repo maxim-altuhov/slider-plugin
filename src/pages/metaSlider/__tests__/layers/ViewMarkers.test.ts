@@ -1,47 +1,47 @@
 /* eslint-disable @typescript-eslint/dot-notation */
+import ViewSlider from '../../layers/ViewSlider';
 import ViewMarkers from '../../layers/ViewMarkers';
-// import '../../metaSlider';
 
-// document.body.innerHTML = '<div id="render-selector"></div>';
-// $('#render-selector').metaSlider({
-//   initValueFirst: 1000,
-//   initValueSecond: 2000,
-//   numberOfDecimalPlaces: 0,
-//   preFix: '',
-//   postFix: '',
-//   customValues: [],
-//   initFormatted: false,
-//   showMarkers: true,
-//   showScale: false,
-//   mainColor: 'red',
-//   colorMarker: '',
-//   colorTextForMarker: 'white',
-//   colorBorderForMarker: 'black',
-// });
+/**
+ * В тесте используется initOptions с типом any
+ * для возможности передачи в методы класс нестандартного объекта
+ * с настройками слайдера, которые имеют значение только для тестируемых методов
+ */
 
-// console.log(document.body.innerHTML);
+const classViewSlider = new ViewSlider();
+let classViewMarkers = new ViewMarkers();
 
-const classViewMarkers = new ViewMarkers();
-const customValueFirst = 'textValueFirst';
-const customValueSecond = 'textValueSecond';
+document.body.innerHTML = '<div id="render-selector"></div>';
 
-const returnHTMLBlockSlider = (
-  initValueFirst: number | string,
-  initValueSecond: number | string,
-) => `<div class="meta-slider__progress js-meta-slider__progress"></div>
-<button type="button" class="meta-slider__thumb js-meta-slider__thumb meta-slider__thumb_left" data-value="${initValueFirst}" data-text=${customValueFirst}>
-  <span class="meta-slider__marker js-meta-slider__marker meta-slider__marker_left"></span>
-</button>
-<button type="button" class="meta-slider__thumb js-meta-slider__thumb meta-slider__thumb_right" data-value="${initValueSecond}" data-text=${customValueSecond}>
-  <span class="meta-slider__marker js-meta-slider__marker meta-slider__marker_right"></span>
-</button>
-<div class="meta-slider__scale js-meta-slider__scale"></div>`;
+const $selector = $('#render-selector');
+classViewSlider.renderSlider($selector);
+const HTMLBlockWithSlider = document.body.innerHTML;
 
 const getTextInMarker = (index: number, replaceSpace = false) => {
-  const text = classViewMarkers['_$elemMarkers'][index].textContent;
-  if (replaceSpace) return text?.replace(/\s+/g, '_');
+  const textInMarker = classViewMarkers['_$elemMarkers'][index].textContent;
+  if (replaceSpace) return textInMarker?.replace(/\s+/g, '_');
 
-  return text;
+  return textInMarker;
+};
+
+const setSliderAttrForTest = (options: any) => {
+  // prettier-ignore
+  const {
+    $elemThumbs,
+    initValueFirst,
+    initValueSecond,
+    textValueFirst,
+    textValueSecond,
+  } = options;
+
+  const initValuesArray = [initValueFirst, initValueSecond];
+  const customValues = [textValueFirst, textValueSecond];
+
+  initValuesArray.forEach((_, index) => {
+    $elemThumbs
+      .eq(index)
+      .attr({ 'data-value': initValuesArray[index], 'data-text': customValues[index] });
+  });
 };
 
 test('State before first initialization', () => {
@@ -53,8 +53,6 @@ test('State before first initialization', () => {
 describe('Checking the "ViewMarkers" layer, the "update" method', () => {
   const defaultOptions = {
     key: 'init',
-    $elemMarkers: $(),
-    $elemThumbs: $(),
     numberOfDecimalPlaces: 0,
     preFix: '',
     postFix: '',
@@ -67,21 +65,21 @@ describe('Checking the "ViewMarkers" layer, the "update" method', () => {
     colorBorderForMarker: 'black',
     initValueFirst: 1000,
     initValueSecond: 2000,
+    textValueFirst: 'textValueFirst',
+    textValueSecond: 'textValueSecond',
   };
 
   let initOptions: any;
 
   beforeEach(() => {
-    classViewMarkers['_$elemMarkers'] = $();
-    classViewMarkers['_$elemThumbs'] = $();
-    classViewMarkers['_isFirstInit'] = true;
+    classViewMarkers = new ViewMarkers();
 
     initOptions = { ...defaultOptions };
-    const { initValueFirst, initValueSecond } = initOptions;
-    document.body.innerHTML = returnHTMLBlockSlider(initValueFirst, initValueSecond);
+    document.body.innerHTML = HTMLBlockWithSlider;
 
     initOptions.$elemMarkers = $('.js-meta-slider__marker');
     initOptions.$elemThumbs = $('.js-meta-slider__thumb');
+    setSliderAttrForTest(initOptions);
 
     classViewMarkers.update(initOptions);
   });
@@ -111,7 +109,13 @@ describe('Checking the "ViewMarkers" layer, the "update" method', () => {
   });
 
   test('Initialization and update with option "preFix/postFix"', () => {
-    const { initValueFirst, initValueSecond } = initOptions;
+    // prettier-ignore
+    const {
+      initValueFirst,
+      initValueSecond,
+      textValueFirst,
+      textValueSecond,
+    } = initOptions;
 
     expect(getTextInMarker(0)).toBe(String(initValueFirst));
     expect(getTextInMarker(1)).toBe(String(initValueSecond));
@@ -125,27 +129,33 @@ describe('Checking the "ViewMarkers" layer, the "update" method', () => {
     expect(getTextInMarker(1)).toBe(`abc${String(initValueSecond)}cba`);
 
     initOptions.key = 'customValues';
-    initOptions.customValues = ['A', 'B', 'C'];
+    initOptions.customValues = [textValueFirst, textValueSecond];
     initOptions.preFix = 'abc';
     initOptions.postFix = 'cba';
     classViewMarkers.update(initOptions);
 
-    expect(getTextInMarker(0)).toBe(`abc${customValueFirst}cba`);
-    expect(getTextInMarker(1)).toBe(`abc${customValueSecond}cba`);
+    expect(getTextInMarker(0)).toBe(`abc${textValueFirst}cba`);
+    expect(getTextInMarker(1)).toBe(`abc${textValueSecond}cba`);
   });
 
   test('Initialization and update with customValues', () => {
-    const { initValueFirst, initValueSecond } = initOptions;
+    // prettier-ignore
+    const {
+      initValueFirst,
+      initValueSecond,
+      textValueFirst,
+      textValueSecond,
+    } = initOptions;
 
     expect(getTextInMarker(0)).toBe(String(initValueFirst));
     expect(getTextInMarker(1)).toBe(String(initValueSecond));
 
     initOptions.key = 'customValues';
-    initOptions.customValues = ['A', 'B', 'C'];
+    initOptions.customValues = [textValueFirst, textValueSecond];
     classViewMarkers.update(initOptions);
 
-    expect(getTextInMarker(0)).toBe(customValueFirst);
-    expect(getTextInMarker(1)).toBe(customValueSecond);
+    expect(getTextInMarker(0)).toBe(textValueFirst);
+    expect(getTextInMarker(1)).toBe(textValueSecond);
   });
 
   test('Сhecking whether the styles for markers are set correctly', () => {
