@@ -1,12 +1,7 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 import ViewSlider from '../../layers/ViewSlider';
 import ViewMarkers from '../../layers/ViewMarkers';
-
-/**
- * В тесте используется initOptions с типом any
- * для возможности передачи в методы класс нестандартного объекта
- * с настройками слайдера, которые имеют значение только для тестируемых методов
- */
+import initSettings from '../../data/initSettings';
 
 const classViewSlider = new ViewSlider();
 let classViewMarkers = new ViewMarkers();
@@ -24,17 +19,15 @@ const getTextInMarker = (index: number, replaceSpace = false) => {
   return textInMarker;
 };
 
-const setSliderAttrForTest = (options: any) => {
+const setSliderAttrForTest = (options: IPluginOptions) => {
   // prettier-ignore
   const {
     $elemThumbs,
-    initValueFirst,
-    initValueSecond,
     textValueFirst,
     textValueSecond,
+    initValuesArray,
   } = options;
 
-  const initValuesArray = [initValueFirst, initValueSecond];
   const customValues = [textValueFirst, textValueSecond];
 
   initValuesArray.forEach((_, index) => {
@@ -44,19 +37,17 @@ const setSliderAttrForTest = (options: any) => {
   });
 };
 
-test('State before first initialization', () => {
+test('Checking the "ViewMarkers" layer. State before first initialization the "update" method', () => {
   expect(classViewMarkers['_$elemMarkers']).toHaveLength(0);
   expect(classViewMarkers['_$elemThumbs']).toHaveLength(0);
   expect(classViewMarkers['_isFirstInit']).toBe(true);
 });
 
 describe('Checking the "ViewMarkers" layer, the "update" method', () => {
-  const defaultOptions = {
+  const defaultSettings = {
     key: 'init',
-    numberOfDecimalPlaces: 0,
     preFix: '',
     postFix: '',
-    customValues: [],
     initFormatted: false,
     showMarkers: true,
     mainColor: 'red',
@@ -65,44 +56,61 @@ describe('Checking the "ViewMarkers" layer, the "update" method', () => {
     colorBorderForMarker: 'black',
     initValueFirst: 1000,
     initValueSecond: 2000,
+    initValuesArray: [1000, 2000],
+    customValues: [],
     textValueFirst: 'textValueFirst',
     textValueSecond: 'textValueSecond',
   };
 
-  let initOptions: any;
+  let testSettings: IPluginOptions;
 
   beforeEach(() => {
     classViewMarkers = new ViewMarkers();
-
-    initOptions = { ...defaultOptions };
     document.body.innerHTML = HTMLBlockWithSlider;
+    testSettings = $.extend({}, initSettings, defaultSettings);
+    testSettings.$elemMarkers = $('.js-meta-slider__marker');
+    testSettings.$elemThumbs = $('.js-meta-slider__thumb');
 
-    initOptions.$elemMarkers = $('.js-meta-slider__marker');
-    initOptions.$elemThumbs = $('.js-meta-slider__thumb');
-    setSliderAttrForTest(initOptions);
+    setSliderAttrForTest(testSettings);
 
-    classViewMarkers.update(initOptions);
+    classViewMarkers.update(testSettings);
   });
 
-  test('First initialization', () => {
-    const { initValueFirst, initValueSecond } = initOptions;
-
+  test('Checking the "_init" method', () => {
     expect(classViewMarkers['_$elemMarkers']).toHaveLength(2);
     expect(classViewMarkers['_$elemThumbs']).toHaveLength(2);
     expect(classViewMarkers['_isFirstInit']).toBe(false);
+  });
+
+  test('Checking the "_setValueInMarkers" method', () => {
+    // prettier-ignore
+    const {
+      initValueFirst,
+      initValueSecond,
+      textValueFirst,
+      textValueSecond,
+    } = testSettings;
+
     expect(getTextInMarker(0)).toBe(String(initValueFirst));
     expect(getTextInMarker(1)).toBe(String(initValueSecond));
+
+    testSettings.key = 'customValues';
+    testSettings.customValues = [textValueFirst, textValueSecond];
+    classViewMarkers.update(testSettings);
+
+    expect(getTextInMarker(0)).toBe(textValueFirst);
+    expect(getTextInMarker(1)).toBe(textValueSecond);
   });
 
   test('Initialization and update with option "initFormatted = true"', () => {
-    const { initValueFirst, initValueSecond } = initOptions;
+    const { initValueFirst, initValueSecond } = testSettings;
 
     expect(getTextInMarker(0)).toBe(String(initValueFirst));
     expect(getTextInMarker(1)).toBe(String(initValueSecond));
 
-    initOptions.key = 'initFormatted';
-    initOptions.initFormatted = true;
-    classViewMarkers.update(initOptions);
+    testSettings.key = 'initFormatted';
+    testSettings.initFormatted = true;
+    classViewMarkers.update(testSettings);
 
     expect(getTextInMarker(0, true)).toBe('1_000');
     expect(getTextInMarker(1, true)).toBe('2_000');
@@ -115,72 +123,58 @@ describe('Checking the "ViewMarkers" layer, the "update" method', () => {
       initValueSecond,
       textValueFirst,
       textValueSecond,
-    } = initOptions;
+    } = testSettings;
 
     expect(getTextInMarker(0)).toBe(String(initValueFirst));
     expect(getTextInMarker(1)).toBe(String(initValueSecond));
 
-    initOptions.key = 'preFix';
-    initOptions.preFix = 'abc';
-    initOptions.postFix = 'cba';
-    classViewMarkers.update(initOptions);
+    testSettings.key = 'preFix';
+    testSettings.preFix = 'abc';
+    testSettings.postFix = 'cba';
+    classViewMarkers.update(testSettings);
 
     expect(getTextInMarker(0)).toBe(`abc${String(initValueFirst)}cba`);
     expect(getTextInMarker(1)).toBe(`abc${String(initValueSecond)}cba`);
 
-    initOptions.key = 'customValues';
-    initOptions.customValues = [textValueFirst, textValueSecond];
-    initOptions.preFix = 'abc';
-    initOptions.postFix = 'cba';
-    classViewMarkers.update(initOptions);
+    testSettings.key = 'customValues';
+    testSettings.customValues = [textValueFirst, textValueSecond];
+    testSettings.preFix = 'abc';
+    testSettings.postFix = 'cba';
+    classViewMarkers.update(testSettings);
 
     expect(getTextInMarker(0)).toBe(`abc${textValueFirst}cba`);
     expect(getTextInMarker(1)).toBe(`abc${textValueSecond}cba`);
   });
 
-  test('Initialization and update with customValues', () => {
+  test('Checking the "_setStyleForMarkers" method. Сhecking whether the styles for markers are set correctly', () => {
     // prettier-ignore
-    const {
-      initValueFirst,
-      initValueSecond,
-      textValueFirst,
-      textValueSecond,
-    } = initOptions;
+    const { 
+      $elemMarkers,
+      mainColor,
+      colorTextForMarker,
+      colorBorderForMarker,
+    } = testSettings;
 
-    expect(getTextInMarker(0)).toBe(String(initValueFirst));
-    expect(getTextInMarker(1)).toBe(String(initValueSecond));
-
-    initOptions.key = 'customValues';
-    initOptions.customValues = [textValueFirst, textValueSecond];
-    classViewMarkers.update(initOptions);
-
-    expect(getTextInMarker(0)).toBe(textValueFirst);
-    expect(getTextInMarker(1)).toBe(textValueSecond);
-  });
-
-  test('Сhecking whether the styles for markers are set correctly', () => {
-    const { mainColor, colorTextForMarker, colorBorderForMarker } = initOptions;
-
-    classViewMarkers['_$elemMarkers'].each((_, elem) => {
+    $elemMarkers.each((_, elem) => {
       expect(elem.style).toHaveProperty('background-color', mainColor);
       expect(elem.style).toHaveProperty('border-color', colorBorderForMarker);
       expect(elem.style).toHaveProperty('color', colorTextForMarker);
       expect(elem.style).toHaveProperty('display', '');
     });
 
-    initOptions.key = 'colorMarker';
-    initOptions.colorMarker = 'yellow';
-    classViewMarkers.update(initOptions);
+    testSettings.key = 'colorMarker';
+    testSettings.colorMarker = 'yellow';
+    classViewMarkers.update(testSettings);
 
-    classViewMarkers['_$elemMarkers'].each((_, elem) => {
-      expect(elem.style).toHaveProperty('background-color', initOptions.colorMarker);
+    $elemMarkers.each((_, elem) => {
+      expect(elem.style).toHaveProperty('background-color', testSettings.colorMarker);
     });
 
-    initOptions.key = 'showMarkers';
-    initOptions.showMarkers = false;
-    classViewMarkers.update(initOptions);
+    testSettings.key = 'showMarkers';
+    testSettings.showMarkers = false;
+    classViewMarkers.update(testSettings);
 
-    classViewMarkers['_$elemMarkers'].each((_, elem) => {
+    $elemMarkers.each((_, elem) => {
       expect(elem.style).toHaveProperty('display', 'none');
     });
   });

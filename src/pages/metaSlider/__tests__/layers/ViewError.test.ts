@@ -1,11 +1,6 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 import ViewError from '../../layers/ViewError';
-
-/**
- * В тесте используется fakeOptions с типом any
- * для возможности передачи в методы класс нестандартного объекта
- * с настройками слайдера, которые имеют значение только для тестируемых методов
- */
+import initSettings from '../../data/initSettings';
 
 describe('Checking the "ViewError" layer, the "renderError" method', () => {
   const initHTMLBlock = '<div class="fake-selector"><div class="fake-slider"></div></div>';
@@ -18,12 +13,14 @@ describe('Checking the "ViewError" layer, the "renderError" method', () => {
     beforeAll(() => {
       document.body.innerHTML = initHTMLBlock;
 
-      const fakeOptions: any = {
+      const defaultSettings = {
         $selector: $('.fake-selector'),
         $elemSlider: $('.fake-slider'),
         showError: true,
       };
-      classViewError.renderError(TEXT_MSG, fakeOptions);
+
+      const testSettings: IPluginOptions = $.extend({}, initSettings, defaultSettings);
+      classViewError.renderError(TEXT_MSG, testSettings);
     });
 
     test('When initializing the "renderError" method, data about selectors is collected', () => {
@@ -47,24 +44,26 @@ describe('Checking the "ViewError" layer, the "renderError" method', () => {
 
   describe('If the error block has already been created', () => {
     const classViewError = new ViewError();
-    let fakeOptions: any;
+    let testSettings: IPluginOptions;
 
     beforeAll(() => {
       document.body.innerHTML = initHTMLBlock;
 
-      fakeOptions = {
+      const defaultSettings = {
         $selector: $('.fake-selector'),
         $elemSlider: $('.fake-slider'),
         showError: true,
       };
-      classViewError.renderError(TEXT_MSG, fakeOptions);
+
+      testSettings = $.extend({}, initSettings, defaultSettings);
+      classViewError.renderError(TEXT_MSG, testSettings);
     });
 
     test('When initializing the "renderError" method, just change the error message', () => {
       expect(classViewError['_$elemErrorText']).toHaveLength(1);
       expect(classViewError['_$elemErrorText']?.text()).toBe(TEXT_MSG);
 
-      classViewError.renderError(NEW_TEXT_MSG, fakeOptions);
+      classViewError.renderError(NEW_TEXT_MSG, testSettings);
 
       expect(classViewError['_$elemErrorText']?.text()).toBe(NEW_TEXT_MSG);
     });
@@ -75,7 +74,7 @@ describe('Checking the "ViewError" layer, the "renderError" method', () => {
       expect(classViewError['_$btnErrorClose']).not.toBeNull();
       expect(document.body.innerHTML).not.toBe(initHTMLBlock);
 
-      classViewError['_$btnErrorClose']?.click();
+      classViewError['_$btnErrorClose']?.trigger('click');
 
       expect(classViewError['_$elemErrorInfo']).toBeNull();
       expect(classViewError['_$elemErrorText']).toBeNull();

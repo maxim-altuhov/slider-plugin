@@ -54,7 +54,6 @@ class ViewMarkers {
         customValues,
         preFix,
         postFix,
-        numberOfDecimalPlaces,
         initFormatted,
       } = options;
 
@@ -67,8 +66,7 @@ class ViewMarkers {
           );
         } else {
           const currentValue = Number(this._$elemThumbs.eq(index).attr('data-value'));
-          const checkedValue = Number(currentValue.toFixed(numberOfDecimalPlaces));
-          const convertedValue = initFormatted ? checkedValue.toLocaleString() : checkedValue;
+          const convertedValue = initFormatted ? currentValue.toLocaleString() : currentValue;
 
           $currentMarker.text(`${preFix}${convertedValue}${postFix}`);
         }

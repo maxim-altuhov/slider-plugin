@@ -13,7 +13,7 @@ beforeEach(() => {
   jest.useFakeTimers();
 
   timer = setInterval(() => {
-    btn.click();
+    btn.trigger('click');
   }, 1000);
 });
 
