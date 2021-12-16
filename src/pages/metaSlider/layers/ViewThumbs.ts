@@ -91,7 +91,6 @@ class ViewThumbs extends Observer {
 
       $currentThumb.on('pointerdown.thumb', this._handleSetEventListenerForThumbs.bind(this));
       $currentThumb.on('keydown.thumb', this._handleChangeThumbPosition.bind(this, options));
-      $currentThumb.on('dragstart.thumb', false);
     });
   }
 
