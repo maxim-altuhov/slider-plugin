@@ -31,10 +31,12 @@ describe('Checking the "ViewError" layer, the "renderError" method', () => {
     });
 
     test('When initializing the "renderError" method, creating block with error', () => {
-      expect(document.body.innerHTML).not.toBe(initHTMLBlock);
-      expect(document.body.innerHTML).toMatch(/js-error-info/);
-      expect(document.body.innerHTML).toMatch(/js-error-info__text/);
-      expect(document.body.innerHTML).toMatch(/js-error-info__close/);
+      const documentPage = document.body.innerHTML;
+
+      expect(documentPage).not.toBe(initHTMLBlock);
+      expect(documentPage).toMatch(/js-error-info/);
+      expect(documentPage).toMatch(/js-error-info__text/);
+      expect(documentPage).toMatch(/js-error-info__close/);
     });
 
     test('When initializing the "renderError" method, the error text is output', () => {

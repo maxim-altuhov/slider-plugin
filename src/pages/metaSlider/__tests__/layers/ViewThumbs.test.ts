@@ -2,7 +2,7 @@
 import ViewSlider from '../../layers/ViewSlider';
 import ViewThumbs from '../../layers/ViewThumbs';
 import initSettings from '../../data/initSettings';
-import * as utilsObj from '../../utils/makeThrottlingHandler';
+import * as makeThrottlingHandler from '../../utils/makeThrottlingHandler';
 
 const classViewSlider = new ViewSlider();
 let classViewThumbs = new ViewThumbs();
@@ -14,6 +14,7 @@ classViewSlider.renderSlider($selector);
 const HTMLBlockWithSlider = document.body.innerHTML;
 
 test('Checking the "ViewThumbs" layer. State before first initialization the "update" method', () => {
+  expect(classViewThumbs.observerList).toHaveLength(0);
   expect(classViewThumbs['_$elemThumbs']).toHaveLength(0);
   expect(classViewThumbs['_isFirstInit']).toBe(true);
 });
@@ -48,15 +49,15 @@ describe('Checking the "ViewThumbs" layer, the "update" method', () => {
   });
 
   test('Checking the "_init" method', () => {
-    const { $elemThumbs } = testSettings;
-
+    expect(classViewThumbs['_$elemThumbs']).toHaveLength(2);
     expect(classViewThumbs['_isFirstInit']).toBe(false);
-    expect($elemThumbs).toHaveLength(2);
   });
 
   test('Checking the "_setValueInThumbs" method', () => {
+    const $elemThumbs = classViewThumbs['_$elemThumbs'];
+
+    // prettier-ignore
     const {
-      $elemThumbs,
       initValuesArray,
       valuesAsPercentageArray,
       textValueFirst,
@@ -89,11 +90,12 @@ describe('Checking the "ViewThumbs" layer, the "update" method', () => {
 
     // prettier-ignore
     const { 
-      $elemThumbs,
       initValueFirst,
       initValueSecond,
       numberOfDecimalPlaces,
     } = testSettings;
+
+    const $elemThumbs = classViewThumbs['_$elemThumbs'];
 
     expect($elemThumbs.eq(0).attr('data-value')).toBe(
       initValueFirst?.toFixed(numberOfDecimalPlaces),
@@ -115,9 +117,10 @@ describe('Checking the "ViewThumbs" layer, the "update" method', () => {
   });
 
   test('Checking the "_setStyleForThumbs" method. Сhecking whether the styles for thumbs are set correctly', () => {
+    const $elemThumbs = classViewThumbs['_$elemThumbs'];
+
     // prettier-ignore
     const { 
-      $elemThumbs,
       mainColor,
       colorBorderForThumb,
     } = testSettings;
@@ -138,7 +141,7 @@ describe('Checking the "ViewThumbs" layer, the "update" method', () => {
   });
 
   test('Checking the "_checkIsRange" method', () => {
-    const { $elemThumbs } = testSettings;
+    const $elemThumbs = classViewThumbs['_$elemThumbs'];
 
     expect($elemThumbs[0].style).toHaveProperty('display', '');
 
@@ -152,9 +155,10 @@ describe('Checking the "ViewThumbs" layer, the "update" method', () => {
   test.each([0, 1])(
     'Checking the "_setEventsThumbs" method, event "keydown" => _handleChangeThumbPosition',
     (index) => {
-      const { $elemThumbs, initValuesArray, step } = testSettings;
+      const { initValuesArray, step } = testSettings;
       const mockNotify = jest.spyOn(classViewThumbs, 'notify');
       const testKeysArr = ['ArrowUp', 'ArrowRight', 'ArrowDown', 'ArrowLeft'];
+      const $elemThumbs = classViewThumbs['_$elemThumbs'];
 
       testKeysArr.forEach((keyCode) => {
         const event = $.Event('keydown', { code: keyCode });
@@ -176,9 +180,9 @@ describe('Checking the "ViewThumbs" layer, the "update" method', () => {
   test.each([0, 1])(
     'Checking the "_setEventsThumbs" method, event "pointerdown" => _handleSetEventListenerForThumbs, _handleInitPointerMove, _handleInitPointerUp',
     (index) => {
-      const { $elemThumbs } = testSettings;
+      const $elemThumbs = classViewThumbs['_$elemThumbs'];
       const mockNotify = jest.spyOn(classViewThumbs, 'notify');
-      const mockMakeThrottlingHandler = jest.spyOn(utilsObj, 'default');
+      const mockMakeThrottlingHandler = jest.spyOn(makeThrottlingHandler, 'default');
       $elemThumbs[index].setPointerCapture = jest.fn();
       const mockSetPointerCapture = $elemThumbs[index].setPointerCapture;
 

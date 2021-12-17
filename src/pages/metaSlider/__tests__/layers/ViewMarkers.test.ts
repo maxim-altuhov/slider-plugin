@@ -147,13 +147,9 @@ describe('Checking the "ViewMarkers" layer, the "update" method', () => {
   });
 
   test('Checking the "_setStyleForMarkers" method. Сhecking whether the styles for markers are set correctly', () => {
-    // prettier-ignore
-    const { 
-      $elemMarkers,
-      mainColor,
-      colorTextForMarker,
-      colorBorderForMarker,
-    } = testSettings;
+    const $elemMarkers = classViewMarkers['_$elemMarkers'];
+
+    const { mainColor, colorTextForMarker, colorBorderForMarker } = testSettings;
 
     $elemMarkers.each((_, elem) => {
       expect(elem.style).toHaveProperty('background-color', mainColor);
