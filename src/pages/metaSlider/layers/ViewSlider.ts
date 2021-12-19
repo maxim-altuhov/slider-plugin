@@ -82,12 +82,14 @@ class ViewSlider extends Observer {
   private _init(options: IPluginOptions) {
     // prettier-ignore
     const { 
+      $selector,
       $elemSlider,
       $sliderProgress,
       $elemThumbs,
       $elemMarkers,
     } = options;
 
+    if (this._$selector.length === 0) this._$selector = $selector;
     this._$elemSlider = $elemSlider;
     this._$sliderProgress = $sliderProgress;
     this._$elemThumbs = $elemThumbs;
@@ -132,8 +134,8 @@ class ViewSlider extends Observer {
     }
 
     if (verifProp && showScale) {
-      const elemScalePoints = this._$selector.find('.js-meta-slider__scale-point');
-      const elemScalePointsHeight = elemScalePoints.outerHeight() || 0;
+      const $elemScalePoints = this._$selector.find('.js-meta-slider__scale-point');
+      const elemScalePointsHeight = $elemScalePoints.outerHeight() || 0;
       this._$elemSlider.css('margin-bottom', `${elemScalePointsHeight * 3}px`);
     } else {
       this._$elemSlider.css('margin-bottom', '');

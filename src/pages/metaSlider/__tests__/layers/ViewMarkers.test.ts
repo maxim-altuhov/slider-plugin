@@ -7,17 +7,12 @@ const classViewSlider = new ViewSlider();
 let classViewMarkers = new ViewMarkers();
 
 document.body.innerHTML = '<div id="render-selector"></div>';
-
 const $selector = $('#render-selector');
+
 classViewSlider.renderSlider($selector);
 const HTMLBlockWithSlider = document.body.innerHTML;
 
-const getTextInMarker = (index: number, replaceSpace = false) => {
-  const textInMarker = classViewMarkers['_$elemMarkers'][index].textContent;
-  if (replaceSpace) return textInMarker?.replace(/\s+/g, '_');
-
-  return textInMarker;
-};
+const getTextInMarker = (index: number) => classViewMarkers['_$elemMarkers'][index].textContent;
 
 const setSliderAttrForTest = (options: IPluginOptions) => {
   // prettier-ignore
@@ -65,14 +60,13 @@ describe('Checking the "ViewMarkers" layer, the "update" method', () => {
   let testSettings: IPluginOptions;
 
   beforeEach(() => {
-    classViewMarkers = new ViewMarkers();
     document.body.innerHTML = HTMLBlockWithSlider;
     testSettings = $.extend({}, initSettings, defaultSettings);
     testSettings.$elemMarkers = $('.js-meta-slider__marker');
     testSettings.$elemThumbs = $('.js-meta-slider__thumb');
 
     setSliderAttrForTest(testSettings);
-
+    classViewMarkers = new ViewMarkers();
     classViewMarkers.update(testSettings);
   });
 
@@ -112,8 +106,8 @@ describe('Checking the "ViewMarkers" layer, the "update" method', () => {
     testSettings.initFormatted = true;
     classViewMarkers.update(testSettings);
 
-    expect(getTextInMarker(0, true)).toBe('1_000');
-    expect(getTextInMarker(1, true)).toBe('2_000');
+    expect(getTextInMarker(0)).toBe(initValueFirst?.toLocaleString());
+    expect(getTextInMarker(1)).toBe(initValueSecond?.toLocaleString());
   });
 
   test('Initialization and update with option "preFix/postFix"', () => {

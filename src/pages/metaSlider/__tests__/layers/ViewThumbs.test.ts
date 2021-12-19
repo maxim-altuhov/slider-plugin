@@ -8,8 +8,8 @@ const classViewSlider = new ViewSlider();
 let classViewThumbs = new ViewThumbs();
 
 document.body.innerHTML = '<div id="render-selector"></div>';
-
 const $selector = $('#render-selector');
+
 classViewSlider.renderSlider($selector);
 const HTMLBlockWithSlider = document.body.innerHTML;
 
@@ -40,11 +40,11 @@ describe('Checking the "ViewThumbs" layer, the "update" method', () => {
   let testSettings: IPluginOptions;
 
   beforeEach(() => {
-    classViewThumbs = new ViewThumbs();
     document.body.innerHTML = HTMLBlockWithSlider;
     testSettings = $.extend({}, initSettings, defaultSettings);
     testSettings.$elemThumbs = $('.js-meta-slider__thumb');
 
+    classViewThumbs = new ViewThumbs();
     classViewThumbs.update(testSettings);
   });
 
