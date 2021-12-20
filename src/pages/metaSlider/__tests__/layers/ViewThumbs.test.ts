@@ -143,13 +143,13 @@ describe('Checking the "ViewThumbs" layer, the "update" method', () => {
   test('Checking the "_checkIsRange" method', () => {
     const $elemThumbs = classViewThumbs['_$elemThumbs'];
 
-    expect($elemThumbs[0].style).toHaveProperty('display', '');
+    expect($elemThumbs.prop('style')).toHaveProperty('display', '');
 
     testSettings.key = 'isRange';
     testSettings.isRange = false;
     classViewThumbs.update(testSettings);
 
-    expect($elemThumbs[0].style).toHaveProperty('display', 'none');
+    expect($elemThumbs.prop('style')).toHaveProperty('display', 'none');
   });
 
   test.each([0, 1])(

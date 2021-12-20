@@ -130,7 +130,7 @@ class ViewSlider extends Observer {
 
       this._$elemSlider.css('margin-top', `${heightMarker + heightThumb / 1.5}px`);
     } else {
-      this._$elemSlider.css('margin-top', '');
+      this._$elemSlider.prop('style').removeProperty('margin-top');
     }
 
     if (verifProp && showScale) {
@@ -138,7 +138,7 @@ class ViewSlider extends Observer {
       const elemScalePointsHeight = $elemScalePoints.outerHeight() || 0;
       this._$elemSlider.css('margin-bottom', `${elemScalePointsHeight * 3}px`);
     } else {
-      this._$elemSlider.css('margin-bottom', '');
+      this._$elemSlider.prop('style').removeProperty('margin-bottom');
     }
   }
 
