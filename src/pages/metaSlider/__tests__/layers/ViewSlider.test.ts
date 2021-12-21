@@ -3,26 +3,48 @@ import ViewSlider from '../../layers/ViewSlider';
 import initSettings from '../../data/initSettings';
 import * as createUniqueID from '../../utils/createUniqueID';
 
-let classViewSlider = new ViewSlider();
-const selectorName = 'render-selector';
-const initHTMLBlock = `<div class="slider-block" id="${selectorName}"></div>`;
-document.body.innerHTML = initHTMLBlock;
-const $initSelector = $(`#${selectorName}`);
+const classViewSlider = new ViewSlider();
+const initSelectorName = 'render-selector';
+const scaleSelectorName = '.js-meta-slider__scale';
+const thumbSelectorName = '.js-meta-slider__thumb';
+const markerSelectorName = '.js-meta-slider__marker';
+const TEST_HEIGHT_ELEM = 20;
 
-test('Checking the "ViewSlider" layer. State before first initialization the "renderSlider" and "update" method', () => {
-  expect(document.body.innerHTML).toBe(initHTMLBlock);
-  expect(classViewSlider.observerList).toHaveLength(0);
-  expect(classViewSlider['_$selector']).toHaveLength(0);
-  expect(classViewSlider['_$elemSlider']).toHaveLength(0);
-  expect(classViewSlider['_$sliderProgress']).toHaveLength(0);
-  expect(classViewSlider['_$elemThumbs']).toHaveLength(0);
-  expect(classViewSlider['_$elemMarkers']).toHaveLength(0);
-  expect(classViewSlider['_isFirstInit']).toBe(true);
+const initHTMLBlock = `<div class="slider-block" id="${initSelectorName}"></div>`;
+const scalePointHTML = `<button type="button" class="meta-slider__scale-point
+js-meta-slider__scale-point" style="height:${TEST_HEIGHT_ELEM}px"></button>`;
+document.body.innerHTML = initHTMLBlock;
+const $initSelector = $(`#${initSelectorName}`);
+
+classViewSlider.renderSlider($initSelector);
+$(scaleSelectorName).append(scalePointHTML);
+
+$(thumbSelectorName).eq(-1).css('height', TEST_HEIGHT_ELEM);
+$(markerSelectorName).eq(-1).css('height', TEST_HEIGHT_ELEM);
+
+describe('Checking the "ViewSlider" layer. State before first initialization the "renderSlider" and "update" method', () => {
+  const notInitViewSlider = new ViewSlider();
+
+  test('State before first initialization', () => {
+    expect(notInitViewSlider.observerList).toHaveLength(0);
+    expect(notInitViewSlider['_$selector']).toHaveLength(0);
+    expect(notInitViewSlider['_$elemSlider']).toHaveLength(0);
+    expect(notInitViewSlider['_$sliderProgress']).toHaveLength(0);
+    expect(notInitViewSlider['_$elemThumbs']).toHaveLength(0);
+    expect(notInitViewSlider['_$elemMarkers']).toHaveLength(0);
+    expect(notInitViewSlider['_isFirstInit']).toBe(true);
+  });
 });
 
 describe('Checking the "ViewSlider" layer', () => {
   const defaultSettings = {
     key: 'init',
+    $selector: $(`#${initSelectorName}`),
+    $elemSlider: $('.js-meta-slider'),
+    $sliderProgress: $('.js-meta-slider__progress'),
+    $elemThumbs: $('.js-meta-slider__thumb'),
+    $elemMarkers: $('.js-meta-slider__marker'),
+    $elemScale: $('.js-meta-slider__scale'),
     showBackground: true,
     initAutoMargins: true,
     showMarkers: true,
@@ -35,33 +57,26 @@ describe('Checking the "ViewSlider" layer', () => {
     valuesAsPercentageArray: [0, 100],
     customValues: [],
   };
-  let HTMLBlockWithSlider: string;
   let testSettings: IPluginOptions;
+  let $selector: JQuery<HTMLElement>;
+  let $elemSlider: JQuery<HTMLElement>;
+  let $sliderProgress: JQuery<HTMLElement>;
 
   beforeAll(() => {
-    const elemScalePoint = `<button type="button" class="meta-slider__scale-point
-    js-meta-slider__scale-point"></button>`;
+    testSettings = $.extend({}, initSettings, defaultSettings);
+    classViewSlider.update(testSettings);
 
-    classViewSlider.renderSlider($initSelector);
-    $('.js-meta-slider__scale').append(elemScalePoint);
-    HTMLBlockWithSlider = document.body.innerHTML;
+    $selector = classViewSlider['_$selector'];
+    $elemSlider = classViewSlider['_$elemSlider'];
+    $sliderProgress = classViewSlider['_$sliderProgress'];
   });
 
-  beforeEach(() => {
-    document.body.innerHTML = HTMLBlockWithSlider;
+  afterEach(() => {
     testSettings = $.extend({}, initSettings, defaultSettings);
-    testSettings.$selector = $(`#${selectorName}`);
-    testSettings.$elemSlider = $('.js-meta-slider');
-    testSettings.$sliderProgress = $('.js-meta-slider__progress');
-    testSettings.$elemThumbs = $('.js-meta-slider__thumb');
-    testSettings.$elemMarkers = $('.js-meta-slider__marker');
-    testSettings.$elemScale = $('.js-meta-slider__scale');
-
-    classViewSlider = new ViewSlider();
-    classViewSlider.update(testSettings);
   });
 
   test('Checking the "renderSlider" method', () => {
+    const mockCreateUniqueID = jest.spyOn(createUniqueID, 'default').mockImplementation(() => '');
     const checkingSelectorsArr = [
       /js-meta-slider/,
       /js-meta-slider__progress/,
@@ -72,37 +87,43 @@ describe('Checking the "ViewSlider" layer', () => {
       /data-value/,
       /data-text/,
     ];
-    const mockCreateUniqueID = jest.spyOn(createUniqueID, 'default').mockImplementation(() => '');
-    classViewSlider.renderSlider($initSelector);
 
-    expect(document.body.innerHTML).not.toBe(initHTMLBlock);
-    expect(mockCreateUniqueID).toHaveBeenCalled();
-    expect(classViewSlider['_$selector']).toHaveLength(1);
-    expect(classViewSlider['_$selector']).toBe($initSelector);
+    classViewSlider.renderSlider($initSelector);
 
     checkingSelectorsArr.forEach((selector) => {
       expect(document.body.innerHTML).toMatch(selector);
     });
+    expect(mockCreateUniqueID).toHaveBeenCalled();
+    expect(document.body.innerHTML).not.toBe(initHTMLBlock);
+    expect($selector).toHaveLength(1);
+    expect($selector).toBe($initSelector);
   });
 
   test('Checking the "_init" method', () => {
+    jest.spyOn<ViewSlider, any>(classViewSlider, '_setEventsSlider');
+
+    classViewSlider['_isFirstInit'] = true;
+    classViewSlider.update(testSettings);
+
     expect(classViewSlider['_isFirstInit']).toBe(false);
-    expect(classViewSlider['_$selector']).toHaveLength(1);
     expect(classViewSlider['_$elemSlider']).toHaveLength(1);
     expect(classViewSlider['_$sliderProgress']).toHaveLength(1);
     expect(classViewSlider['_$elemThumbs']).toHaveLength(2);
     expect(classViewSlider['_$elemMarkers']).toHaveLength(2);
+    expect(classViewSlider['_setEventsSlider']).toHaveBeenCalled();
   });
 
-  test('Checking the "_setMinAndMaxVal" method => first init and update', () => {
+  test('Checking the "_setMinAndMaxVal" method => "defaultSettings"', () => {
+    classViewSlider.update(testSettings);
     const { minValue, maxValue } = testSettings;
-    const $elemSlider = classViewSlider['_$elemSlider'];
 
     expect($elemSlider.attr('data-min')).toBe(String(minValue));
     expect($elemSlider.attr('data-max')).toBe(String(maxValue));
     expect($elemSlider.attr('data-min_text')).toBeUndefined();
     expect($elemSlider.attr('data-max_text')).toBeUndefined();
+  });
 
+  test('Checking the "_setMinAndMaxVal" method => option "customValues"', () => {
     testSettings.key = 'customValues';
     testSettings.customValues = ['one', 'two', 'three'];
     classViewSlider.update(testSettings);
@@ -119,45 +140,41 @@ describe('Checking the "ViewSlider" layer', () => {
     expect($elemSlider.attr('data-max_text')).toBeUndefined();
   });
 
-  test('Checking the "_setAutoMargins" method => first init and update', () => {
-    const TEST_HEIGHT_ELEM = 20;
-    const $elemScalePoints = $('.js-meta-slider__scale-point');
-    const $elemSlider = classViewSlider['_$elemSlider'];
-    const $elemThumbs = classViewSlider['_$elemThumbs'];
-    const $elemMarkers = classViewSlider['_$elemMarkers'];
-
-    $elemScalePoints.eq(-1).css('height', TEST_HEIGHT_ELEM);
-    $elemThumbs.eq(-1).css('height', TEST_HEIGHT_ELEM);
-    $elemMarkers.eq(-1).css('height', TEST_HEIGHT_ELEM);
-
+  test('Checking the "_setAutoMargins" method => "defaultSettings"', () => {
     classViewSlider.update(testSettings);
 
     expect($elemSlider.css('margin-top')).toMatch(/\d+px/);
     expect($elemSlider.css('margin-top')).not.toBe('0px');
     expect($elemSlider.css('margin-bottom')).toMatch(/\d+px/);
     expect($elemSlider.css('margin-bottom')).not.toBe('0px');
+  });
 
+  test('Checking the "_setAutoMargins" method => option "showScale"', () => {
     testSettings.key = 'showScale';
     testSettings.showScale = false;
     classViewSlider.update(testSettings);
 
     expect($elemSlider.css('margin-bottom')).toBe('');
+  });
 
+  test('Checking the "_setAutoMargins" method => option "showMarkers"', () => {
     testSettings.key = 'showMarkers';
     testSettings.showMarkers = false;
     classViewSlider.update(testSettings);
 
     expect($elemSlider.css('margin-top')).toBe('');
+  });
 
-    testSettings = $.extend({}, initSettings, defaultSettings);
+  test('Checking the "_setAutoMargins" method => option "initAutoMargins"', () => {
     testSettings.key = 'initAutoMargins';
     testSettings.initAutoMargins = false;
     classViewSlider.update(testSettings);
 
     expect($elemSlider.css('margin-top')).toBe('');
     expect($elemSlider.css('margin-bottom')).toBe('');
+  });
 
-    testSettings = $.extend({}, initSettings, defaultSettings);
+  test('Checking the "_setAutoMargins" method => option "isVertical"', () => {
     testSettings.key = 'isVertical';
     testSettings.isVertical = true;
     classViewSlider.update(testSettings);
@@ -166,41 +183,49 @@ describe('Checking the "ViewSlider" layer', () => {
     expect($elemSlider.css('margin-bottom')).toBe('');
   });
 
-  test('Checking the "_setBackgroundForSlider" method => first init and update', () => {
-    const $elemSlider = classViewSlider['_$elemSlider'];
+  test('Checking the "_setBackgroundForSlider" method => "defaultSettings"', () => {
+    classViewSlider.update(testSettings);
     const { secondColor } = testSettings;
 
     expect($elemSlider.prop('style')).toHaveProperty('background-color', secondColor);
+  });
 
+  test('Checking the "_setBackgroundForSlider" method => option "secondColor"', () => {
     testSettings.key = 'secondColor';
     testSettings.secondColor = 'yellow';
     classViewSlider.update(testSettings);
-    const { secondColor: newSecondColor } = testSettings;
+    const { secondColor } = testSettings;
 
-    expect($elemSlider.prop('style')).toHaveProperty('background-color', newSecondColor);
+    expect($elemSlider.prop('style')).toHaveProperty('background-color', secondColor);
   });
 
-  test('Checking the "_setVerticalOrientation" method => first init and update', () => {
-    expect(classViewSlider['_$selector'].attr('class')).not.toMatch(/ms-vertical/);
-    expect(classViewSlider['_$elemSlider'].attr('class')).not.toMatch(/meta-slider_vertical/);
+  test('Checking the "_setVerticalOrientation" method => "defaultSettings"', () => {
+    classViewSlider.update(testSettings);
 
+    expect($selector.attr('class')).not.toMatch(/ms-vertical/);
+    expect($elemSlider.attr('class')).not.toMatch(/meta-slider_vertical/);
+  });
+
+  test('Checking the "_setVerticalOrientation" method => option "isVertical"', () => {
     testSettings.key = 'isVertical';
     testSettings.isVertical = true;
     classViewSlider.update(testSettings);
 
-    expect(classViewSlider['_$selector'].attr('class')).toMatch(/ms-vertical/);
-    expect(classViewSlider['_$elemSlider'].attr('class')).toMatch(/meta-slider_vertical/);
+    expect($selector.attr('class')).toMatch(/ms-vertical/);
+    expect($elemSlider.attr('class')).toMatch(/meta-slider_vertical/);
   });
 
-  test('Checking the "_setBackgroundTheRange" method => first init and update', () => {
-    const $sliderProgress = classViewSlider['_$sliderProgress'];
+  test('Checking the "_setBackgroundTheRange" method => "defaultSettings"', () => {
+    classViewSlider.update(testSettings);
     const { valuesAsPercentageArray, mainColor } = testSettings;
     const [firstPosition, secondPosition] = valuesAsPercentageArray;
 
     expect($sliderProgress.prop('style')).toHaveProperty('left', `${firstPosition}%`);
     expect($sliderProgress.prop('style')).toHaveProperty('right', `${100 - secondPosition}%`);
     expect($sliderProgress.prop('style')).toHaveProperty('background', mainColor);
+  });
 
+  test('Checking the "_setBackgroundTheRange" method => option "showBackground"', () => {
     testSettings.key = 'showBackground';
     testSettings.showBackground = false;
     classViewSlider.update(testSettings);
@@ -209,10 +234,10 @@ describe('Checking the "ViewSlider" layer', () => {
   });
 
   test('Checking the "_setEventsSlider" method, event "pointerdown" => _handleSetSliderValues', () => {
-    const $elemSlider = classViewSlider['_$elemSlider'];
     const mockNotify = jest.spyOn(classViewSlider, 'notify');
     const eventPointerdown = $.Event('pointerdown.slider');
     eventPointerdown.preventDefault = jest.fn();
+
     $elemSlider.trigger(eventPointerdown);
 
     expect(eventPointerdown.preventDefault).toHaveBeenCalled();

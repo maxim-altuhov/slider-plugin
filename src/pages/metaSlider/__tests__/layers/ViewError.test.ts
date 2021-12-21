@@ -2,86 +2,84 @@
 import ViewError from '../../layers/ViewError';
 import initSettings from '../../data/initSettings';
 
-describe('Checking the "ViewError" layer, the "renderError" method', () => {
-  const initHTMLBlock = '<div class="fake-selector"><div class="fake-slider"></div></div>';
+const initHTMLBlock = '<div class="fake-selector"><div class="fake-slider"></div></div>';
+document.body.innerHTML = initHTMLBlock;
+
+describe('Checking the "ViewError" layer, before first initialization "renderError" method', () => {
+  const notInitViewError = new ViewError();
+
+  test('State before first initialization', () => {
+    expect(notInitViewError['_$selector']).toBeUndefined();
+    expect(notInitViewError['_$elemErrorInfo']).toBeUndefined();
+    expect(notInitViewError['_$elemErrorText']).toBeUndefined();
+    expect(notInitViewError['_$btnErrorClose']).toBeUndefined();
+  });
+});
+
+describe('Checking the "ViewError" layer', () => {
+  const classViewError = new ViewError();
   const TEXT_MSG = 'TEXT MESSAGE';
   const NEW_TEXT_MSG = 'NEW TEXT';
 
-  describe('If the error block has not yet been created', () => {
-    const classViewError = new ViewError();
+  const defaultSettings = {
+    $selector: $('.fake-selector'),
+    $elemSlider: $('.fake-slider'),
+    showError: true,
+  };
 
-    beforeAll(() => {
-      document.body.innerHTML = initHTMLBlock;
+  const testSettings: IPluginOptions = $.extend({}, initSettings, defaultSettings);
+  let $elemErrorInfo: null | JQuery<HTMLElement> | undefined;
+  let $elemErrorText: null | JQuery<HTMLElement> | undefined;
+  let $btnErrorClose: null | JQuery<HTMLElement> | undefined;
 
-      const defaultSettings = {
-        $selector: $('.fake-selector'),
-        $elemSlider: $('.fake-slider'),
-        showError: true,
-      };
+  beforeEach(() => {
+    classViewError.renderError(TEXT_MSG, testSettings);
 
-      const testSettings: IPluginOptions = $.extend({}, initSettings, defaultSettings);
-      classViewError.renderError(TEXT_MSG, testSettings);
-    });
-
-    test('When initializing the "renderError" method, data about selectors is collected', () => {
-      expect(classViewError['_$selector']).toHaveLength(1);
-      expect(classViewError['_$elemErrorInfo']).toHaveLength(1);
-      expect(classViewError['_$elemErrorText']).toHaveLength(1);
-      expect(classViewError['_$btnErrorClose']).toHaveLength(1);
-    });
-
-    test('When initializing the "renderError" method, creating block with error', () => {
-      const documentPage = document.body.innerHTML;
-
-      expect(documentPage).not.toBe(initHTMLBlock);
-      expect(documentPage).toMatch(/js-error-info/);
-      expect(documentPage).toMatch(/js-error-info__text/);
-      expect(documentPage).toMatch(/js-error-info__close/);
-    });
-
-    test('When initializing the "renderError" method, the error text is output', () => {
-      expect(classViewError['_$elemErrorText']?.text()).toBe(TEXT_MSG);
-    });
+    $elemErrorInfo = classViewError['_$elemErrorInfo'];
+    $elemErrorText = classViewError['_$elemErrorText'];
+    $btnErrorClose = classViewError['_$btnErrorClose'];
   });
 
-  describe('If the error block has already been created', () => {
-    const classViewError = new ViewError();
-    let testSettings: IPluginOptions;
+  test('Checking the "renderError" method => Creating block with error', () => {
+    const documentPage = document.body.innerHTML;
 
-    beforeAll(() => {
-      document.body.innerHTML = initHTMLBlock;
+    expect(classViewError['_$selector']).toHaveLength(1);
+    expect(documentPage).not.toBe(initHTMLBlock);
+    expect(documentPage).toMatch(/js-error-info/);
+    expect(documentPage).toMatch(/js-error-info__text/);
+    expect(documentPage).toMatch(/js-error-info__close/);
+  });
 
-      const defaultSettings = {
-        $selector: $('.fake-selector'),
-        $elemSlider: $('.fake-slider'),
-        showError: true,
-      };
+  test('Checking the "_getErrorBlockSelectors" method => Data about selectors is collected', () => {
+    expect($elemErrorInfo).toHaveLength(1);
+    expect($elemErrorText).toHaveLength(1);
+    expect($btnErrorClose).toHaveLength(1);
+  });
 
-      testSettings = $.extend({}, initSettings, defaultSettings);
-      classViewError.renderError(TEXT_MSG, testSettings);
-    });
+  test('Checking the "renderError" method => The error text is output', () => {
+    expect($elemErrorText?.text()).toBe(TEXT_MSG);
+  });
 
-    test('When initializing the "renderError" method, just change the error message', () => {
-      expect(classViewError['_$elemErrorText']).toHaveLength(1);
-      expect(classViewError['_$elemErrorText']?.text()).toBe(TEXT_MSG);
+  test('Checking the "renderError" method => If block already created, just changed the error message', () => {
+    expect($elemErrorText).toHaveLength(1);
+    expect($elemErrorText?.text()).toBe(TEXT_MSG);
 
-      classViewError.renderError(NEW_TEXT_MSG, testSettings);
+    classViewError.renderError(NEW_TEXT_MSG, testSettings);
 
-      expect(classViewError['_$elemErrorText']?.text()).toBe(NEW_TEXT_MSG);
-    });
+    expect($elemErrorText?.text()).toBe(NEW_TEXT_MSG);
+  });
 
-    test('When we click on the button to close the error window, it is deleted and all selectors are reset', () => {
-      expect(classViewError['_$elemErrorInfo']).not.toBeNull();
-      expect(classViewError['_$elemErrorText']).not.toBeNull();
-      expect(classViewError['_$btnErrorClose']).not.toBeNull();
-      expect(document.body.innerHTML).not.toBe(initHTMLBlock);
+  test('Checking the "_setEventErrorClose" method, event "click" => init _handleRemoveErrorBlock => When we click on the button to close the error window, it is deleted and all selectors are reset', () => {
+    expect(classViewError['_$elemErrorInfo']).not.toBeNull();
+    expect(classViewError['_$elemErrorText']).not.toBeNull();
+    expect(classViewError['_$btnErrorClose']).not.toBeNull();
+    expect(document.body.innerHTML).not.toBe(initHTMLBlock);
 
-      classViewError['_$btnErrorClose']?.trigger('click');
+    classViewError['_$btnErrorClose']?.trigger('click');
 
-      expect(classViewError['_$elemErrorInfo']).toBeNull();
-      expect(classViewError['_$elemErrorText']).toBeNull();
-      expect(classViewError['_$btnErrorClose']).toBeNull();
-      expect(document.body.innerHTML).toBe(initHTMLBlock);
-    });
+    expect(classViewError['_$elemErrorInfo']).toBeNull();
+    expect(classViewError['_$elemErrorText']).toBeNull();
+    expect(classViewError['_$btnErrorClose']).toBeNull();
+    expect(document.body.innerHTML).toBe(initHTMLBlock);
   });
 });

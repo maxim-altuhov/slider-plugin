@@ -5,23 +5,25 @@ import initSettings from '../../data/initSettings';
 import * as makeThrottlingHandler from '../../utils/makeThrottlingHandler';
 
 const classViewSlider = new ViewSlider();
-let classViewThumbs = new ViewThumbs();
-
 document.body.innerHTML = '<div id="render-selector"></div>';
 const $selector = $('#render-selector');
-
 classViewSlider.renderSlider($selector);
-const HTMLBlockWithSlider = document.body.innerHTML;
 
-test('Checking the "ViewThumbs" layer. State before first initialization the "update" method', () => {
-  expect(classViewThumbs.observerList).toHaveLength(0);
-  expect(classViewThumbs['_$elemThumbs']).toHaveLength(0);
-  expect(classViewThumbs['_isFirstInit']).toBe(true);
+describe('Checking the "ViewThumbs" layer, before first initialization.', () => {
+  const notInitViewThumbs = new ViewThumbs();
+
+  test('State before first initialization the "update" method', () => {
+    expect(notInitViewThumbs.observerList).toHaveLength(0);
+    expect(notInitViewThumbs['_$elemThumbs']).toHaveLength(0);
+    expect(notInitViewThumbs['_isFirstInit']).toBe(true);
+  });
 });
 
-describe('Checking the "ViewThumbs" layer, the "update" method', () => {
+describe('Checking the "ViewThumbs" layer => "update" method', () => {
+  const classViewThumbs = new ViewThumbs();
   const defaultSettings = {
     key: 'init',
+    $elemThumbs: $('.js-meta-slider__thumb'),
     isRange: true,
     mainColor: 'red',
     colorThumb: '',
@@ -36,33 +38,33 @@ describe('Checking the "ViewThumbs" layer, the "update" method', () => {
     customValues: [],
     numberOfDecimalPlaces: 0,
   };
-
   let testSettings: IPluginOptions;
+  let $elemThumbs: JQuery<HTMLElement>;
 
-  beforeEach(() => {
-    document.body.innerHTML = HTMLBlockWithSlider;
+  beforeAll(() => {
     testSettings = $.extend({}, initSettings, defaultSettings);
-    testSettings.$elemThumbs = $('.js-meta-slider__thumb');
-
-    classViewThumbs = new ViewThumbs();
     classViewThumbs.update(testSettings);
+    $elemThumbs = classViewThumbs['_$elemThumbs'];
+  });
+
+  afterEach(() => {
+    testSettings = $.extend({}, initSettings, defaultSettings);
   });
 
   test('Checking the "_init" method', () => {
-    expect(classViewThumbs['_$elemThumbs']).toHaveLength(2);
+    jest.spyOn<ViewThumbs, any>(classViewThumbs, '_setEventsThumbs');
+
+    classViewThumbs['_isFirstInit'] = true;
+    classViewThumbs.update(testSettings);
+
+    expect($elemThumbs).toHaveLength(2);
     expect(classViewThumbs['_isFirstInit']).toBe(false);
+    expect(classViewThumbs['_setEventsThumbs']).toHaveBeenCalledWith(testSettings);
   });
 
-  test('Checking the "_setValueInThumbs" method', () => {
-    const $elemThumbs = classViewThumbs['_$elemThumbs'];
-
-    // prettier-ignore
-    const {
-      initValuesArray,
-      valuesAsPercentageArray,
-      textValueFirst,
-      textValueSecond,
-    } = testSettings;
+  test('Checking the "_setValueInThumbs" method => defaultSettings', () => {
+    const { initValuesArray, valuesAsPercentageArray } = testSettings;
+    classViewThumbs.update(testSettings);
 
     $elemThumbs.each((index, thumb) => {
       const $currentThumb = $(thumb);
@@ -70,66 +72,52 @@ describe('Checking the "ViewThumbs" layer, the "update" method', () => {
       expect($currentThumb.attr('data-text')).toBeUndefined();
       expect(thumb.style).toHaveProperty('left', `${valuesAsPercentageArray[index]}%`);
     });
+  });
+
+  test('Checking the "_setValueInThumbs" method => option "customValues"', () => {
+    const { textValueFirst, textValueSecond } = testSettings;
 
     testSettings.key = 'customValues';
     testSettings.initValuesArray = [0, 2];
     testSettings.customValues = [textValueFirst, 'randomCustomValue', textValueSecond];
     classViewThumbs.update(testSettings);
 
-    const { customValues, initValuesArray: initValuesArrayCustom } = testSettings;
+    const { customValues, initValuesArray } = testSettings;
 
-    initValuesArrayCustom.forEach((currentValue, index) => {
-      expect($elemThumbs[index].getAttribute('data-text')).toBe(customValues[currentValue]);
+    initValuesArray.forEach((currentValue, index) => {
+      expect($elemThumbs.eq(index).attr('data-text')).toBe(customValues[currentValue]);
     });
   });
 
-  test('Checking the "_setValueInThumbs" method, option "numberOfDecimalPlaces"', () => {
+  test('Checking the "_setValueInThumbs" method => option "numberOfDecimalPlaces"', () => {
     testSettings.key = 'numberOfDecimalPlaces';
     testSettings.numberOfDecimalPlaces = 2;
     classViewThumbs.update(testSettings);
 
-    // prettier-ignore
-    const { 
-      initValueFirst,
-      initValueSecond,
-      numberOfDecimalPlaces,
-    } = testSettings;
+    const { initValueFirst, initValueSecond, numberOfDecimalPlaces: numFix } = testSettings;
 
-    const $elemThumbs = classViewThumbs['_$elemThumbs'];
-
-    expect($elemThumbs.eq(0).attr('data-value')).toBe(
-      initValueFirst?.toFixed(numberOfDecimalPlaces),
-    );
-    expect($elemThumbs.eq(1).attr('data-value')).toBe(
-      initValueSecond?.toFixed(numberOfDecimalPlaces),
-    );
+    expect($elemThumbs.eq(0).attr('data-value')).toBe(initValueFirst?.toFixed(numFix));
+    expect($elemThumbs.eq(1).attr('data-value')).toBe(initValueSecond?.toFixed(numFix));
 
     testSettings.numberOfDecimalPlaces = 4;
-    const { numberOfDecimalPlaces: UpdateNumberOfDecimalPlaces } = testSettings;
+    const { numberOfDecimalPlaces: updateNumFix } = testSettings;
     classViewThumbs.update(testSettings);
 
-    expect($elemThumbs.eq(0).attr('data-value')).toBe(
-      initValueFirst?.toFixed(UpdateNumberOfDecimalPlaces),
-    );
-    expect($elemThumbs.eq(1).attr('data-value')).toBe(
-      initValueSecond?.toFixed(UpdateNumberOfDecimalPlaces),
-    );
+    expect($elemThumbs.eq(0).attr('data-value')).toBe(initValueFirst?.toFixed(updateNumFix));
+    expect($elemThumbs.eq(1).attr('data-value')).toBe(initValueSecond?.toFixed(updateNumFix));
   });
 
-  test('Checking the "_setStyleForThumbs" method. Сhecking whether the styles for thumbs are set correctly', () => {
-    const $elemThumbs = classViewThumbs['_$elemThumbs'];
-
-    // prettier-ignore
-    const { 
-      mainColor,
-      colorBorderForThumb,
-    } = testSettings;
+  test('Checking the "_setStyleForThumbs" method => "defaultSettings"', () => {
+    const { mainColor, colorBorderForThumb } = testSettings;
+    classViewThumbs.update(testSettings);
 
     $elemThumbs.each((_, elem) => {
       expect(elem.style).toHaveProperty('background-color', mainColor);
       expect(elem.style).toHaveProperty('border-color', colorBorderForThumb);
     });
+  });
 
+  test('Checking the "_setStyleForThumbs" method => option "colorThumb"', () => {
     testSettings.key = 'colorThumb';
     testSettings.colorThumb = 'yellow';
     const { colorThumb } = testSettings;
@@ -140,11 +128,13 @@ describe('Checking the "ViewThumbs" layer, the "update" method', () => {
     });
   });
 
-  test('Checking the "_checkIsRange" method', () => {
-    const $elemThumbs = classViewThumbs['_$elemThumbs'];
+  test('Checking the "_checkIsRange" method => "defaultSettings"', () => {
+    classViewThumbs.update(testSettings);
 
     expect($elemThumbs.prop('style')).toHaveProperty('display', '');
+  });
 
+  test('Checking the "_checkIsRange" method => option "isRange"', () => {
     testSettings.key = 'isRange';
     testSettings.isRange = false;
     classViewThumbs.update(testSettings);
@@ -153,34 +143,33 @@ describe('Checking the "ViewThumbs" layer, the "update" method', () => {
   });
 
   test.each([0, 1])(
-    'Checking the "_setEventsThumbs" method, event "keydown" => _handleChangeThumbPosition',
+    'Checking the "_setEventsThumbs" method, event "keydown" (index %d) => init _handleChangeThumbPosition',
     (index) => {
       const { initValuesArray, step } = testSettings;
       const mockNotify = jest.spyOn(classViewThumbs, 'notify');
       const testKeysArr = ['ArrowUp', 'ArrowRight', 'ArrowDown', 'ArrowLeft'];
-      const $elemThumbs = classViewThumbs['_$elemThumbs'];
 
       testKeysArr.forEach((keyCode) => {
-        const event = $.Event('keydown', { code: keyCode });
-        $elemThumbs.eq(index).trigger(event, testSettings);
+        const eventKeydown = $.Event('keydown', { code: keyCode });
+        eventKeydown.preventDefault = jest.fn();
+        $elemThumbs.eq(index).trigger(eventKeydown, testSettings);
+
+        expect(eventKeydown.preventDefault).toHaveBeenCalled();
 
         if (keyCode === 'ArrowUp' || keyCode === 'ArrowRight') {
-          expect(mockNotify).toHaveBeenCalledWith(event, initValuesArray[index] + step);
+          expect(mockNotify).toHaveBeenCalledWith(eventKeydown, initValuesArray[index] + step);
         }
 
         if (keyCode === 'ArrowDown' || keyCode === 'ArrowLeft') {
-          expect(mockNotify).toHaveBeenCalledWith(event, initValuesArray[index] - step);
+          expect(mockNotify).toHaveBeenCalledWith(eventKeydown, initValuesArray[index] - step);
         }
-
-        mockNotify.mockClear();
       });
     },
   );
 
   test.each([0, 1])(
-    'Checking the "_setEventsThumbs" method, event "pointerdown" => _handleSetEventListenerForThumbs, _handleInitPointerMove, _handleInitPointerUp',
+    'Checking the "_setEventsThumbs" method, event "pointerdown" (index %d) => init _handleSetEventListenerForThumbs, _handleInitPointerMove, _handleInitPointerUp',
     (index) => {
-      const $elemThumbs = classViewThumbs['_$elemThumbs'];
       const mockNotify = jest.spyOn(classViewThumbs, 'notify');
       const mockMakeThrottlingHandler = jest.spyOn(makeThrottlingHandler, 'default');
       $elemThumbs[index].setPointerCapture = jest.fn();
@@ -201,10 +190,10 @@ describe('Checking the "ViewThumbs" layer, the "update" method', () => {
 
       jest.clearAllTimers();
 
-      const removeEvent = jest.spyOn($.fn, 'off');
+      const mockRemoveEvent = jest.spyOn($.fn, 'off');
       $elemThumbs.eq(index).trigger('pointerup.thumb');
-      expect(removeEvent).toHaveBeenCalledWith('pointermove.thumb');
-      expect(removeEvent).toHaveBeenCalledWith('pointerup.thumb');
+      expect(mockRemoveEvent).toHaveBeenCalledWith('pointermove.thumb');
+      expect(mockRemoveEvent).toHaveBeenCalledWith('pointerup.thumb');
     },
   );
 });

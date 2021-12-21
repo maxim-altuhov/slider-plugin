@@ -55,14 +55,16 @@ class ViewSlider extends Observer {
 
   // Первоначальный рендер слайдера
   renderSlider($initSelector: JQuery) {
-    const $fragmentWithASlider = $(document.createDocumentFragment());
-    const $blockSlider = $(document.createElement('div'));
-    const sliderID = createUniqueID;
+    const sliderID = createUniqueID();
 
-    $blockSlider.addClass('meta-slider js-meta-slider');
-    $blockSlider.attr('data-id', sliderID);
+    if (this._$selector.length === 0) {
+      const $fragmentWithASlider = $(document.createDocumentFragment());
+      const $blockSlider = $(document.createElement('div'));
 
-    const HTMLBlock = `<div class="meta-slider__progress js-meta-slider__progress"></div>
+      $blockSlider.addClass('meta-slider js-meta-slider');
+      $blockSlider.attr('data-id', sliderID);
+
+      const HTMLBlock = `<div class="meta-slider__progress js-meta-slider__progress"></div>
     <button type="button" class="meta-slider__thumb js-meta-slider__thumb meta-slider__thumb_left" data-value="" data-text="">
       <span class="meta-slider__marker js-meta-slider__marker meta-slider__marker_left"></span>
     </button>
@@ -71,25 +73,24 @@ class ViewSlider extends Observer {
     </button>
     <div class="meta-slider__scale js-meta-slider__scale"></div>`;
 
-    $blockSlider.html(HTMLBlock);
+      $blockSlider.html(HTMLBlock);
 
-    $fragmentWithASlider.append($blockSlider);
-    this._$selector = $initSelector;
-    this._$selector.append($fragmentWithASlider);
+      $fragmentWithASlider.append($blockSlider);
+      this._$selector = $initSelector;
+      this._$selector.append($fragmentWithASlider);
+    }
   }
 
   // Первоначальная инициализация
   private _init(options: IPluginOptions) {
     // prettier-ignore
     const { 
-      $selector,
       $elemSlider,
       $sliderProgress,
       $elemThumbs,
       $elemMarkers,
     } = options;
 
-    if (this._$selector.length === 0) this._$selector = $selector;
     this._$elemSlider = $elemSlider;
     this._$sliderProgress = $sliderProgress;
     this._$elemThumbs = $elemThumbs;

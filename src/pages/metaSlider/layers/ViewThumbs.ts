@@ -114,7 +114,7 @@ class ViewThumbs extends Observer {
       const { step } = options;
       let eventTargetValue = Number($target.attr('data-value'));
 
-      if (code === 'ArrowUp' || code === 'ArrowDown') event.preventDefault();
+      event.preventDefault();
       if (code === 'ArrowLeft' || code === 'ArrowDown') eventTargetValue -= step;
       if (code === 'ArrowRight' || code === 'ArrowUp') eventTargetValue += step;
 

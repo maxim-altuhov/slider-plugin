@@ -4,43 +4,26 @@ import ViewMarkers from '../../layers/ViewMarkers';
 import initSettings from '../../data/initSettings';
 
 const classViewSlider = new ViewSlider();
-let classViewMarkers = new ViewMarkers();
-
 document.body.innerHTML = '<div id="render-selector"></div>';
 const $selector = $('#render-selector');
-
 classViewSlider.renderSlider($selector);
-const HTMLBlockWithSlider = document.body.innerHTML;
 
-const getTextInMarker = (index: number) => classViewMarkers['_$elemMarkers'][index].textContent;
+describe('Checking the "ViewMarkers" layer, before first initialization.', () => {
+  const notInitViewMarkers = new ViewMarkers();
 
-const setSliderAttrForTest = (options: IPluginOptions) => {
-  // prettier-ignore
-  const {
-    $elemThumbs,
-    textValueFirst,
-    textValueSecond,
-    initValuesArray,
-  } = options;
-
-  const customValues = [textValueFirst, textValueSecond];
-
-  initValuesArray.forEach((_, index) => {
-    $elemThumbs
-      .eq(index)
-      .attr({ 'data-value': initValuesArray[index], 'data-text': customValues[index] });
+  test('State before first initialization the "update" method', () => {
+    expect(notInitViewMarkers['_$elemMarkers']).toHaveLength(0);
+    expect(notInitViewMarkers['_$elemThumbs']).toHaveLength(0);
+    expect(notInitViewMarkers['_isFirstInit']).toBe(true);
   });
-};
-
-test('Checking the "ViewMarkers" layer. State before first initialization the "update" method', () => {
-  expect(classViewMarkers['_$elemMarkers']).toHaveLength(0);
-  expect(classViewMarkers['_$elemThumbs']).toHaveLength(0);
-  expect(classViewMarkers['_isFirstInit']).toBe(true);
 });
 
 describe('Checking the "ViewMarkers" layer, the "update" method', () => {
+  const classViewMarkers = new ViewMarkers();
   const defaultSettings = {
     key: 'init',
+    $elemMarkers: $('.js-meta-slider__marker'),
+    $elemThumbs: $('.js-meta-slider__thumb'),
     preFix: '',
     postFix: '',
     initFormatted: false,
@@ -58,16 +41,37 @@ describe('Checking the "ViewMarkers" layer, the "update" method', () => {
   };
 
   let testSettings: IPluginOptions;
+  let $elemMarkers: JQuery<HTMLElement>;
 
-  beforeEach(() => {
-    document.body.innerHTML = HTMLBlockWithSlider;
+  const getTextInMarker = (index: number) => $elemMarkers[index].textContent;
+
+  const setSliderAttrForTest = (options: IPluginOptions) => {
+    // prettier-ignore
+    const {
+    $elemThumbs,
+    textValueFirst,
+    textValueSecond,
+    initValuesArray,
+  } = options;
+
+    const customValues = [textValueFirst, textValueSecond];
+
+    initValuesArray.forEach((_, index) => {
+      $elemThumbs
+        .eq(index)
+        .attr({ 'data-value': initValuesArray[index], 'data-text': customValues[index] });
+    });
+  };
+
+  beforeAll(() => {
     testSettings = $.extend({}, initSettings, defaultSettings);
-    testSettings.$elemMarkers = $('.js-meta-slider__marker');
-    testSettings.$elemThumbs = $('.js-meta-slider__thumb');
-
     setSliderAttrForTest(testSettings);
-    classViewMarkers = new ViewMarkers();
     classViewMarkers.update(testSettings);
+    $elemMarkers = classViewMarkers['_$elemMarkers'];
+  });
+
+  afterEach(() => {
+    testSettings = $.extend({}, initSettings, defaultSettings);
   });
 
   test('Checking the "_init" method', () => {
@@ -76,17 +80,16 @@ describe('Checking the "ViewMarkers" layer, the "update" method', () => {
     expect(classViewMarkers['_isFirstInit']).toBe(false);
   });
 
-  test('Checking the "_setValueInMarkers" method', () => {
-    // prettier-ignore
-    const {
-      initValueFirst,
-      initValueSecond,
-      textValueFirst,
-      textValueSecond,
-    } = testSettings;
+  test('Checking the "_setValueInMarkers" method => defaultSettings', () => {
+    const { initValueFirst, initValueSecond } = testSettings;
+    classViewMarkers.update(testSettings);
 
     expect(getTextInMarker(0)).toBe(String(initValueFirst));
     expect(getTextInMarker(1)).toBe(String(initValueSecond));
+  });
+
+  test('Checking the "_setValueInMarkers" method => option "customValues"', () => {
+    const { textValueFirst, textValueSecond } = testSettings;
 
     testSettings.key = 'customValues';
     testSettings.customValues = [textValueFirst, textValueSecond];
@@ -96,11 +99,8 @@ describe('Checking the "ViewMarkers" layer, the "update" method', () => {
     expect(getTextInMarker(1)).toBe(textValueSecond);
   });
 
-  test('Initialization and update with option "initFormatted = true"', () => {
+  test('Checking the "_setValueInMarkers" method => option "initFormatted = true"', () => {
     const { initValueFirst, initValueSecond } = testSettings;
-
-    expect(getTextInMarker(0)).toBe(String(initValueFirst));
-    expect(getTextInMarker(1)).toBe(String(initValueSecond));
 
     testSettings.key = 'initFormatted';
     testSettings.initFormatted = true;
@@ -110,17 +110,8 @@ describe('Checking the "ViewMarkers" layer, the "update" method', () => {
     expect(getTextInMarker(1)).toBe(initValueSecond?.toLocaleString());
   });
 
-  test('Initialization and update with option "preFix/postFix"', () => {
-    // prettier-ignore
-    const {
-      initValueFirst,
-      initValueSecond,
-      textValueFirst,
-      textValueSecond,
-    } = testSettings;
-
-    expect(getTextInMarker(0)).toBe(String(initValueFirst));
-    expect(getTextInMarker(1)).toBe(String(initValueSecond));
+  test('Checking the "_setValueInMarkers" method => option "preFix/postFix"', () => {
+    const { initValueFirst, initValueSecond } = testSettings;
 
     testSettings.key = 'preFix';
     testSettings.preFix = 'abc';
@@ -129,6 +120,10 @@ describe('Checking the "ViewMarkers" layer, the "update" method', () => {
 
     expect(getTextInMarker(0)).toBe(`abc${String(initValueFirst)}cba`);
     expect(getTextInMarker(1)).toBe(`abc${String(initValueSecond)}cba`);
+  });
+
+  test('Checking the "_setValueInMarkers" method => option "preFix/postFix" + "customValues"', () => {
+    const { textValueFirst, textValueSecond } = testSettings;
 
     testSettings.key = 'customValues';
     testSettings.customValues = [textValueFirst, textValueSecond];
@@ -140,18 +135,20 @@ describe('Checking the "ViewMarkers" layer, the "update" method', () => {
     expect(getTextInMarker(1)).toBe(`abc${textValueSecond}cba`);
   });
 
-  test('Checking the "_setStyleForMarkers" method. Сhecking whether the styles for markers are set correctly', () => {
-    const $elemMarkers = classViewMarkers['_$elemMarkers'];
-
+  test('Checking the "_setStyleForMarkers" method => "defaultSettings"', () => {
     const { mainColor, colorTextForMarker, colorBorderForMarker } = testSettings;
+    classViewMarkers.update(testSettings);
 
+    expect($elemMarkers.length > 0).toBeTruthy();
     $elemMarkers.each((_, elem) => {
       expect(elem.style).toHaveProperty('background-color', mainColor);
       expect(elem.style).toHaveProperty('border-color', colorBorderForMarker);
       expect(elem.style).toHaveProperty('color', colorTextForMarker);
       expect(elem.style).toHaveProperty('display', '');
     });
+  });
 
+  test('Checking the "_setStyleForMarkers" method => option "colorMarker"', () => {
     testSettings.key = 'colorMarker';
     testSettings.colorMarker = 'yellow';
     classViewMarkers.update(testSettings);
@@ -159,7 +156,9 @@ describe('Checking the "ViewMarkers" layer, the "update" method', () => {
     $elemMarkers.each((_, elem) => {
       expect(elem.style).toHaveProperty('background-color', testSettings.colorMarker);
     });
+  });
 
+  test('Checking the "_setStyleForMarkers" method => option "showMarkers"', () => {
     testSettings.key = 'showMarkers';
     testSettings.showMarkers = false;
     classViewMarkers.update(testSettings);

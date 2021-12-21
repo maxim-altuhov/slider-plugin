@@ -1,8 +1,8 @@
 class ViewError {
-  private _$selector: undefined | JQuery;
-  private _$elemErrorInfo: null | JQuery | undefined;
-  private _$elemErrorText: null | JQuery | undefined;
-  private _$btnErrorClose: null | JQuery | undefined;
+  private _$selector: undefined | JQuery<HTMLElement>;
+  private _$elemErrorInfo: null | JQuery<HTMLElement> | undefined;
+  private _$elemErrorText: null | JQuery<HTMLElement> | undefined;
+  private _$btnErrorClose: null | JQuery<HTMLElement> | undefined;
 
   // Метод для рендеринга ошибки
   renderError(message: string, options: IPluginOptions) {

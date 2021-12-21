@@ -98,10 +98,10 @@ class ViewScale extends Observer {
         const $scalePoint = $(scalePoint);
         const valueInScalePoint = Number($scalePoint.attr('data-value'));
 
-        const resultValue = (valueInScalePoint - minValue) / (maxValue - minValue);
+        const position = (valueInScalePoint - minValue) / (maxValue - minValue);
         this._scalePointsSize += $scalePoint.outerWidth() || 0;
 
-        $scalePoint.css('left', `${resultValue * 100}%`);
+        $scalePoint.css('left', `${position * 100}%`);
       });
 
       if (this._mapSkipScalePoints && this._mapSkipScalePoints.size > 0) {
