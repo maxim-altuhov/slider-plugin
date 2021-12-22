@@ -13,6 +13,7 @@ describe('Checking the "ViewThumbs" layer, before first initialization.', () => 
   const notInitViewThumbs = new ViewThumbs();
 
   test('State before first initialization the "update" method', () => {
+    expect($selector.html()).toMatchSnapshot();
     expect(notInitViewThumbs.observerList).toHaveLength(0);
     expect(notInitViewThumbs['_$elemThumbs']).toHaveLength(0);
     expect(notInitViewThumbs['_isFirstInit']).toBe(true);

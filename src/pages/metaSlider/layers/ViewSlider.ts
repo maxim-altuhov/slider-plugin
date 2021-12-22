@@ -58,11 +58,12 @@ class ViewSlider extends Observer {
     const sliderID = createUniqueID();
 
     if (this._$selector.length === 0) {
+      this._$selector = $initSelector;
       const $fragmentWithASlider = $(document.createDocumentFragment());
       const $blockSlider = $(document.createElement('div'));
 
       $blockSlider.addClass('meta-slider js-meta-slider');
-      $blockSlider.attr('data-id', sliderID);
+      this._$selector.attr('data-id', sliderID);
 
       const HTMLBlock = `<div class="meta-slider__progress js-meta-slider__progress"></div>
     <button type="button" class="meta-slider__thumb js-meta-slider__thumb meta-slider__thumb_left" data-value="" data-text="">
@@ -76,7 +77,6 @@ class ViewSlider extends Observer {
       $blockSlider.html(HTMLBlock);
 
       $fragmentWithASlider.append($blockSlider);
-      this._$selector = $initSelector;
       this._$selector.append($fragmentWithASlider);
     }
   }

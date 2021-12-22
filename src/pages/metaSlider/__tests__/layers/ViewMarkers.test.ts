@@ -12,6 +12,7 @@ describe('Checking the "ViewMarkers" layer, before first initialization.', () =>
   const notInitViewMarkers = new ViewMarkers();
 
   test('State before first initialization the "update" method', () => {
+    expect($selector.html()).toMatchSnapshot();
     expect(notInitViewMarkers['_$elemMarkers']).toHaveLength(0);
     expect(notInitViewMarkers['_$elemThumbs']).toHaveLength(0);
     expect(notInitViewMarkers['_isFirstInit']).toBe(true);

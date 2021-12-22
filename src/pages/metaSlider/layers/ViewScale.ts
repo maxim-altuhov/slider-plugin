@@ -75,11 +75,12 @@ class ViewScale extends Observer {
 
       // prettier-ignore
       const stepSizeValue = initAutoScaleCreation ? step : (stepSizeForScale ?? step);
+      const isCustomValue = customValues.length > 0;
       const $fragmentWithScale = $(document.createDocumentFragment());
+
       let currentValue = minValue;
 
       for (; currentValue <= maxValue; currentValue += stepSizeValue) {
-        const isCustomValue = customValues.length > 0;
         const convertedValue = initFormatted ? currentValue.toLocaleString() : currentValue;
         const resultValue = isCustomValue ? customValues[currentValue] : convertedValue;
 
@@ -99,8 +100,7 @@ class ViewScale extends Observer {
         const valueInScalePoint = Number($scalePoint.attr('data-value'));
 
         const position = (valueInScalePoint - minValue) / (maxValue - minValue);
-        this._scalePointsSize += $scalePoint.outerWidth() || 0;
-
+        this._calcScalePointsSize($scalePoint);
         $scalePoint.css('left', `${position * 100}%`);
       });
 
@@ -110,6 +110,10 @@ class ViewScale extends Observer {
 
       this._setEventsScalePoints();
     }
+  }
+
+  private _calcScalePointsSize(currentScalePoint: JQuery<HTMLElement>) {
+    this._scalePointsSize += currentScalePoint.outerWidth() || 0;
   }
 
   private _setStyleForScale(options: IPluginOptions) {
@@ -212,7 +216,7 @@ class ViewScale extends Observer {
   // Обработчик события отслеживающий размер окна браузера для метода checkingScaleSize()
   private _setEventsWindow(options: IPluginOptions) {
     const { showScale, initScaleAdjustment } = options;
-    const sliderID = this._$elemSlider.attr('data-id');
+    const sliderID = this._$selector.attr('data-id');
 
     if (showScale && initScaleAdjustment) {
       $(window).on(

@@ -39,7 +39,7 @@ interface IPluginOptions {
   numberOfDecimalPlaces: number;
   preFix: string;
   postFix: string;
-  customValues: string[] | string;
+  customValues: (number | string)[] | string;
   initValueFirst: number | null;
   initValueSecond: number | null;
   initValuesArray: number[];

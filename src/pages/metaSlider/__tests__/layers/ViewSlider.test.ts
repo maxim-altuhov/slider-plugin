@@ -26,6 +26,7 @@ describe('Checking the "ViewSlider" layer. State before first initialization the
   const notInitViewSlider = new ViewSlider();
 
   test('State before first initialization', () => {
+    expect($initSelector.html()).toMatchSnapshot();
     expect(notInitViewSlider.observerList).toHaveLength(0);
     expect(notInitViewSlider['_$selector']).toHaveLength(0);
     expect(notInitViewSlider['_$elemSlider']).toHaveLength(0);

@@ -9,6 +9,7 @@ describe('Checking the "ViewError" layer, before first initialization "renderErr
   const notInitViewError = new ViewError();
 
   test('State before first initialization', () => {
+    expect(document.body.innerHTML).toMatchSnapshot();
     expect(notInitViewError['_$selector']).toBeUndefined();
     expect(notInitViewError['_$elemErrorInfo']).toBeUndefined();
     expect(notInitViewError['_$elemErrorText']).toBeUndefined();

@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Checking the "ViewScale" layer, before first initialization. State before first initialization the "update" method 1`] = `
+"<div class=\\"meta-slider js-meta-slider\\"><div class=\\"meta-slider__progress js-meta-slider__progress\\"></div>
+    <button type=\\"button\\" class=\\"meta-slider__thumb js-meta-slider__thumb meta-slider__thumb_left\\" data-value=\\"\\" data-text=\\"\\">
+      <span class=\\"meta-slider__marker js-meta-slider__marker meta-slider__marker_left\\"></span>
+    </button>
+    <button type=\\"button\\" class=\\"meta-slider__thumb js-meta-slider__thumb meta-slider__thumb_right\\" data-value=\\"\\" data-text=\\"\\">
+      <span class=\\"meta-slider__marker js-meta-slider__marker meta-slider__marker_right\\"></span>
+    </button>
+    <div class=\\"meta-slider__scale js-meta-slider__scale\\"></div></div>"
+`;
