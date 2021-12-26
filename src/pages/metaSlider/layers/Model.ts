@@ -173,8 +173,8 @@ class Model extends Observer {
     this.opt.initValueSecond = secondValue;
 
     if (customValues.length > 0) {
-      this.opt.textValueFirst = customValues[this.opt.initValueFirst];
-      this.opt.textValueSecond = customValues[this.opt.initValueSecond];
+      this.opt.textValueFirst = String(customValues[this.opt.initValueFirst]);
+      this.opt.textValueSecond = String(customValues[this.opt.initValueSecond]);
       this.opt.textValuesArray = [this.opt.textValueFirst, this.opt.textValueSecond];
     }
 
@@ -465,8 +465,8 @@ class Model extends Observer {
 
       if (this.opt.initValueFirst !== null && this.opt.initValueSecond !== null) {
         if (customValues.length > 0) {
-          this.opt.textValueFirst = customValues[this.opt.initValueFirst];
-          this.opt.textValueSecond = customValues[this.opt.initValueSecond];
+          this.opt.textValueFirst = String(customValues[this.opt.initValueFirst]);
+          this.opt.textValueSecond = String(customValues[this.opt.initValueSecond]);
           this.opt.textValuesArray = [this.opt.textValueFirst, this.opt.textValueSecond];
         } else {
           this.opt.textValueFirst = '';

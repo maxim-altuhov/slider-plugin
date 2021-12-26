@@ -35,13 +35,15 @@ class ViewScale extends Observer {
       key === 'postFix' ||
       key === 'initScaleAdjustment';
 
+    // prettier-ignore
+    const setEventResizeVerifKeys = key === 'init' || key === 'showScale' || key === 'initScaleAdjustment';
     const styleVerifKeys = key === 'init' || key === 'colorForScale' || key === 'showScale';
 
     if (renderScaleVerifKeys) {
       this._createScale(options);
       this._checkingScaleSize(options);
 
-      if (key === 'initScaleAdjustment' || key === 'init') this._setEventsWindow(options);
+      if (setEventResizeVerifKeys) this._setEventResize(options);
     }
 
     if (styleVerifKeys) this._setStyleForScale(options);
@@ -100,7 +102,7 @@ class ViewScale extends Observer {
         const valueInScalePoint = Number($scalePoint.attr('data-value'));
 
         const position = (valueInScalePoint - minValue) / (maxValue - minValue);
-        this._calcScalePointsSize($scalePoint);
+        this._calcScalePointsSize(scalePoint);
         $scalePoint.css('left', `${position * 100}%`);
       });
 
@@ -112,8 +114,8 @@ class ViewScale extends Observer {
     }
   }
 
-  private _calcScalePointsSize(currentScalePoint: JQuery<HTMLElement>) {
-    this._scalePointsSize += currentScalePoint.outerWidth() || 0;
+  private _calcScalePointsSize(targetScalePoint: HTMLElement) {
+    this._scalePointsSize += targetScalePoint.offsetWidth;
   }
 
   private _setStyleForScale(options: IPluginOptions) {
@@ -171,7 +173,7 @@ class ViewScale extends Observer {
           }
 
           if (!currentScalePoint.classList.contains('meta-slider__scale-point_skip'))
-            this._scalePointsSize += currentScalePoint.offsetWidth;
+            this._calcScalePointsSize(currentScalePoint);
         });
 
         this._mapSkipScalePoints.set(totalSizeScalePoints, [...this._skipScalePointsArray]);
@@ -205,7 +207,7 @@ class ViewScale extends Observer {
             .removeClass('meta-slider__scale-point_skip')
             .css({ color: 'inherit', borderColor: '' });
 
-          this._scalePointsSize += $scalePoint.outerWidth() || 0;
+          this._calcScalePointsSize($scalePoint[0]);
         });
 
         this._mapSkipScalePoints.delete(controlSize);
@@ -214,7 +216,7 @@ class ViewScale extends Observer {
   }
 
   // Обработчик события отслеживающий размер окна браузера для метода checkingScaleSize()
-  private _setEventsWindow(options: IPluginOptions) {
+  private _setEventResize(options: IPluginOptions) {
     const { showScale, initScaleAdjustment } = options;
     const sliderID = this._$selector.attr('data-id');
 

@@ -2,6 +2,7 @@
 import ViewSlider from '../../layers/ViewSlider';
 import ViewScale from '../../layers/ViewScale';
 import initSettings from '../../data/initSettings';
+import * as makeThrottlingHandler from '../../utils/makeThrottlingHandler';
 
 const classViewSlider = new ViewSlider();
 document.body.innerHTML = '<div id="render-selector"></div>';
@@ -26,6 +27,7 @@ describe('Checking the "ViewScale" layer, before first initialization.', () => {
 });
 
 describe('Checking the "ViewScale" layer', () => {
+  const SLIDER_SIZE_PX = 250;
   const classViewScale = new ViewScale();
   const defaultSettings = {
     key: 'init',
@@ -36,10 +38,10 @@ describe('Checking the "ViewScale" layer', () => {
     initAutoScaleCreation: true,
     initFormatted: false,
     initScaleAdjustment: true,
-    step: 10,
-    stepSizeForScale: 50,
-    minValue: 0,
-    maxValue: 100,
+    step: 1,
+    stepSizeForScale: 2.5,
+    minValue: 1,
+    maxValue: 5,
     customValues: [],
     preFix: '',
     postFix: '',
@@ -47,27 +49,37 @@ describe('Checking the "ViewScale" layer', () => {
   };
 
   let testSettings: IPluginOptions;
+  let $selector: JQuery<HTMLElement>;
   let $elemSlider: JQuery<HTMLElement>;
   let $elemScale: JQuery<HTMLElement>;
+  let sliderID: string | undefined;
 
   beforeAll(() => {
     testSettings = $.extend({}, initSettings, defaultSettings);
     classViewScale.update(testSettings);
+    $selector = classViewScale['_$selector'];
     $elemSlider = classViewScale['_$elemSlider'];
     $elemScale = classViewScale['_$elemScale'];
+    sliderID = $selector.attr('data-id');
 
-    $elemSlider.css('width', '200px');
+    $elemSlider.css('width', `${SLIDER_SIZE_PX}px`);
   });
 
   afterEach(() => {
     testSettings = $.extend({}, initSettings, defaultSettings);
   });
 
-  test('Checking the "_init" method', () => {
+  test('Checking the "_init" method and the first initialization update method', () => {
+    jest.spyOn<ViewScale, any>(classViewScale, '_setEventResize');
+
+    classViewScale['_isFirstInit'] = true;
+    classViewScale.update(testSettings);
+
     expect(classViewScale['_$selector']).toHaveLength(1);
     expect(classViewScale['_$elemSlider']).toHaveLength(1);
     expect(classViewScale['_$elemScale']).toHaveLength(1);
     expect(classViewScale['_isFirstInit']).toBe(false);
+    expect(classViewScale['_setEventResize']).toHaveBeenCalledWith(testSettings);
   });
 
   test('Checking the "_createScale" method => "defaultSettings"', () => {
@@ -75,8 +87,14 @@ describe('Checking the "ViewScale" layer', () => {
     jest.spyOn<ViewScale, any>(classViewScale, '_calcScalePointsSize');
     jest.spyOn(Map.prototype, 'clear');
     jest.spyOn($.fn, 'empty');
+    const CONTROL_SIZE_PX = 100;
     const { maxValue, minValue, step } = testSettings;
 
+    expect(classViewScale['_mapSkipScalePoints'].size).toBe(0);
+    classViewScale['_mapSkipScalePoints'].set(CONTROL_SIZE_PX, [
+      classViewScale['_$elemScalePoints'].eq(0),
+    ]);
+    expect(classViewScale['_mapSkipScalePoints'].size).not.toBe(0);
     classViewScale.update(testSettings);
 
     const $elemScalePoints = classViewScale['_$elemScalePoints'];
@@ -88,7 +106,7 @@ describe('Checking the "ViewScale" layer', () => {
 
       scalePointCounter += 1;
     }
-
+    expect(classViewScale['_$elemScale'].html()).toMatchSnapshot();
     expect(classViewScale['_$elemScale'].empty).toHaveBeenCalled();
     expect($elemScalePoints).toHaveLength(scalePointCounter);
 
@@ -96,15 +114,17 @@ describe('Checking the "ViewScale" layer', () => {
       const $scalePoint = $(scalePoint);
       expect($scalePoint.attr('class')).toMatch(/js-meta-slider__scale-point/);
       expect($scalePoint.attr('data-value')).toBeDefined();
-      expect($scalePoint.prop('style')).toHaveProperty('color');
+      expect($scalePoint.prop('style')).toHaveProperty('color', '');
       expect($scalePoint.prop('style')).toHaveProperty(
         'left',
         `${((Number($scalePoint.attr('data-value')) - minValue) / (maxValue - minValue)) * 100}%`,
       );
-      expect(classViewScale['_calcScalePointsSize']).toHaveBeenCalledWith($scalePoint);
+      expect(classViewScale['_calcScalePointsSize']).toHaveBeenCalledWith(scalePoint);
     });
+
     expect(classViewScale['_setEventsScalePoints']).toHaveBeenCalled();
     expect(classViewScale['_mapSkipScalePoints'].clear).toHaveBeenCalled();
+    expect(classViewScale['_mapSkipScalePoints'].size).toBe(0);
   });
 
   test('Checking the "_createScale" method => option "preFix/postFix"', () => {
@@ -120,16 +140,18 @@ describe('Checking the "ViewScale" layer', () => {
   test('Checking the "_createScale" method => option "initAutoScaleCreation"', () => {
     testSettings.key = 'initAutoScaleCreation';
     testSettings.initAutoScaleCreation = false;
-    const { maxValue, minValue, stepSizeForScale } = testSettings;
+    const { maxValue, minValue } = testSettings;
     classViewScale.update(testSettings);
 
     const $elemScalePoints = classViewScale['_$elemScalePoints'];
     let scalePointCounter = 0;
-    let stepValue = 0;
 
-    if (stepSizeForScale) stepValue = stepSizeForScale;
-
-    for (let currentValue = minValue; currentValue <= maxValue; currentValue += stepValue) {
+    for (
+      let currentValue = minValue;
+      currentValue <= maxValue;
+      currentValue += testSettings.stepSizeForScale || 0
+    ) {
+      expect(testSettings.stepSizeForScale).not.toBe(0);
       expect($elemScalePoints.eq(scalePointCounter).attr('data-value')).toBe(String(currentValue));
       expect($elemScalePoints.eq(scalePointCounter).text()).toBe(String(currentValue));
 
@@ -211,5 +233,180 @@ describe('Checking the "ViewScale" layer', () => {
     });
     expect($elemScale.prop('style')).toHaveProperty('opacity', '0');
     expect($elemScale.prop('style')).toHaveProperty('pointer-events', 'none');
+  });
+
+  test('Checking the "_checkingScaleSize" method => Main test with "defaultSettings" (if the number of scale points is odd and <= 6)', () => {
+    jest.spyOn<ViewScale, any>(classViewScale, '_calcScalePointsSize');
+    jest.spyOn<ViewScale, any>(classViewScale, '_setPropForSkipScalePoint');
+    jest.spyOn<ViewScale, any>(classViewScale, '_checkingSkipScalePointSize');
+    jest.spyOn(Map.prototype, 'set');
+
+    const SCALE_POINTS_SIZE_PX = 200;
+    classViewScale.update(testSettings);
+    classViewScale['_scalePointsSize'] = SCALE_POINTS_SIZE_PX;
+
+    expect(classViewScale['_skipScalePointsArray']).toHaveLength(0);
+
+    classViewScale['_checkingScaleSize'](testSettings);
+    const $elemScalePoints = classViewScale['_$elemScalePoints'];
+    const sizeScalePointsArray = classViewScale['_$elemScalePoints'].length;
+    const skipScalePointsArray = classViewScale['_skipScalePointsArray'];
+    const mapSkipScalePoints = classViewScale['_mapSkipScalePoints'];
+    const calcScalePointsSize = classViewScale['_calcScalePointsSize'];
+    const checkingSkipScalePointSize = classViewScale['_checkingSkipScalePointSize'];
+
+    $elemScalePoints.each((_, scalePoint) => {
+      expect(classViewScale['_setPropForSkipScalePoint']).toHaveBeenCalledWith(scalePoint);
+    });
+
+    expect(sizeScalePointsArray > 0).toBeTruthy();
+    expect(skipScalePointsArray.length > 0).toBeTruthy();
+
+    skipScalePointsArray.forEach(($scalePointSkip) => {
+      expect(calcScalePointsSize).toHaveBeenCalledWith($scalePointSkip[0]);
+    });
+
+    expect(mapSkipScalePoints.set).toHaveBeenCalledWith(expect.any(Number), [
+      ...skipScalePointsArray,
+    ]);
+
+    expect(checkingSkipScalePointSize).toHaveBeenCalledWith(SLIDER_SIZE_PX, expect.any(Number));
+  });
+
+  test('Checking the "_checkingScaleSize" method => if the number of scale points is even and > 6"', () => {
+    jest.spyOn<ViewScale, any>(classViewScale, '_calcScalePointsSize');
+    testSettings.maxValue = 8;
+    classViewScale.update(testSettings);
+    const SCALE_POINTS_SIZE_PX = 200;
+
+    classViewScale['_scalePointsSize'] = SCALE_POINTS_SIZE_PX;
+    classViewScale['_checkingScaleSize'](testSettings);
+    const $elemScalePoints = classViewScale['_$elemScalePoints'];
+    const skipScalePointsArray = classViewScale['_skipScalePointsArray'];
+    const calcScalePointsSize = classViewScale['_calcScalePointsSize'];
+
+    $elemScalePoints.each((index, scalePoint) => {
+      if (index % 2 !== 0) {
+        expect(classViewScale['_setPropForSkipScalePoint']).toHaveBeenCalledWith(scalePoint);
+      }
+    });
+
+    expect(skipScalePointsArray.length > 0).toBeTruthy();
+    skipScalePointsArray.forEach(($scalePointSkip) => {
+      expect(calcScalePointsSize).toHaveBeenCalledWith($scalePointSkip[0]);
+    });
+  });
+
+  test('Checking the "_checkingScaleSize" method => if the number of scale points is odd, <= 6 and this is not the first or last value in the scale "', () => {
+    jest.spyOn<ViewScale, any>(classViewScale, '_calcScalePointsSize');
+    testSettings.maxValue = 6;
+    classViewScale.update(testSettings);
+    const SCALE_POINTS_SIZE_PX = 200;
+
+    classViewScale['_scalePointsSize'] = SCALE_POINTS_SIZE_PX;
+    classViewScale['_checkingScaleSize'](testSettings);
+    const $elemScalePoints = classViewScale['_$elemScalePoints'];
+    const skipScalePointsArray = classViewScale['_skipScalePointsArray'];
+    const calcScalePointsSize = classViewScale['_calcScalePointsSize'];
+
+    $elemScalePoints.each((index, scalePoint) => {
+      const firstOrLastIndex = index === 0 || index === $elemScalePoints.length - 1;
+
+      if (index % 2 === 0 && !firstOrLastIndex) {
+        expect(classViewScale['_setPropForSkipScalePoint']).toHaveBeenCalledWith(scalePoint);
+      }
+    });
+
+    expect(skipScalePointsArray.length > 0).toBeTruthy();
+    skipScalePointsArray.forEach(($scalePointSkip) => {
+      expect(calcScalePointsSize).toHaveBeenCalledWith($scalePointSkip[0]);
+    });
+  });
+
+  test('Checking the "_setPropForSkipScalePoint" method', () => {
+    classViewScale.update(testSettings);
+    classViewScale['_skipScalePointsArray'].length = 0;
+    const testScalePoint = classViewScale['_$elemScalePoints'][0];
+    classViewScale['_setPropForSkipScalePoint'](testScalePoint);
+
+    const $testScalePoint = $(testScalePoint);
+    expect($testScalePoint[0].outerHTML).toMatchSnapshot();
+    expect($testScalePoint.attr('class')).toMatch(/meta-slider__scale-point_skip/);
+    expect($testScalePoint.attr('tabindex')).toBe('-1');
+    expect($testScalePoint.prop('style')).toHaveProperty('color', 'transparent');
+    expect(classViewScale['_skipScalePointsArray'].length).toBe(1);
+  });
+
+  test('Checking the "_checkingSkipScalePointSize" method', () => {
+    jest.spyOn<ViewScale, any>(classViewScale, '_calcScalePointsSize');
+    jest.spyOn(Map.prototype, 'delete');
+    classViewScale.update(testSettings);
+
+    const CONTROL_SIZE_PX = 100;
+    const MARGIN_PX = 100;
+    const $testScalePoint = classViewScale['_$elemScalePoints'].eq(0);
+
+    classViewScale['_setPropForSkipScalePoint']($testScalePoint[0]);
+    classViewScale['_mapSkipScalePoints'].set(CONTROL_SIZE_PX, [$testScalePoint]);
+    expect(classViewScale['_mapSkipScalePoints'].size > 0).toBeTruthy();
+
+    classViewScale['_checkingSkipScalePointSize'](SLIDER_SIZE_PX, MARGIN_PX);
+    expect($testScalePoint[0].outerHTML).toMatchSnapshot();
+    expect($testScalePoint.attr('tabindex')).toBeUndefined();
+    expect($testScalePoint.attr('class')).not.toMatch(/meta-slider__scale-point_skip/);
+    expect(classViewScale['_calcScalePointsSize']).toHaveBeenCalledWith($testScalePoint[0]);
+    expect(classViewScale['_mapSkipScalePoints'].delete).toHaveBeenCalledWith(CONTROL_SIZE_PX);
+    expect(classViewScale['_mapSkipScalePoints'].size).toBe(0);
+  });
+
+  test('Checking the "_setEventResize" method, event "resize" => "defaultSettings" => init "_handleCheckingScaleSize"', () => {
+    jest.spyOn<ViewScale, any>(classViewScale, '_checkingScaleSize');
+    const mockMakeThrottlingHandler = jest.spyOn(makeThrottlingHandler, 'default');
+    classViewScale.update(testSettings);
+
+    jest.useFakeTimers();
+    $(window).trigger(`resize.scale-${sliderID}`);
+
+    jest.advanceTimersByTime(mockMakeThrottlingHandler.mock.calls[0][1]);
+
+    expect(mockMakeThrottlingHandler).toHaveBeenCalled();
+    expect(classViewScale['_checkingScaleSize']).toBeCalledWith(testSettings);
+  });
+
+  test('Checking the "_setEventResize" method => option "showScale"', () => {
+    jest.spyOn($.fn, 'off');
+    testSettings.key = 'showScale';
+    testSettings.showScale = false;
+    classViewScale.update(testSettings);
+
+    expect($(window).off).toHaveBeenCalledWith(`resize.scale-${sliderID}`);
+  });
+
+  test('Checking the "_setEventResize" method => option "initScaleAdjustment"', () => {
+    jest.spyOn($.fn, 'off');
+    testSettings.key = 'initScaleAdjustment';
+    testSettings.showScale = false;
+    classViewScale.update(testSettings);
+
+    expect($(window).off).toHaveBeenCalledWith(`resize.scale-${sliderID}`);
+  });
+
+  test('Checking the "_setEventsScalePoints" method, event "click" => init "_handleGetValueInScalePoint"', () => {
+    const mockNotify = jest.spyOn(classViewScale, 'notify');
+    classViewScale.update(testSettings);
+    const $elemScalePoints = classViewScale['_$elemScalePoints'];
+
+    expect($elemScalePoints.length > 0).toBeTruthy();
+
+    $elemScalePoints.each((_, elemPoint) => {
+      const $elemPoint = $(elemPoint);
+      const eventClick = $.Event('click.scalePoint');
+      eventClick.preventDefault = jest.fn();
+
+      $elemPoint.trigger(eventClick);
+
+      expect(eventClick.preventDefault).toHaveBeenCalled();
+      expect(mockNotify).toBeCalledWith(eventClick, Number($elemPoint.attr('data-value')));
+    });
   });
 });

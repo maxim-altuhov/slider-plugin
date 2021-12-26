@@ -1,5 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Checking the "ViewScale" layer Checking the "_checkingSkipScalePointSize" method 1`] = `"<button type=\\"button\\" class=\\"meta-slider__scale-point js-meta-slider__scale-point\\" style=\\"left: 0%; color: transparent;\\" data-value=\\"1\\">1</button>"`;
+
+exports[`Checking the "ViewScale" layer Checking the "_createScale" method => "defaultSettings" 1`] = `"<button type=\\"button\\" class=\\"meta-slider__scale-point js-meta-slider__scale-point\\" style=\\"left: 0%;\\" data-value=\\"1\\">1</button><button type=\\"button\\" class=\\"meta-slider__scale-point js-meta-slider__scale-point\\" style=\\"left: 25%;\\" data-value=\\"2\\">2</button><button type=\\"button\\" class=\\"meta-slider__scale-point js-meta-slider__scale-point\\" style=\\"left: 50%;\\" data-value=\\"3\\">3</button><button type=\\"button\\" class=\\"meta-slider__scale-point js-meta-slider__scale-point\\" style=\\"left: 75%;\\" data-value=\\"4\\">4</button><button type=\\"button\\" class=\\"meta-slider__scale-point js-meta-slider__scale-point\\" style=\\"left: 100%;\\" data-value=\\"5\\">5</button>"`;
+
+exports[`Checking the "ViewScale" layer Checking the "_setPropForSkipScalePoint" method 1`] = `"<button type=\\"button\\" class=\\"meta-slider__scale-point js-meta-slider__scale-point meta-slider__scale-point_skip\\" style=\\"left: 0%; color: transparent;\\" data-value=\\"1\\" tabindex=\\"-1\\">1</button>"`;
+
 exports[`Checking the "ViewScale" layer, before first initialization. State before first initialization the "update" method 1`] = `
 "<div class=\\"meta-slider js-meta-slider\\"><div class=\\"meta-slider__progress js-meta-slider__progress\\"></div>
     <button type=\\"button\\" class=\\"meta-slider__thumb js-meta-slider__thumb meta-slider__thumb_left\\" data-value=\\"\\" data-text=\\"\\">
