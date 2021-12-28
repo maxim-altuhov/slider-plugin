@@ -50,7 +50,7 @@ interface IPluginOptions {
 }
 
 interface IPluginMethods {
-  [key: string]: Function;
+  [key: string]: any;
   init(this: JQuery, settings?: object): JQuery;
   setProp(this: JQuery, prop: string, value: string | number | (string | number)[]): JQuery;
   getProp(this: JQuery, prop: string): string | number | (string | number)[];

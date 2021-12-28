@@ -67,6 +67,7 @@ describe('Checking the "ViewScale" layer', () => {
 
   afterEach(() => {
     testSettings = $.extend({}, initSettings, defaultSettings);
+    jest.restoreAllMocks();
   });
 
   test('Checking the "_init" method and the first initialization update method', () => {
@@ -275,6 +276,7 @@ describe('Checking the "ViewScale" layer', () => {
 
   test('Checking the "_checkingScaleSize" method => if the number of scale points is even and > 6"', () => {
     jest.spyOn<ViewScale, any>(classViewScale, '_calcScalePointsSize');
+    jest.spyOn<ViewScale, any>(classViewScale, '_setPropForSkipScalePoint');
     testSettings.maxValue = 8;
     classViewScale.update(testSettings);
     const SCALE_POINTS_SIZE_PX = 200;
@@ -299,6 +301,7 @@ describe('Checking the "ViewScale" layer', () => {
 
   test('Checking the "_checkingScaleSize" method => if the number of scale points is odd, <= 6 and this is not the first or last value in the scale "', () => {
     jest.spyOn<ViewScale, any>(classViewScale, '_calcScalePointsSize');
+    jest.spyOn<ViewScale, any>(classViewScale, '_setPropForSkipScalePoint');
     testSettings.maxValue = 6;
     classViewScale.update(testSettings);
     const SCALE_POINTS_SIZE_PX = 200;

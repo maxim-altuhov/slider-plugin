@@ -50,6 +50,7 @@ describe('Checking the "ViewThumbs" layer => "update" method', () => {
 
   afterEach(() => {
     testSettings = $.extend({}, initSettings, defaultSettings);
+    jest.restoreAllMocks();
   });
 
   test('Checking the "_init" method', () => {

@@ -74,6 +74,7 @@ describe('Checking the "ViewSlider" layer', () => {
 
   afterEach(() => {
     testSettings = $.extend({}, initSettings, defaultSettings);
+    jest.restoreAllMocks();
   });
 
   test('Checking the "renderSlider" method', () => {
