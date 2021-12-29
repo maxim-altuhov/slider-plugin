@@ -1,6 +1,7 @@
 import Model from '../layers/Model';
 import methods from '../metaSlider';
 import initSettings from '../data/initSettings';
+import limitedProp from '../data/limitedProp';
 
 jest.mock('../layers/View');
 jest.mock('../layers/Presenter');
@@ -52,7 +53,7 @@ describe('Checking the methods of the metaSlider plugin', () => {
 
     expect(() => {
       $initSelector.metaSlider();
-    }).toThrow();
+    }).toThrow('The selector for initializing the slider must be unique on the page');
 
     $initSelector.length = 1;
   });
@@ -60,27 +61,11 @@ describe('Checking the methods of the metaSlider plugin', () => {
   test('Checking if the passed method does not exist for the jQuery.metaSlider', () => {
     expect(() => {
       $initSelector.metaSlider('fakeMethodName');
-    }).toThrow();
+    }).toThrow('A method named fakeMethodName does not exist for jQuery.metaSlider');
   });
 
   test('Checking the "setProp" method', () => {
     const fakeProp = 'fakePropName';
-    const limitedProp = [
-      'key',
-      '$selector',
-      '$elemSlider',
-      '$sliderProgress',
-      '$elemMarkers',
-      '$elemScale',
-      '$elemThumbs',
-      'textValueFirst',
-      'textValueSecond',
-      'initValuesArray',
-      'textValuesArray',
-      'valuesAsPercentageArray',
-      'stepAsPercent',
-    ];
-
     $initSelector.metaSlider(testSettings);
     const { model } = $initSelector.data('metaSlider');
     jest.spyOn(model, 'update').mockImplementation(() => 'update');
@@ -110,6 +95,7 @@ describe('Checking the methods of the metaSlider plugin', () => {
 
   test('Checking the "getProp" method', () => {
     jest.spyOn(methods, 'getProp');
+    const fakeMethodName = 'fakeMethodName';
 
     $initSelector.metaSlider(testSettings);
     $initSelector.metaSlider('getProp', 'customValues');
@@ -117,8 +103,8 @@ describe('Checking the methods of the metaSlider plugin', () => {
     expect(methods.getProp).toHaveReturnedWith(testSettings.customValues);
 
     expect(() => {
-      $initSelector.metaSlider('getProp', 'fakeMethodName');
-    }).toThrow();
+      $initSelector.metaSlider('getProp', fakeMethodName);
+    }).toThrow(`The '${fakeMethodName}' property does not exist.`);
   });
 
   test('Checking the "getOptionsObj" method', () => {

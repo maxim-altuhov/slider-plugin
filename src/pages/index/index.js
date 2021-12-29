@@ -13,8 +13,8 @@ $(() => {
     step: 10,
     minValue: 0,
     maxValue: 100,
-    initValueFirst: 20,
-    initValueSecond: 80,
+    initValueFirst: 0,
+    initValueSecond: 50,
     showError: true,
   });
 

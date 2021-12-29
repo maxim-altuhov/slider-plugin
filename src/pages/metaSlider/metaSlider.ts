@@ -1,6 +1,7 @@
 /// <reference path='./interfaces/metaSlider.d.ts' />
 import './metaSlider.scss';
 import initSettings from './data/initSettings';
+import limitedProp from './data/limitedProp';
 import Model from './layers/Model';
 import View from './layers/View';
 import Presenter from './layers/Presenter';
@@ -34,22 +35,9 @@ const methods: IPluginMethods = {
     return this;
   },
   setProp(prop, value) {
-    const limitedProp =
-      prop === 'key' ||
-      prop === '$selector' ||
-      prop === '$elemSlider' ||
-      prop === '$sliderProgress' ||
-      prop === '$elemMarkers' ||
-      prop === '$elemScale' ||
-      prop === '$elemThumbs' ||
-      prop === 'textValueFirst' ||
-      prop === 'textValueSecond' ||
-      prop === 'initValuesArray' ||
-      prop === 'textValuesArray' ||
-      prop === 'valuesAsPercentageArray' ||
-      prop === 'stepAsPercent';
+    if (limitedProp.includes(prop)) throw new Error(`Property '${prop}' cannot be changed.`);
 
-    if (!limitedProp && prop in inputOptions) {
+    if (!limitedProp.includes(prop) && prop in inputOptions) {
       const { model } = this.data('metaSlider');
 
       if (value === undefined) throw new Error('The value parameter cannot be omitted.');
@@ -57,8 +45,6 @@ const methods: IPluginMethods = {
       model.opt[prop] = value;
       model.opt.key = prop;
       model.update();
-    } else if (limitedProp) {
-      throw new Error(`Property '${prop}' cannot be changed.`);
     } else {
       throw new Error(`The '${prop}' property does not exist.`);
     }

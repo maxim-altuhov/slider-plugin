@@ -1,10 +1,5 @@
 import Observer from '../../patterns/Observer';
 
-/**
- * В тесте используется правило @ts-ignore для возможности
- * дополнительной проверки класса Observer на вывод ошибок
- * при передаче в методы некорректных типов данных
- */
 const classObserver = new Observer();
 const sumFnForTest = (a: number, b: number) => a + b;
 
@@ -20,22 +15,16 @@ describe('Checking the "Observer" pattern, the "subscribe" method', () => {
     expect(classObserver.observerList).toContainEqual(sumFnForTest);
   });
 
-  test('When a non-function is passed to the subscribe method, an error is thrown', () => {
-    expect(() => {
-      // @ts-ignore
-      classObserver.subscribe(expect.any(Number));
-    }).toThrow();
+  test.each([expect.any(Number), expect.any(Array), expect.any(String)])(
+    'When a non-function is passed to the subscribe method, an error is thrown (test $#)',
+    () => {
+      expect((testArg: any) => {
+        classObserver.subscribe(testArg);
+      }).toThrow('Add observer must be a function');
+    },
+  );
 
-    expect(() => {
-      // @ts-ignore
-      classObserver.subscribe(expect.any(Array));
-    }).toThrow();
-
-    expect(() => {
-      // @ts-ignore
-      classObserver.subscribe(expect.any(String));
-    }).toThrow();
-
+  test('The function is passed to the subscribe method', () => {
     expect(() => {
       classObserver.subscribe(() => true);
     }).not.toThrow();
@@ -48,7 +37,7 @@ describe('Checking the "Observer" pattern, the "subscribe" method', () => {
 
     expect(() => {
       classObserver.subscribe(sumFnForTest);
-    }).toThrow();
+    }).toThrow('Observer already in the list');
   });
 });
 
