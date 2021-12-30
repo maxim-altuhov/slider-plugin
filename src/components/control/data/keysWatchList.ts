@@ -11,12 +11,16 @@ const keysWatchList: { [key: string]: string[] } = {
     'initValueFirst',
     'initValueSecond',
     'numberOfDecimalPlaces',
+    'step',
+    'stepSizeForScale',
   ],
   minValue: [
     'maxValue',
     'initValueFirst',
     'initValueSecond',
     'numberOfDecimalPlaces',
+    'step',
+    'stepSizeForScale',
   ],
   step: [
     'initValueFirst',
