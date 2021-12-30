@@ -37,6 +37,7 @@ describe('Checking the "ControlPanel", before first initialization.', () => {
     expect(notInitControlPanel['_selectorsObj']).toBeDefined();
     expect(notInitControlPanel['_objWithControlPanelDependencies']).toBeDefined();
     expect(notInitControlPanel.propertyList.length > 0).toBeTruthy();
+    expect(notInitControlPanel.keysWatchList).toBeDefined();
 
     expect(notInitControlPanel['_getSelectors']).toHaveBeenCalled();
 
@@ -51,7 +52,7 @@ describe('Checking the "ControlPanel"', () => {
   const allSelectorsObj = classControlPanel['_selectorsObj'];
   const testSelectorsArr = Object.entries(allSelectorsObj).filter((elem) => elem[1].length > 0);
   const objWithControlPanelDependencies = classControlPanel['_objWithControlPanelDependencies'];
-  const { propertyList } = classControlPanel;
+  const { propertyList, keysWatchList } = classControlPanel;
 
   beforeAll(() => {
     classControlPanel.init();
@@ -163,9 +164,12 @@ describe('Checking the "ControlPanel"', () => {
       classControlPanel.watchTheSlider();
 
       expect($sliderSelector.metaSlider).toHaveBeenCalledWith('getProp', 'key');
-      expect(mockGetProp).toHaveBeenCalledWith(propKey);
       expect(mockInitCheckingDependencies).toHaveBeenCalledWith(propKey);
       expect(mockSetOptionStepForInputs).toHaveBeenCalled();
+
+      if (propKey in keysWatchList) {
+        keysWatchList[propKey].forEach((prop) => expect(mockGetProp).toHaveBeenCalledWith(prop));
+      }
     });
 
     mockInitCheckingDependencies.mockRestore();

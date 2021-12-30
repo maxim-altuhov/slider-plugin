@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for pages/metaSlider/data/initSettings.ts</title>
+    <title>Code coverage report for components/control/data/keysWatchList.ts</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../../prettify.css" />
     <link rel="stylesheet" href="../../../base.css" />
@@ -19,7 +19,7 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../../index.html">All files</a> / <a href="index.html">pages/metaSlider/data</a> initSettings.ts</h1>
+        <h1><a href="../../../index.html">All files</a> / <a href="index.html">components/control/data</a> keysWatchList.ts</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
@@ -104,7 +104,19 @@
 <a name='L45'></a><a href='#L45'>45</a>
 <a name='L46'></a><a href='#L46'>46</a>
 <a name='L47'></a><a href='#L47'>47</a>
-<a name='L48'></a><a href='#L48'>48</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">9x</span>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -150,54 +162,75 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">9x</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">const initSettings: IPluginOptions = {
-  key: '',
-  $selector: $(),
-  $elemSlider: $(),
-  $sliderProgress: $(),
-  $elemMarkers: $(),
-  $elemScale: $(),
-  $elemThumbs: $(),
-  mainColor: '#6d6dff',
-  secondColor: '#e4e4e4',
-  colorMarker: '',
-  colorThumb: '',
-  colorTextForMarker: '#ffffff',
-  colorBorderForMarker: '#ffffff',
-  colorBorderForThumb: '#ffffff',
-  colorForScale: '#000000',
-  initFormatted: true,
-  initAutoMargins: true,
-  initScaleAdjustment: true,
-  calcNumberOfDecimalPlaces: true,
-  showError: false,
-  showScale: true,
-  showMarkers: true,
-  showBackground: true,
-  isRange: true,
-  isVertical: false,
-  initAutoScaleCreation: true,
-  checkingStepSizeForScale: false,
-  step: 1,
-  stepAsPercent: 0,
-  minValue: 0,
-  maxValue: 0,
-  stepSizeForScale: null,
-  numberOfDecimalPlaces: 0,
-  preFix: '',
-  postFix: '',
-  customValues: [],
-  initValueFirst: null,
-  initValueSecond: null,
-  initValuesArray: [],
-  textValueFirst: '',
-  textValueSecond: '',
-  textValuesArray: [],
-  valuesAsPercentageArray: [],
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// prettier-ignore
+const keysWatchList: { [key: string]: string[] } = {
+  changedValue: [
+    'initValueFirst',
+    'initValueSecond',
+    'textValueFirst',
+    'textValueSecond',
+  ],
+  maxValue: [
+    'minValue',
+    'initValueFirst',
+    'initValueSecond',
+    'numberOfDecimalPlaces',
+  ],
+  minValue: [
+    'maxValue',
+    'initValueFirst',
+    'initValueSecond',
+    'numberOfDecimalPlaces',
+  ],
+  step: [
+    'initValueFirst',
+    'initValueSecond',
+    'numberOfDecimalPlaces',
+    'stepSizeForScale',
+  ],
+  customValues: [
+    'initValueFirst',
+    'initValueSecond',
+    'textValueFirst',
+    'textValueSecond',
+    'minValue',
+    'maxValue',
+    'step',
+    'stepSizeForScale',
+    'numberOfDecimalPlaces',
+    'initFormatted',
+    'calcNumberOfDecimalPlaces',
+    'initAutoScaleCreation',
+    'checkingStepSizeForScale',
+  ],
+  numberOfDecimalPlaces: [
+    'initValueFirst',
+    'initValueSecond',
+    'minValue',
+    'maxValue',
+    'step',
+  ],
+  initValueFirst: ['initValueSecond', 'textValueFirst', 'textValueSecond'],
+  initValueSecond: ['initValueFirst', 'textValueFirst', 'textValueSecond'],
+  initAutoScaleCreation: ['checkingStepSizeForScale', 'stepSizeForScale'],
+  checkingStepSizeForScale: ['initAutoScaleCreation', 'stepSizeForScale'],
+  isRange: ['initValueFirst', 'textValueFirst'],
+  calcNumberOfDecimalPlaces: ['numberOfDecimalPlaces'],
+  isVertical: ['initAutoMargins'],
 };
 &nbsp;
-export default initSettings;
+export default keysWatchList;
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->

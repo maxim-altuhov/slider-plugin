@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for pages/metaSlider/data/initSettings.ts</title>
+    <title>Code coverage report for components/control/data/objWithControlPanelDependencies.ts</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../../prettify.css" />
     <link rel="stylesheet" href="../../../base.css" />
@@ -19,7 +19,7 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../../index.html">All files</a> / <a href="index.html">pages/metaSlider/data</a> initSettings.ts</h1>
+        <h1><a href="../../../index.html">All files</a> / <a href="index.html">components/control/data</a> objWithControlPanelDependencies.ts</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
@@ -100,11 +100,12 @@
 <a name='L41'></a><a href='#L41'>41</a>
 <a name='L42'></a><a href='#L42'>42</a>
 <a name='L43'></a><a href='#L43'>43</a>
-<a name='L44'></a><a href='#L44'>44</a>
-<a name='L45'></a><a href='#L45'>45</a>
-<a name='L46'></a><a href='#L46'>46</a>
-<a name='L47'></a><a href='#L47'>47</a>
-<a name='L48'></a><a href='#L48'>48</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">9x</span>
+<a name='L44'></a><a href='#L44'>44</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -141,63 +142,50 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">9x</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">const initSettings: IPluginOptions = {
-  key: '',
-  $selector: $(),
-  $elemSlider: $(),
-  $sliderProgress: $(),
-  $elemMarkers: $(),
-  $elemScale: $(),
-  $elemThumbs: $(),
-  mainColor: '#6d6dff',
-  secondColor: '#e4e4e4',
-  colorMarker: '',
-  colorThumb: '',
-  colorTextForMarker: '#ffffff',
-  colorBorderForMarker: '#ffffff',
-  colorBorderForThumb: '#ffffff',
-  colorForScale: '#000000',
-  initFormatted: true,
-  initAutoMargins: true,
-  initScaleAdjustment: true,
-  calcNumberOfDecimalPlaces: true,
-  showError: false,
-  showScale: true,
-  showMarkers: true,
-  showBackground: true,
-  isRange: true,
-  isVertical: false,
-  initAutoScaleCreation: true,
-  checkingStepSizeForScale: false,
-  step: 1,
-  stepAsPercent: 0,
-  minValue: 0,
-  maxValue: 0,
-  stepSizeForScale: null,
-  numberOfDecimalPlaces: 0,
-  preFix: '',
-  postFix: '',
-  customValues: [],
-  initValueFirst: null,
-  initValueSecond: null,
-  initValuesArray: [],
-  textValueFirst: '',
-  textValueSecond: '',
-  textValuesArray: [],
-  valuesAsPercentageArray: [],
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">type TypeObjWithDependencies = {
+  checkingOptions: string[];
+  isReverseDependency: boolean;
 };
 &nbsp;
-export default initSettings;
+const objWithControlPanelDependencies: { [key: string]: TypeObjWithDependencies } = {
+  isRange: {
+    checkingOptions: ['initValueFirst'],
+    isReverseDependency: true,
+  },
+  isVertical: {
+    checkingOptions: ['initAutoMargins'],
+    isReverseDependency: false,
+  },
+  initAutoScaleCreation: {
+    checkingOptions: ['stepSizeForScale', 'checkingStepSizeForScale'],
+    isReverseDependency: false,
+  },
+  checkingStepSizeForScale: {
+    checkingOptions: ['initAutoScaleCreation'],
+    isReverseDependency: false,
+  },
+  calcNumberOfDecimalPlaces: {
+    checkingOptions: ['numberOfDecimalPlaces'],
+    isReverseDependency: false,
+  },
+  customValues: {
+    checkingOptions: [
+      'minValue',
+      'maxValue',
+      'step',
+      'stepSizeForScale',
+      'initAutoScaleCreation',
+      'numberOfDecimalPlaces',
+      'calcNumberOfDecimalPlaces',
+      'checkingStepSizeForScale',
+      'initFormatted',
+    ],
+    isReverseDependency: false,
+  },
+};
+&nbsp;
+export default objWithControlPanelDependencies;
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
