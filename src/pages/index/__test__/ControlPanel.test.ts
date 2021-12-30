@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/dot-notation */
-import Model from '../../../pages/metaSlider/layers/Model';
-import ControlPanel from '../ControlPanel';
-import '../../../pages/metaSlider/metaSlider';
+import Model from '../../metaSlider/layers/Model';
+import ControlPanel from '../ts/ControlPanel';
+import '../../metaSlider/metaSlider';
 
 jest.mock('../../../pages/metaSlider/layers/View');
 jest.mock('../../../pages/metaSlider/layers/Presenter');

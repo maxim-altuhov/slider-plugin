@@ -1,6 +1,6 @@
-import objWithControlPanelDependencies from './data/objWithControlPanelDependencies';
-import propertyList from './data/propertyList';
-import keysWatchList from './data/keysWatchList';
+import objWithControlPanelDependencies from '../data/objWithControlPanelDependencies';
+import propertyList from '../data/propertyList';
+import keysWatchList from '../data/keysWatchList';
 
 class ControlPanel {
   readonly propertyList = propertyList;
