@@ -170,7 +170,7 @@ describe('Checking the "ViewThumbs" layer => "update" method', () => {
   );
 
   test.each([0, 1])(
-    'Checking the "_setEventsThumbs" method, event "pointerdown" (index %d) => init _handleSetEventListenerForThumbs, _handleInitPointerMove, _handleInitPointerUp',
+    'Checking the "_setEventsThumbs" method, event "pointerdown/pointerup" (index %d) => init _handleSetEventListenerForThumbs, _handleInitPointerMove, _handleInitPointerUp',
     (index) => {
       const mockNotify = jest.spyOn(classViewThumbs, 'notify');
       const mockMakeThrottlingHandler = jest.spyOn(makeThrottlingHandler, 'default');

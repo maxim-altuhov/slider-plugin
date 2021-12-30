@@ -1,7 +1,8 @@
 type TypeObjWithOptions = {
   checkingOptions: string[];
-  isReverseDependency?: boolean;
+  isReverseDependency: boolean;
 };
+
 class ControlPanel {
   private _$panelSelector: JQuery;
   private _$sliderSelector: JQuery;
@@ -21,15 +22,19 @@ class ControlPanel {
       },
       isVertical: {
         checkingOptions: ['initAutoMargins'],
+        isReverseDependency: false,
       },
       initAutoScaleCreation: {
         checkingOptions: ['stepSizeForScale', 'checkingStepSizeForScale'],
+        isReverseDependency: false,
       },
       checkingStepSizeForScale: {
         checkingOptions: ['initAutoScaleCreation'],
+        isReverseDependency: false,
       },
       calcNumberOfDecimalPlaces: {
         checkingOptions: ['numberOfDecimalPlaces'],
+        isReverseDependency: false,
       },
       customValues: {
         checkingOptions: [
@@ -43,6 +48,7 @@ class ControlPanel {
           'checkingStepSizeForScale',
           'initFormatted',
         ],
+        isReverseDependency: false,
       },
     };
 
@@ -90,12 +96,12 @@ class ControlPanel {
    * установка обработчика событий на инпуты и подписка на обновление модели слайдера
    */
   init() {
-    Object.entries(this._selectorsObj).forEach((_selectorsObjArr: [string, JQuery]) => {
-      const [prop, $selector] = _selectorsObjArr;
+    Object.entries(this._selectorsObj).forEach((currentElem) => {
+      const [prop, $inputSelector] = currentElem;
       this._getProp(prop);
       this._initCheckingDependencies(prop);
 
-      $selector.on('change.input', this._handleInputChanges);
+      $inputSelector.on('change.input', this._handleInputChanges);
     });
 
     this._setOptionStepForInputs();
@@ -103,9 +109,9 @@ class ControlPanel {
   }
 
   unbind() {
-    Object.entries(this._selectorsObj).forEach((_selectorsObjArr: [string, JQuery]) => {
-      const $selector = _selectorsObjArr[1];
-      $selector.off('change.input');
+    Object.entries(this._selectorsObj).forEach((currentElem) => {
+      const [, $inputSelector] = currentElem;
+      $inputSelector.off('change.input');
     });
 
     this._$sliderSelector.metaSlider('unsubscribe', this.watchTheSlider);
@@ -233,16 +239,16 @@ class ControlPanel {
 
   // Метод для получения текущих свойств слайдера и установки новых значений в контр.панели
   private _getProp(prop: string) {
-    const resultProp = this._$sliderSelector.metaSlider('getProp', prop);
+    const valueProp = this._$sliderSelector.metaSlider('getProp', prop);
     const $inputTarget = this._selectorsObj[prop];
 
     if ($inputTarget.attr('type') === 'checkbox') {
-      $inputTarget.prop('checked', resultProp);
+      $inputTarget.prop('checked', valueProp);
     } else {
-      $inputTarget.val(resultProp);
+      $inputTarget.val(valueProp);
     }
 
-    return resultProp;
+    return valueProp;
   }
 
   // Формируем объект со всеми инпутами, поиск по имени свойства слайдера
@@ -273,7 +279,7 @@ class ControlPanel {
   private _checkingInputWithTargetProp(
     initProp: string,
     checkingOptions: string[],
-    isReverseDependency = false,
+    isReverseDependency: boolean,
   ) {
     const $inputTarget = this._selectorsObj[initProp];
     let targetValueInBooleanType;
@@ -312,7 +318,7 @@ class ControlPanel {
   // Установка новых значений свойств слайдера при изменении инпутов контр. панели
   private _handleInputChanges(event: Event & { target: EventTarget }) {
     const $inputTarget = $(event.target);
-    const prop = $inputTarget.attr('name');
+    const targetProp = $inputTarget.attr('name');
     let value = null;
 
     if ($inputTarget.attr('type') === 'checkbox') {
@@ -323,7 +329,7 @@ class ControlPanel {
       value = Number($inputTarget.val());
     }
 
-    if (prop) this._setProp(prop, value);
+    if (targetProp) this._setProp(targetProp, value);
   }
 }
 

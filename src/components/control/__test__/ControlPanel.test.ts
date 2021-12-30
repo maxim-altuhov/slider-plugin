@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 import Model from '../../../pages/metaSlider/layers/Model';
-import '../../../pages/metaSlider/metaSlider';
 import ControlPanel from '../ControlPanel';
+import '../../../pages/metaSlider/metaSlider';
 
 jest.mock('../../../pages/metaSlider/layers/View');
 jest.mock('../../../pages/metaSlider/layers/Presenter');
@@ -16,18 +16,16 @@ document.body.innerHTML = `<div id="fake-slider-selector"></div>
 <input type="number" name="minValue">
 <input type="number" name="maxValue">
 <input type="number" name="step">
+<input type="text" name="customValues">
+<input type="text" name="mainColor">
+<input type="checkbox" name="isRange" value="isRange">
 <input type="checkbox" name="showScale" value="showScale">
+<input type="checkbox" name="isVertical" value="isVertical">
+<input type="checkbox" name="initAutoMargins" value="initAutoMargins">
 </div>`;
 $('#fake-slider-selector').metaSlider();
 
-describe('Checking the "ControlPanel"', () => {
-  const classControlPanel = new ControlPanel('#fake-panel-selector', '#fake-slider-selector');
-  const $sliderSelector = classControlPanel['_$sliderSelector'];
-  const $panelSelector = classControlPanel['_$panelSelector'];
-  const selectorsObj = classControlPanel['_selectorsObj'];
-  const objWithControlPanelDependencies = classControlPanel['_objWithControlPanelDependencies'];
-  const { propertyList } = classControlPanel;
-
+describe('Checking the "ControlPanel", before first initialization.', () => {
   test('State before first initialization the "init" method', () => {
     const mockGetSelectors = jest.spyOn<ControlPanel, any>(ControlPanel.prototype, '_getSelectors');
     const notInitControlPanel = new ControlPanel('#fake-panel-selector', '#fake-slider-selector');
@@ -44,111 +42,164 @@ describe('Checking the "ControlPanel"', () => {
 
     mockGetSelectors.mockRestore();
   });
+});
 
-  test('Checking the "init" method (It must be run first before other tests!)', () => {
-    jest.spyOn($.fn, 'on');
-    const handleInputChanges = classControlPanel['_handleInputChanges'];
-    const mockGetProp = jest.spyOn<ControlPanel, any>(classControlPanel, '_getProp');
-    const mockInitCheckingDependencies = jest
-      .spyOn<ControlPanel, any>(classControlPanel, '_initCheckingDependencies')
-      .mockImplementation(() => '_initCheckingDependencies');
+describe('Checking the "ControlPanel"', () => {
+  const classControlPanel = new ControlPanel('#fake-panel-selector', '#fake-slider-selector');
+  const $sliderSelector = classControlPanel['_$sliderSelector'];
+  const $panelSelector = classControlPanel['_$panelSelector'];
+  const allSelectorsObj = classControlPanel['_selectorsObj'];
+  const testSelectorsArr = Object.entries(allSelectorsObj).filter((elem) => elem[1].length > 0);
+  const objWithControlPanelDependencies = classControlPanel['_objWithControlPanelDependencies'];
+  const { propertyList } = classControlPanel;
 
-    const mockSetOptionsForInputs = jest
-      .spyOn<ControlPanel, any>(classControlPanel, '_setOptionStepForInputs')
-      .mockImplementation(() => '_setOptionStepForInputs');
-
+  beforeAll(() => {
     classControlPanel.init();
-
-    Object.entries(selectorsObj).forEach((selectorsObjArr: [string, JQuery]) => {
-      const [prop, $selector] = selectorsObjArr;
-
-      expect(mockGetProp).toHaveBeenCalledWith(prop);
-      expect(mockInitCheckingDependencies).toHaveBeenCalledWith(prop);
-      expect($selector.on).toHaveBeenCalledWith('change.input', handleInputChanges);
-    });
-
-    expect(mockSetOptionsForInputs).toHaveBeenCalled();
-    expect($sliderSelector.metaSlider).toHaveBeenCalledWith(
-      'subscribe',
-      classControlPanel.watchTheSlider,
-    );
-
-    mockInitCheckingDependencies.mockRestore();
-    mockSetOptionsForInputs.mockRestore();
   });
 
-  test('Checking the "unbind" method', () => {
-    jest.spyOn($.fn, 'off');
-    classControlPanel.unbind();
+  beforeEach(() => {
+    testSelectorsArr.forEach((currentElem) => {
+      const [, $inputSelector] = currentElem;
 
-    Object.entries(selectorsObj).forEach((selectorsObjArr: [string, JQuery]) => {
-      const $selector = selectorsObjArr[1];
-      expect($selector.off).toHaveBeenCalledWith('change.input');
+      if ($inputSelector.attr('type') === 'checkbox') $inputSelector.prop('checked', true);
+      $inputSelector.removeAttr('data-dependency');
+      $inputSelector.removeAttr('disabled');
     });
 
-    expect($sliderSelector.metaSlider).toHaveBeenCalledWith(
-      'unsubscribe',
-      classControlPanel.watchTheSlider,
-    );
-  });
-
-  test('Checking the "watchTheSlider" method', () => {
-    const mockInitCheckingDependencies = jest
-      .spyOn<ControlPanel, any>(classControlPanel, '_initCheckingDependencies')
-      .mockImplementation(() => '_initCheckingDependencies');
-    const mockSetOptionsForInputs = jest
-      .spyOn<ControlPanel, any>(classControlPanel, '_setOptionStepForInputs')
-      .mockImplementation(() => '_setOptionStepForInputs');
-    const mockGetProp = jest
-      .spyOn<ControlPanel, any>(classControlPanel, '_getProp')
-      .mockImplementation(() => '_getProp');
-
-    propertyList.forEach((prop) => {
-      $sliderSelector.data('metaSlider').model.opt.key = prop;
-      classControlPanel.watchTheSlider();
-
-      expect(mockGetProp).toHaveBeenCalledWith(prop);
-    });
-
-    expect($sliderSelector.metaSlider).toHaveBeenCalledWith('getProp', 'key');
-    expect(mockInitCheckingDependencies).toHaveBeenCalled();
-    expect(mockSetOptionsForInputs).toHaveBeenCalled();
-
-    mockInitCheckingDependencies.mockRestore();
-    mockSetOptionsForInputs.mockRestore();
-    mockGetProp.mockRestore();
-  });
-
-  test('Checking the "_setOptionStepForInputs" method', () => {
     const {
       initValueFirst: inputValueFirst,
       initValueSecond: inputValueSecond,
       minValue: inputMinValue,
       maxValue: inputMaxValue,
       step: inputStep,
-    } = selectorsObj;
+      customValues: inputCustomValues,
+      mainColor: inputMainColor,
+    } = allSelectorsObj;
 
     inputValueFirst.val(20);
     inputValueSecond.val(80);
     inputMaxValue.val(100);
     inputMinValue.val(0);
     inputStep.val(10);
+    inputCustomValues.val(['a', 'b', 'c']);
+    inputMainColor.val('red');
 
+    $sliderSelector.data('metaSlider').model.opt.key = '';
+  });
+
+  test('Checking the "init" method', () => {
+    jest.spyOn($.fn, 'on');
+
+    const { model } = $sliderSelector.data('metaSlider');
+    const handleInputChanges = classControlPanel['_handleInputChanges'];
+    const mockGetProp = jest.spyOn<ControlPanel, any>(classControlPanel, '_getProp');
+    const mockSubscribe = jest.spyOn(model, 'subscribe').mockImplementation(() => 'subscribe');
+
+    const mockInitCheckingDependencies = jest
+      .spyOn<ControlPanel, any>(classControlPanel, '_initCheckingDependencies')
+      .mockImplementation(() => '_initCheckingDependencies');
+
+    const mockSetOptionStepForInputs = jest
+      .spyOn<ControlPanel, any>(classControlPanel, '_setOptionStepForInputs')
+      .mockImplementation(() => '_setOptionStepForInputs');
+
+    classControlPanel.init();
+
+    testSelectorsArr.forEach((currentElem) => {
+      const [prop, $inputSelector] = currentElem;
+
+      expect(mockGetProp).toHaveBeenCalledWith(prop);
+      expect(mockInitCheckingDependencies).toHaveBeenCalledWith(prop);
+      expect($inputSelector.on).toHaveBeenCalledWith('change.input', handleInputChanges);
+    });
+
+    expect(mockSetOptionStepForInputs).toHaveBeenCalled();
+    expect($sliderSelector.metaSlider).toHaveBeenCalledWith(
+      'subscribe',
+      classControlPanel.watchTheSlider,
+    );
+
+    mockSubscribe.mockRestore();
+    mockInitCheckingDependencies.mockRestore();
+    mockSetOptionStepForInputs.mockRestore();
+  });
+
+  test('Checking the "unbind" method', () => {
+    const { model } = $sliderSelector.data('metaSlider');
+    const mockRemoveEvent = jest.spyOn($.fn, 'off').mockImplementation();
+    const mockUnsubscribe = jest
+      .spyOn(model, 'unsubscribe')
+      .mockImplementation(() => 'unsubscribe');
+
+    classControlPanel.unbind();
+
+    testSelectorsArr.forEach((currentElem) => {
+      const [, $inputSelector] = currentElem;
+      expect($inputSelector.off).toHaveBeenCalledWith('change.input');
+    });
+
+    expect($sliderSelector.metaSlider).toHaveBeenCalledWith(
+      'unsubscribe',
+      classControlPanel.watchTheSlider,
+    );
+
+    mockRemoveEvent.mockRestore();
+    mockUnsubscribe.mockRestore();
+  });
+
+  test('Checking the "watchTheSlider" method', () => {
+    const mockInitCheckingDependencies = jest
+      .spyOn<ControlPanel, any>(classControlPanel, '_initCheckingDependencies')
+      .mockImplementation(() => '_initCheckingDependencies');
+    const mockSetOptionStepForInputs = jest
+      .spyOn<ControlPanel, any>(classControlPanel, '_setOptionStepForInputs')
+      .mockImplementation(() => '_setOptionStepForInputs');
+    const mockGetProp = jest
+      .spyOn<ControlPanel, any>(classControlPanel, '_getProp')
+      .mockImplementation(() => '_getProp');
+
+    propertyList.forEach((propKey) => {
+      $sliderSelector.data('metaSlider').model.opt.key = propKey;
+      classControlPanel.watchTheSlider();
+
+      expect($sliderSelector.metaSlider).toHaveBeenCalledWith('getProp', 'key');
+      expect(mockGetProp).toHaveBeenCalledWith(propKey);
+      expect(mockInitCheckingDependencies).toHaveBeenCalledWith(propKey);
+      expect(mockSetOptionStepForInputs).toHaveBeenCalled();
+    });
+
+    mockInitCheckingDependencies.mockRestore();
+    mockSetOptionStepForInputs.mockRestore();
+    mockGetProp.mockRestore();
+  });
+
+  test('Checking the "_setOptionStepForInputs" method', () => {
     classControlPanel['_setOptionStepForInputs']();
 
-    expect(inputValueFirst.attr('min')).toBeDefined();
-    expect(inputValueFirst.attr('max')).toBeDefined();
-    expect(inputValueFirst.attr('step')).toBeDefined();
+    const {
+      initValueFirst: inputValueFirst,
+      initValueSecond: inputValueSecond,
+      minValue: inputMinValue,
+      maxValue: inputMaxValue,
+      step: inputStep,
+    } = allSelectorsObj;
 
-    expect(inputValueSecond.attr('min')).toBeDefined();
-    expect(inputValueSecond.attr('max')).toBeDefined();
-    expect(inputValueSecond.attr('step')).toBeDefined();
+    const maxValueForFirstThumbs = Number(inputValueSecond.val()) - Number(inputStep.val());
+    const minValueForSecondThumbs = Number(inputValueFirst.val()) + Number(inputStep.val());
+
+    expect(inputValueFirst.attr('min')).toBe(inputMinValue.val());
+    expect(inputValueFirst.attr('max')).toBe(String(maxValueForFirstThumbs));
+    expect(inputValueFirst.attr('step')).toBe(inputStep.val());
+
+    expect(inputValueSecond.attr('min')).toBe(String(minValueForSecondThumbs));
+    expect(inputValueSecond.attr('max')).toBe(inputMaxValue.val());
+    expect(inputValueSecond.attr('step')).toBe(inputStep.val());
   });
 
   test('Checking the "_setProp" method', () => {
-    classControlPanel['_setProp']('mainColor', 'red');
+    classControlPanel['_setProp']('mainColor', 'black');
 
-    expect($sliderSelector.metaSlider).toHaveBeenCalledWith('setProp', 'mainColor', 'red');
+    expect($sliderSelector.metaSlider).toHaveBeenCalledWith('setProp', 'mainColor', 'black');
   });
 
   test.each(['step', 'showScale'])('Checking the "_getProp" method => option %p', (prop) => {
@@ -158,10 +209,10 @@ describe('Checking the "ControlPanel"', () => {
 
     expect($sliderSelector.metaSlider).toHaveBeenCalledWith('getProp', prop);
 
-    if (selectorsObj[prop].attr('type') === 'checkbox') {
-      expect(selectorsObj[prop].prop('checked')).toBe(currentValue);
+    if (allSelectorsObj[prop].attr('type') === 'checkbox') {
+      expect(allSelectorsObj[prop].prop('checked')).toBe(currentValue);
     } else {
-      expect(selectorsObj[prop].val()).toBe(String(currentValue));
+      expect(allSelectorsObj[prop].val()).toBe(String(currentValue));
     }
 
     expect(classControlPanel['_getProp']).toHaveReturnedWith(currentValue);
@@ -181,20 +232,70 @@ describe('Checking the "ControlPanel"', () => {
       .spyOn<ControlPanel, any>(classControlPanel, '_checkingInputWithTargetProp')
       .mockImplementation(() => '_checkingInputWithTargetProp');
 
-    Object.keys(objWithControlPanelDependencies).forEach((prop) => {
-      classControlPanel['_initCheckingDependencies'](prop);
+    Object.keys(objWithControlPanelDependencies).forEach((initProp) => {
+      classControlPanel['_initCheckingDependencies'](initProp);
 
-      if (objWithControlPanelDependencies[prop].isReverseDependency) {
-        expect(mockCheckTheProp).toHaveBeenCalledWith(prop, expect.any(Array), expect.any(Boolean));
-      } else {
-        expect(mockCheckTheProp).toHaveBeenCalledWith(prop, expect.any(Array), undefined);
-      }
+      expect(mockCheckTheProp).toHaveBeenCalledWith(
+        initProp,
+        expect.any(Array),
+        expect.any(Boolean),
+      );
     });
 
     mockCheckTheProp.mockRestore();
   });
 
-  test('Checking the "_checkingInputWithTargetProp" method', () => {
-    classControlPanel['_checkingInputWithTargetProp']('isVertical', ['initAutoMargins']);
+  test.each(['isVertical', 'isRange', 'customValues'])(
+    'Checking the "_checkingInputWithTargetProp" method => option %p',
+    (initProp) => {
+      jest.spyOn<ControlPanel, any>(classControlPanel, '_togglePropDisableForInput');
+      jest.spyOn<ControlPanel, any>(classControlPanel, '_checkingInputWithTargetProp');
+      const { checkingOptions, isReverseDependency } = objWithControlPanelDependencies[initProp];
+      const $inputTarget = allSelectorsObj[initProp];
+      $inputTarget.attr('data-dependency', String(!isReverseDependency));
+
+      classControlPanel['_initCheckingDependencies'](initProp);
+
+      expect($inputTarget.attr('data-dependency')).toBe(String(!isReverseDependency));
+      expect(classControlPanel['_checkingInputWithTargetProp']).toHaveBeenCalledWith(
+        initProp,
+        checkingOptions,
+        isReverseDependency,
+      );
+
+      checkingOptions.forEach((targetProp) => {
+        expect(classControlPanel['_togglePropDisableForInput']).toHaveBeenCalledWith(
+          targetProp,
+          !isReverseDependency,
+        );
+      });
+    },
+  );
+
+  test('Checking the "_togglePropDisableForInput" method', () => {
+    const targetProp = 'isVertical';
+    const targetOption = false;
+    classControlPanel['_togglePropDisableForInput'](targetProp, targetOption);
+
+    expect(allSelectorsObj[targetProp].prop('disabled')).toBe(targetOption);
   });
+
+  test.each(['isVertical', 'isRange', 'customValues', 'step'])(
+    'Checking the "_handleInputChanges" method => option %p',
+    (initProp) => {
+      const mockSetProp = jest.spyOn<ControlPanel, any>(classControlPanel, '_setProp');
+      const eventChange = $.Event('change.input');
+      const $targetInput = allSelectorsObj[initProp];
+
+      $targetInput.trigger(eventChange);
+
+      if ($targetInput.attr('type') === 'number') {
+        expect(mockSetProp).toHaveBeenCalledWith(initProp, Number($targetInput.val()));
+      } else if ($targetInput.attr('type') === 'checkbox') {
+        expect(mockSetProp).toHaveBeenCalledWith(initProp, $targetInput.prop('checked'));
+      } else {
+        expect(mockSetProp).toHaveBeenCalledWith(initProp, $targetInput.val());
+      }
+    },
+  );
 });

@@ -373,7 +373,7 @@ describe('Checking the "ViewScale" layer', () => {
     jest.advanceTimersByTime(mockMakeThrottlingHandler.mock.calls[0][1]);
 
     expect(mockMakeThrottlingHandler).toHaveBeenCalled();
-    expect(classViewScale['_checkingScaleSize']).toBeCalledWith(testSettings);
+    expect(classViewScale['_checkingScaleSize']).toHaveBeenCalledWith(testSettings);
   });
 
   test('Checking the "_setEventResize" method => option "showScale"', () => {
@@ -409,7 +409,7 @@ describe('Checking the "ViewScale" layer', () => {
       $elemPoint.trigger(eventClick);
 
       expect(eventClick.preventDefault).toHaveBeenCalled();
-      expect(mockNotify).toBeCalledWith(eventClick, Number($elemPoint.attr('data-value')));
+      expect(mockNotify).toHaveBeenCalledWith(eventClick, Number($elemPoint.attr('data-value')));
     });
   });
 });
