@@ -9,6 +9,8 @@ const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserWebpackPlugin = require('terser-webpack-plugin');
 const postcssFlexbugs = require('postcss-flexbugs-fixes');
 const ESLintPlugin = require('eslint-webpack-plugin');
+const FileManagerPlugin = require('filemanager-webpack-plugin');
+const RemovePlugin = require('remove-files-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 // Объект с путями к директориям проекта
@@ -99,6 +101,13 @@ const setBabelOptions = (presets) => {
 
 // Плагины
 const setPlugins = () => {
+  const optionsForRemovePlugin = [
+    {
+      folder: './plugin',
+      method: () => true,
+      recursive: true,
+    },
+  ];
   const basePlugins = [
     ...allPages.map((page) => new HTMLWebpackPlugin({
       filename: `${page}.html`,
@@ -127,30 +136,56 @@ const setPlugins = () => {
       jQuery: 'jquery',
       'window.jQuery': 'jquery',
     }),
+    new RemovePlugin({
+      before: {
+        test: optionsForRemovePlugin,
+      },
+      watch: {
+        test: optionsForRemovePlugin,
+      },
+    }),
   ];
 
   if (isDev && !isDevServer) {
     basePlugins.push(new ESLintPlugin({ extensions: ['js', 'jsx', 'ts', 'tsx'] }));
   } else if (isProd) {
-    basePlugins.push(new ImageMinimizerPlugin({
-      minimizerOptions: {
-        plugins: [
-          ['gifsicle', { interlaced: true }],
-          ['jpegtran', { progressive: true }],
-          ['optipng', { optimizationLevel: 5 }],
-          [
-            'svgo',
-            {
-              plugins: [
-                {
-                  removeViewBox: false,
-                },
-              ],
-            },
+    basePlugins.push(
+      new ImageMinimizerPlugin({
+        minimizerOptions: {
+          plugins: [
+            ['gifsicle', { interlaced: true }],
+            ['jpegtran', { progressive: true }],
+            ['optipng', { optimizationLevel: 5 }],
+            [
+              'svgo',
+              {
+                plugins: [
+                  {
+                    removeViewBox: false,
+                  },
+                ],
+              },
+            ],
           ],
-        ],
-      },
-    }));
+        },
+      }),
+      new FileManagerPlugin({
+        events: {
+          onEnd: [{
+            move: [
+              {
+                source: path.join(__dirname, './dist/js/metaSlider.min.js'),
+                destination: path.join(__dirname, './plugin/metaSlider.min.js'),
+              },
+              {
+                source: path.join(__dirname, './dist/css/metaSlider.min.css'),
+                destination: path.join(__dirname, './plugin/metaSlider.min.css'),
+              },
+            ],
+          }],
+        },
+      }),
+    );
   }
 
   return basePlugins;
