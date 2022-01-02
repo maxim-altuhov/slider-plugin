@@ -36,8 +36,8 @@ describe('Checking the "ControlPanel", before first initialization.', () => {
     expect(notInitControlPanel['_$sliderSelector']).toHaveLength(1);
     expect(notInitControlPanel['_selectorsObj']).toBeDefined();
     expect(notInitControlPanel['_objWithControlPanelDependencies']).toBeDefined();
+    expect(notInitControlPanel['_keysWatchList']).toBeDefined();
     expect(notInitControlPanel.propertyList.length > 0).toBeTruthy();
-    expect(notInitControlPanel.keysWatchList).toBeDefined();
 
     expect(notInitControlPanel['_getSelectors']).toHaveBeenCalled();
 
@@ -50,9 +50,10 @@ describe('Checking the "ControlPanel"', () => {
   const $sliderSelector = classControlPanel['_$sliderSelector'];
   const $panelSelector = classControlPanel['_$panelSelector'];
   const allSelectorsObj = classControlPanel['_selectorsObj'];
+  const keysWatchList = classControlPanel['_keysWatchList'];
   const testSelectorsArr = Object.entries(allSelectorsObj).filter((elem) => elem[1].length > 0);
   const objWithControlPanelDependencies = classControlPanel['_objWithControlPanelDependencies'];
-  const { propertyList, keysWatchList } = classControlPanel;
+  const { propertyList } = classControlPanel;
 
   beforeAll(() => {
     classControlPanel.init();

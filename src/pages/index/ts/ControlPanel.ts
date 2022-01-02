@@ -4,11 +4,11 @@ import keysWatchList from '../data/keysWatchList';
 
 class ControlPanel {
   readonly propertyList = propertyList;
-  readonly keysWatchList = keysWatchList;
   private _$panelSelector: JQuery;
   private _$sliderSelector: JQuery;
   private _selectorsObj: { [key: string]: JQuery } = {};
   private _objWithControlPanelDependencies = objWithControlPanelDependencies;
+  private _keysWatchList = keysWatchList;
 
   constructor(panelSelector: string, sliderSelector: string) {
     this.watchTheSlider = this.watchTheSlider.bind(this);
@@ -58,8 +58,8 @@ class ControlPanel {
     if (key !== 'changedValue') this._getProp(key);
 
     // отслеживание изменяемого свойства по ключу
-    if (key in this.keysWatchList) {
-      this.keysWatchList[key].forEach((prop) => this._getProp(prop));
+    if (key in this._keysWatchList) {
+      this._keysWatchList[key].forEach((prop) => this._getProp(prop));
     }
 
     // Инициализация проверки зависимости свойств слайдера друг от друга
