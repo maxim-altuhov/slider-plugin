@@ -42,6 +42,7 @@ const keysWatchList: { [key: string]: string[] } = {
     'calcNumberOfDecimalPlaces',
     'initAutoScaleCreation',
     'checkingStepSizeForScale',
+    'initScaleAdjustment',
   ],
   numberOfDecimalPlaces: [
     'initValueFirst',

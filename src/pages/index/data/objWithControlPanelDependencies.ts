@@ -35,6 +35,7 @@ const objWithControlPanelDependencies: { [key: string]: TypeObjWithDependencies 
       'calcNumberOfDecimalPlaces',
       'checkingStepSizeForScale',
       'initFormatted',
+      'initScaleAdjustment',
     ],
     isReverseDependency: false,
   },

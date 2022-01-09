@@ -410,6 +410,7 @@ class Model extends Observer {
     this.opt.minValue = 0;
     this.opt.maxValue = customValues.length - 1;
     this.opt.initAutoScaleCreation = false;
+    this.opt.initScaleAdjustment = false;
     this.opt.checkingStepSizeForScale = false;
     this.opt.initFormatted = false;
     this.opt.calcNumberOfDecimalPlaces = false;
