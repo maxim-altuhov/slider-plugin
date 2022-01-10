@@ -1,5 +1,6 @@
 /// <reference path='./interfaces/metaSlider.d.ts' />
 import './metaSlider.scss';
+import typeSettings from './data/typeSettings';
 import initSettings from './data/initSettings';
 import limitedProp from './data/limitedProp';
 import Model from './layers/Model';
@@ -8,13 +9,27 @@ import Presenter from './layers/Presenter';
 
 let inputOptions: IPluginOptions;
 const methods: IPluginMethods = {
-  init(settings) {
+  init(settings: { [key: string]: any }) {
     // If the slider is not initialized yet
     const data = this.data('metaSlider');
 
     if (!data) {
       if (this.length > 1) {
         throw new Error('The selector for initializing the slider must be unique on the page');
+      }
+
+      if (settings) {
+        Object.keys(settings).forEach((key) => {
+          if (typeSettings[key] && typeof settings[key] !== typeSettings[key]) {
+            throw new Error(
+              `The slider's "${key}" property should be passed as "${typeSettings[key]}"`,
+            );
+          }
+
+          if (key === 'customValues' && !Array.isArray(settings[key])) {
+            throw new Error('The slider`s "customValues" property should be passed as an array');
+          }
+        });
       }
 
       // Combining user settings and default settings

@@ -18,6 +18,9 @@ describe('Checking the methods of the metaSlider plugin', () => {
     customValues: ['A', 'B', 'C'],
     textValuesArray: ['A', 'C'],
     initValuesArray: [0, 2],
+    stepSizeForScale: 10,
+    initValueFirst: 1,
+    initValueSecond: 100,
   };
   let testSettings: IPluginOptions = $.extend({}, initSettings, defaultSettings);
 
@@ -58,10 +61,26 @@ describe('Checking the methods of the metaSlider plugin', () => {
     $initSelector.length = 1;
   });
 
-  test('Checking if the passed method does not exist for the jQuery.metaSlider', () => {
+  test('Checking whether the passed method exists for the jQuery.metaSlider', () => {
     expect(() => {
       $initSelector.metaSlider('fakeMethodName');
     }).toThrow('A method named fakeMethodName does not exist for jQuery.metaSlider');
+  });
+
+  test('Checking the correctness of the properties passed in the slider options by type => "initValueFirst"', () => {
+    expect(() => {
+      $initSelector.metaSlider({
+        initValueFirst: 'incorrectType',
+      });
+    }).toThrow('The slider\'s "initValueFirst" property should be passed as "number"');
+  });
+
+  test('Checking the correctness of the properties passed in the slider options by type => "customValues"', () => {
+    expect(() => {
+      $initSelector.metaSlider({
+        customValues: 123,
+      });
+    }).toThrow('The slider`s "customValues" property should be passed as an array');
   });
 
   test('Checking the "setProp" method', () => {

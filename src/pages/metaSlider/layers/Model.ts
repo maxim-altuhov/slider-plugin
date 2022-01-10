@@ -360,7 +360,7 @@ class Model extends Observer {
     }
   }
 
-  // Checking whether the school is divided without remainder by the set scale step
+  // Checking whether the scale is divided without remainder by the set scale step
   private _checkingIsIntegerSizeScale(stepSizeForScale: number) {
     const { maxValue, minValue } = this.opt;
 
