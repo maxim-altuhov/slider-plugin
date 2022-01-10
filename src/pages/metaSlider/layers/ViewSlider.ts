@@ -148,10 +148,8 @@ class ViewSlider extends Observer {
   private _setVerticalOrientation(options: IPluginOptions) {
     if (options.isVertical) {
       this._$elemSlider.addClass('meta-slider_vertical');
-      this._$selector.addClass('ms-vertical');
     } else {
       this._$elemSlider.removeClass('meta-slider_vertical');
-      this._$selector.removeClass('ms-vertical');
     }
   }
 

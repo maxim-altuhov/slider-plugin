@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>79/79</span>
+                <span class='fraction'>77/77</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>74/74</span>
+                <span class='fraction'>72/72</span>
             </div>
         
             
@@ -247,11 +247,7 @@
 <a name='L188'></a><a href='#L188'>188</a>
 <a name='L189'></a><a href='#L189'>189</a>
 <a name='L190'></a><a href='#L190'>190</a>
-<a name='L191'></a><a href='#L191'>191</a>
-<a name='L192'></a><a href='#L192'>192</a>
-<a name='L193'></a><a href='#L193'>193</a>
-<a name='L194'></a><a href='#L194'>194</a>
-<a name='L195'></a><a href='#L195'>195</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">8x</span>
+<a name='L191'></a><a href='#L191'>191</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -304,7 +300,6 @@
 <span class="cline-any cline-yes">16x</span>
 <span class="cline-any cline-yes">16x</span>
 <span class="cline-any cline-yes">16x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -341,7 +336,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
@@ -403,9 +397,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -500,7 +492,6 @@ class ViewSlider extends Observer {
     if (minAndMaxVerifKeys) this._setMinAndMaxVal(options);
   }
 &nbsp;
-  // Первоначальный рендер слайдера
   renderSlider($initSelector: JQuery) {
     const sliderID = createUniqueID();
 &nbsp;
@@ -528,7 +519,6 @@ class ViewSlider extends Observer {
     }
   }
 &nbsp;
-  // Первоначальная инициализация
   private _init(options: IPluginOptions) {
     // prettier-ignore
     const { 
@@ -545,7 +535,7 @@ class ViewSlider extends Observer {
     this._setEventsSlider();
   }
 &nbsp;
-  // Устанвливает data-атрибуты с мин. и макс. значениями слайдера
+  // Sets data attributes with min. and max. slider values
   private _setMinAndMaxVal(options: IPluginOptions) {
     const { minValue, maxValue, customValues } = options;
 &nbsp;
@@ -560,7 +550,7 @@ class ViewSlider extends Observer {
     }
   }
 &nbsp;
-  // Проверка и установка отступов у слайдера
+  // Checking and setting slider margins
   private _setAutoMargins(options: IPluginOptions) {
     // prettier-ignore
     const { 
@@ -597,14 +587,12 @@ class ViewSlider extends Observer {
   private _setVerticalOrientation(options: IPluginOptions) {
     if (options.isVertical) {
       this._$elemSlider.addClass('meta-slider_vertical');
-      this._$selector.addClass('ms-vertical');
     } else {
       this._$elemSlider.removeClass('meta-slider_vertical');
-      this._$selector.removeClass('ms-vertical');
     }
   }
 &nbsp;
-  // Проверка и установка цвета заливки интервала между бегунками
+  // Checking and setting the fill color of the interval between the thumbs
   private _setBackgroundTheRange(options: IPluginOptions) {
     if (options.showBackground) {
       const { valuesAsPercentageArray, mainColor } = options;
@@ -622,12 +610,12 @@ class ViewSlider extends Observer {
     }
   }
 &nbsp;
-  // Обработчик события клика внутри слайдера
+  // Click event handler inside the slider
   private _setEventsSlider() {
     this._$elemSlider.on('pointerdown.slider', this._handleSetSliderValues.bind(this));
   }
 &nbsp;
-  // Получает значения при клике внутри слайдера
+  // Gets values when clicked inside the slider
   private _handleSetSliderValues(event: Event &amp; { target: EventTarget }) {
     event.preventDefault();
     const $target = $(event.target);
@@ -646,7 +634,7 @@ export default ViewSlider;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Sun Jan 02 2022 12:06:44 GMT+0300 (Москва, стандартное время)
+                at Mon Jan 10 2022 09:29:41 GMT+0300 (Москва, стандартное время)
             </div>
         </div>
         <script src="../../prettify.js"></script>

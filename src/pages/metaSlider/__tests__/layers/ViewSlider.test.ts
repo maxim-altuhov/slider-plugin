@@ -204,7 +204,6 @@ describe('Checking the "ViewSlider" layer', () => {
   test('Checking the "_setVerticalOrientation" method => "defaultSettings"', () => {
     classViewSlider.update(testSettings);
 
-    expect($selector.attr('class')).not.toMatch(/ms-vertical/);
     expect($elemSlider.attr('class')).not.toMatch(/meta-slider_vertical/);
   });
 
@@ -213,7 +212,6 @@ describe('Checking the "ViewSlider" layer', () => {
     testSettings.isVertical = true;
     classViewSlider.update(testSettings);
 
-    expect($selector.attr('class')).toMatch(/ms-vertical/);
     expect($elemSlider.attr('class')).toMatch(/meta-slider_vertical/);
   });
 

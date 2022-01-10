@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">3.12% </span>
+                <span class="strong">3.11% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>7/224</span>
+                <span class='fraction'>7/225</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">3.3% </span>
+                <span class="strong">3.28% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>7/212</span>
+                <span class='fraction'>7/213</span>
             </div>
         
             
@@ -542,7 +542,8 @@
 <a name='L483'></a><a href='#L483'>483</a>
 <a name='L484'></a><a href='#L484'>484</a>
 <a name='L485'></a><a href='#L485'>485</a>
-<a name='L486'></a><a href='#L486'>486</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">3x</span>
+<a name='L486'></a><a href='#L486'>486</a>
+<a name='L487'></a><a href='#L487'>487</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -951,6 +952,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1040,7 +1042,7 @@ class Model extends Observer {
     this.opt.$selector = selector;
   }
 &nbsp;
-  // Первичная инициализация модели
+  // Initial initialization of the model
 <span class="fstat-no" title="function not covered" >  init(</span>) {
 <span class="cstat-no" title="statement not covered" >    this.opt.key = 'init';</span>
 <span class="cstat-no" title="statement not covered" >    this._getSliderSelectors();</span>
@@ -1049,14 +1051,14 @@ class Model extends Observer {
 <span class="cstat-no" title="statement not covered" >    this.notify(this.opt);</span>
   }
 &nbsp;
-  // Метод вызываемый при обновлении модели снаружи
+  // Method called when updating the model from the outside
 <span class="fstat-no" title="function not covered" >  update(</span>) {
 <span class="cstat-no" title="statement not covered" >    this._checkingIncomingProp();</span>
 <span class="cstat-no" title="statement not covered" >    this._calcValuesInPercentage();</span>
 <span class="cstat-no" title="statement not covered" >    this.notify(this.opt);</span>
   }
 &nbsp;
-  // Расчёт значений позиций бегунков слайдера
+  // Calculation of slider slider position values
 <span class="fstat-no" title="function not covered" >  calcTargetValue(</span>
     event: (Event &amp; { target: EventTarget; clientY: number; clientX: number }) | null,
     initValue?: number,
@@ -1110,8 +1112,8 @@ class Model extends Observer {
   }
 &nbsp;
   /**
-   * Проверка рассчитанных значений слайдера на выполнение различных условий
-   * и определение какой бегунок у слайдера должен быть перемещён
+   * Checking the calculated slider values for the fulfillment of various conditions
+   * and determining which slider slider should be moved
    */
   private <span class="fstat-no" title="function not covered" >_checkingTargetValue(</span>
     targetValue: number,
@@ -1228,7 +1230,7 @@ class Model extends Observer {
     }
   }
 &nbsp;
-  // Проверка входящих настроек для слайдера
+  // Checking incoming slider settings
   private <span class="fstat-no" title="function not covered" >_checkingIncomingProp(</span>) {
     const errMessage: IErrMessage = <span class="cstat-no" title="statement not covered" >{</span>
       initValue: `Ошибка во входящих данных для одного или нескольких бегунков слайдера. Установлено 
@@ -1298,7 +1300,7 @@ class Model extends Observer {
     }
   }
 &nbsp;
-  // Автоматический рассчёт кол-ва знаков после запятой у значений слайдера
+  // Automatic calculation of the number of decimal places for slider values
   private <span class="fstat-no" title="function not covered" >_getNumberOfDecimalPlaces(</span>) {
     const propToCheck = <span class="cstat-no" title="statement not covered" >['minValue', 'maxValue', 'step'];</span>
 &nbsp;
@@ -1389,14 +1391,14 @@ class Model extends Observer {
     }
   }
 &nbsp;
-  // Проверка делится ли шкала без остатка на установленный шаг шкалы
+  // Checking whether the school is divided without remainder by the set scale step
   private <span class="fstat-no" title="function not covered" >_checkingIsIntegerSizeScale(</span>stepSizeForScale: number) {
     const { maxValue, minValue } = <span class="cstat-no" title="statement not covered" >this.opt;</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    return Number.isInteger((maxValue - minValue) / stepSizeForScale);</span>
   }
 &nbsp;
-  // Корректировка шага шкалы, если не выполняется условие в методе checkingIsIntegerSizeScale()
+  // Adjusting the scale step
   private <span class="fstat-no" title="function not covered" >_checkingCorrectStepSizeForScale(</span>errMessage: IErrMessage) {
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (this.opt.stepSizeForScale) {</span>
       const isIntegerStepSizeForScale = <span class="cstat-no" title="statement not covered" >Number.isInteger(this.opt.stepSizeForScale);</span>
@@ -1428,7 +1430,7 @@ class Model extends Observer {
     }
   }
 &nbsp;
-  // Сброс опций по-умолчанию при установке кастомных значений
+  // Resetting default options when setting custom values
   private <span class="fstat-no" title="function not covered" >_initCustomValues(</span>) {
     const { customValues } = <span class="cstat-no" title="statement not covered" >this.opt;</span>
 &nbsp;
@@ -1439,6 +1441,7 @@ class Model extends Observer {
 <span class="cstat-no" title="statement not covered" >    this.opt.minValue = 0;</span>
 <span class="cstat-no" title="statement not covered" >    this.opt.maxValue = customValues.length - 1;</span>
 <span class="cstat-no" title="statement not covered" >    this.opt.initAutoScaleCreation = false;</span>
+<span class="cstat-no" title="statement not covered" >    this.opt.initScaleAdjustment = false;</span>
 <span class="cstat-no" title="statement not covered" >    this.opt.checkingStepSizeForScale = false;</span>
 <span class="cstat-no" title="statement not covered" >    this.opt.initFormatted = false;</span>
 <span class="cstat-no" title="statement not covered" >    this.opt.calcNumberOfDecimalPlaces = false;</span>
@@ -1519,7 +1522,7 @@ export default Model;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Sun Jan 02 2022 12:06:44 GMT+0300 (Москва, стандартное время)
+                at Mon Jan 10 2022 09:29:41 GMT+0300 (Москва, стандартное время)
             </div>
         </div>
         <script src="../../prettify.js"></script>
