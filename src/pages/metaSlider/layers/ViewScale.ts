@@ -49,7 +49,6 @@ class ViewScale extends Observer {
     if (styleVerifKeys) this._setStyleForScale(options);
   }
 
-  // Первоначальная инициализация
   private _init(options: IPluginOptions) {
     const { $selector, $elemSlider, $elemScale } = options;
 
@@ -58,7 +57,7 @@ class ViewScale extends Observer {
     this._$elemScale = $elemScale;
   }
 
-  // Рендер шкалы значений
+  // Rendering of the scale of values
   private _createScale(options: IPluginOptions) {
     if (options.showScale) {
       this._$elemScale.empty();
@@ -137,8 +136,8 @@ class ViewScale extends Observer {
   }
 
   /**
-   * Метод, который проверяет помещаются ли все деления шкалы на данной длине слайдера.
-   * Если нет, то этот метод делает авто-подстройку делений шкалы и скрывает лишние значения
+   * A method that checks whether all the scale divisions fit on a given slider length.
+   * If not, then this method automatically adjusts the scale divisions and hides the extra values
    */
   private _checkingScaleSize(options: IPluginOptions) {
     const { showScale, initScaleAdjustment } = options;
@@ -183,7 +182,7 @@ class ViewScale extends Observer {
     }
   }
 
-  // Установка свойств для пропущенных делений шкалы
+  // Setting properties for skipped scale divisions
   private _setPropForSkipScalePoint(currentScalePoint: HTMLElement) {
     const $currentScalePoint = $(currentScalePoint);
     $currentScalePoint
@@ -195,8 +194,8 @@ class ViewScale extends Observer {
   }
 
   /**
-   * Метод отслеживает размер слайдера и возвращает скрытые деления шкалы,
-   * если они уже помещаются на шкале
+   * The method tracks the slider size and returns hidden scale divisions,
+   * if they already fit on the scale
    */
   private _checkingSkipScalePointSize(sliderSize: number, margin: number) {
     this._mapSkipScalePoints.forEach((scalePointSkipArray, controlSize) => {
@@ -215,7 +214,7 @@ class ViewScale extends Observer {
     });
   }
 
-  // Обработчик события отслеживающий размер окна браузера для метода checkingScaleSize()
+  // Event handler that tracks the size of the browser window for the checkingScaleSize() method
   private _setEventResize(options: IPluginOptions) {
     const { showScale, initScaleAdjustment } = options;
     const sliderID = this._$selector.attr('data-id');
@@ -230,19 +229,19 @@ class ViewScale extends Observer {
     }
   }
 
-  // Отслеживает ширину слайдера
+  // Tracks the width of the slider
   private _handleCheckingScaleSize(options: IPluginOptions) {
     this._checkingScaleSize(options);
   }
 
-  // Обрабочик событий кликов на значения шкалы
+  // Event handler for clicks on scale values
   private _setEventsScalePoints() {
     this._$elemScalePoints.each((_, elemPoint) => {
       $(elemPoint).on('click.scalePoint', this._handleGetValueInScalePoint.bind(this));
     });
   }
 
-  // Получает значения при клике на шкалу слайдера
+  // Gets values when clicking on the slider scale
   private _handleGetValueInScalePoint(event: Event & { target: EventTarget }) {
     event.preventDefault();
     const $target = $(event.target);

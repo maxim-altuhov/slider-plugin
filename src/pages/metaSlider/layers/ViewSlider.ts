@@ -53,7 +53,6 @@ class ViewSlider extends Observer {
     if (minAndMaxVerifKeys) this._setMinAndMaxVal(options);
   }
 
-  // Первоначальный рендер слайдера
   renderSlider($initSelector: JQuery) {
     const sliderID = createUniqueID();
 
@@ -81,7 +80,6 @@ class ViewSlider extends Observer {
     }
   }
 
-  // Первоначальная инициализация
   private _init(options: IPluginOptions) {
     // prettier-ignore
     const { 
@@ -98,7 +96,7 @@ class ViewSlider extends Observer {
     this._setEventsSlider();
   }
 
-  // Устанвливает data-атрибуты с мин. и макс. значениями слайдера
+  // Sets data attributes with min. and max. slider values
   private _setMinAndMaxVal(options: IPluginOptions) {
     const { minValue, maxValue, customValues } = options;
 
@@ -113,7 +111,7 @@ class ViewSlider extends Observer {
     }
   }
 
-  // Проверка и установка отступов у слайдера
+  // Checking and setting slider margins
   private _setAutoMargins(options: IPluginOptions) {
     // prettier-ignore
     const { 
@@ -157,7 +155,7 @@ class ViewSlider extends Observer {
     }
   }
 
-  // Проверка и установка цвета заливки интервала между бегунками
+  // Checking and setting the fill color of the interval between the thumbs
   private _setBackgroundTheRange(options: IPluginOptions) {
     if (options.showBackground) {
       const { valuesAsPercentageArray, mainColor } = options;
@@ -175,12 +173,12 @@ class ViewSlider extends Observer {
     }
   }
 
-  // Обработчик события клика внутри слайдера
+  // Click event handler inside the slider
   private _setEventsSlider() {
     this._$elemSlider.on('pointerdown.slider', this._handleSetSliderValues.bind(this));
   }
 
-  // Получает значения при клике внутри слайдера
+  // Gets values when clicked inside the slider
   private _handleSetSliderValues(event: Event & { target: EventTarget }) {
     event.preventDefault();
     const $target = $(event.target);

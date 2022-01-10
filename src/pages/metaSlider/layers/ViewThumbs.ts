@@ -37,7 +37,6 @@ class ViewThumbs extends Observer {
     if (key === 'init' || key === 'isRange') this._checkIsRange(options);
   }
 
-  // Первоначальная инициализация
   private _init(options: IPluginOptions) {
     this._$elemThumbs = options.$elemThumbs;
     this._setEventsThumbs(options);
@@ -52,7 +51,7 @@ class ViewThumbs extends Observer {
     });
   }
 
-  // Установка бегунков в нужные позиции и добавление data-атрибутов для слайдера
+  // Setting the sliders to the desired positions and adding data attributes for the slider
   private _setValueInThumbs(options: IPluginOptions) {
     // prettier-ignore
     const { 
@@ -76,7 +75,7 @@ class ViewThumbs extends Observer {
     });
   }
 
-  // Проверка опции "IsRange" у слайдера и показ/скрытие первого бегунка
+  // Checking the slider's "IsRange" option and showing/hiding the first thumb
   private _checkIsRange(options: IPluginOptions) {
     if (options.isRange) {
       this._$elemThumbs.eq(0).css('display', '');
@@ -94,7 +93,7 @@ class ViewThumbs extends Observer {
     });
   }
 
-  // Изменение позиции бегунков слайдера при использовании клавиатуры
+  // Changing the position of the thumbs sliders when using the keyboard
   private _handleChangeThumbPosition(
     options: IPluginOptions,
     event: Event & { target: EventTarget; code?: string },
@@ -122,7 +121,7 @@ class ViewThumbs extends Observer {
     }
   }
 
-  // Установка обработчиков событий движения/прекращения движения бегунков слайдера
+  // Installing event handlers for movement/termination of thumbs sliders
   private _handleSetEventListenerForThumbs(event: Event & { target: Element; pointerId?: number }) {
     const { target, pointerId } = event;
 
@@ -136,12 +135,12 @@ class ViewThumbs extends Observer {
     $target.on('pointerup.thumb', ViewThumbs._handleInitPointerUp.bind(this));
   }
 
-  // Отслеживание перемещение бегунков слайдера
+  // Tracking the movement of thumbs sliders
   private _handleInitPointerMove(event: Event) {
     this.notify(event);
   }
 
-  // Отслеживание прекращения движения бегунков слайдера
+  // Tracking the termination of the thumbs sliders
   private static _handleInitPointerUp(event: Event & { target: EventTarget }) {
     const $target = $(event.target);
     $target.off('pointermove.thumb');

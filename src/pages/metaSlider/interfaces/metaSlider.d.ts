@@ -1,6 +1,6 @@
 /**
- * Использую тип any в [key: string]: any, чтобы была возможность
- * обратиться к любому свойству в объекте с опциями слайдера.
+ * I use the any type in [key: string]: any to be able to
+ * access any property in the object with slider options.
  */
 interface IPluginOptions {
   [key: string]: any;

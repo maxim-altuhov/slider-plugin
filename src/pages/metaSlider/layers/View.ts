@@ -6,8 +6,8 @@ import ViewError from './ViewError';
 
 class View {
   /**
-   * Использую тип any, чтобы была возможность обратиться
-   * к любому методу экземпляра класса в объекте viewList.
+   * I use the any type to be able to access any method
+   * of the class instance in the view List object.
    */
   readonly viewList: Record<string, any> = {
     viewError: new ViewError(),
@@ -17,14 +17,13 @@ class View {
     viewMarkers: new ViewMarkers(),
   };
 
-  // Вызываем метод update() в subview
   update(options: IPluginOptions) {
     Object.keys(this.viewList).forEach((view) => {
       if ('update' in this.viewList[view]) this.viewList[view].update(options);
     });
   }
 
-  // Первоначальный рендер слайдера и его основных элементов
+  // Initial render of the slider and its main elements
   renderSlider($initSelector: JQuery) {
     this.viewList['viewSlider'].renderSlider($initSelector);
   }

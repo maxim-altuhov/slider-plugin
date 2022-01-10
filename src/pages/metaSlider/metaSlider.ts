@@ -9,7 +9,7 @@ import Presenter from './layers/Presenter';
 let inputOptions: IPluginOptions;
 const methods: IPluginMethods = {
   init(settings) {
-    // Если слайдер ещё не инициализирован
+    // If the slider is not initialized yet
     const data = this.data('metaSlider');
 
     if (!data) {
@@ -17,10 +17,10 @@ const methods: IPluginMethods = {
         throw new Error('The selector for initializing the slider must be unique on the page');
       }
 
-      //  Объединяем пользовательские настройки и настройки по умолчанию
+      // Combining user settings and default settings
       inputOptions = $.extend({}, initSettings, settings);
 
-      // инициализация плагина
+      // Initializing the plugin
       const model = new Model(this, inputOptions);
       const view = new View();
       const presenter = new Presenter(view, model);
@@ -87,7 +87,7 @@ const methods: IPluginMethods = {
 };
 
 (($) => {
-  // Вызываем нужный метод плагина, проверяем наличие и тип передаваемого аргумента
+  // We call the desired plugin method, check the presence and type of the argument being passed
   $.fn.metaSlider = function (initParam, ...prop) {
     if (typeof initParam === 'string' && methods[initParam]) {
       return methods[initParam].apply(this, prop);

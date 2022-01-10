@@ -11,7 +11,7 @@ class Model extends Observer {
     this.opt.$selector = selector;
   }
 
-  // Первичная инициализация модели
+  // Initial initialization of the model
   init() {
     this.opt.key = 'init';
     this._getSliderSelectors();
@@ -20,14 +20,14 @@ class Model extends Observer {
     this.notify(this.opt);
   }
 
-  // Метод вызываемый при обновлении модели снаружи
+  // Method called when updating the model from the outside
   update() {
     this._checkingIncomingProp();
     this._calcValuesInPercentage();
     this.notify(this.opt);
   }
 
-  // Расчёт значений позиций бегунков слайдера
+  // Calculation of slider slider position values
   calcTargetValue(
     event: (Event & { target: EventTarget; clientY: number; clientX: number }) | null,
     initValue?: number,
@@ -81,8 +81,8 @@ class Model extends Observer {
   }
 
   /**
-   * Проверка рассчитанных значений слайдера на выполнение различных условий
-   * и определение какой бегунок у слайдера должен быть перемещён
+   * Checking the calculated slider values for the fulfillment of various conditions
+   * and determining which slider slider should be moved
    */
   private _checkingTargetValue(
     targetValue: number,
@@ -199,7 +199,7 @@ class Model extends Observer {
     }
   }
 
-  // Проверка входящих настроек для слайдера
+  // Checking incoming slider settings
   private _checkingIncomingProp() {
     const errMessage: IErrMessage = {
       initValue: `Ошибка во входящих данных для одного или нескольких бегунков слайдера. Установлено 
@@ -269,7 +269,7 @@ class Model extends Observer {
     }
   }
 
-  // Автоматический рассчёт кол-ва знаков после запятой у значений слайдера
+  // Automatic calculation of the number of decimal places for slider values
   private _getNumberOfDecimalPlaces() {
     const propToCheck = ['minValue', 'maxValue', 'step'];
 
@@ -360,14 +360,14 @@ class Model extends Observer {
     }
   }
 
-  // Проверка делится ли шкала без остатка на установленный шаг шкалы
+  // Checking whether the school is divided without remainder by the set scale step
   private _checkingIsIntegerSizeScale(stepSizeForScale: number) {
     const { maxValue, minValue } = this.opt;
 
     return Number.isInteger((maxValue - minValue) / stepSizeForScale);
   }
 
-  // Корректировка шага шкалы, если не выполняется условие в методе checkingIsIntegerSizeScale()
+  // Adjusting the scale step
   private _checkingCorrectStepSizeForScale(errMessage: IErrMessage) {
     if (this.opt.stepSizeForScale) {
       const isIntegerStepSizeForScale = Number.isInteger(this.opt.stepSizeForScale);
@@ -399,7 +399,7 @@ class Model extends Observer {
     }
   }
 
-  // Сброс опций по-умолчанию при установке кастомных значений
+  // Resetting default options when setting custom values
   private _initCustomValues() {
     const { customValues } = this.opt;
 

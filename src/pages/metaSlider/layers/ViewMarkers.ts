@@ -39,7 +39,6 @@ class ViewMarkers {
     if (styleVerifKeys) this._setStyleForMarkers(options);
   }
 
-  // Первоначальная инициализация
   private _init(options: IPluginOptions) {
     const { $elemThumbs, $elemMarkers } = options;
 

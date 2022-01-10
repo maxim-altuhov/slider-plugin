@@ -20,8 +20,8 @@ class ControlPanel {
   }
 
   /**
-   * Инициализация контр.панели и её заполнение значениями свойств слайдера,
-   * установка обработчика событий на инпуты и подписка на обновление модели слайдера
+   * Initializing the control panel and filling it with slider property values,
+   * installing event handlers on inputs and subscribing to the slider model update
    */
   init() {
     Object.entries(this._selectorsObj).forEach((currentElem) => {
@@ -46,26 +46,27 @@ class ControlPanel {
   }
 
   /**
-   * Метод который следит за обновлением модели через патерн Observer и выводит данные
-   * в контр. панель, проверка происходит по значению свойства 'key', которое присваевается
-   * в зависимости от того, какое свойство слайдера изменилось.
-   * Здесь также происходит инициализация метода проверки зависимости свойств слайдера друг от друга
+   * A method that monitors the model update through the Observer pattern and outputs data
+   * in the control panel, the check is performed by the value of the 'key' property,
+   * which is assigned depending on which property of the slider has changed.
+   * This is also where the initialization of the method for checking the dependence
+   * of the slider properties on each other takes place
    */
   watchTheSlider() {
     const key: string = this._$sliderSelector.metaSlider('getProp', 'key');
 
-    // Получение текущего значения изменяемого свойства
+    // Getting the current value of the measured property
     if (key !== 'changedValue') this._getProp(key);
 
-    // отслеживание изменяемого свойства по ключу
+    // Tracking the property being changed by key
     if (key in this._keysWatchList) {
       this._keysWatchList[key].forEach((prop) => this._getProp(prop));
     }
 
-    // Инициализация проверки зависимости свойств слайдера друг от друга
+    // Initialization of checking the dependence of slider properties on each other
     this._initCheckingDependencies(key);
 
-    // Устанавливает корректный шаг для инпутов
+    // Sets the correct step for inputs
     this._setOptionStepForInputs();
   }
 
@@ -94,12 +95,12 @@ class ControlPanel {
     });
   }
 
-  // Метод установки новых значений для слайдера
+  // Method for setting new values for the slider
   private _setProp(prop: string, value: string | number | (string | number)[]) {
     this._$sliderSelector.metaSlider('setProp', prop, value);
   }
 
-  // Метод для получения текущих свойств слайдера и установки новых значений в контр.панели
+  // Method for getting the current slider properties and setting new values in the control panel
   private _getProp(prop: string) {
     const valueProp = this._$sliderSelector.metaSlider('getProp', prop);
     const $inputTarget = this._selectorsObj[prop];
@@ -113,7 +114,7 @@ class ControlPanel {
     return valueProp;
   }
 
-  // Формируем объект со всеми инпутами, поиск по имени свойства слайдера
+  // Forming an object with all the inputs, searching by the name of the slider property
   private _getSelectors() {
     this.propertyList.forEach((prop) => {
       this._selectorsObj[prop] = this._$panelSelector.find(`[name = ${prop}]`);
@@ -121,8 +122,8 @@ class ControlPanel {
   }
 
   /**
-   * Проверка наличия зависимости входящего свойства от других заранее определенных свойств слайдера
-   * и установка инпутам в контр.панели с этими свойствами заданного атрибута
+   * Checking whether the incoming property is dependent on other predefined slider properties
+   * and setting the input in the control panel with these properties of the specified attribute
    */
   private _initCheckingDependencies(prop: string) {
     if (prop in this._objWithControlPanelDependencies) {
@@ -135,8 +136,8 @@ class ControlPanel {
   }
 
   /**
-   * Проверка инпута с определенным свойством слайдера на наличие в нём значения
-   * и установка атрибута disabled зависимым от него инпутам
+   * Checking an input with a certain slider property for the presence of a value in it
+   * and setting the disabled attribute to the inputs dependent on it
    */
   private _checkingInputWithTargetProp(
     initProp: string,
@@ -171,13 +172,13 @@ class ControlPanel {
     }
   }
 
-  // Метод переключения атрибута disabled у инпутов
+  // Method for switching the disabled attribute for inputs
   private _togglePropDisableForInput(targetProp: string, option: boolean) {
     const $inputTarget = this._selectorsObj[targetProp];
     $inputTarget.prop('disabled', option);
   }
 
-  // Установка новых значений свойств слайдера при изменении инпутов контр. панели
+  // Setting new slider property values when changing control panel inputs
   private _handleInputChanges(event: Event & { target: EventTarget }) {
     const $inputTarget = $(event.target);
     const targetProp = $inputTarget.attr('name');

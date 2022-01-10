@@ -1,4 +1,4 @@
-// список всех доступных свойств слайдера
+// List of all available slider properties
 const propertyList = [
   'mainColor',
   'secondColor',

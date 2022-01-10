@@ -4,7 +4,6 @@ class ViewError {
   private _$elemErrorText: null | JQuery<HTMLElement> | undefined;
   private _$btnErrorClose: null | JQuery<HTMLElement> | undefined;
 
-  // Метод для рендеринга ошибки
   renderError(message: string, options: IPluginOptions) {
     const { $selector, $elemSlider, showError } = options;
 
@@ -24,7 +23,7 @@ class ViewError {
     }
   }
 
-  // Собираем селекторы
+  // Collecting selectors
   private _getErrorBlockSelectors() {
     if (this._$selector) {
       this._$elemErrorInfo = this._$selector.find('.js-error-info');
@@ -33,14 +32,14 @@ class ViewError {
     }
   }
 
-  // Устанавливаем обработчик на кнопку закрытия окна с ошибкой
+  // Setting the handler to the close window button with an error
   private _setEventErrorClose() {
     if (this._$btnErrorClose) {
       this._$btnErrorClose.on('click.btnErrorClose', this._handleRemoveErrorBlock.bind(this));
     }
   }
 
-  // Удаляем сообщение с ошибкой
+  // Deleting the error message
   private _handleRemoveErrorBlock() {
     if (this._$btnErrorClose && this._$elemErrorInfo) {
       this._$btnErrorClose.off('click.btnErrorClose');

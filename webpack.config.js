@@ -13,7 +13,7 @@ const FileManagerPlugin = require('filemanager-webpack-plugin');
 const RemovePlugin = require('remove-files-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
-// Объект с путями к директориям проекта
+// An object with paths to project directories
 const pathDir = {
   src: path.join(__dirname, './src'),
   dist: path.join(__dirname, './dist'),
@@ -25,13 +25,13 @@ const isDev = process.env.NODE_ENV === 'development';
 const isDevServer = process.env.SECOND_ENV === 'devserver';
 const isProd = !isDev;
 
-// Настройка ставить ли хеш файлу при выгрузке в production
+// Setting whether to put a hash of the file when uploading to production
 const setHash = false;
 
-// Настройка типа входящего файла html или pug
+// Configuring the type of incoming html or pug file
 const inputTypeFile = 'pug';
 
-// Формируем имя файла в зависимости от режима сборки
+// We form the file name depending on the build mode
 const getFileName = (ext) => {
   if (isProd && setHash) return `[name].[fullhash].min.${ext}`;
   if (isProd) return `[name].min.${ext}`;
@@ -79,7 +79,7 @@ const setLoaders = (add) => {
   return loaders;
 };
 
-// Настройки для babel
+// Settings for babel
 const setBabelOptions = (presets) => {
   const options = {
     presets: [
@@ -99,7 +99,7 @@ const setBabelOptions = (presets) => {
   return options;
 };
 
-// Плагины
+// Plugins
 const setPlugins = () => {
   const optionsForRemovePlugin = [
     {
@@ -191,7 +191,7 @@ const setPlugins = () => {
   return basePlugins;
 };
 
-// Параметры оптимизации
+// Optimization Parameters
 const setOptimization = () => {
   const config = {};
 
@@ -244,7 +244,7 @@ const setOptimization = () => {
   return config;
 };
 
-// Определение входных точек
+// Defining input points
 const getEntryPoints = () => {
   const entry = {};
 
@@ -255,7 +255,7 @@ const getEntryPoints = () => {
   return entry;
 };
 
-// Модуль с настройками
+// Module with settings
 module.exports = {
   context: path.resolve(__dirname, 'src'),
   stats: { children: false },

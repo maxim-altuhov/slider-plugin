@@ -1,7 +1,6 @@
 class Observer {
   public observerList: Function[] = [];
 
-  // Добавляет метод в список подписчиков
   subscribe(observer: Function) {
     if (typeof observer !== 'function') {
       throw new Error('Add observer must be a function');
@@ -14,14 +13,13 @@ class Observer {
     this.observerList.push(observer);
   }
 
-  // Удаляет метод из списка подписчиков
   unsubscribe(observer: Function) {
     this.observerList = this.observerList.filter((item) => item !== observer);
   }
 
   /**
-   * Вызывает все подписанные методы из списка.
-   * Тип any, чтобы была возможность передавать любые аргументы в вызываемые методы
+   * Calls all subscribed methods from the list.
+   * Type any, so that it is possible to pass any arguments to the called methods
    */
   notify(...arg: any) {
     this.observerList.forEach((observer) => observer(...arg));

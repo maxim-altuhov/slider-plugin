@@ -1,5 +1,5 @@
-// добавление шрифтов
-// пример:  @include font('Roboto', 'RobotoSlab-Bold', '700', 'normal');
+// Adding fonts
+// example:  @include font('Roboto', 'RobotoSlab-Bold', '700', 'normal');
 @mixin font($font_name, $file_name, $weight, $style) {
   @font-face {
     font-family: $font_name;

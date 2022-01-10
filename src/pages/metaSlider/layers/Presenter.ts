@@ -4,12 +4,12 @@ import View from './View';
 class Presenter {
   constructor(private _view: View, private _model: Model) {}
 
-  // Первоначальный рендер слайдера и его основных элементов главным View
+  // The initial render of the slider and its main elements is the main View
   renderSlider(initSelector: JQuery) {
     this._view.renderSlider(initSelector);
   }
 
-  // Добавляем методы в Observer
+  // Adding methods to the Observer
   setObservers() {
     this._model.subscribe(this.updateViews.bind(this));
     this._model.errorEvent.subscribe(this.renderError.bind(this));
@@ -19,17 +19,17 @@ class Presenter {
     this._getView('viewScale').subscribe(this.calcTargetValue.bind(this));
   }
 
-  // Передаем новые данные из модели и обновляем view и subview
+  // Passing new data from the model and updating the view and subview
   updateViews(options: IPluginOptions) {
     this._view.update(options);
   }
 
-  // Вывод ошибки при наличии некорректных значений в настройках слайдера
+  // Error output if there are incorrect values in the slider settings
   renderError(message: string, options: IPluginOptions) {
     this._getView('viewError').renderError(message, options);
   }
 
-  // Вызов метода в модели для расчёта значений позиций бегунков слайдера
+  // Calling a method in the model to calculate the values of the thumbs slider positions
   calcTargetValue(
     event: (Event & { target: EventTarget; clientY: number; clientX: number }) | null,
     initValue?: number,
@@ -38,7 +38,7 @@ class Presenter {
     this._model.calcTargetValue(event, initValue, onlyReturn);
   }
 
-  // Получаем нужный subview через главный view
+  // Getting the desired subview via the main View
   private _getView(viewName: string) {
     return this._view.viewList[viewName];
   }
