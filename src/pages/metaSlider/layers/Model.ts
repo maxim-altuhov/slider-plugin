@@ -27,7 +27,7 @@ class Model extends Observer {
     this.notify(this.opt);
   }
 
-  // Calculation of slider slider position values
+  // Calculation of thumbs slider position values
   calcTargetValue(
     event: (Event & { target: EventTarget; clientY: number; clientX: number }) | null,
     initValue?: number,
@@ -81,13 +81,13 @@ class Model extends Observer {
   }
 
   /**
-   * Checking the calculated slider values for the fulfillment of various conditions
-   * and determining which slider slider should be moved
+   * Checking the calculated values of the slider for the fulfillment
+   * of various conditions and determining which slider should be moved
    */
   private _checkingTargetValue(
     targetValue: number,
     event: (Event & { target: EventTarget; code?: string }) | null,
-    eventPosition: number,
+    eventPosition?: number,
   ) {
     this.opt.initValueFirst = this.opt.initValueFirst ?? this.opt.minValue;
     this.opt.initValueSecond = this.opt.initValueSecond ?? this.opt.maxValue;
@@ -116,7 +116,7 @@ class Model extends Observer {
       initValuesArray[1] = targetValue;
     }
 
-    const isIdenticalDistanceInRange = clickInRange && firstThumbDiff === secondThumbDiff;
+    const isIdenticalDistInRange = clickInRange && firstThumbDiff === secondThumbDiff;
     const code = event?.code;
 
     // prettier-ignore
@@ -133,7 +133,9 @@ class Model extends Observer {
       secondThumbPosition = secondThumb.getBoundingClientRect().right;
     }
 
-    if (isIdenticalDistanceInRange && !isEventMoveKeypress) {
+    const checkRulesEventPosition = isIdenticalDistInRange && !isEventMoveKeypress && eventPosition;
+
+    if (checkRulesEventPosition) {
       const firstValuePosition = Math.abs(eventPosition - firstThumbPosition);
       const secondValuePosition = Math.abs(eventPosition - secondThumbPosition);
 
@@ -144,7 +146,7 @@ class Model extends Observer {
       }
     }
 
-    if (isIdenticalDistanceInRange && isEventMoveKeypress) {
+    if (isIdenticalDistInRange && isEventMoveKeypress) {
       const $target = $(event.target);
 
       if ($target.hasClass('meta-slider__thumb_left')) {

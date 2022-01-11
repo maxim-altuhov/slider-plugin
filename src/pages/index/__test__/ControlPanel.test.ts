@@ -95,15 +95,13 @@ describe('Checking the "ControlPanel"', () => {
     const { model } = $sliderSelector.data('metaSlider');
     const handleInputChanges = classControlPanel['_handleInputChanges'];
     const mockGetProp = jest.spyOn<ControlPanel, any>(classControlPanel, '_getProp');
-    const mockSubscribe = jest.spyOn(model, 'subscribe').mockImplementation(() => 'subscribe');
-
+    const mockSubscribe = jest.spyOn(model, 'subscribe').mockImplementation();
     const mockInitCheckingDependencies = jest
       .spyOn<ControlPanel, any>(classControlPanel, '_initCheckingDependencies')
-      .mockImplementation(() => '_initCheckingDependencies');
-
+      .mockImplementation();
     const mockSetOptionStepForInputs = jest
       .spyOn<ControlPanel, any>(classControlPanel, '_setOptionStepForInputs')
-      .mockImplementation(() => '_setOptionStepForInputs');
+      .mockImplementation();
 
     classControlPanel.init();
 
@@ -129,9 +127,7 @@ describe('Checking the "ControlPanel"', () => {
   test('Checking the "unbind" method', () => {
     const { model } = $sliderSelector.data('metaSlider');
     const mockRemoveEvent = jest.spyOn($.fn, 'off').mockImplementation();
-    const mockUnsubscribe = jest
-      .spyOn(model, 'unsubscribe')
-      .mockImplementation(() => 'unsubscribe');
+    const mockUnsubscribe = jest.spyOn(model, 'unsubscribe').mockImplementation();
 
     classControlPanel.unbind();
 
@@ -152,13 +148,13 @@ describe('Checking the "ControlPanel"', () => {
   test('Checking the "watchTheSlider" method', () => {
     const mockInitCheckingDependencies = jest
       .spyOn<ControlPanel, any>(classControlPanel, '_initCheckingDependencies')
-      .mockImplementation(() => '_initCheckingDependencies');
+      .mockImplementation();
     const mockSetOptionStepForInputs = jest
       .spyOn<ControlPanel, any>(classControlPanel, '_setOptionStepForInputs')
-      .mockImplementation(() => '_setOptionStepForInputs');
+      .mockImplementation();
     const mockGetProp = jest
       .spyOn<ControlPanel, any>(classControlPanel, '_getProp')
-      .mockImplementation(() => '_getProp');
+      .mockImplementation();
 
     propertyList.forEach((propKey) => {
       $sliderSelector.data('metaSlider').model.opt.key = propKey;
@@ -235,7 +231,7 @@ describe('Checking the "ControlPanel"', () => {
   test('Checking the "_initCheckingDependencies" method', () => {
     const mockCheckTheProp = jest
       .spyOn<ControlPanel, any>(classControlPanel, '_checkingInputWithTargetProp')
-      .mockImplementation(() => '_checkingInputWithTargetProp');
+      .mockImplementation();
 
     Object.keys(objWithControlPanelDependencies).forEach((initProp) => {
       classControlPanel['_initCheckingDependencies'](initProp);

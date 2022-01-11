@@ -78,7 +78,7 @@ describe('Checking the "ViewSlider" layer', () => {
   });
 
   test('Checking the "renderSlider" method', () => {
-    const mockCreateUniqueID = jest.spyOn(createUniqueID, 'default').mockImplementation(() => '');
+    const mockCreateUniqueID = jest.spyOn(createUniqueID, 'default').mockImplementation();
     const checkingSelectorsArr = [
       /js-meta-slider/,
       /js-meta-slider__progress/,
