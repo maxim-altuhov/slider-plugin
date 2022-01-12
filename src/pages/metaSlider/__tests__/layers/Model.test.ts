@@ -26,7 +26,7 @@ describe('Checking the "Model" layer', () => {
     expect(classModel.opt.$selector).toBe($selector);
     expect(classModel.observerList).toHaveLength(0);
     expect(classModel.errorEvent).toBeDefined();
-    expect(classModel['_propSavedStatus']).toBeDefined();
+    expect(classModel['_listSavedStatus']).toBeDefined();
   });
 
   test('Checking the "init" method', () => {
@@ -87,17 +87,9 @@ describe('Checking the "Model" layer', () => {
       expect(mockOuterWidth).toHaveBeenCalled();
 
       if (checkingValue) {
-        expect(classModel['_checkingTargetValue']).toHaveBeenCalledWith(
-          checkingValue,
-          fakeEvent,
-          fakeEvent.clientX,
-        );
+        expect(classModel['_checkingTargetValue']).toHaveBeenCalledWith(checkingValue);
       } else {
-        expect(classModel['_checkingTargetValue']).toHaveBeenCalledWith(
-          59,
-          fakeEvent,
-          fakeEvent.clientX,
-        );
+        expect(classModel['_checkingTargetValue']).toHaveBeenCalledWith(59);
       }
     },
   );
@@ -122,11 +114,7 @@ describe('Checking the "Model" layer', () => {
     // @ts-ignore
     classModel.calcTargetValue(fakeEvent, TEST_VALUE);
 
-    expect(classModel['_checkingTargetValue']).toHaveBeenCalledWith(
-      TEST_VALUE,
-      fakeEvent,
-      fakeEvent.clientY,
-    );
+    expect(classModel['_checkingTargetValue']).toHaveBeenCalledWith(TEST_VALUE);
   });
 
   test.each([-50, 50, 150])(
@@ -156,16 +144,10 @@ describe('Checking the "Model" layer', () => {
   );
 
   test.each([-50, 10, 50, 90, 150])(
-    'Checking the "_checkingTargetValue" method => isVertical = false/true; isRange = true; initValueFirst, initValueSecond, eventPosition is defined => checkingValue: %p',
+    'Checking the "_checkingTargetValue" method => isVertical = false/true; isRange = true; initValueFirst, initValueSecond is defined => checkingValue: %p',
     (checkingValue) => {
       jest.spyOn<Model, any>(classModel, '_calcValuesInPercentage').mockImplementation();
       jest.spyOn<Model, any>(classModel, '_setCurrentValues').mockImplementation();
-      const mockGetBoundingClientRect = jest.spyOn(Element.prototype, 'getBoundingClientRect');
-
-      const fakeEvent = $.Event('click', {
-        target: classModel.opt.$elemThumbs[0],
-        clientX: 575,
-      });
 
       classModel.opt.isRange = true;
       classModel.opt.initValueFirst = 0;
@@ -175,8 +157,7 @@ describe('Checking the "Model" layer', () => {
       [true, false].forEach((testValue) => {
         classModel.opt.isVertical = testValue;
 
-        // @ts-ignore
-        classModel['_checkingTargetValue'](checkingValue, fakeEvent, fakeEvent.clientX);
+        classModel['_checkingTargetValue'](checkingValue);
 
         const { initValuesArray } = classModel.opt;
         const averageValue = (initValuesArray[0] + initValuesArray[1]) / 2;
@@ -187,45 +168,8 @@ describe('Checking the "Model" layer', () => {
           expect(initValuesArray).toEqual([checkingValue, initValuesArray[1]]);
         }
 
-        expect(mockGetBoundingClientRect).toHaveBeenCalled();
         expect(classModel['_calcValuesInPercentage']).toHaveBeenCalled();
         expect(classModel['_setCurrentValues']).toHaveBeenCalled();
-      });
-    },
-  );
-
-  test.each([0, 1])(
-    'Checking the "_checkingTargetValue" method => isEventMoveKeypress => $elemThumbsIndex: %p',
-    (index) => {
-      jest.spyOn<Model, any>(classModel, '_calcValuesInPercentage').mockImplementation();
-      jest.spyOn<Model, any>(classModel, '_setCurrentValues').mockImplementation();
-
-      const fakeEvent = $.Event('click', {
-        target: classModel.opt.$elemThumbs[index],
-        code: '',
-      });
-
-      classModel.opt.isVertical = false;
-      classModel.opt.isRange = true;
-      classModel.opt.initValueFirst = 0;
-      classModel.opt.initValueSecond = 100;
-      classModel.opt.initValuesArray = [0, 100];
-
-      const TEST_VALUE = 50;
-      const testEventCode = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'];
-
-      testEventCode.forEach((eventCode) => {
-        fakeEvent.code = eventCode;
-
-        // @ts-ignore
-        classModel['_checkingTargetValue'](TEST_VALUE, fakeEvent);
-        const { initValuesArray, initValueFirst, initValueSecond } = classModel.opt;
-
-        if (index === 0) {
-          expect(initValuesArray).toEqual([TEST_VALUE, initValueSecond]);
-        } else {
-          expect(initValuesArray).toEqual([initValueFirst, TEST_VALUE]);
-        }
       });
     },
   );
@@ -235,17 +179,12 @@ describe('Checking the "Model" layer', () => {
     jest.spyOn<Model, any>(classModel, '_setCurrentValues').mockImplementation();
     const TEST_VALUE = 50;
 
-    const fakeEvent = $.Event('click', {
-      target: classModel.opt.$elemThumbs[0],
-    });
-
     classModel.opt.isVertical = false;
     classModel.opt.isRange = true;
     classModel.opt.minValue = 0;
     classModel.opt.maxValue = 100;
 
-    // @ts-ignore
-    classModel['_checkingTargetValue'](TEST_VALUE, fakeEvent);
+    classModel['_checkingTargetValue'](TEST_VALUE);
     const { initValueFirst, initValueSecond, minValue, maxValue } = classModel.opt;
 
     expect(initValueFirst).toBe(minValue);
@@ -257,20 +196,33 @@ describe('Checking the "Model" layer', () => {
     jest.spyOn<Model, any>(classModel, '_setCurrentValues').mockImplementation();
     const TEST_VALUE = 50;
 
-    const fakeEvent = $.Event('click', {
-      target: classModel.opt.$elemThumbs[0],
-    });
-
     classModel.opt.isVertical = false;
     classModel.opt.isRange = false;
     classModel.opt.initValueFirst = 0;
     classModel.opt.initValueSecond = 100;
     classModel.opt.initValuesArray = [0, 100];
 
-    // @ts-ignore
-    classModel['_checkingTargetValue'](TEST_VALUE, fakeEvent);
+    classModel['_checkingTargetValue'](TEST_VALUE);
     const { initValuesArray, initValueFirst } = classModel.opt;
 
     expect(initValuesArray).toEqual([initValueFirst, TEST_VALUE]);
+  });
+
+  test('Checking the "_checkingTargetValue" method => targetValue === averageValue', () => {
+    jest.spyOn<Model, any>(classModel, '_calcValuesInPercentage').mockImplementation();
+    jest.spyOn<Model, any>(classModel, '_setCurrentValues').mockImplementation();
+    const TEST_VALUE = 50;
+
+    classModel.opt.isVertical = false;
+    classModel.opt.isRange = true;
+    classModel.opt.initValueFirst = 0;
+    classModel.opt.initValueSecond = 100;
+    classModel.opt.initValuesArray = [0, 100];
+
+    classModel['_listSavedStatus']['activeThumb'] = '';
+    classModel['_checkingTargetValue'](TEST_VALUE);
+    const { initValuesArray, initValueSecond } = classModel.opt;
+
+    expect(initValuesArray).toEqual([TEST_VALUE, initValueSecond]);
   });
 });

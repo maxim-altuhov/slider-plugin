@@ -31,7 +31,7 @@ class Presenter {
 
   // Calling a method in the model to calculate the values of the thumbs slider positions
   calcTargetValue(
-    event: (Event & { target: EventTarget; clientY: number; clientX: number }) | null,
+    event: (Event & { clientY: number; clientX: number }) | null,
     initValue?: number,
     onlyReturn = false,
   ) {

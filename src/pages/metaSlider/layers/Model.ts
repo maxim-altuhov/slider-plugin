@@ -3,7 +3,7 @@ import Observer from '../patterns/Observer';
 class Model extends Observer {
   opt;
   errorEvent = new Observer();
-  private _propSavedStatus: { [index: string]: boolean } = {};
+  private _listSavedStatus: { [index: string]: boolean | string } = {};
 
   constructor(selector: JQuery, options: IPluginOptions) {
     super();
@@ -29,7 +29,7 @@ class Model extends Observer {
 
   // Calculation of thumbs slider position values
   calcTargetValue(
-    event: (Event & { target: EventTarget; clientY: number; clientX: number }) | null,
+    event: (Event & { clientY: number; clientX: number }) | null,
     initValue?: number,
     onlyReturn = false,
   ): number | null {
@@ -75,7 +75,7 @@ class Model extends Observer {
     const targetValue = Number((resultValue + minValue).toFixed(numberOfDecimalPlaces));
 
     if (onlyReturn) return targetValue;
-    this._checkingTargetValue(targetValue, event, eventPosition);
+    this._checkingTargetValue(targetValue);
 
     return null;
   }
@@ -84,11 +84,7 @@ class Model extends Observer {
    * Checking the calculated values of the slider for the fulfillment
    * of various conditions and determining which slider should be moved
    */
-  private _checkingTargetValue(
-    targetValue: number,
-    event: (Event & { target: EventTarget; code?: string }) | null,
-    eventPosition?: number,
-  ) {
+  private _checkingTargetValue(targetValue: number) {
     this.opt.initValueFirst = this.opt.initValueFirst ?? this.opt.minValue;
     this.opt.initValueSecond = this.opt.initValueSecond ?? this.opt.maxValue;
 
@@ -96,64 +92,29 @@ class Model extends Observer {
     const { 
       initValueFirst,
       initValueSecond,
-      isRange, 
       initValuesArray, 
-      $elemThumbs, 
-      isVertical,
+      isRange,
     } = this.opt;
 
-    const firstThumbDiff = Math.abs(Number((targetValue - initValueFirst).toFixed(2)));
-    const secondThumbDiff = Math.abs(Number((targetValue - initValueSecond).toFixed(2)));
-    let clickInRange = false;
+    const averageValue = (initValueFirst + initValueSecond) / 2;
+    const { activeThumb } = this._listSavedStatus;
 
-    if (isRange) clickInRange = targetValue > initValueFirst && targetValue < initValueSecond;
-    if (targetValue <= initValueFirst) initValuesArray[0] = targetValue;
-    if (targetValue >= initValueSecond || !isRange) initValuesArray[1] = targetValue;
+    if (targetValue === averageValue) {
+      if (activeThumb === 'first') {
+        initValuesArray[0] = targetValue;
+      } else if (activeThumb === 'second') {
+        initValuesArray[1] = targetValue;
+      } else {
+        initValuesArray[0] = targetValue;
+      }
+    }
 
-    if (clickInRange && firstThumbDiff < secondThumbDiff) {
+    if (targetValue < averageValue && isRange) {
       initValuesArray[0] = targetValue;
-    } else if (clickInRange && firstThumbDiff > secondThumbDiff) {
+      this._listSavedStatus['activeThumb'] = 'first';
+    } else if (targetValue > averageValue || !isRange) {
       initValuesArray[1] = targetValue;
-    }
-
-    const isIdenticalDistInRange = clickInRange && firstThumbDiff === secondThumbDiff;
-    const code = event?.code;
-
-    // prettier-ignore
-    const isEventMoveKeypress = (code === 'ArrowLeft' || code === 'ArrowRight' || code === 'ArrowUp' || code === 'ArrowDown') && event;
-    const [firstThumb, secondThumb] = $elemThumbs;
-    let firstThumbPosition = 0;
-    let secondThumbPosition = 0;
-
-    if (isVertical) {
-      firstThumbPosition = firstThumb.getBoundingClientRect().bottom;
-      secondThumbPosition = secondThumb.getBoundingClientRect().top;
-    } else if (!isVertical) {
-      firstThumbPosition = firstThumb.getBoundingClientRect().left;
-      secondThumbPosition = secondThumb.getBoundingClientRect().right;
-    }
-
-    const checkRulesEventPosition = isIdenticalDistInRange && !isEventMoveKeypress && eventPosition;
-
-    if (checkRulesEventPosition) {
-      const firstValuePosition = Math.abs(eventPosition - firstThumbPosition);
-      const secondValuePosition = Math.abs(eventPosition - secondThumbPosition);
-
-      if (Math.round(secondValuePosition - firstValuePosition) >= 0) {
-        initValuesArray[0] = targetValue;
-      } else {
-        initValuesArray[1] = targetValue;
-      }
-    }
-
-    if (isIdenticalDistInRange && isEventMoveKeypress) {
-      const $target = $(event.target);
-
-      if ($target.hasClass('meta-slider__thumb_left')) {
-        initValuesArray[0] = targetValue;
-      } else {
-        initValuesArray[1] = targetValue;
-      }
+      this._listSavedStatus['activeThumb'] = 'second';
     }
 
     this._calcValuesInPercentage();
@@ -238,11 +199,11 @@ class Model extends Observer {
     const verticalSliderVerifKeys = key === 'init' || key === 'isVertical';
 
     if (key === 'init' || key === 'initAutoMargins') {
-      this._propSavedStatus['autoMargins'] = initAutoMargins;
+      this._listSavedStatus['autoMargins'] = initAutoMargins;
     }
 
     if (verticalSliderVerifKeys && !isVertical) {
-      this.opt.initAutoMargins = this._propSavedStatus['autoMargins'];
+      this.opt.initAutoMargins = Boolean(this._listSavedStatus['autoMargins']);
     }
 
     if (verticalSliderVerifKeys && isVertical) this.opt.initAutoMargins = false;
