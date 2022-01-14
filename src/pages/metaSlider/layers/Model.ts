@@ -313,19 +313,17 @@ class Model extends Observer {
     }
   }
 
-  // Checking whether the scale is divided without remainder by the set scale step
-  private _checkingIsIntegerSizeScale(stepSizeForScale: number) {
+  /**
+   * Checking whether the scale is completely divided by the set scale step
+   * and adjusting the scale step
+   */
+  private _checkingCorrectStepSizeForScale(errMessage: IErrMessage) {
     const { maxValue, minValue } = this.opt;
 
-    return Number.isInteger((maxValue - minValue) / stepSizeForScale);
-  }
-
-  // Adjusting the scale step
-  private _checkingCorrectStepSizeForScale(errMessage: IErrMessage) {
     if (this.opt.stepSizeForScale) {
       const isIntegerStepSizeForScale = Number.isInteger(this.opt.stepSizeForScale);
 
-      while (!this._checkingIsIntegerSizeScale(this.opt.stepSizeForScale)) {
+      while (!Number.isInteger((maxValue - minValue) / this.opt.stepSizeForScale)) {
         if (this.opt.stepSizeForScale > 1 && isIntegerStepSizeForScale) {
           this.opt.stepSizeForScale += 1;
         } else if (!isIntegerStepSizeForScale) {
@@ -346,7 +344,9 @@ class Model extends Observer {
     if (key === 'init' || key === 'customValues') {
       // prettier-ignore
       this.opt.customValues = (typeof customValues === 'string') ? customValues.split(',') : customValues;
-      this.opt.customValues = this.opt.customValues.filter((elem) => elem !== '' && elem !== ' ');
+      this.opt.customValues = this.opt.customValues
+        .filter((elem) => elem !== '' && elem !== ' ')
+        .map((elem) => String(elem).trim());
 
       if (this.opt.customValues.length > 0) this._initCustomValues();
     }

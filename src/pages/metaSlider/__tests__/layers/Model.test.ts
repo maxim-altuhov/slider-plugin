@@ -16,6 +16,13 @@ describe('Checking the "Model" layer', () => {
   initSettings.$elemMarkers = $selector.find('.js-meta-slider__marker');
   initSettings.$elemScale = $selector.find('.js-meta-slider__scale');
 
+  const fakeErrMessage = {
+    step: 'Error message',
+    stepSizeForScale: 'Error message',
+    minAndMaxValue: 'Error message',
+    initValue: 'Error message',
+  };
+
   afterEach(() => {
     classModel.opt = { ...initSettings };
     jest.restoreAllMocks();
@@ -372,9 +379,6 @@ describe('Checking the "Model" layer', () => {
     ({ key, testMinValue, testMaxValue, valueFirst, valueSecond }) => {
       jest.spyOn(Number.prototype, 'toFixed');
       const mockErrorEvent = jest.spyOn(classModel.errorEvent, 'notify').mockImplementation();
-      const fakeErrMessage = {
-        minAndMaxValue: 'Error Message',
-      };
 
       classModel.opt.key = key;
       classModel.opt.initValueFirst = valueFirst;
@@ -432,10 +436,6 @@ describe('Checking the "Model" layer', () => {
       jest.spyOn<Model, any>(classModel, '_checkingCorrectStepSizeForScale').mockImplementation();
       jest.spyOn(Number.prototype, 'toFixed');
       const mockErrorEvent = jest.spyOn(classModel.errorEvent, 'notify').mockImplementation();
-      const fakeErrMessage = {
-        step: 'Error Message',
-        stepSizeForScale: 'Error Message',
-      };
 
       classModel.opt.key = key;
       classModel.opt.minValue = min;
@@ -461,7 +461,9 @@ describe('Checking the "Model" layer', () => {
 
       expect(step.toFixed).toHaveBeenCalledWith(numberOfDecimalPlaces);
 
-      if (!stepScale) expect(stepScale).toBe(step);
+      if (!stepForScale) {
+        expect(stepScale).toBe(step);
+      }
 
       if (step <= 0 || step > diffMinAndMax) {
         expect(step).toBe(diffMinAndMax);
@@ -493,21 +495,183 @@ describe('Checking the "Model" layer', () => {
 
   test.each`
     stepForScale | expected
-    ${1}         | ${true}
-    ${2}         | ${true}
-    ${5}         | ${true}
-    ${13}        | ${false}
-    ${18}        | ${false}
+    ${1}         | ${1}
+    ${1.2}       | ${2}
+    ${3}         | ${4}
+    ${5.567}     | ${10}
   `(
-    'Checking the "_checkingIsIntegerSizeScale" method => stepSizeForScale: $stepForScale',
+    'Checking the "_checkingCorrectStepSizeForScale" method => stepSizeForScale: $stepForScale',
     ({ stepForScale, expected }) => {
-      jest.spyOn<Model, any>(classModel, '_checkingIsIntegerSizeScale');
+      jest.spyOn(Number.prototype, 'toFixed');
+      const mockIsInteger = jest.spyOn(Number, 'isInteger');
+      const mockErrorEvent = jest.spyOn(classModel.errorEvent, 'notify').mockImplementation();
+
+      classModel.opt.stepSizeForScale = stepForScale;
       classModel.opt.minValue = 0;
       classModel.opt.maxValue = 100;
 
-      classModel['_checkingIsIntegerSizeScale'](stepForScale);
+      classModel['_checkingCorrectStepSizeForScale'](fakeErrMessage);
+      const { maxValue, minValue, stepSizeForScale } = classModel.opt;
 
-      expect(classModel['_checkingIsIntegerSizeScale']).toHaveReturnedWith(expected);
+      expect(mockIsInteger).toHaveBeenNthCalledWith(1, stepForScale);
+
+      if (!Number.isInteger((maxValue - minValue) / stepForScale)) {
+        expect(stepSizeForScale).toBe(expected);
+
+        expect(mockErrorEvent).toHaveBeenCalledWith(
+          fakeErrMessage['stepSizeForScale'],
+          classModel.opt,
+        );
+
+        if (!Number.isInteger(stepForScale) && stepSizeForScale) {
+          expect(stepSizeForScale.toFixed).toHaveBeenCalledWith(1);
+        }
+      }
+    },
+  );
+
+  test.each`
+    key               | testCustomValues   | expected
+    ${'init'}         | ${['a', 'b', 'c']} | ${['a', 'b', 'c']}
+    ${'init'}         | ${[' ']}           | ${[]}
+    ${'init'}         | ${['']}            | ${[]}
+    ${'customValues'} | ${'c, b, a'}       | ${['c', 'b', 'a']}
+  `(
+    'Checking the "_checkingCustomValues" method => key: $key, customValues: $testCustomValues',
+    ({ key, testCustomValues, expected }) => {
+      jest.spyOn<Model, any>(classModel, '_initCustomValues').mockImplementation();
+
+      classModel.opt.key = key;
+      classModel.opt.customValues = testCustomValues;
+
+      classModel['_checkingCustomValues']();
+      const { customValues } = classModel.opt;
+
+      expect(customValues).toEqual(expected);
+
+      if (customValues.length > 0) expect(classModel['_initCustomValues']).toHaveBeenCalled();
+    },
+  );
+
+  test.each([[[1]], [['a', 'b', 'c']], [['abc']]])(
+    'Checking the "_initCustomValues" method => customValues: %p',
+    (testValue) => {
+      classModel.opt.customValues = [...testValue];
+
+      classModel['_initCustomValues']();
+
+      const {
+        customValues,
+        minValue,
+        maxValue,
+        initAutoScaleCreation,
+        initScaleAdjustment,
+        checkingStepSizeForScale,
+        initFormatted,
+        calcNumberOfDecimalPlaces,
+        numberOfDecimalPlaces,
+        step,
+        stepSizeForScale,
+      } = classModel.opt;
+
+      expect(minValue).toBe(0);
+      expect(maxValue).toBe(customValues.length - 1);
+      expect(initAutoScaleCreation).toBe(false);
+      expect(initScaleAdjustment).toBe(false);
+      expect(checkingStepSizeForScale).toBe(false);
+      expect(initFormatted).toBe(false);
+      expect(calcNumberOfDecimalPlaces).toBe(false);
+      expect(numberOfDecimalPlaces).toBe(0);
+      expect(step).toBe(1);
+      expect(stepSizeForScale).toBe(1);
+
+      if (testValue.length === 1) {
+        expect(customValues).toEqual([testValue[0], testValue[0]]);
+      }
+    },
+  );
+
+  test.each`
+    key                        | valFirst | valSec  | min   | max    | range    | customVal
+    ${'init'}                  | ${10}    | ${50}   | ${0}  | ${100} | ${true}  | ${[]}
+    ${'isRange'}               | ${10}    | ${50}   | ${0}  | ${100} | ${false} | ${[]}
+    ${'customValues'}          | ${10}    | ${50}   | ${0}  | ${100} | ${true}  | ${[1, 2]}
+    ${'initValueFirst'}        | ${null}  | ${null} | ${0}  | ${100} | ${true}  | ${[]}
+    ${'initValueSecond'}       | ${60}    | ${50}   | ${0}  | ${100} | ${true}  | ${[]}
+    ${'initValueSecond'}       | ${10}    | ${150}  | ${0}  | ${100} | ${true}  | ${[]}
+    ${'initValueSecond'}       | ${10}    | ${50}   | ${50} | ${100} | ${true}  | ${[]}
+    ${'minValue'}              | ${-50}   | ${50}   | ${0}  | ${100} | ${true}  | ${[]}
+    ${'maxValue'}              | ${150}   | ${50}   | ${0}  | ${100} | ${true}  | ${[]}
+    ${'step'}                  | ${10}    | ${50}   | ${0}  | ${100} | ${true}  | ${[]}
+    ${'numberOfDecimalPlaces'} | ${10}    | ${50}   | ${0}  | ${100} | ${true}  | ${[]}
+  `(
+    'Checking the "_checkingInitValues" method => key: $key, initValueFirst: $valFirst, initValueSecond: $valSec, isRange: $range, customValues: $customVal',
+    ({ key, valFirst, valSec, min, max, range, customVal }) => {
+      const mockErrorEvent = jest.spyOn(classModel.errorEvent, 'notify').mockImplementation();
+
+      jest
+        .spyOn(classModel, 'calcTargetValue')
+        // @ts-ignore
+        .mockImplementation((_, initValue) => initValue);
+
+      classModel.opt.key = key;
+      classModel.opt.initValueFirst = valFirst;
+      classModel.opt.initValueSecond = valSec;
+      classModel.opt.minValue = min;
+      classModel.opt.maxValue = max;
+      classModel.opt.isRange = range;
+      classModel.opt.customValues = customVal;
+
+      classModel['_checkingInitValues'](fakeErrMessage);
+
+      const {
+        initValueFirst,
+        initValueSecond,
+        minValue,
+        maxValue,
+        customValues,
+        initValuesArray,
+        textValueFirst,
+        textValueSecond,
+        textValuesArray,
+        isRange,
+      } = classModel.opt;
+
+      if (!valFirst) expect(initValueFirst).toBe(minValue);
+      if (!valSec) expect(initValueSecond).toBe(maxValue);
+
+      const firstValueIsIncorrect = valFirst > maxValue || valFirst < minValue;
+      const secondValueIsIncorrect = valSec > maxValue || valSec < minValue;
+      const valuesOverlap = valFirst > valSec;
+
+      if (firstValueIsIncorrect || valuesOverlap) {
+        expect(initValueFirst).toBe(minValue);
+        expect(mockErrorEvent).toBeCalledWith(fakeErrMessage['initValue'], classModel.opt);
+      }
+
+      if (secondValueIsIncorrect || valuesOverlap) {
+        expect(initValueSecond).toBe(maxValue);
+        expect(mockErrorEvent).toBeCalledWith(fakeErrMessage['initValue'], classModel.opt);
+      }
+
+      if (!isRange) expect(initValueFirst).toBe(minValue);
+
+      expect(classModel.calcTargetValue).toHaveBeenNthCalledWith(1, null, initValueFirst, true);
+      expect(classModel.calcTargetValue).toHaveBeenNthCalledWith(2, null, initValueSecond, true);
+
+      const initValuesIsDefined = initValueFirst && initValueSecond;
+
+      if (customValues.length > 0 && initValuesIsDefined) {
+        expect(textValueFirst).toBe(String(customValues[initValueFirst]));
+        expect(textValueSecond).toBe(String(customValues[initValueSecond]));
+        expect(textValuesArray).toEqual([textValueFirst, textValueSecond]);
+      } else {
+        expect(textValueFirst).toBe('');
+        expect(textValueSecond).toBe('');
+        expect(textValuesArray).toEqual([]);
+      }
+
+      expect(initValuesArray).toEqual([initValueFirst, initValueSecond]);
     },
   );
 });
