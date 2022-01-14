@@ -67,21 +67,30 @@ describe('Checking the methods of the metaSlider plugin', () => {
     }).toThrow('A method named fakeMethodName does not exist for jQuery.metaSlider');
   });
 
-  test('Checking the correctness of the properties passed in the slider options by type => "initValueFirst"', () => {
-    expect(() => {
-      $initSelector.metaSlider({
-        initValueFirst: 'incorrectType',
-      });
-    }).toThrow('The slider\'s "initValueFirst" property should be passed as "number"');
-  });
+  test.each`
+    testProp            | incorrectType      | expected
+    ${'initValueFirst'} | ${'incorrectType'} | ${'number'}
+    ${'mainColor'}      | ${12345}           | ${'string'}
+    ${'isRange'}        | ${'incorrectType'} | ${'boolean'}
+    ${'customValues'}   | ${'incorrectType'} | ${'array'}
+  `(
+    'Checking by type the correctness of the properties passed in the slider parameters => testProp = $testProp',
+    ({ testProp, incorrectType, expected }) => {
+      const settings = {
+        [testProp]: incorrectType,
+      };
 
-  test('Checking the correctness of the properties passed in the slider options by type => "customValues"', () => {
-    expect(() => {
-      $initSelector.metaSlider({
-        customValues: 123,
-      });
-    }).toThrow('The slider`s "customValues" property should be passed as an array');
-  });
+      if (testProp === 'customValues') {
+        expect(() => {
+          $initSelector.metaSlider(settings);
+        }).toThrow('The slider`s "customValues" property should be passed as an array');
+      } else {
+        expect(() => {
+          $initSelector.metaSlider(settings);
+        }).toThrow(`The slider's "${testProp}" property should be passed as "${expected}"`);
+      }
+    },
+  );
 
   test('Checking the "setProp" method', () => {
     const fakeProp = 'fakePropName';

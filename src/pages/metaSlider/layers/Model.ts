@@ -85,19 +85,9 @@ class Model extends Observer {
    * of various conditions and determining which slider should be moved
    */
   private _checkingTargetValue(targetValue: number) {
-    this.opt.initValueFirst = this.opt.initValueFirst ?? this.opt.minValue;
-    this.opt.initValueSecond = this.opt.initValueSecond ?? this.opt.maxValue;
-
-    // prettier-ignore
-    const { 
-      initValueFirst,
-      initValueSecond,
-      initValuesArray, 
-      isRange,
-    } = this.opt;
-
-    const averageValue = (initValueFirst + initValueSecond) / 2;
+    const { initValuesArray, isRange } = this.opt;
     const { activeThumb } = this._listSavedStatus;
+    const averageValue = (initValuesArray[0] + initValuesArray[1]) / 2;
 
     if (targetValue === averageValue) {
       if (activeThumb === 'first') {
@@ -165,8 +155,8 @@ class Model extends Observer {
   // Checking incoming slider settings
   private _checkingIncomingProp() {
     const errMessage: IErrMessage = {
-      initValue: `Ошибка во входящих данных для одного или нескольких бегунков слайдера. Установлено 
-      значение по-умолчанию.`,
+      initValue: `Ошибка во входящих данных для одного или нескольких бегунков слайдера. 
+      Установлено значение по-умолчанию.`,
       minAndMaxValue: `Max значение установленное для слайдера меньше его Min значения. 
       Установлено значение по-умолчанию.`,
       stepSizeForScale: `Установите корректное значение шага для шкалы с делениями. 
@@ -266,12 +256,12 @@ class Model extends Observer {
       this.opt.minValue = Number(minValue.toFixed(numberOfDecimalPlaces));
       this.opt.maxValue = Number(maxValue.toFixed(numberOfDecimalPlaces));
 
+      // prettier-ignore
+      if (this.opt.minValue > this.opt.maxValue ) this.errorEvent.notify(errMessage['minAndMaxValue'], this.opt);
+
       if (this.opt.minValue >= this.opt.maxValue) {
         this.opt.minValue = initValueFirst ?? 0;
         this.opt.maxValue = initValueSecond ?? 100;
-
-        // prettier-ignore
-        if (this.opt.minValue > this.opt.maxValue ) this.errorEvent.notify(errMessage['minAndMaxValue'], this.opt);
       }
     }
   }

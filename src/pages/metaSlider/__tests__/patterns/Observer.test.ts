@@ -17,8 +17,8 @@ describe('Checking the "Observer" pattern, the "subscribe" method', () => {
 
   test.each([expect.any(Number), expect.any(Array), expect.any(String)])(
     'When a non-function is passed to the subscribe method, an error is thrown (test $#)',
-    () => {
-      expect((testArg: any) => {
+    (testArg) => {
+      expect(() => {
         classObserver.subscribe(testArg);
       }).toThrow('Add observer must be a function');
     },

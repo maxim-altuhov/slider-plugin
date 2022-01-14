@@ -57,11 +57,35 @@ describe('Checking the "Model" layer', () => {
     expect(classModel.notify).toHaveBeenCalledWith(classModel.opt);
   });
 
-  test.each([50, undefined])(
-    'Checking the "calcTargetValue" method => initValue is defined/undefined => checkingValue: %p',
-    (checkingValue) => {
+  test.each`
+    checkingValue | expected | isVertical | onlyReturn
+    ${50}         | ${50}    | ${false}   | ${true}
+    ${50}         | ${50}    | ${true}    | ${false}
+    ${-50}        | ${0}     | ${false}   | ${false}
+    ${150}        | ${100}   | ${false}   | ${false}
+    ${undefined}  | ${40}    | ${true}    | ${undefined}
+    ${undefined}  | ${59}    | ${false}   | ${undefined}
+    ${-50}        | ${0}     | ${false}   | ${true}
+    ${150}        | ${100}   | ${false}   | ${true}
+  `(
+    'Checking the "calcTargetValue" method => checkingValue: $checkingValue, isVertical: $isVertical, onlyReturn: $onlyReturn',
+    ({ checkingValue, expected, isVertical, onlyReturn }) => {
       jest.spyOn(classModel, 'calcTargetValue');
       jest.spyOn<Model, any>(classModel, '_checkingTargetValue').mockImplementation();
+
+      const mockGetBoundingClientRect = jest
+        .spyOn(Element.prototype, 'getBoundingClientRect')
+        .mockImplementation(() => ({
+          bottom: 535.71875,
+          height: 824.5,
+          left: 490.25,
+          right: 500.25,
+          top: -288.78125,
+          width: 10,
+          x: 490.25,
+          y: -288.78125,
+          toJSON() {},
+        }));
       const mockOuterWidth = jest.spyOn($.fn, 'outerWidth').mockImplementation(() => 825);
       const mockOffset = jest
         .spyOn($.fn, 'offset')
@@ -73,7 +97,7 @@ describe('Checking the "Model" layer', () => {
         clientX: 575,
       });
 
-      classModel.opt.isVertical = false;
+      classModel.opt.isVertical = isVertical;
       classModel.opt.minValue = 0;
       classModel.opt.maxValue = 100;
       classModel.opt.step = 1;
@@ -81,157 +105,82 @@ describe('Checking the "Model" layer', () => {
       classModel.opt.numberOfDecimalPlaces = 0;
 
       // @ts-ignore
-      classModel.calcTargetValue(fakeEvent, checkingValue);
+      classModel.calcTargetValue(fakeEvent, checkingValue, onlyReturn);
 
-      expect(classModel.calcTargetValue).toHaveReturnedWith(null);
-      expect(mockOffset).toHaveBeenCalled();
-      expect(mockOuterWidth).toHaveBeenCalled();
-
-      if (checkingValue) {
-        expect(classModel['_checkingTargetValue']).toHaveBeenCalledWith(checkingValue);
+      if (isVertical) {
+        expect(mockGetBoundingClientRect).toHaveBeenCalled();
       } else {
-        expect(classModel['_checkingTargetValue']).toHaveBeenCalledWith(59);
+        expect(mockOffset).toHaveBeenCalled();
+        expect(mockOuterWidth).toHaveBeenCalled();
+      }
+
+      if (onlyReturn) {
+        expect(classModel.calcTargetValue).toHaveReturnedWith(expected);
+      } else {
+        expect(classModel.calcTargetValue).toHaveReturnedWith(null);
+        expect(classModel['_checkingTargetValue']).toHaveBeenCalledWith(expected);
       }
     },
   );
 
-  test('Checking the "calcTargetValue" method => isVertical = true', () => {
-    jest.spyOn<Model, any>(classModel, '_checkingTargetValue').mockImplementation();
-
-    const fakeEvent = $.Event('click', {
-      target: classModel.opt.$elemThumbs[0],
-      clientY: 205,
-      clientX: 575,
-    });
-
-    classModel.opt.isVertical = true;
-    classModel.opt.minValue = 0;
-    classModel.opt.maxValue = 100;
-    classModel.opt.step = 1;
-    classModel.opt.stepAsPercent = 1;
-    classModel.opt.numberOfDecimalPlaces = 0;
-    const TEST_VALUE = 50;
-
-    // @ts-ignore
-    classModel.calcTargetValue(fakeEvent, TEST_VALUE);
-
-    expect(classModel['_checkingTargetValue']).toHaveBeenCalledWith(TEST_VALUE);
-  });
-
-  test.each([-50, 50, 150])(
-    'Checking the "calcTargetValue" method => onlyReturn = true => checkingValue: %p',
-    (checkingValue) => {
-      jest.spyOn(classModel, 'calcTargetValue');
-
-      classModel.opt.isVertical = false;
-      classModel.opt.minValue = -20;
-      classModel.opt.maxValue = 100;
-      classModel.opt.step = 1;
-      classModel.opt.stepAsPercent = 1;
-      classModel.opt.numberOfDecimalPlaces = 0;
-
-      classModel.calcTargetValue(null, checkingValue, true);
-      const { minValue, maxValue } = classModel.opt;
-
-      if (checkingValue < minValue) {
-        expect(classModel.calcTargetValue).toHaveReturnedWith(minValue);
-      } else if (checkingValue > maxValue) {
-        expect(classModel.calcTargetValue).toHaveReturnedWith(maxValue + minValue);
-      } else {
-        expect(classModel.calcTargetValue).toHaveReturnedWith(38);
-      }
-    },
-  );
-
-  test.each([-50, 10, 50, 90, 150])(
-    'Checking the "_checkingTargetValue" method => isVertical = false/true; isRange = true; initValueFirst, initValueSecond is defined => checkingValue: %p',
-    (checkingValue) => {
+  test.each`
+    checkingValue | valueFirst | valueSecond | testIsRange | activeThumb
+    ${50}         | ${0}       | ${100}      | ${true}     | ${'first'}
+    ${50}         | ${0}       | ${100}      | ${true}     | ${'second'}
+    ${50}         | ${0}       | ${100}      | ${true}     | ${''}
+    ${5}          | ${20}      | ${50}       | ${true}     | ${''}
+    ${80}         | ${20}      | ${30}       | ${true}     | ${''}
+    ${50}         | ${10}      | ${80}       | ${true}     | ${''}
+    ${40}         | ${0}       | ${100}      | ${false}    | ${''}
+    ${90}         | ${0}       | ${100}      | ${false}    | ${''}
+  `(
+    'Checking the "_checkingTargetValue" method => checkingValue: $checkingValue, isRange: $testIsRange, activeThumb: $activeThumb',
+    ({ checkingValue, valueFirst, valueSecond, testIsRange, activeThumb }) => {
       jest.spyOn<Model, any>(classModel, '_calcValuesInPercentage').mockImplementation();
       jest.spyOn<Model, any>(classModel, '_setCurrentValues').mockImplementation();
 
-      classModel.opt.isRange = true;
-      classModel.opt.initValueFirst = 0;
-      classModel.opt.initValueSecond = 100;
-      classModel.opt.initValuesArray = [0, 100];
+      classModel.opt.initValueFirst = valueFirst;
+      classModel.opt.initValueSecond = valueSecond;
+      classModel.opt.minValue = 0;
+      classModel.opt.maxValue = 100;
+      classModel.opt.isRange = testIsRange;
+      classModel.opt.initValuesArray = [valueFirst, valueSecond];
+      classModel['_listSavedStatus']['activeThumb'] = activeThumb;
+      const averageValue = (valueFirst + valueSecond) / 2;
 
-      [true, false].forEach((testValue) => {
-        classModel.opt.isVertical = testValue;
+      classModel['_checkingTargetValue'](checkingValue);
+      const statusActiveThumb = classModel['_listSavedStatus']['activeThumb'];
 
-        classModel['_checkingTargetValue'](checkingValue);
+      // prettier-ignore
+      const { 
+        initValuesArray,
+        initValueFirst,
+        initValueSecond,
+        isRange,
+      } = classModel.opt;
 
-        const { initValuesArray } = classModel.opt;
-        const averageValue = (initValuesArray[0] + initValuesArray[1]) / 2;
+      if (checkingValue < averageValue && isRange) {
+        expect(initValuesArray).toEqual([checkingValue, initValueSecond]);
+        expect(statusActiveThumb).toBe('first');
+      } else if (checkingValue > averageValue || !isRange) {
+        expect(initValuesArray).toEqual([initValueFirst, checkingValue]);
+        expect(statusActiveThumb).toBe('second');
+      }
 
-        if (checkingValue > averageValue) {
-          expect(initValuesArray).toEqual([initValuesArray[0], checkingValue]);
+      if (checkingValue === averageValue) {
+        if (statusActiveThumb === 'first') {
+          expect(initValuesArray).toEqual([checkingValue, initValueSecond]);
+        } else if (statusActiveThumb === 'second') {
+          expect(initValuesArray).toEqual([initValueFirst, checkingValue]);
         } else {
-          expect(initValuesArray).toEqual([checkingValue, initValuesArray[1]]);
+          expect(initValuesArray).toEqual([checkingValue, initValueSecond]);
         }
+      }
 
-        expect(classModel['_calcValuesInPercentage']).toHaveBeenCalled();
-        expect(classModel['_setCurrentValues']).toHaveBeenCalled();
-      });
+      expect(classModel['_calcValuesInPercentage']).toHaveBeenCalled();
+      expect(classModel['_setCurrentValues']).toHaveBeenCalled();
     },
   );
-
-  test('Checking the "_checkingTargetValue" method => initValueFirst, initValueSecond is undefined', () => {
-    jest.spyOn<Model, any>(classModel, '_calcValuesInPercentage').mockImplementation();
-    jest.spyOn<Model, any>(classModel, '_setCurrentValues').mockImplementation();
-    const TEST_VALUE = 50;
-
-    classModel.opt.isVertical = false;
-    classModel.opt.isRange = true;
-    classModel.opt.minValue = 0;
-    classModel.opt.maxValue = 100;
-
-    classModel['_checkingTargetValue'](TEST_VALUE);
-
-    // prettier-ignore
-    const { 
-      initValueFirst,
-      initValueSecond,
-      minValue,
-      maxValue,
-    } = classModel.opt;
-
-    expect(initValueFirst).toBe(minValue);
-    expect(initValueSecond).toBe(maxValue);
-  });
-
-  test('Checking the "_checkingTargetValue" method => isRange = false', () => {
-    jest.spyOn<Model, any>(classModel, '_calcValuesInPercentage').mockImplementation();
-    jest.spyOn<Model, any>(classModel, '_setCurrentValues').mockImplementation();
-    const TEST_VALUE = 50;
-
-    classModel.opt.isVertical = false;
-    classModel.opt.isRange = false;
-    classModel.opt.initValueFirst = 0;
-    classModel.opt.initValueSecond = 100;
-    classModel.opt.initValuesArray = [0, 100];
-
-    classModel['_checkingTargetValue'](TEST_VALUE);
-    const { initValuesArray, initValueFirst } = classModel.opt;
-
-    expect(initValuesArray).toEqual([initValueFirst, TEST_VALUE]);
-  });
-
-  test('Checking the "_checkingTargetValue" method => targetValue === averageValue', () => {
-    jest.spyOn<Model, any>(classModel, '_calcValuesInPercentage').mockImplementation();
-    jest.spyOn<Model, any>(classModel, '_setCurrentValues').mockImplementation();
-    const TEST_VALUE = 50;
-
-    classModel.opt.isVertical = false;
-    classModel.opt.isRange = true;
-    classModel.opt.initValueFirst = 0;
-    classModel.opt.initValueSecond = 100;
-    classModel.opt.initValuesArray = [0, 100];
-
-    classModel['_listSavedStatus']['activeThumb'] = '';
-    classModel['_checkingTargetValue'](TEST_VALUE);
-    const { initValuesArray, initValueSecond } = classModel.opt;
-
-    expect(initValuesArray).toEqual([TEST_VALUE, initValueSecond]);
-  });
 
   test('Checking the "_calcValuesInPercentage" method', () => {
     classModel.opt.minValue = 0;
@@ -273,7 +222,7 @@ describe('Checking the "Model" layer', () => {
   });
 
   test.each(['init', 'step', 'maxValue', 'minValue', 'customValues', 'numberOfDecimalPlaces'])(
-    'Checking the "_calcStepAsPercentage" method => key = %p',
+    'Checking the "_calcStepAsPercentage" method => key: %p',
     (key) => {
       classModel.opt.key = key;
       classModel.opt.minValue = 0;
@@ -332,7 +281,7 @@ describe('Checking the "Model" layer', () => {
   });
 
   test.each(['init', 'initAutoMargins', 'isVertical'])(
-    'Checking the "_checkingIsVerticalSlider" method => isVertical, initAutoMargins = true/false => key = %p',
+    'Checking the "_checkingIsVerticalSlider" method => isVertical and initAutoMargins: true/false => key: %p',
     (key) => {
       classModel.opt.key = key;
 
@@ -347,6 +296,218 @@ describe('Checking the "Model" layer', () => {
         expect(classModel['_listSavedStatus']).toHaveProperty('autoMargins', initAutoMargins);
         expect(initAutoMargins).toBe(statusAutoMargins);
       });
+    },
+  );
+
+  test.each([
+    'init',
+    'numberOfDecimalPlaces',
+    'calcNumberOfDecimalPlaces',
+    'initValueFirst',
+    'initValueSecond',
+    'minValue',
+    'maxValue',
+    'step',
+  ])('Checking the "_checkingNumberOfDecimalPlaces" method => key: %p', (key) => {
+    jest.spyOn<Model, any>(classModel, '_getNumberOfDecimalPlaces').mockImplementation();
+    jest.spyOn(Number.prototype, 'toFixed');
+    const mockIsInteger = jest.spyOn(Number, 'isInteger');
+    const numberOfDecimalPlacesCheckingList = [-5, 5, 0, 2.5];
+
+    classModel.opt.key = key;
+
+    numberOfDecimalPlacesCheckingList.forEach((currentNum) => {
+      classModel.opt.numberOfDecimalPlaces = currentNum;
+
+      const { numberOfDecimalPlaces } = classModel.opt;
+
+      [true, false].forEach((status) => {
+        classModel.opt.calcNumberOfDecimalPlaces = status;
+
+        classModel['_checkingNumberOfDecimalPlaces']();
+
+        if (key !== 'numberOfDecimalPlaces' && classModel.opt.calcNumberOfDecimalPlaces) {
+          expect(classModel['_getNumberOfDecimalPlaces']).toHaveBeenCalled();
+        }
+      });
+
+      if (key === 'init' || key === 'numberOfDecimalPlaces') {
+        if (currentNum === 2.5) expect(numberOfDecimalPlaces.toFixed).toHaveBeenCalled();
+
+        if (currentNum === -5) {
+          expect(mockIsInteger).toHaveBeenCalledWith(0);
+        } else {
+          expect(mockIsInteger).toHaveBeenCalledWith(currentNum);
+        }
+      }
+    });
+  });
+
+  test.each`
+    testProp      | testValue | expected
+    ${'minValue'} | ${1}      | ${0}
+    ${'maxValue'} | ${1.5}    | ${1}
+    ${'step'}     | ${2.253}  | ${3}
+    ${'step'}     | ${2.25}   | ${2}
+  `(
+    'Checking the "_getNumberOfDecimalPlaces" method => testProp: $testProp, testValue: $testValue',
+    ({ testProp, testValue, expected }) => {
+      classModel.opt[testProp] = testValue;
+
+      classModel['_getNumberOfDecimalPlaces']();
+
+      expect(classModel.opt.numberOfDecimalPlaces).toBe(expected);
+    },
+  );
+
+  test.each`
+    key                        | testMinValue | testMaxValue | valueFirst | valueSecond
+    ${'init'}                  | ${0}         | ${100}       | ${10}      | ${80}
+    ${'init'}                  | ${100}       | ${100}       | ${null}    | ${null}
+    ${'minValue'}              | ${200}       | ${100}       | ${10}      | ${80}
+    ${'maxValue'}              | ${200}       | ${100}       | ${10}      | ${80}
+    ${'numberOfDecimalPlaces'} | ${0}         | ${100}       | ${50}      | ${100}
+  `(
+    'Checking the "_checkingMinMaxValues" method => key: $key, minValue: $testMinValue, maxValue: $testMaxValue, initValueFirst: $valueFirst, initValueSecond: $valueSecond',
+    ({ key, testMinValue, testMaxValue, valueFirst, valueSecond }) => {
+      jest.spyOn(Number.prototype, 'toFixed');
+      const mockErrorEvent = jest.spyOn(classModel.errorEvent, 'notify').mockImplementation();
+      const fakeErrMessage = {
+        minAndMaxValue: 'Error Message',
+      };
+
+      classModel.opt.key = key;
+      classModel.opt.initValueFirst = valueFirst;
+      classModel.opt.initValueSecond = valueSecond;
+      classModel.opt.minValue = testMinValue;
+      classModel.opt.maxValue = testMaxValue;
+      classModel.opt.numberOfDecimalPlaces = 2;
+
+      classModel['_checkingMinMaxValues'](fakeErrMessage);
+
+      // prettier-ignore
+      const { 
+        initValueFirst,
+        initValueSecond,
+        minValue,
+        maxValue,
+        numberOfDecimalPlaces,
+      } = classModel.opt;
+
+      expect(minValue.toFixed).toHaveBeenCalledWith(numberOfDecimalPlaces);
+      expect(maxValue.toFixed).toHaveBeenCalledWith(numberOfDecimalPlaces);
+
+      if (minValue > maxValue) {
+        expect(mockErrorEvent).toHaveBeenCalledWith(
+          fakeErrMessage['minAndMaxValue'],
+          classModel.opt,
+        );
+      }
+
+      if (minValue >= maxValue) {
+        if (!initValueFirst || !initValueSecond) {
+          expect(minValue).toBe(0);
+          expect(maxValue).toBe(100);
+        } else {
+          expect(minValue).toBe(initValueFirst);
+          expect(maxValue).toBe(initValueSecond);
+        }
+      }
+    },
+  );
+
+  test.each`
+    key                        | min   | max    | stepForScale | stepValue | initAutoScale | checkingStep
+    ${'init'}                  | ${0}  | ${100} | ${null}      | ${-5}     | ${true}       | ${true}
+    ${'init'}                  | ${0}  | ${100} | ${10}        | ${10}     | ${true}       | ${false}
+    ${'initAutoScaleCreation'} | ${0}  | ${100} | ${10}        | ${10}     | ${false}      | ${true}
+    ${'step'}                  | ${0}  | ${100} | ${10}        | ${0}      | ${false}      | ${true}
+    ${'stepSizeForScale'}      | ${80} | ${100} | ${25}        | ${10}     | ${false}      | ${true}
+    ${'maxValue'}              | ${80} | ${100} | ${10}        | ${25}     | ${false}      | ${true}
+    ${'minValue'}              | ${0}  | ${100} | ${10}        | ${10}     | ${false}      | ${true}
+    ${'numberOfDecimalPlaces'} | ${0}  | ${100} | ${10}        | ${10}     | ${true}       | ${true}
+  `(
+    'Checking the "_checkingStepSize" method => key: $key, minValue: $min, maxValue: $max, stepSizeForScale: $stepForScale, step: $stepValue, initAutoScaleCreation: $initAutoScale, checkingStepSizeForScale: $checkingStep',
+    ({ key, min, max, stepForScale, stepValue, initAutoScale, checkingStep }) => {
+      jest.spyOn<Model, any>(classModel, '_checkingCorrectStepSizeForScale').mockImplementation();
+      jest.spyOn(Number.prototype, 'toFixed');
+      const mockErrorEvent = jest.spyOn(classModel.errorEvent, 'notify').mockImplementation();
+      const fakeErrMessage = {
+        step: 'Error Message',
+        stepSizeForScale: 'Error Message',
+      };
+
+      classModel.opt.key = key;
+      classModel.opt.minValue = min;
+      classModel.opt.maxValue = max;
+      classModel.opt.stepSizeForScale = stepForScale;
+      classModel.opt.step = stepValue;
+      classModel.opt.initAutoScaleCreation = initAutoScale;
+      classModel.opt.checkingStepSizeForScale = checkingStep;
+      classModel.opt.numberOfDecimalPlaces = 2;
+
+      const diffMinAndMax = classModel.opt.maxValue - classModel.opt.minValue;
+
+      classModel['_checkingStepSize'](fakeErrMessage);
+
+      // prettier-ignore
+      const {
+        stepSizeForScale: stepScale,
+        step,
+        initAutoScaleCreation,
+        checkingStepSizeForScale,
+        numberOfDecimalPlaces,
+      } = classModel.opt;
+
+      expect(step.toFixed).toHaveBeenCalledWith(numberOfDecimalPlaces);
+
+      if (!stepScale) expect(stepScale).toBe(step);
+
+      if (step <= 0 || step > diffMinAndMax) {
+        expect(step).toBe(diffMinAndMax);
+        expect(mockErrorEvent).toHaveBeenCalledWith(fakeErrMessage['step'], classModel.opt);
+      }
+
+      if (initAutoScaleCreation) {
+        expect(checkingStepSizeForScale).toBe(false);
+        expect(stepScale).toBe(step);
+      }
+
+      const rulesStepScale = stepScale && (stepScale <= 0 || stepScale > diffMinAndMax);
+
+      if (rulesStepScale) {
+        expect(stepScale).toBe(diffMinAndMax);
+        expect(mockErrorEvent).toHaveBeenCalledWith(
+          fakeErrMessage['stepSizeForScale'],
+          classModel.opt,
+        );
+      }
+
+      if (checkingStepSizeForScale && !initAutoScaleCreation) {
+        expect(classModel['_checkingCorrectStepSizeForScale']).toHaveBeenCalledWith(fakeErrMessage);
+      } else {
+        expect(classModel['_checkingCorrectStepSizeForScale']).not.toHaveBeenCalled();
+      }
+    },
+  );
+
+  test.each`
+    stepForScale | expected
+    ${1}         | ${true}
+    ${2}         | ${true}
+    ${5}         | ${true}
+    ${13}        | ${false}
+    ${18}        | ${false}
+  `(
+    'Checking the "_checkingIsIntegerSizeScale" method => stepSizeForScale: $stepForScale',
+    ({ stepForScale, expected }) => {
+      jest.spyOn<Model, any>(classModel, '_checkingIsIntegerSizeScale');
+      classModel.opt.minValue = 0;
+      classModel.opt.maxValue = 100;
+
+      classModel['_checkingIsIntegerSizeScale'](stepForScale);
+
+      expect(classModel['_checkingIsIntegerSizeScale']).toHaveReturnedWith(expected);
     },
   );
 });
