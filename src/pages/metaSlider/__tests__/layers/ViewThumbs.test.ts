@@ -4,6 +4,7 @@ import ViewThumbs from '../../layers/ViewThumbs';
 import initSettings from '../../data/initSettings';
 import * as makeThrottlingHandler from '../../utils/makeThrottlingHandler';
 
+jest.mock('../../utils/createUniqueID');
 const classViewSlider = new ViewSlider();
 document.body.innerHTML = '<div id="render-selector"></div>';
 const $selector = $('#render-selector');
@@ -148,7 +149,7 @@ describe('Checking the "ViewThumbs" layer => "update" method', () => {
     'Checking the "_setEventsThumbs" method, event "keydown" (index %d) => init _handleChangeThumbPosition',
     (index) => {
       const { initValuesArray, step } = testSettings;
-      const mockNotify = jest.spyOn(classViewThumbs, 'notify');
+      const mockNotify = jest.spyOn(classViewThumbs, 'notify').mockImplementation();
       const testKeysArr = ['ArrowUp', 'ArrowRight', 'ArrowDown', 'ArrowLeft'];
 
       testKeysArr.forEach((keyCode) => {
@@ -172,7 +173,7 @@ describe('Checking the "ViewThumbs" layer => "update" method', () => {
   test.each([0, 1])(
     'Checking the "_setEventsThumbs" method, event "pointerdown/pointerup" (index %d) => init _handleSetEventListenerForThumbs, _handleInitPointerMove, _handleInitPointerUp',
     (index) => {
-      const mockNotify = jest.spyOn(classViewThumbs, 'notify');
+      const mockNotify = jest.spyOn(classViewThumbs, 'notify').mockImplementation();
       const mockMakeThrottlingHandler = jest.spyOn(makeThrottlingHandler, 'default');
       $elemThumbs[index].setPointerCapture = jest.fn();
       const mockSetPointerCapture = $elemThumbs[index].setPointerCapture;

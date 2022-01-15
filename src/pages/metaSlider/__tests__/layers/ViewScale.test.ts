@@ -4,6 +4,8 @@ import ViewScale from '../../layers/ViewScale';
 import initSettings from '../../data/initSettings';
 import * as makeThrottlingHandler from '../../utils/makeThrottlingHandler';
 
+jest.mock('../../utils/createUniqueID');
+jest.mock('../../utils/makeThrottlingHandler');
 const classViewSlider = new ViewSlider();
 document.body.innerHTML = '<div id="render-selector"></div>';
 const $initSelector = $('#render-selector');
@@ -395,7 +397,7 @@ describe('Checking the "ViewScale" layer', () => {
   });
 
   test('Checking the "_setEventsScalePoints" method, event "click" => init "_handleGetValueInScalePoint"', () => {
-    const mockNotify = jest.spyOn(classViewScale, 'notify');
+    const mockNotify = jest.spyOn(classViewScale, 'notify').mockImplementation();
     classViewScale.update(testSettings);
     const $elemScalePoints = classViewScale['_$elemScalePoints'];
 

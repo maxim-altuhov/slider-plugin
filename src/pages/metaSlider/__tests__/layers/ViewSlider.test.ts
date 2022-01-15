@@ -3,6 +3,7 @@ import ViewSlider from '../../layers/ViewSlider';
 import initSettings from '../../data/initSettings';
 import * as createUniqueID from '../../utils/createUniqueID';
 
+const mockCreateUniqueID = jest.spyOn(createUniqueID, 'default').mockImplementation(() => '');
 const classViewSlider = new ViewSlider();
 const initSelectorName = 'render-selector';
 const scaleSelectorName = '.js-meta-slider__scale';
@@ -10,7 +11,7 @@ const thumbSelectorName = '.js-meta-slider__thumb';
 const markerSelectorName = '.js-meta-slider__marker';
 const TEST_HEIGHT_ELEM = 20;
 
-const initHTMLBlock = `<div class="slider-block" id="${initSelectorName}"></div>`;
+const initHTMLBlock = `<div id="${initSelectorName}"></div>`;
 const scalePointHTML = `<button type="button" class="meta-slider__scale-point
 js-meta-slider__scale-point" style="height:${TEST_HEIGHT_ELEM}px"></button>`;
 document.body.innerHTML = initHTMLBlock;
@@ -78,7 +79,6 @@ describe('Checking the "ViewSlider" layer', () => {
   });
 
   test('Checking the "renderSlider" method', () => {
-    const mockCreateUniqueID = jest.spyOn(createUniqueID, 'default').mockImplementation();
     const checkingSelectorsArr = [
       /js-meta-slider/,
       /js-meta-slider__progress/,
@@ -234,7 +234,7 @@ describe('Checking the "ViewSlider" layer', () => {
   });
 
   test('Checking the "_setEventsSlider" method, event "pointerdown" => _handleSetSliderValues', () => {
-    const mockNotify = jest.spyOn(classViewSlider, 'notify');
+    const mockNotify = jest.spyOn(classViewSlider, 'notify').mockImplementation();
     const eventPointerdown = $.Event('pointerdown.slider');
     eventPointerdown.preventDefault = jest.fn();
 

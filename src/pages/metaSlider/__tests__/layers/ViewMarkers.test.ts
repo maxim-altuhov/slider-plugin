@@ -3,6 +3,7 @@ import ViewSlider from '../../layers/ViewSlider';
 import ViewMarkers from '../../layers/ViewMarkers';
 import initSettings from '../../data/initSettings';
 
+jest.mock('../../utils/createUniqueID');
 const classViewSlider = new ViewSlider();
 document.body.innerHTML = '<div id="render-selector"></div>';
 const $selector = $('#render-selector');

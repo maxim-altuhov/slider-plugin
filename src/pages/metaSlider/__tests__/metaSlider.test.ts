@@ -179,7 +179,7 @@ describe('Checking the methods of the metaSlider plugin', () => {
 
     const fakeFoo = () => true;
     const { model } = $initSelector.data('metaSlider');
-    jest.spyOn(model, 'subscribe');
+    jest.spyOn(model, 'subscribe').mockImplementation();
 
     $initSelector.metaSlider('subscribe', fakeFoo);
 
@@ -192,7 +192,7 @@ describe('Checking the methods of the metaSlider plugin', () => {
 
     const fakeFoo = () => true;
     const { model } = $initSelector.data('metaSlider');
-    jest.spyOn(model, 'unsubscribe');
+    jest.spyOn(model, 'unsubscribe').mockImplementation();
 
     $initSelector.metaSlider('unsubscribe', fakeFoo);
 
