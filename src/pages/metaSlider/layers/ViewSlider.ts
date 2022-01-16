@@ -135,7 +135,7 @@ class ViewSlider extends Observer {
     if (verifProp && showScale) {
       const $elemScalePoints = this._$selector.find('.js-meta-slider__scale-point');
       const elemScalePointsHeight = $elemScalePoints.outerHeight() || 0;
-      this._$elemSlider.css('margin-bottom', `${elemScalePointsHeight * 3}px`);
+      this._$elemSlider.css('margin-bottom', `${elemScalePointsHeight * 1.5}px`);
     } else {
       this._$elemSlider.prop('style').removeProperty('margin-bottom');
     }

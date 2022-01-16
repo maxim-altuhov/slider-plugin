@@ -1,11 +1,14 @@
 .meta-slider {
   &_vertical {
     .meta-slider__scale-point {
-      top: 30px;
+      display: block;
+      top: 26px;
       max-width: 20px;
       min-height: 20px;
       line-height: 20px;
       transform: translateX(-50%) rotate(90deg);
+      text-overflow: initial;
+      overflow: initial;
 
       &::after {
         bottom: 50%;
@@ -35,17 +38,24 @@
   }
 
   &__scale-point {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
     position: absolute;
-    top: 20px;
+    top: 6px;
     min-width: 20px;
+    max-width: 70px;
+    min-height: 30px;
     border: 0;
     white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
     transform: translateX(-50%);
 
     &::after {
       content: '';
       position: absolute;
-      bottom: 100%;
+      bottom: 50%;
       left: 50%;
       height: 12px;
       border-left-width: 1px;
