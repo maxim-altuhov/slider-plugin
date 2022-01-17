@@ -40,7 +40,7 @@ $(() => {
     minValue: 0,
     maxValue: 1000,
     step: 100,
-    initValueSecond: 200,
+    initValueSecond: 500,
     isRange: false,
     preFix: '$ ',
     isVertical: true,
