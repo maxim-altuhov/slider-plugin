@@ -11,7 +11,7 @@
     left: 50%;
     bottom: 120%;
     min-width: 40px;
-    max-width: 100px;
+    max-width: 130px;
     min-height: 25px;
     line-height: 25px;
     padding: 0 10px;
@@ -22,7 +22,7 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
-    transform: translateX(-50%);
     touch-action: none;
+    transform: translateX(-50%);
   }
 }
