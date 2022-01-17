@@ -422,6 +422,49 @@ describe('Checking the "Model" layer', () => {
   );
 
   test.each`
+    testKey        | statusScale
+    ${'init'}      | ${false}
+    ${'showScale'} | ${true}
+  `(
+    'Checking the "_checkingShowScaleStatus" method => key: $testKey, showScale: $statusScale',
+    ({ testKey, statusScale }) => {
+      classModel.opt.key = testKey;
+      classModel.opt.showScale = statusScale;
+      classModel.opt.initAutoScaleCreation = true;
+      classModel.opt.initScaleAdjustment = true;
+      classModel.opt.checkingStepSizeForScale = false;
+
+      classModel['_checkingShowScaleStatus']();
+
+      const {
+        key,
+        showScale,
+        initAutoScaleCreation,
+        initScaleAdjustment,
+        checkingStepSizeForScale,
+      } = classModel.opt;
+
+      const verifKeys = key === 'init' || key === 'showScale';
+
+      if (!showScale && verifKeys) {
+        expect(initAutoScaleCreation).toBe(false);
+        expect(initScaleAdjustment).toBe(false);
+        expect(checkingStepSizeForScale).toBe(false);
+
+        expect(classModel['_listSavedStatus']['initAutoScaleCreation']).toBe(true);
+        expect(classModel['_listSavedStatus']['initScaleAdjustment']).toBe(true);
+        expect(classModel['_listSavedStatus']['checkingStepSizeForScale']).toBe(false);
+      } else if (showScale && key === 'showScale') {
+        expect(initAutoScaleCreation).toBe(classModel['_listSavedStatus']['initAutoScaleCreation']);
+        expect(initScaleAdjustment).toBe(classModel['_listSavedStatus']['initScaleAdjustment']);
+        expect(checkingStepSizeForScale).toBe(
+          classModel['_listSavedStatus']['checkingStepSizeForScale'],
+        );
+      }
+    },
+  );
+
+  test.each`
     key                        | min   | max    | stepForScale | stepValue | initAutoScale | checkingStep
     ${'init'}                  | ${0}  | ${100} | ${null}      | ${-5}     | ${true}       | ${true}
     ${'init'}                  | ${0}  | ${100} | ${10}        | ${10}     | ${true}       | ${false}

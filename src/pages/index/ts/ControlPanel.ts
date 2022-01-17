@@ -127,11 +127,19 @@ class ControlPanel {
    */
   private _initCheckingDependencies(prop: string) {
     if (prop in this._objWithControlPanelDependencies) {
-      this._checkingInputWithTargetProp(
-        prop,
-        this._objWithControlPanelDependencies[prop].checkingOptions,
-        this._objWithControlPanelDependencies[prop].isReverseDependency,
-      );
+      const { checkingOptions, isReverseDependency } = this._objWithControlPanelDependencies[prop];
+
+      checkingOptions.forEach((nestedProp) => {
+        if (nestedProp in this._objWithControlPanelDependencies) {
+          this._checkingInputWithTargetProp(
+            nestedProp,
+            this._objWithControlPanelDependencies[nestedProp].checkingOptions,
+            this._objWithControlPanelDependencies[nestedProp].isReverseDependency,
+          );
+        }
+      });
+
+      this._checkingInputWithTargetProp(prop, checkingOptions, isReverseDependency);
     }
   }
 

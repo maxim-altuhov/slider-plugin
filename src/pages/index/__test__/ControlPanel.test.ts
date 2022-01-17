@@ -234,13 +234,21 @@ describe('Checking the "ControlPanel"', () => {
       .mockImplementation();
 
     Object.keys(objWithControlPanelDependencies).forEach((initProp) => {
+      const { checkingOptions, isReverseDependency } = objWithControlPanelDependencies[initProp];
+
       classControlPanel['_initCheckingDependencies'](initProp);
 
-      expect(mockCheckTheProp).toHaveBeenCalledWith(
-        initProp,
-        expect.any(Array),
-        expect.any(Boolean),
-      );
+      expect(mockCheckTheProp).toHaveBeenCalledWith(initProp, checkingOptions, isReverseDependency);
+
+      checkingOptions.forEach((nestedProp) => {
+        if (nestedProp in objWithControlPanelDependencies) {
+          expect(mockCheckTheProp).toHaveBeenCalledWith(
+            nestedProp,
+            objWithControlPanelDependencies[nestedProp].checkingOptions,
+            objWithControlPanelDependencies[nestedProp].isReverseDependency,
+          );
+        }
+      });
     });
 
     mockCheckTheProp.mockRestore();

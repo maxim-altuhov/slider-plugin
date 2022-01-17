@@ -39,6 +39,10 @@ const objWithControlPanelDependencies: { [key: string]: TypeObjWithDependencies 
     ],
     isReverseDependency: false,
   },
+  showScale: {
+    checkingOptions: ['initAutoScaleCreation', 'initScaleAdjustment', 'checkingStepSizeForScale'],
+    isReverseDependency: true,
+  },
 };
 
 export default objWithControlPanelDependencies;

@@ -5,7 +5,6 @@ import initSettings from '../../data/initSettings';
 import * as makeThrottlingHandler from '../../utils/makeThrottlingHandler';
 
 jest.mock('../../utils/createUniqueID');
-jest.mock('../../utils/makeThrottlingHandler');
 const classViewSlider = new ViewSlider();
 document.body.innerHTML = '<div id="render-selector"></div>';
 const $initSelector = $('#render-selector');

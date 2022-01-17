@@ -168,6 +168,7 @@ class Model extends Observer {
     this._checkingIsVerticalSlider();
     this._checkingNumberOfDecimalPlaces();
     this._checkingMinMaxValues(errMessage);
+    this._checkingShowScaleStatus();
     this._checkingStepSize(errMessage);
     this._checkingCustomValues();
     this._calcStepAsPercentage();
@@ -263,6 +264,35 @@ class Model extends Observer {
         this.opt.minValue = initValueFirst ?? 0;
         this.opt.maxValue = initValueSecond ?? 100;
       }
+    }
+  }
+
+  private _checkingShowScaleStatus() {
+    // prettier-ignore
+    const {
+      key,
+      showScale,
+      initAutoScaleCreation,
+      initScaleAdjustment,
+      checkingStepSizeForScale,
+    } = this.opt;
+
+    const verifKeys = key === 'init' || key === 'showScale';
+
+    if (!showScale && verifKeys) {
+      this._listSavedStatus['initAutoScaleCreation'] = initAutoScaleCreation;
+      this._listSavedStatus['initScaleAdjustment'] = initScaleAdjustment;
+      this._listSavedStatus['checkingStepSizeForScale'] = checkingStepSizeForScale;
+
+      this.opt.initAutoScaleCreation = false;
+      this.opt.initScaleAdjustment = false;
+      this.opt.checkingStepSizeForScale = false;
+    } else if (showScale && key === 'showScale') {
+      this.opt.initAutoScaleCreation = Boolean(this._listSavedStatus['initAutoScaleCreation']);
+      this.opt.initScaleAdjustment = Boolean(this._listSavedStatus['initScaleAdjustment']);
+      this.opt.checkingStepSizeForScale = Boolean(
+        this._listSavedStatus['checkingStepSizeForScale'],
+      );
     }
   }
 
