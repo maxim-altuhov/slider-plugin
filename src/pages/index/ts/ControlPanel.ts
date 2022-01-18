@@ -12,7 +12,7 @@ class ControlPanel {
 
   constructor(panelSelector: string, sliderSelector: string) {
     this.watchTheSlider = this.watchTheSlider.bind(this);
-    this._handleInputChanges = this._handleInputChanges.bind(this);
+    this._handleInputChange = this._handleInputChange.bind(this);
     this._$panelSelector = $(panelSelector);
     this._$sliderSelector = $(sliderSelector);
 
@@ -29,7 +29,7 @@ class ControlPanel {
       this._getProp(prop);
       this._initCheckingDependencies(prop);
 
-      $inputSelector.on('change.input', this._handleInputChanges);
+      $inputSelector.on('change.input', this._handleInputChange);
     });
 
     this._setOptionStepForInputs();
@@ -187,20 +187,20 @@ class ControlPanel {
   }
 
   // Setting new slider property values when changing control panel inputs
-  private _handleInputChanges(event: Event & { target: EventTarget }) {
+  private _handleInputChange(event: Event & { target: EventTarget }) {
     const $inputTarget = $(event.target);
     const targetProp = $inputTarget.attr('name');
-    let value = null;
+    let targetValue = null;
 
     if ($inputTarget.attr('type') === 'checkbox') {
-      value = $inputTarget.prop('checked');
+      targetValue = $inputTarget.prop('checked');
     } else if ($inputTarget.attr('type') === 'text') {
-      value = $inputTarget.val();
+      targetValue = $inputTarget.val();
     } else {
-      value = Number($inputTarget.val());
+      targetValue = Number($inputTarget.val());
     }
 
-    if (targetProp) this._setProp(targetProp, value);
+    if (targetProp) this._setProp(targetProp, targetValue);
   }
 }
 

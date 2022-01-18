@@ -233,7 +233,7 @@ describe('Checking the "ViewSlider" layer', () => {
     expect($sliderProgress.prop('style')).toHaveProperty('background', 'none');
   });
 
-  test('Checking the "_setEventsSlider" method, event "pointerdown" => _handleSetSliderValues', () => {
+  test('Checking the "_setEventsSlider" method, event "pointerdown" => _handleSliderPointerdown', () => {
     const mockNotify = jest.spyOn(classViewSlider, 'notify').mockImplementation();
     const eventPointerdown = $.Event('pointerdown.slider');
     eventPointerdown.preventDefault = jest.fn();

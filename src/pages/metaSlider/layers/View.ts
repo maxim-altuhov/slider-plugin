@@ -7,7 +7,7 @@ import ViewError from './ViewError';
 class View {
   /**
    * I use the any type to be able to access any method
-   * of the class instance in the view List object.
+   * of the class instance in the viewList object.
    */
   readonly viewList: Record<string, any> = {
     viewError: new ViewError(),

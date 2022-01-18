@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/dot-notation */
+// The test uses the 'any' type in jest.spyOn so that private methods of the class can be tested
 import Model from '../../metaSlider/layers/Model';
-import ControlPanel from '../ts/ControlPanel';
 import '../../metaSlider/metaSlider';
+import ControlPanel from '../ts/ControlPanel';
 
 jest.mock('../../../pages/metaSlider/layers/View');
 jest.mock('../../../pages/metaSlider/layers/Presenter');
@@ -11,17 +12,17 @@ jest.spyOn(Model.prototype, 'update').mockImplementation(() => 'update');
 
 document.body.innerHTML = `<div id="fake-slider-selector"></div>
 <div id="fake-panel-selector">
-<input type="number" name="initValueFirst">
-<input type="number" name="initValueSecond">
-<input type="number" name="minValue">
-<input type="number" name="maxValue">
-<input type="number" name="step">
-<input type="text" name="customValues">
-<input type="text" name="mainColor">
-<input type="checkbox" name="isRange" value="isRange">
-<input type="checkbox" name="showScale" value="showScale">
-<input type="checkbox" name="isVertical" value="isVertical">
-<input type="checkbox" name="initAutoMargins" value="initAutoMargins">
+  <input type="number" name="initValueFirst">
+  <input type="number" name="initValueSecond">
+  <input type="number" name="minValue">
+  <input type="number" name="maxValue">
+  <input type="number" name="step">
+  <input type="text" name="customValues">
+  <input type="text" name="mainColor">
+  <input type="checkbox" name="isRange" value="isRange">
+  <input type="checkbox" name="showScale" value="showScale">
+  <input type="checkbox" name="isVertical" value="isVertical">
+  <input type="checkbox" name="initAutoMargins" value="initAutoMargins">
 </div>`;
 $('#fake-slider-selector').metaSlider();
 
@@ -31,14 +32,13 @@ describe('Checking the "ControlPanel", before first initialization.', () => {
     const notInitControlPanel = new ControlPanel('#fake-panel-selector', '#fake-slider-selector');
 
     expect(notInitControlPanel.watchTheSlider).toBeDefined();
-    expect(notInitControlPanel['_handleInputChanges']).toBeDefined();
+    expect(notInitControlPanel['_handleInputChange']).toBeDefined();
     expect(notInitControlPanel['_$panelSelector']).toHaveLength(1);
     expect(notInitControlPanel['_$sliderSelector']).toHaveLength(1);
     expect(notInitControlPanel['_selectorsObj']).toBeDefined();
     expect(notInitControlPanel['_objWithControlPanelDependencies']).toBeDefined();
     expect(notInitControlPanel['_keysWatchList']).toBeDefined();
     expect(notInitControlPanel.propertyList.length > 0).toBeTruthy();
-
     expect(notInitControlPanel['_getSelectors']).toHaveBeenCalled();
 
     mockGetSelectors.mockRestore();
@@ -47,12 +47,13 @@ describe('Checking the "ControlPanel", before first initialization.', () => {
 
 describe('Checking the "ControlPanel"', () => {
   const classControlPanel = new ControlPanel('#fake-panel-selector', '#fake-slider-selector');
+
   const $sliderSelector = classControlPanel['_$sliderSelector'];
   const $panelSelector = classControlPanel['_$panelSelector'];
   const allSelectorsObj = classControlPanel['_selectorsObj'];
   const keysWatchList = classControlPanel['_keysWatchList'];
-  const testSelectorsArr = Object.entries(allSelectorsObj).filter((elem) => elem[1].length > 0);
   const objWithControlPanelDependencies = classControlPanel['_objWithControlPanelDependencies'];
+  const testSelectorsArr = Object.entries(allSelectorsObj).filter((elem) => elem[1].length > 0);
   const { propertyList } = classControlPanel;
 
   beforeAll(() => {
@@ -90,10 +91,9 @@ describe('Checking the "ControlPanel"', () => {
   });
 
   test('Checking the "init" method', () => {
-    jest.spyOn($.fn, 'on');
-
     const { model } = $sliderSelector.data('metaSlider');
-    const handleInputChanges = classControlPanel['_handleInputChanges'];
+
+    const handleInputChanges = classControlPanel['_handleInputChange'];
     const mockGetProp = jest.spyOn<ControlPanel, any>(classControlPanel, '_getProp');
     const mockSubscribe = jest.spyOn(model, 'subscribe').mockImplementation();
     const mockInitCheckingDependencies = jest
@@ -102,6 +102,7 @@ describe('Checking the "ControlPanel"', () => {
     const mockSetOptionStepForInputs = jest
       .spyOn<ControlPanel, any>(classControlPanel, '_setOptionStepForInputs')
       .mockImplementation();
+    jest.spyOn($.fn, 'on');
 
     classControlPanel.init();
 
@@ -290,7 +291,7 @@ describe('Checking the "ControlPanel"', () => {
   });
 
   test.each(['isVertical', 'isRange', 'customValues', 'step'])(
-    'Checking the "_handleInputChanges" method => option %p',
+    'Checking the "_handleInputChange" method => option %p',
     (initProp) => {
       const mockSetProp = jest.spyOn<ControlPanel, any>(classControlPanel, '_setProp');
       const eventChange = $.Event('change.input');

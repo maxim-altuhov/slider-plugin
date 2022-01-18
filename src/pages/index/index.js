@@ -1,7 +1,8 @@
 import $ from 'jquery';
-import './index.scss';
+
 import '../metaSlider/metaSlider';
 import ControlPanel from './ts/ControlPanel';
+import './index.scss';
 
 $(() => {
   const controlPanel1 = new ControlPanel('#config-slider-1', '#slider-1');

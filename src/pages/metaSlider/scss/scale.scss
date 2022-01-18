@@ -1,7 +1,6 @@
 .meta-slider {
   &_vertical {
     .meta-slider__scale-point {
-      display: block;
       top: 26px;
       max-width: 20px;
       min-height: 20px;
@@ -9,6 +8,7 @@
       transform: translateX(-50%) rotate(90deg);
       text-overflow: initial;
       overflow: visible;
+      padding: 0px;
 
       &::after {
         bottom: 50%;
@@ -22,7 +22,7 @@
         transform: translate(-50%, 100%);
       }
 
-      &_skip {
+      &_skipped {
         &::after {
           height: 1px;
           width: 6px;
@@ -38,19 +38,18 @@
   }
 
   &__scale-point {
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
     position: absolute;
     top: 6px;
     min-width: 20px;
     max-width: 120px;
     min-height: 30px;
     border: 0;
+    text-align: center;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
     transform: translateX(-50%);
+    padding: 15px 0 0 0;
 
     &::after {
       content: '';
@@ -64,7 +63,7 @@
       transform: translateX(-50%);
     }
 
-    &_skip {
+    &_skipped {
       pointer-events: none;
 
       &::after {

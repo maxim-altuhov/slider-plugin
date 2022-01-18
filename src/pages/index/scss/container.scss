@@ -1,14 +1,12 @@
 .container {
-  min-width: 305px;
-
   &__wrapper {
     display: flex;
+    text-align: justify;
     background-color: #ffffff;
     margin: 25px auto;
     padding: 30px;
-    border-radius: 10px;
     min-height: 250px;
-    text-align: justify;
+    border-radius: 10px;
 
     @media (max-width: 1199px) {
       flex-wrap: wrap;

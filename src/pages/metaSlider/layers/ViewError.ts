@@ -2,7 +2,7 @@ class ViewError {
   private _$selector: undefined | JQuery<HTMLElement>;
   private _$elemErrorInfo: null | JQuery<HTMLElement> | undefined;
   private _$elemErrorText: null | JQuery<HTMLElement> | undefined;
-  private _$btnErrorClose: null | JQuery<HTMLElement> | undefined;
+  private _$elemErrorCloseBtn: null | JQuery<HTMLElement> | undefined;
 
   renderError(message: string, options: IPluginOptions) {
     const { $selector, $elemSlider, showError } = options;
@@ -12,7 +12,7 @@ class ViewError {
     if (showError && !this._$elemErrorInfo) {
       const HTMLBlockError = `<div class="error-info js-error-info">
       <p class="error-info__text js-error-info__text">${message}</p>
-      <button type="button" class="error-info__close js-error-info__close">X</button>
+      <button type="button" class="error-info__close-btn js-error-info__close-btn">X</button>
       </div>`;
       $elemSlider.after(HTMLBlockError);
 
@@ -28,25 +28,25 @@ class ViewError {
     if (this._$selector) {
       this._$elemErrorInfo = this._$selector.find('.js-error-info');
       this._$elemErrorText = this._$selector.find('.js-error-info__text');
-      this._$btnErrorClose = this._$selector.find('.js-error-info__close');
+      this._$elemErrorCloseBtn = this._$selector.find('.js-error-info__close-btn');
     }
   }
 
   // Setting the handler to the close window button with an error
   private _setEventErrorClose() {
-    if (this._$btnErrorClose) {
-      this._$btnErrorClose.on('click.btnErrorClose', this._handleRemoveErrorBlock.bind(this));
+    if (this._$elemErrorCloseBtn) {
+      this._$elemErrorCloseBtn.on('click.closeBtn', this._handleCloseBtnClick.bind(this));
     }
   }
 
   // Deleting the error message
-  private _handleRemoveErrorBlock() {
-    if (this._$btnErrorClose && this._$elemErrorInfo) {
-      this._$btnErrorClose.off('click.btnErrorClose');
+  private _handleCloseBtnClick() {
+    if (this._$elemErrorCloseBtn && this._$elemErrorInfo) {
+      this._$elemErrorCloseBtn.off('click.closeBtn');
       this._$elemErrorInfo.remove();
       this._$elemErrorInfo = null;
       this._$elemErrorText = null;
-      this._$btnErrorClose = null;
+      this._$elemErrorCloseBtn = null;
     }
   }
 }

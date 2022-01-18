@@ -150,7 +150,7 @@ class ViewScale extends Observer {
         const totalSizeScalePoints = this._scalePointsSize + MARGIN_PX;
         this._skipScalePointsArray = [];
         this._$elemScalePoints = this._$selector.find(
-          '.js-meta-slider__scale-point:not(.meta-slider__scale-point_skip)',
+          '.js-meta-slider__scale-point:not(.meta-slider__scale-point_skipped)',
         );
 
         this._scalePointsSize = 0;
@@ -171,7 +171,7 @@ class ViewScale extends Observer {
             this._setPropForSkipScalePoint(currentScalePoint);
           }
 
-          if (!currentScalePoint.classList.contains('meta-slider__scale-point_skip'))
+          if (!currentScalePoint.classList.contains('meta-slider__scale-point_skipped'))
             this._calcScalePointsSize(currentScalePoint);
         });
 
@@ -186,7 +186,7 @@ class ViewScale extends Observer {
   private _setPropForSkipScalePoint(currentScalePoint: HTMLElement) {
     const $currentScalePoint = $(currentScalePoint);
     $currentScalePoint
-      .addClass('meta-slider__scale-point_skip')
+      .addClass('meta-slider__scale-point_skipped')
       .attr('tabindex', -1)
       .css({ color: 'transparent', borderColor: 'inherit' });
 
@@ -203,7 +203,7 @@ class ViewScale extends Observer {
         scalePointSkipArray.forEach(($scalePoint) => {
           $scalePoint
             .removeAttr('tabindex')
-            .removeClass('meta-slider__scale-point_skip')
+            .removeClass('meta-slider__scale-point_skipped')
             .css({ color: 'inherit', borderColor: '' });
 
           this._calcScalePointsSize($scalePoint[0]);
@@ -222,7 +222,7 @@ class ViewScale extends Observer {
     if (showScale && initScaleAdjustment) {
       $(window).on(
         `resize.scale-${sliderID}`,
-        makeThrottlingHandler(this._handleCheckingScaleSize.bind(this, options), 250),
+        makeThrottlingHandler(this._handleWindowResize.bind(this, options), 250),
       );
     } else {
       $(window).off(`resize.scale-${sliderID}`);
@@ -230,19 +230,19 @@ class ViewScale extends Observer {
   }
 
   // Tracks the width of the slider
-  private _handleCheckingScaleSize(options: IPluginOptions) {
+  private _handleWindowResize(options: IPluginOptions) {
     this._checkingScaleSize(options);
   }
 
   // Event handler for clicks on scale values
   private _setEventsScalePoints() {
     this._$elemScalePoints.each((_, elemPoint) => {
-      $(elemPoint).on('click.scalePoint', this._handleGetValueInScalePoint.bind(this));
+      $(elemPoint).on('click.scalePoint', this._handleScalePointClick.bind(this));
     });
   }
 
   // Gets values when clicking on the slider scale
-  private _handleGetValueInScalePoint(event: Event & { target: EventTarget }) {
+  private _handleScalePointClick(event: Event & { target: EventTarget }) {
     event.preventDefault();
     const $target = $(event.target);
     const targetValue = Number($target.attr('data-value'));

@@ -5,9 +5,9 @@
 
   &__label {
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    cursor: pointer;
     display: flex;
     align-items: center;
-    cursor: pointer;
     text-align: right;
     line-height: 1.4;
   }

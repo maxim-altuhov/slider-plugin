@@ -58,11 +58,7 @@ const keysWatchList: { [key: string]: string[] } = {
   isRange: ['initValueFirst', 'textValueFirst'],
   calcNumberOfDecimalPlaces: ['numberOfDecimalPlaces'],
   isVertical: ['initAutoMargins'],
-  showScale: [
-    'initAutoScaleCreation',
-    'checkingStepSizeForScale',
-    'initScaleAdjustment',
-  ],
+  showScale: ['initAutoScaleCreation', 'checkingStepSizeForScale', 'initScaleAdjustment'],
 };
 
 export default keysWatchList;

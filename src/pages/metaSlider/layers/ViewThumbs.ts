@@ -88,13 +88,13 @@ class ViewThumbs extends Observer {
     this._$elemThumbs.each((_, thumb) => {
       const $currentThumb = $(thumb);
 
-      $currentThumb.on('pointerdown.thumb', this._handleSetEventListenerForThumbs.bind(this));
-      $currentThumb.on('keydown.thumb', this._handleChangeThumbPosition.bind(this, options));
+      $currentThumb.on('pointerdown.thumb', this._handleThumbPointerdown.bind(this));
+      $currentThumb.on('keydown.thumb', this._handleThumbKeydown.bind(this, options));
     });
   }
 
   // Changing the position of the thumbs sliders when using the keyboard
-  private _handleChangeThumbPosition(
+  private _handleThumbKeydown(
     options: IPluginOptions,
     event: Event & { target: EventTarget; code?: string },
   ) {
@@ -122,26 +122,26 @@ class ViewThumbs extends Observer {
   }
 
   // Installing event handlers for movement/termination of thumbs sliders
-  private _handleSetEventListenerForThumbs(event: Event & { target: Element; pointerId?: number }) {
+  private _handleThumbPointerdown(event: Event & { target: Element; pointerId?: number }) {
     const { target, pointerId } = event;
 
-    if (target && pointerId) target.setPointerCapture(pointerId);
+    if (typeof pointerId !== 'undefined') target.setPointerCapture(pointerId);
 
     const $target = $(target);
     $target.on(
       'pointermove.thumb',
-      makeThrottlingHandler(this._handleInitPointerMove.bind(this), 50),
+      makeThrottlingHandler(this._handleThumbPointermove.bind(this), 50),
     );
-    $target.on('pointerup.thumb', ViewThumbs._handleInitPointerUp.bind(this));
+    $target.on('pointerup.thumb', ViewThumbs._handleThumbPointerup.bind(this));
   }
 
   // Tracking the movement of thumbs sliders
-  private _handleInitPointerMove(event: Event) {
+  private _handleThumbPointermove(event: Event) {
     this.notify(event);
   }
 
   // Tracking the termination of the thumbs sliders
-  private static _handleInitPointerUp(event: Event & { target: EventTarget }) {
+  private static _handleThumbPointerup(event: Event & { target: EventTarget }) {
     const $target = $(event.target);
     $target.off('pointermove.thumb');
     $target.off('pointerup.thumb');

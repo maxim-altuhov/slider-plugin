@@ -1,14 +1,14 @@
 /// <reference path='./interfaces/metaSlider.d.ts' />
-import './metaSlider.scss';
 import typeSettings from './data/typeSettings';
 import initSettings from './data/initSettings';
 import limitedProp from './data/limitedProp';
 import Model from './layers/Model';
 import View from './layers/View';
 import Presenter from './layers/Presenter';
+import './metaSlider.scss';
 
-let inputOptions: IPluginOptions;
-const methods: IPluginMethods = {
+let pluginOptions: IPluginOptions;
+const pluginMethods: IPluginMethods = {
   init(settings: { [key: string]: any }) {
     // If the slider is not initialized yet
     const data = this.data('metaSlider');
@@ -33,10 +33,10 @@ const methods: IPluginMethods = {
       }
 
       // Combining user settings and default settings
-      inputOptions = $.extend({}, initSettings, settings);
+      pluginOptions = $.extend({}, initSettings, settings);
 
       // Initializing the plugin
-      const model = new Model(this, inputOptions);
+      const model = new Model(this, pluginOptions);
       const view = new View();
       const presenter = new Presenter(view, model);
 
@@ -52,7 +52,7 @@ const methods: IPluginMethods = {
   setProp(prop, value) {
     if (limitedProp.includes(prop)) throw new Error(`Property '${prop}' cannot be changed.`);
 
-    if (!limitedProp.includes(prop) && prop in inputOptions) {
+    if (!limitedProp.includes(prop) && prop in pluginOptions) {
       const { model } = this.data('metaSlider');
 
       if (value === undefined) throw new Error('The value parameter cannot be omitted.');
@@ -67,7 +67,7 @@ const methods: IPluginMethods = {
     return this;
   },
   getProp(prop) {
-    if (prop in inputOptions) return this.data('metaSlider').model.opt[prop];
+    if (prop in pluginOptions) return this.data('metaSlider').model.opt[prop];
 
     throw new Error(`The '${prop}' property does not exist.`);
   },
@@ -104,15 +104,15 @@ const methods: IPluginMethods = {
 (($) => {
   // We call the desired plugin method, check the presence and type of the argument being passed
   $.fn.metaSlider = function (initParam, ...prop) {
-    if (typeof initParam === 'string' && methods[initParam]) {
-      return methods[initParam].apply(this, prop);
+    if (typeof initParam === 'string' && pluginMethods[initParam]) {
+      return pluginMethods[initParam].apply(this, prop);
     }
 
-    if (!initParam) return methods.init.call(this);
-    if (typeof initParam === 'object') return methods.init.call(this, initParam);
+    if (!initParam) return pluginMethods.init.call(this);
+    if (typeof initParam === 'object') return pluginMethods.init.call(this, initParam);
 
     throw new Error(`A method named ${initParam} does not exist for jQuery.metaSlider`);
   };
 })(jQuery);
 
-export default methods;
+export default pluginMethods;

@@ -335,7 +335,7 @@ describe('Checking the "ViewScale" layer', () => {
 
     const $testScalePoint = $(testScalePoint);
     expect($testScalePoint[0].outerHTML).toMatchSnapshot();
-    expect($testScalePoint.attr('class')).toMatch(/meta-slider__scale-point_skip/);
+    expect($testScalePoint.attr('class')).toMatch(/meta-slider__scale-point_skipped/);
     expect($testScalePoint.attr('tabindex')).toBe('-1');
     expect($testScalePoint.prop('style')).toHaveProperty('color', 'transparent');
     expect(classViewScale['_skipScalePointsArray'].length).toBe(1);
@@ -357,13 +357,13 @@ describe('Checking the "ViewScale" layer', () => {
     classViewScale['_checkingSkipScalePointSize'](SLIDER_SIZE_PX, MARGIN_PX);
     expect($testScalePoint[0].outerHTML).toMatchSnapshot();
     expect($testScalePoint.attr('tabindex')).toBeUndefined();
-    expect($testScalePoint.attr('class')).not.toMatch(/meta-slider__scale-point_skip/);
+    expect($testScalePoint.attr('class')).not.toMatch(/meta-slider__scale-point_skipped/);
     expect(classViewScale['_calcScalePointsSize']).toHaveBeenCalledWith($testScalePoint[0]);
     expect(classViewScale['_mapSkipScalePoints'].delete).toHaveBeenCalledWith(CONTROL_SIZE_PX);
     expect(classViewScale['_mapSkipScalePoints'].size).toBe(0);
   });
 
-  test('Checking the "_setEventResize" method, event "resize" => "defaultSettings" => init "_handleCheckingScaleSize"', () => {
+  test('Checking the "_setEventResize" method, event "resize" => "defaultSettings" => init "_handleWindowResize"', () => {
     jest.spyOn<ViewScale, any>(classViewScale, '_checkingScaleSize');
     const mockMakeThrottlingHandler = jest.spyOn(makeThrottlingHandler, 'default');
     classViewScale.update(testSettings);
@@ -395,7 +395,7 @@ describe('Checking the "ViewScale" layer', () => {
     expect($(window).off).toHaveBeenCalledWith(`resize.scale-${sliderID}`);
   });
 
-  test('Checking the "_setEventsScalePoints" method, event "click" => init "_handleGetValueInScalePoint"', () => {
+  test('Checking the "_setEventsScalePoints" method, event "click" => init "_handleScalePointClick"', () => {
     const mockNotify = jest.spyOn(classViewScale, 'notify').mockImplementation();
     classViewScale.update(testSettings);
     const $elemScalePoints = classViewScale['_$elemScalePoints'];

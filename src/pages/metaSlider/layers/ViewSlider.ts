@@ -173,11 +173,11 @@ class ViewSlider extends Observer {
 
   // Click event handler inside the slider
   private _setEventsSlider() {
-    this._$elemSlider.on('pointerdown.slider', this._handleSetSliderValues.bind(this));
+    this._$elemSlider.on('pointerdown.slider', this._handleSliderPointerdown.bind(this));
   }
 
   // Gets values when clicked inside the slider
-  private _handleSetSliderValues(event: Event & { target: EventTarget }) {
+  private _handleSliderPointerdown(event: Event & { target: EventTarget }) {
     event.preventDefault();
     const $target = $(event.target);
 

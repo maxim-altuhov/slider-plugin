@@ -146,7 +146,7 @@ describe('Checking the "ViewThumbs" layer => "update" method', () => {
   });
 
   test.each([0, 1])(
-    'Checking the "_setEventsThumbs" method, event "keydown" (index %d) => init _handleChangeThumbPosition',
+    'Checking the "_setEventsThumbs" method, event "keydown" (index %d) => init _handleThumbKeydown',
     (index) => {
       const { initValuesArray, step } = testSettings;
       const mockNotify = jest.spyOn(classViewThumbs, 'notify').mockImplementation();
@@ -171,7 +171,7 @@ describe('Checking the "ViewThumbs" layer => "update" method', () => {
   );
 
   test.each([0, 1])(
-    'Checking the "_setEventsThumbs" method, event "pointerdown/pointerup" (index %d) => init _handleSetEventListenerForThumbs, _handleInitPointerMove, _handleInitPointerUp',
+    'Checking the "_setEventsThumbs" method, event "pointerdown/pointerup" (index %d) => init _handleThumbPointerdown, _handleThumbPointermove, _handleThumbPointerup',
     (index) => {
       const mockNotify = jest.spyOn(classViewThumbs, 'notify').mockImplementation();
       const mockMakeThrottlingHandler = jest.spyOn(makeThrottlingHandler, 'default');
