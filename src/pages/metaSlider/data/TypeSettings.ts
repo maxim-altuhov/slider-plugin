@@ -1,4 +1,4 @@
-const typeSettings: { [key: string]: string } = {
+const TypeSettings: { [key: string]: string } = {
   mainColor: 'string',
   secondColor: 'string',
   colorMarker: 'string',
@@ -30,4 +30,4 @@ const typeSettings: { [key: string]: string } = {
   initValueSecond: 'number',
 };
 
-export default typeSettings;
+export default TypeSettings;

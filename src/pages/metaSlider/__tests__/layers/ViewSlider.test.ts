@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 import ViewSlider from '../../layers/ViewSlider';
-import initSettings from '../../data/initSettings';
+import InitSettings from '../../data/InitSettings';
 import * as createUniqueID from '../../utils/createUniqueID';
 
 const mockCreateUniqueID = jest.spyOn(createUniqueID, 'default').mockImplementation(() => '');
@@ -65,7 +65,7 @@ describe('Checking the "ViewSlider" layer', () => {
   let $sliderProgress: JQuery<HTMLElement>;
 
   beforeAll(() => {
-    testSettings = $.extend({}, initSettings, defaultSettings);
+    testSettings = $.extend({}, InitSettings, defaultSettings);
     classViewSlider.update(testSettings);
 
     $selector = classViewSlider['_$selector'];
@@ -74,7 +74,7 @@ describe('Checking the "ViewSlider" layer', () => {
   });
 
   afterEach(() => {
-    testSettings = $.extend({}, initSettings, defaultSettings);
+    testSettings = $.extend({}, InitSettings, defaultSettings);
     jest.restoreAllMocks();
   });
 

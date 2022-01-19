@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/dot-notation */
-import initSettings from '../../data/initSettings';
+import InitSettings from '../../data/InitSettings';
 import ViewSlider from '../../layers/ViewSlider';
 import Model from '../../layers/Model';
 
@@ -10,12 +10,12 @@ const $selector = $('#render-selector');
 classViewSlider.renderSlider($selector);
 
 describe('Checking the "Model" layer', () => {
-  const classModel = new Model($selector, initSettings);
-  initSettings.$elemSlider = $selector.find('.js-meta-slider');
-  initSettings.$sliderProgress = $selector.find('.js-meta-slider__progress');
-  initSettings.$elemThumbs = $selector.find('.js-meta-slider__thumb');
-  initSettings.$elemMarkers = $selector.find('.js-meta-slider__marker');
-  initSettings.$elemScale = $selector.find('.js-meta-slider__scale');
+  const classModel = new Model($selector, InitSettings);
+  InitSettings.$elemSlider = $selector.find('.js-meta-slider');
+  InitSettings.$sliderProgress = $selector.find('.js-meta-slider__progress');
+  InitSettings.$elemThumbs = $selector.find('.js-meta-slider__thumb');
+  InitSettings.$elemMarkers = $selector.find('.js-meta-slider__marker');
+  InitSettings.$elemScale = $selector.find('.js-meta-slider__scale');
 
   const fakeErrMessage = {
     step: 'Error message',
@@ -25,13 +25,13 @@ describe('Checking the "Model" layer', () => {
   };
 
   afterEach(() => {
-    classModel.opt = { ...initSettings };
+    classModel.opt = { ...InitSettings };
     jest.restoreAllMocks();
   });
 
   test('State before first initialization', () => {
     expect($selector.html()).toMatchSnapshot();
-    expect(classModel.opt).toBe(initSettings);
+    expect(classModel.opt).toBe(InitSettings);
     expect(classModel.opt.$selector).toBe($selector);
     expect(classModel.observerList).toHaveLength(0);
     expect(classModel.errorEvent).toBeDefined();

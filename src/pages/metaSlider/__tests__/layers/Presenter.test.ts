@@ -2,11 +2,11 @@
 import Model from '../../layers/Model';
 import View from '../../layers/View';
 import Presenter from '../../layers/Presenter';
-import initSettings from '../../data/initSettings';
+import InitSettings from '../../data/InitSettings';
 
 const fakeSelector = $('.fake-selector');
 const initView = new View();
-const initModel = new Model(fakeSelector, initSettings);
+const initModel = new Model(fakeSelector, InitSettings);
 const presenter = new Presenter(initView, initModel);
 
 const view = presenter['_view'];
@@ -38,16 +38,16 @@ describe('Checking the "Presenter" layer', () => {
 
   test('Initializing the "updateViews" method', () => {
     view.update = jest.fn();
-    presenter.updateViews(initSettings);
+    presenter.updateViews(InitSettings);
 
-    expect(view.update).toHaveBeenCalledWith(initSettings);
+    expect(view.update).toHaveBeenCalledWith(InitSettings);
   });
 
   test('Initializing the "renderError" method', () => {
     presenter['_getView']('viewError').renderError = jest.fn();
-    presenter.renderError('message', initSettings);
+    presenter.renderError('message', InitSettings);
 
-    expect(view.viewList['viewError'].renderError).toHaveBeenCalledWith('message', initSettings);
+    expect(view.viewList['viewError'].renderError).toHaveBeenCalledWith('message', InitSettings);
   });
 
   test('Initializing the "calcTargetValue" method', () => {

@@ -1,6 +1,6 @@
 /// <reference path='./interfaces/metaSlider.d.ts' />
-import typeSettings from './data/typeSettings';
-import initSettings from './data/initSettings';
+import TypeSettings from './data/TypeSettings';
+import InitSettings from './data/InitSettings';
 import limitedProp from './data/limitedProp';
 import Model from './layers/Model';
 import View from './layers/View';
@@ -20,9 +20,9 @@ const pluginMethods: IPluginMethods = {
 
       if (settings) {
         Object.keys(settings).forEach((key) => {
-          if (typeSettings[key] && typeof settings[key] !== typeSettings[key]) {
+          if (TypeSettings[key] && typeof settings[key] !== TypeSettings[key]) {
             throw new Error(
-              `The slider's "${key}" property should be passed as "${typeSettings[key]}"`,
+              `The slider's "${key}" property should be passed as "${TypeSettings[key]}"`,
             );
           }
 
@@ -33,7 +33,7 @@ const pluginMethods: IPluginMethods = {
       }
 
       // Combining user settings and default settings
-      pluginOptions = $.extend({}, initSettings, settings);
+      pluginOptions = $.extend({}, InitSettings, settings);
 
       // Initializing the plugin
       const model = new Model(this, pluginOptions);

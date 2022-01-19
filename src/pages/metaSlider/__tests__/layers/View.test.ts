@@ -1,5 +1,5 @@
 import View from '../../layers/View';
-import initSettings from '../../data/initSettings';
+import InitSettings from '../../data/InitSettings';
 
 describe('Checking the "View" layer', () => {
   const classView = new View();
@@ -20,14 +20,14 @@ describe('Checking the "View" layer', () => {
   });
 
   beforeEach(() => {
-    classView.update(initSettings);
+    classView.update(InitSettings);
     classView.renderSlider($FAKE_SELECTOR);
   });
 
   test.each(viewListContainsUpdate)(
     'When the "update" method is performed at the "View" level, an update occurs in the dependent subview from "ViewList"-> %s and an object with options is passed to the "update"',
     (view) => {
-      expect(classView.viewList[view].update).toHaveBeenCalledWith(initSettings);
+      expect(classView.viewList[view].update).toHaveBeenCalledWith(InitSettings);
     },
   );
 

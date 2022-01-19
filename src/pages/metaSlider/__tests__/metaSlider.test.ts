@@ -1,6 +1,6 @@
 import Model from '../layers/Model';
 import pluginMethods from '../metaSlider';
-import initSettings from '../data/initSettings';
+import InitSettings from '../data/InitSettings';
 import limitedProp from '../data/limitedProp';
 
 jest.mock('../layers/View');
@@ -22,10 +22,10 @@ describe('Checking the methods of the metaSlider plugin', () => {
     initValueFirst: 1,
     initValueSecond: 100,
   };
-  let testSettings: IPluginOptions = $.extend({}, initSettings, defaultSettings);
+  let testSettings: IPluginOptions = $.extend({}, InitSettings, defaultSettings);
 
   afterEach(() => {
-    testSettings = $.extend({}, initSettings, defaultSettings);
+    testSettings = $.extend({}, InitSettings, defaultSettings);
     $initSelector.removeData('metaSlider');
   });
 

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 import ViewError from '../../layers/ViewError';
-import initSettings from '../../data/initSettings';
+import InitSettings from '../../data/InitSettings';
 
 const initHTMLBlock = '<div class="fake-selector"><div class="fake-slider"></div></div>';
 document.body.innerHTML = initHTMLBlock;
@@ -28,7 +28,7 @@ describe('Checking the "ViewError" layer', () => {
     showError: true,
   };
 
-  const testSettings: IPluginOptions = $.extend({}, initSettings, defaultSettings);
+  const testSettings: IPluginOptions = $.extend({}, InitSettings, defaultSettings);
   let $elemErrorInfo: null | JQuery<HTMLElement> | undefined;
   let $elemErrorText: null | JQuery<HTMLElement> | undefined;
   let $elemErrorCloseBtn: null | JQuery<HTMLElement> | undefined;

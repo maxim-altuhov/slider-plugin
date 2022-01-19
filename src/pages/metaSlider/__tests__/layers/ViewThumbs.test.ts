@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 import ViewSlider from '../../layers/ViewSlider';
 import ViewThumbs from '../../layers/ViewThumbs';
-import initSettings from '../../data/initSettings';
+import InitSettings from '../../data/InitSettings';
 import * as makeThrottlingHandler from '../../utils/makeThrottlingHandler';
 
 jest.mock('../../utils/createUniqueID');
@@ -44,13 +44,13 @@ describe('Checking the "ViewThumbs" layer => "update" method', () => {
   let $elemThumbs: JQuery<HTMLElement>;
 
   beforeAll(() => {
-    testSettings = $.extend({}, initSettings, defaultSettings);
+    testSettings = $.extend({}, InitSettings, defaultSettings);
     classViewThumbs.update(testSettings);
     $elemThumbs = classViewThumbs['_$elemThumbs'];
   });
 
   afterEach(() => {
-    testSettings = $.extend({}, initSettings, defaultSettings);
+    testSettings = $.extend({}, InitSettings, defaultSettings);
     jest.restoreAllMocks();
   });
 

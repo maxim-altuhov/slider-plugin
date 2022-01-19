@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 import ViewSlider from '../../layers/ViewSlider';
 import ViewMarkers from '../../layers/ViewMarkers';
-import initSettings from '../../data/initSettings';
+import InitSettings from '../../data/InitSettings';
 
 jest.mock('../../utils/createUniqueID');
 const classViewSlider = new ViewSlider();
@@ -66,14 +66,14 @@ describe('Checking the "ViewMarkers" layer, the "update" method', () => {
   };
 
   beforeAll(() => {
-    testSettings = $.extend({}, initSettings, defaultSettings);
+    testSettings = $.extend({}, InitSettings, defaultSettings);
     setSliderAttrForTest(testSettings);
     classViewMarkers.update(testSettings);
     $elemMarkers = classViewMarkers['_$elemMarkers'];
   });
 
   afterEach(() => {
-    testSettings = $.extend({}, initSettings, defaultSettings);
+    testSettings = $.extend({}, InitSettings, defaultSettings);
   });
 
   test('Checking the "_init" method', () => {

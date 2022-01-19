@@ -1,5 +1,5 @@
 // prettier-ignore
-const keysWatchList: { [key: string]: string[] } = {
+const KeysWatchList: { [key: string]: string[] } = {
   changedValue: [
     'initValueFirst',
     'initValueSecond',
@@ -61,4 +61,4 @@ const keysWatchList: { [key: string]: string[] } = {
   showScale: ['initAutoScaleCreation', 'checkingStepSizeForScale', 'initScaleAdjustment'],
 };
 
-export default keysWatchList;
+export default KeysWatchList;

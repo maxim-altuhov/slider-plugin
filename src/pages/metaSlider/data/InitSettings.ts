@@ -1,4 +1,4 @@
-const initSettings: IPluginOptions = {
+const InitSettings: IPluginOptions = {
   key: '',
   $selector: $(),
   $elemSlider: $(),
@@ -44,4 +44,4 @@ const initSettings: IPluginOptions = {
   valuesAsPercentageArray: [],
 };
 
-export default initSettings;
+export default InitSettings;

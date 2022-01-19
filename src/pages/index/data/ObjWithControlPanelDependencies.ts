@@ -3,7 +3,7 @@ type TypeObjWithDependencies = {
   isReverseDependency: boolean;
 };
 
-const objWithControlPanelDependencies: { [key: string]: TypeObjWithDependencies } = {
+const ObjWithControlPanelDependencies: { [key: string]: TypeObjWithDependencies } = {
   isRange: {
     checkingOptions: ['initValueFirst'],
     isReverseDependency: true,
@@ -45,4 +45,4 @@ const objWithControlPanelDependencies: { [key: string]: TypeObjWithDependencies 
   },
 };
 
-export default objWithControlPanelDependencies;
+export default ObjWithControlPanelDependencies;

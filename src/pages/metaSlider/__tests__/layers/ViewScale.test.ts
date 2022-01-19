@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 import ViewSlider from '../../layers/ViewSlider';
 import ViewScale from '../../layers/ViewScale';
-import initSettings from '../../data/initSettings';
+import InitSettings from '../../data/InitSettings';
 import * as makeThrottlingHandler from '../../utils/makeThrottlingHandler';
 
 jest.mock('../../utils/createUniqueID');
@@ -56,7 +56,7 @@ describe('Checking the "ViewScale" layer', () => {
   let sliderID: string | undefined;
 
   beforeAll(() => {
-    testSettings = $.extend({}, initSettings, defaultSettings);
+    testSettings = $.extend({}, InitSettings, defaultSettings);
     classViewScale.update(testSettings);
     $selector = classViewScale['_$selector'];
     $elemSlider = classViewScale['_$elemSlider'];
@@ -67,7 +67,7 @@ describe('Checking the "ViewScale" layer', () => {
   });
 
   afterEach(() => {
-    testSettings = $.extend({}, initSettings, defaultSettings);
+    testSettings = $.extend({}, InitSettings, defaultSettings);
     jest.restoreAllMocks();
   });
 

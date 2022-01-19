@@ -1,14 +1,14 @@
-import objWithControlPanelDependencies from '../data/objWithControlPanelDependencies';
+import ObjWithControlPanelDependencies from '../data/ObjWithControlPanelDependencies';
+import KeysWatchList from '../data/KeysWatchList';
 import propertyList from '../data/propertyList';
-import keysWatchList from '../data/keysWatchList';
 
 class ControlPanel {
   readonly propertyList = propertyList;
   private _$panelSelector: JQuery;
   private _$sliderSelector: JQuery;
   private _selectorsObj: { [key: string]: JQuery } = {};
-  private _objWithControlPanelDependencies = objWithControlPanelDependencies;
-  private _keysWatchList = keysWatchList;
+  private _objWithControlPanelDependencies = ObjWithControlPanelDependencies;
+  private _keysWatchList = KeysWatchList;
 
   constructor(panelSelector: string, sliderSelector: string) {
     this.watchTheSlider = this.watchTheSlider.bind(this);
