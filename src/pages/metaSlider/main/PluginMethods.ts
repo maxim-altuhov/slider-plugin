@@ -28,7 +28,7 @@ const PluginMethods: IPluginMethods = {
           }
 
           if (key === 'customValues' && !Array.isArray(settings[key])) {
-            throw new Error('The slider`s "customValues" property should be passed as an array');
+            throw new Error('The slider`s "customValues" property should be passed as an array.');
           }
         });
       }
