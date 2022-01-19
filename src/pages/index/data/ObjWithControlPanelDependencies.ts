@@ -1,8 +1,3 @@
-type TypeObjWithDependencies = {
-  checkingOptions: string[];
-  isReverseDependency: boolean;
-};
-
 const ObjWithControlPanelDependencies: { [key: string]: TypeObjWithDependencies } = {
   isRange: {
     checkingOptions: ['initValueFirst'],

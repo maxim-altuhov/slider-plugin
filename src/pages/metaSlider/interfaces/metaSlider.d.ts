@@ -5,12 +5,12 @@
 interface IPluginOptions {
   [key: string]: any;
   key: string;
-  $selector: JQuery;
-  $elemSlider: JQuery;
-  $sliderProgress: JQuery;
-  $elemMarkers: JQuery;
-  $elemScale: JQuery;
-  $elemThumbs: JQuery;
+  $selector: JQuery<HTMLElement>;
+  $elemSlider: JQuery<HTMLElement>;
+  $sliderProgress: JQuery<HTMLElement>;
+  $elemMarkers: JQuery<HTMLElement>;
+  $elemScale: JQuery<HTMLElement>;
+  $elemThumbs: JQuery<HTMLElement>;
   mainColor: string;
   secondColor: string;
   colorMarker: string;
@@ -51,14 +51,18 @@ interface IPluginOptions {
 
 interface IPluginMethods {
   [key: string]: any;
-  init(this: JQuery, settings?: object): JQuery;
-  setProp(this: JQuery, prop: string, value: string | number | (string | number)[]): JQuery;
-  getProp(this: JQuery, prop: string): string | number | (string | number)[];
-  getOptionsObj(this: JQuery): IPluginOptions;
-  getCurrentValues(this: JQuery): string[] | number[];
-  destroy(this: JQuery): JQuery;
-  subscribe(this: JQuery, observer: Function): void;
-  unsubscribe(this: JQuery, observer: Function): void;
+  init(this: JQuery<HTMLElement>, settings?: object & { [key: string]: any }): JQuery<HTMLElement>;
+  setProp(
+    this: JQuery<HTMLElement>,
+    prop: string,
+    value: string | number | (string | number)[],
+  ): JQuery<HTMLElement>;
+  getProp(this: JQuery<HTMLElement>, prop: string): string | number | (string | number)[];
+  getOptionsObj(this: JQuery<HTMLElement>): IPluginOptions;
+  getCurrentValues(this: JQuery<HTMLElement>): string[] | number[];
+  destroy(this: JQuery<HTMLElement>): JQuery<HTMLElement>;
+  subscribe(this: JQuery<HTMLElement>, observer: Function): void;
+  unsubscribe(this: JQuery<HTMLElement>, observer: Function): void;
 }
 
 interface IErrMessage {
