@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/dot-notation */
+// The tests uses the 'any' type in jest.spyOn so that private methods of the class can be tested
 import InitSettings from '../../data/InitSettings';
 import ViewSlider from '../../layers/ViewSlider';
 import Model from '../../layers/Model';
@@ -65,6 +66,7 @@ describe('Checking the "Model" layer', () => {
     expect(classModel.notify).toHaveBeenCalledWith(classModel.opt);
   });
 
+  // The test uses the @ts-ignore rule so that a fake event can be passed to the test method
   test.each`
     checkingValue | expected | isVertical | onlyReturn
     ${50}         | ${50}    | ${false}   | ${true}
@@ -635,6 +637,10 @@ describe('Checking the "Model" layer', () => {
     },
   );
 
+  /**
+   * The test uses the @ts-ignore rule so that the implementation
+   * can be correctly replaced in the method under test
+   */
   test.each`
     key                        | valFirst | valSec  | min   | max    | range    | customVal
     ${'init'}                  | ${10}    | ${50}   | ${0}  | ${100} | ${true}  | ${[]}

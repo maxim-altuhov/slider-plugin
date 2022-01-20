@@ -53,7 +53,7 @@ class ViewSlider extends Observer {
     if (minAndMaxVerifKeys) this._setMinAndMaxVal(options);
   }
 
-  renderSlider($initSelector: JQuery) {
+  renderSlider($initSelector: JQuery<HTMLElement>) {
     const sliderID = createUniqueID();
 
     if (this._$selector.length === 0) {

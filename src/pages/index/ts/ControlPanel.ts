@@ -4,9 +4,9 @@ import propertyList from '../data/propertyList';
 
 class ControlPanel {
   readonly propertyList = propertyList;
-  private _$panelSelector: JQuery;
-  private _$sliderSelector: JQuery;
-  private _selectorsObj: { [key: string]: JQuery } = {};
+  private _$panelSelector: JQuery<HTMLElement>;
+  private _$sliderSelector: JQuery<HTMLElement>;
+  private _selectorsObj: { [key: string]: JQuery<HTMLElement> } = {};
   private _objWithControlPanelDependencies = ObjWithControlPanelDependencies;
   private _keysWatchList = KeysWatchList;
 

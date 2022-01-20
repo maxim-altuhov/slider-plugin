@@ -3,6 +3,8 @@ import makeThrottlingHandler from '../../utils/makeThrottlingHandler';
 document.body.innerHTML = '<button id="click-btn"></button>';
 
 const TIMEOUT_MS = 5000;
+
+// I use the any type so that it is possible to pass any arguments to the called functions
 const testFn = jest.fn((arg?: any) => arg);
 let timer: NodeJS.Timeout;
 

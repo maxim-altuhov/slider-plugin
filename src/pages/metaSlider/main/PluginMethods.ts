@@ -45,7 +45,7 @@ const PluginMethods: IPluginMethods = {
       presenter.setObservers();
       model.init();
 
-      this.data('metaSlider', { model, view, presenter });
+      this.data('metaSlider', { model });
     }
 
     return this;

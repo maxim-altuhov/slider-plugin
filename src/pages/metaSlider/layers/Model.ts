@@ -5,7 +5,7 @@ class Model extends Observer {
   errorEvent = new Observer();
   private _listSavedStatus: { [index: string]: boolean | string } = {};
 
-  constructor(selector: JQuery, options: IPluginOptions) {
+  constructor(selector: JQuery<HTMLElement>, options: IPluginOptions) {
     super();
     this.opt = options;
     this.opt.$selector = selector;

@@ -1,4 +1,5 @@
 import Model from '../../layers/Model';
+import Presenter from '../../layers/Presenter';
 import PluginMethods from '../../main/PluginMethods';
 import InitSettings from '../../data/InitSettings';
 import limitedProp from '../../data/limitedProp';
@@ -6,6 +7,12 @@ import limitedProp from '../../data/limitedProp';
 jest.mock('../../layers/View');
 jest.mock('../../layers/Presenter');
 jest.spyOn(Model.prototype, 'init').mockImplementation(() => 'init');
+const mockRenderSlider = jest
+  .spyOn(Presenter.prototype, 'renderSlider')
+  .mockImplementation(() => 'renderSlider');
+const mockSetObservers = jest
+  .spyOn(Presenter.prototype, 'setObservers')
+  .mockImplementation(() => 'setObservers');
 
 document.body.innerHTML = '<div id="fake-selector"></div>';
 const $initSelector = $('#fake-selector');
@@ -34,17 +41,15 @@ describe('Checking the methods of the metaSlider plugin', () => {
     expect($initSelector.data('metaSlider')).toBeUndefined();
 
     PluginMethods.init.call($initSelector, testSettings);
-    const { model, presenter } = $initSelector.data('metaSlider');
+    const { model } = $initSelector.data('metaSlider');
 
     expect(PluginMethods.init).toHaveBeenCalledWith(testSettings);
     expect(PluginMethods.init).toHaveReturnedWith($initSelector);
     expect(model.init).toHaveBeenCalled();
-    expect(presenter.renderSlider).toHaveBeenCalledWith($initSelector);
-    expect(presenter.setObservers).toHaveBeenCalled();
+    expect(mockRenderSlider).toHaveBeenCalledWith($initSelector);
+    expect(mockSetObservers).toHaveBeenCalled();
     expect($initSelector.data('metaSlider')).toBeDefined();
     expect($initSelector.data('metaSlider')).toHaveProperty('model');
-    expect($initSelector.data('metaSlider')).toHaveProperty('view');
-    expect($initSelector.data('metaSlider')).toHaveProperty('presenter');
   });
 
   test('Checking the "init" method => The selector for initializing the slider must be unique on the page', () => {

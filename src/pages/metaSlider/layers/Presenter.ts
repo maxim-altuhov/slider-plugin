@@ -5,7 +5,7 @@ class Presenter {
   constructor(private _view: View, private _model: Model) {}
 
   // The initial render of the slider and its main elements is the main View
-  renderSlider(initSelector: JQuery) {
+  renderSlider(initSelector: JQuery<HTMLElement>) {
     this._view.renderSlider(initSelector);
   }
 

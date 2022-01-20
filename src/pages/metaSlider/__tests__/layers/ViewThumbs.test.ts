@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/dot-notation */
+// The tests uses the 'any' type in jest.spyOn so that private methods of the class can be tested
 import ViewSlider from '../../layers/ViewSlider';
 import ViewThumbs from '../../layers/ViewThumbs';
 import InitSettings from '../../data/InitSettings';

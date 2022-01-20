@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/dot-notation */
-// The test uses the 'any' type in jest.spyOn so that private methods of the class can be tested
+// The tests uses the 'any' type in jest.spyOn so that private methods of the class can be tested
 import Model from '../../metaSlider/layers/Model';
 import '../../metaSlider/metaSlider';
 import ControlPanel from '../ts/ControlPanel';

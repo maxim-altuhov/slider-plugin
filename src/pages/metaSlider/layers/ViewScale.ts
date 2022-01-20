@@ -7,8 +7,8 @@ class ViewScale extends Observer {
   private _$elemScale = $();
   private _$elemScalePoints = $();
   private _scalePointsSize = 0;
-  private _mapSkipScalePoints: Map<number, JQuery[]> = new Map();
-  private _skipScalePointsArray: JQuery[] = [];
+  private _mapSkipScalePoints: Map<number, JQuery<HTMLElement>[]> = new Map();
+  private _skipScalePointsArray: JQuery<HTMLElement>[] = [];
   private _isFirstInit = true;
 
   update(options: IPluginOptions) {
