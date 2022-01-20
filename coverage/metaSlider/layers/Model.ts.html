@@ -526,7 +526,11 @@
 <a name='L467'></a><a href='#L467'>467</a>
 <a name='L468'></a><a href='#L468'>468</a>
 <a name='L469'></a><a href='#L469'>469</a>
-<a name='L470'></a><a href='#L470'>470</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">5x</span>
+<a name='L470'></a><a href='#L470'>470</a>
+<a name='L471'></a><a href='#L471'>471</a>
+<a name='L472'></a><a href='#L472'>472</a>
+<a name='L473'></a><a href='#L473'>473</a>
+<a name='L474'></a><a href='#L474'>474</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -667,6 +671,7 @@
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -730,6 +735,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">64x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">64x</span>
@@ -835,6 +841,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">8x</span>
@@ -944,6 +951,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">11x</span>
@@ -1135,13 +1143,14 @@ class Model extends Observer {
   private _calcStepAsPercentage() {
     const { key } = this.opt;
 &nbsp;
+    // prettier-ignore
     const calcStepAsPercentVerifKeys =
-      key === 'init' ||
-      key === 'step' ||
-      key === 'maxValue' ||
-      key === 'minValue' ||
-      key === 'customValues' ||
-      key === 'numberOfDecimalPlaces';
+      key === 'init'
+      || key === 'step'
+      || key === 'maxValue'
+      || key === 'minValue'
+      || key === 'customValues'
+      || key === 'numberOfDecimalPlaces';
 &nbsp;
     if (calcStepAsPercentVerifKeys) {
       const { maxValue, minValue, step } = this.opt;
@@ -1200,14 +1209,15 @@ class Model extends Observer {
   private _checkingNumberOfDecimalPlaces() {
     const { key, calcNumberOfDecimalPlaces } = this.opt;
 &nbsp;
+    // prettier-ignore
     const calcNumberVerifKeys =
-      key === 'init' ||
-      key === 'calcNumberOfDecimalPlaces' ||
-      key === 'initValueFirst' ||
-      key === 'initValueSecond' ||
-      key === 'minValue' ||
-      key === 'maxValue' ||
-      key === 'step';
+      key === 'init'
+      || key === 'calcNumberOfDecimalPlaces'
+      || key === 'initValueFirst'
+      || key === 'initValueSecond'
+      || key === 'minValue'
+      || key === 'maxValue'
+      || key === 'step';
 &nbsp;
     if (calcNumberVerifKeys &amp;&amp; calcNumberOfDecimalPlaces) this._getNumberOfDecimalPlaces();
 &nbsp;
@@ -1245,10 +1255,10 @@ class Model extends Observer {
 &nbsp;
     // prettier-ignore
     const verifKeys =
-      key === 'init' ||
-      key === 'minValue' ||
-      key === 'maxValue' ||
-      key === 'numberOfDecimalPlaces';
+      key === 'init'
+      || key === 'minValue'
+      || key === 'maxValue'
+      || key === 'numberOfDecimalPlaces';
 &nbsp;
     if (verifKeys) {
       this.opt.minValue = Number(minValue.toFixed(numberOfDecimalPlaces));
@@ -1305,14 +1315,15 @@ class Model extends Observer {
       initAutoScaleCreation,
     } = this.opt;
 &nbsp;
+    // prettier-ignore
     const initVerifKeys =
-      key === 'init' ||
-      key === 'initAutoScaleCreation' ||
-      key === 'step' ||
-      key === 'stepSizeForScale' ||
-      key === 'maxValue' ||
-      key === 'minValue' ||
-      key === 'numberOfDecimalPlaces';
+      key === 'init'
+      || key === 'initAutoScaleCreation'
+      || key === 'step'
+      || key === 'stepSizeForScale'
+      || key === 'maxValue'
+      || key === 'minValue'
+      || key === 'numberOfDecimalPlaces';
 &nbsp;
     const differenceMinAndMax = maxValue - minValue;
 &nbsp;
@@ -1414,16 +1425,17 @@ class Model extends Observer {
       customValues,
     } = this.opt;
 &nbsp;
+    // prettier-ignore
     const verifKeys =
-      key === 'init' ||
-      key === 'initValueFirst' ||
-      key === 'initValueSecond' ||
-      key === 'minValue' ||
-      key === 'maxValue' ||
-      key === 'isRange' ||
-      key === 'step' ||
-      key === 'numberOfDecimalPlaces' ||
-      key === 'customValues';
+      key === 'init'
+      || key === 'initValueFirst'
+      || key === 'initValueSecond'
+      || key === 'minValue'
+      || key === 'maxValue'
+      || key === 'isRange'
+      || key === 'step'
+      || key === 'numberOfDecimalPlaces'
+      || key === 'customValues';
 &nbsp;
     const firstValueIsIncorrect = initValueFirst &gt; maxValue || initValueFirst &lt; minValue;
     const secondValueIsIncorrect = initValueSecond &gt; maxValue || initValueSecond &lt; minValue;
@@ -1471,7 +1483,7 @@ export default Model;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Thu Jan 20 2022 07:08:46 GMT+0300 (Москва, стандартное время)
+                at Thu Jan 20 2022 20:02:50 GMT+0300 (Москва, стандартное время)
             </div>
         </div>
         <script src="../../prettify.js"></script>

@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">7.69% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>1/13</span>
+                <span class='fraction'>13/13</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/1</span>
+                <span class='fraction'>1/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/7</span>
+                <span class='fraction'>7/7</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">8.33% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>1/12</span>
+                <span class='fraction'>12/12</span>
             </div>
         
             
@@ -55,7 +55,7 @@
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
         </p>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -108,31 +108,31 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -141,12 +141,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -155,45 +155,45 @@
 import View from './View';
 &nbsp;
 class Presenter {
-<span class="fstat-no" title="function not covered" >  constructor(private <span class="cstat-no" title="statement not covered" >_</span>view: View,</span> private <span class="cstat-no" title="statement not covered" >_model: Model)</span> {}
+  constructor(private _view: View, private _model: Model) {}
 &nbsp;
   // The initial render of the slider and its main elements is the main View
-<span class="fstat-no" title="function not covered" >  renderSlider(</span>initSelector: JQuery) {
-<span class="cstat-no" title="statement not covered" >    this._view.renderSlider(initSelector);</span>
+  renderSlider(initSelector: JQuery&lt;HTMLElement&gt;) {
+    this._view.renderSlider(initSelector);
   }
 &nbsp;
   // Adding methods to the Observer
-<span class="fstat-no" title="function not covered" >  setObservers(</span>) {
-<span class="cstat-no" title="statement not covered" >    this._model.subscribe(this.updateViews.bind(this));</span>
-<span class="cstat-no" title="statement not covered" >    this._model.errorEvent.subscribe(this.renderError.bind(this));</span>
+  setObservers() {
+    this._model.subscribe(this.updateViews.bind(this));
+    this._model.errorEvent.subscribe(this.renderError.bind(this));
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    this._getView('viewSlider').subscribe(this.calcTargetValue.bind(this));</span>
-<span class="cstat-no" title="statement not covered" >    this._getView('viewThumbs').subscribe(this.calcTargetValue.bind(this));</span>
-<span class="cstat-no" title="statement not covered" >    this._getView('viewScale').subscribe(this.calcTargetValue.bind(this));</span>
+    this._getView('viewSlider').subscribe(this.calcTargetValue.bind(this));
+    this._getView('viewThumbs').subscribe(this.calcTargetValue.bind(this));
+    this._getView('viewScale').subscribe(this.calcTargetValue.bind(this));
   }
 &nbsp;
   // Passing new data from the model and updating the view and subview
-<span class="fstat-no" title="function not covered" >  updateViews(</span>options: IPluginOptions) {
-<span class="cstat-no" title="statement not covered" >    this._view.update(options);</span>
+  updateViews(options: IPluginOptions) {
+    this._view.update(options);
   }
 &nbsp;
   // Error output if there are incorrect values in the slider settings
-<span class="fstat-no" title="function not covered" >  renderError(</span>message: string, options: IPluginOptions) {
-<span class="cstat-no" title="statement not covered" >    this._getView('viewError').renderError(message, options);</span>
+  renderError(message: string, options: IPluginOptions) {
+    this._getView('viewError').renderError(message, options);
   }
 &nbsp;
   // Calling a method in the model to calculate the values of the thumbs slider positions
-<span class="fstat-no" title="function not covered" >  calcTargetValue(</span>
+  calcTargetValue(
     event: (Event &amp; { clientY: number; clientX: number }) | null,
     initValue?: number,
-    onlyReturn = <span class="branch-0 cbranch-no" title="branch not covered" >false,</span>
+    onlyReturn = false,
   ) {
-<span class="cstat-no" title="statement not covered" >    this._model.calcTargetValue(event, initValue, onlyReturn);</span>
+    this._model.calcTargetValue(event, initValue, onlyReturn);
   }
 &nbsp;
   // Getting the desired subview via the main View
-  private <span class="fstat-no" title="function not covered" >_getView(</span>viewName: string) {
-<span class="cstat-no" title="statement not covered" >    return this._view.viewList[viewName];</span>
+  private _getView(viewName: string) {
+    return this._view.viewList[viewName];
   }
 }
 &nbsp;
@@ -205,7 +205,7 @@ export default Presenter;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Wed Jan 19 2022 19:35:56 GMT+0300 (Москва, стандартное время)
+                at Thu Jan 20 2022 14:10:01 GMT+0300 (Москва, стандартное время)
             </div>
         </div>
         <script src="../prettify.js"></script>

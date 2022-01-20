@@ -45,6 +45,7 @@
     "fsd/split-conditionals": "error",
     "lines-between-class-members": "off",
     "@typescript-eslint/lines-between-class-members": ["error", "off", { "exceptAfterOverload": true }],
-    "no-underscore-dangle": ["off"]
+    "no-underscore-dangle": ["off"],
+    "operator-linebreak": ["error", "after", { "overrides": { "||": "before", "&&": "before", "?": "before", ":": "before" } }]
   }
 }

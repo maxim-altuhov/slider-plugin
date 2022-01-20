@@ -143,18 +143,15 @@ describe('Checking the "ViewScale" layer', () => {
   test('Checking the "_createScale" method => option "initAutoScaleCreation"', () => {
     testSettings.key = 'initAutoScaleCreation';
     testSettings.initAutoScaleCreation = false;
+    testSettings.stepSizeForScale = null;
+    testSettings.step = 1;
     const { maxValue, minValue } = testSettings;
     classViewScale.update(testSettings);
 
     const $elemScalePoints = classViewScale['_$elemScalePoints'];
     let scalePointCounter = 0;
 
-    for (
-      let currentValue = minValue;
-      currentValue <= maxValue;
-      currentValue += testSettings.stepSizeForScale || 0
-    ) {
-      expect(testSettings.stepSizeForScale).not.toBe(0);
+    for (let currentValue = minValue; currentValue <= maxValue; currentValue += testSettings.step) {
       expect($elemScalePoints.eq(scalePointCounter).attr('data-value')).toBe(String(currentValue));
       expect($elemScalePoints.eq(scalePointCounter).text()).toBe(String(currentValue));
 

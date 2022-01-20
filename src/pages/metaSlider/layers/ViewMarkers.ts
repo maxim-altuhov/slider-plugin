@@ -11,29 +11,31 @@ class ViewMarkers {
 
     const { key } = options;
 
+    // prettier-ignore
     const setValueVerifKeys =
-      key === 'init' ||
-      key === 'changedValue' ||
-      key === 'initValueFirst' ||
-      key === 'initValueSecond' ||
-      key === 'customValues' ||
-      key === 'preFix' ||
-      key === 'postFix' ||
-      key === 'calcNumberOfDecimalPlaces' ||
-      key === 'numberOfDecimalPlaces' ||
-      key === 'initFormatted' ||
-      key === 'isRange' ||
-      key === 'minValue' ||
-      key === 'maxValue' ||
-      key === 'step';
+      key === 'init'
+      || key === 'changedValue'
+      || key === 'initValueFirst'
+      || key === 'initValueSecond'
+      || key === 'customValues'
+      || key === 'preFix'
+      || key === 'postFix'
+      || key === 'calcNumberOfDecimalPlaces'
+      || key === 'numberOfDecimalPlaces'
+      || key === 'initFormatted'
+      || key === 'isRange'
+      || key === 'minValue'
+      || key === 'maxValue'
+      || key === 'step';
 
+    // prettier-ignore
     const styleVerifKeys =
-      key === 'init' ||
-      key === 'showMarkers' ||
-      key === 'mainColor' ||
-      key === 'colorMarker' ||
-      key === 'colorTextForMarker' ||
-      key === 'colorBorderForMarker';
+      key === 'init'
+      || key === 'showMarkers'
+      || key === 'mainColor'
+      || key === 'colorMarker'
+      || key === 'colorTextForMarker'
+      || key === 'colorBorderForMarker';
 
     if (setValueVerifKeys) this._setValueInMarkers(options);
     if (styleVerifKeys) this._setStyleForMarkers(options);

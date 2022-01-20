@@ -5,16 +5,20 @@ import ControlPanel from './ts/ControlPanel';
 import './index.scss';
 
 $(() => {
-  const controlPanel1 = new ControlPanel('#config-slider-1', '#slider-1');
-  const controlPanel2 = new ControlPanel('#config-slider-2', '#slider-2');
-  const controlPanel3 = new ControlPanel('#config-slider-3', '#slider-3');
-  const controlPanel4 = new ControlPanel('#config-slider-4', '#slider-4');
+  const $slider1 = $('#slider-1');
+  const $slider2 = $('#slider-2');
+  const $slider3 = $('#slider-3');
+  const $slider4 = $('#slider-4');
+  const controlPanel1 = new ControlPanel($('#config-slider-1'), $slider1);
+  const controlPanel2 = new ControlPanel($('#config-slider-2'), $slider2);
+  const controlPanel3 = new ControlPanel($('#config-slider-3'), $slider3);
+  const controlPanel4 = new ControlPanel($('#config-slider-4'), $slider4);
 
-  $('#slider-1').metaSlider({
+  $slider1.metaSlider({
     step: 5,
   });
 
-  $('#slider-2').metaSlider({
+  $slider2.metaSlider({
     mainColor: '#ffb13c',
     secondColor: '#fbd3b0',
     colorForScale: '#814100',
@@ -26,7 +30,7 @@ $(() => {
     initValueSecond: 3,
   });
 
-  $('#slider-3').metaSlider({
+  $slider3.metaSlider({
     mainColor: 'red',
     minValue: -50,
     maxValue: 50,
@@ -36,7 +40,7 @@ $(() => {
     postFix: ' °C',
   });
 
-  $('#slider-4').metaSlider({
+  $slider4.metaSlider({
     mainColor: '#47a947',
     minValue: 0,
     maxValue: 1000,

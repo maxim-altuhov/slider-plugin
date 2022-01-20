@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">5.17% </span>
+                <span class="strong">8.62% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>3/58</span>
+                <span class='fraction'>5/58</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">7.14% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/14</span>
+                <span class='fraction'>1/14</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">5.76% </span>
+                <span class="strong">9.61% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>3/52</span>
+                <span class='fraction'>5/52</span>
             </div>
         
             
@@ -208,23 +208,27 @@
 <a name='L149'></a><a href='#L149'>149</a>
 <a name='L150'></a><a href='#L150'>150</a>
 <a name='L151'></a><a href='#L151'>151</a>
-<a name='L152'></a><a href='#L152'>152</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L152'></a><a href='#L152'>152</a>
+<a name='L153'></a><a href='#L153'>153</a>
+<a name='L154'></a><a href='#L154'>154</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -362,9 +366,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import makeThrottlingHandler from '../utils/makeThrottlingHandler';
 import Observer from '../patterns/Observer';
 &nbsp;
-<span class="fstat-no" title="function not covered" >class V</span>iewThumbs extends Observer {
-  private <span class="cstat-no" title="statement not covered" >_$elemThumbs = $();</span>
-  private <span class="cstat-no" title="statement not covered" >_isFirstInit = true;</span>
+class ViewThumbs extends Observer {
+  private _$elemThumbs = $();
+  private _isFirstInit = true;
 &nbsp;
 <span class="fstat-no" title="function not covered" >  update(</span>options: IPluginOptions) {
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (this._isFirstInit) {</span>
@@ -374,24 +378,26 @@ import Observer from '../patterns/Observer';
 &nbsp;
     const { key } = <span class="cstat-no" title="statement not covered" >options;</span>
 &nbsp;
+    // prettier-ignore
     const setValueVerifKeys =
-<span class="cstat-no" title="statement not covered" >      key === 'init' ||</span>
-      key === 'changedValue' ||
-      key === 'initValueFirst' ||
-      key === 'initValueSecond' ||
-      key === 'customValues' ||
-      key === 'calcNumberOfDecimalPlaces' ||
-      key === 'numberOfDecimalPlaces' ||
-      key === 'isRange' ||
-      key === 'minValue' ||
-      key === 'maxValue' ||
-      key === 'step';
+<span class="cstat-no" title="statement not covered" >      key === 'init'</span>
+      || key === 'changedValue'
+      || key === 'initValueFirst'
+      || key === 'initValueSecond'
+      || key === 'customValues'
+      || key === 'calcNumberOfDecimalPlaces'
+      || key === 'numberOfDecimalPlaces'
+      || key === 'isRange'
+      || key === 'minValue'
+      || key === 'maxValue'
+      || key === 'step';
 &nbsp;
+    // prettier-ignore
     const styleVerifKeys =
-<span class="cstat-no" title="statement not covered" >      key === 'init' ||</span>
-      key === 'mainColor' ||
-      key === 'colorThumb' ||
-      key === 'colorBorderForThumb';
+<span class="cstat-no" title="statement not covered" >      key === 'init'</span>
+      || key === 'mainColor'
+      || key === 'colorThumb'
+      || key === 'colorBorderForThumb';
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (setValueVerifKeys) <span class="cstat-no" title="statement not covered" >this._setValueInThumbs(options);</span></span>
 <span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (styleVerifKeys) <span class="cstat-no" title="statement not covered" >this._setStyleForThumbs(options);</span></span>
@@ -463,10 +469,10 @@ import Observer from '../patterns/Observer';
 &nbsp;
     // prettier-ignore
     const configEventCode = 
-<span class="cstat-no" title="statement not covered" >      code === 'ArrowLeft' ||</span>
-      code === 'ArrowRight' ||
-      code === 'ArrowUp' ||
-      code === 'ArrowDown';
+<span class="cstat-no" title="statement not covered" >      code === 'ArrowLeft'</span>
+      || code === 'ArrowRight'
+      || code === 'ArrowUp'
+      || code === 'ArrowDown';
 &nbsp;
     const $target = <span class="cstat-no" title="statement not covered" >$(target);</span>
 &nbsp;
@@ -517,7 +523,7 @@ export default ViewThumbs;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Wed Jan 19 2022 19:35:56 GMT+0300 (Москва, стандартное время)
+                at Thu Jan 20 2022 14:10:01 GMT+0300 (Москва, стандартное время)
             </div>
         </div>
         <script src="../prettify.js"></script>

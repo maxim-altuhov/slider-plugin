@@ -138,13 +138,14 @@ class Model extends Observer {
   private _calcStepAsPercentage() {
     const { key } = this.opt;
 
+    // prettier-ignore
     const calcStepAsPercentVerifKeys =
-      key === 'init' ||
-      key === 'step' ||
-      key === 'maxValue' ||
-      key === 'minValue' ||
-      key === 'customValues' ||
-      key === 'numberOfDecimalPlaces';
+      key === 'init'
+      || key === 'step'
+      || key === 'maxValue'
+      || key === 'minValue'
+      || key === 'customValues'
+      || key === 'numberOfDecimalPlaces';
 
     if (calcStepAsPercentVerifKeys) {
       const { maxValue, minValue, step } = this.opt;
@@ -203,14 +204,15 @@ class Model extends Observer {
   private _checkingNumberOfDecimalPlaces() {
     const { key, calcNumberOfDecimalPlaces } = this.opt;
 
+    // prettier-ignore
     const calcNumberVerifKeys =
-      key === 'init' ||
-      key === 'calcNumberOfDecimalPlaces' ||
-      key === 'initValueFirst' ||
-      key === 'initValueSecond' ||
-      key === 'minValue' ||
-      key === 'maxValue' ||
-      key === 'step';
+      key === 'init'
+      || key === 'calcNumberOfDecimalPlaces'
+      || key === 'initValueFirst'
+      || key === 'initValueSecond'
+      || key === 'minValue'
+      || key === 'maxValue'
+      || key === 'step';
 
     if (calcNumberVerifKeys && calcNumberOfDecimalPlaces) this._getNumberOfDecimalPlaces();
 
@@ -248,10 +250,10 @@ class Model extends Observer {
 
     // prettier-ignore
     const verifKeys =
-      key === 'init' ||
-      key === 'minValue' ||
-      key === 'maxValue' ||
-      key === 'numberOfDecimalPlaces';
+      key === 'init'
+      || key === 'minValue'
+      || key === 'maxValue'
+      || key === 'numberOfDecimalPlaces';
 
     if (verifKeys) {
       this.opt.minValue = Number(minValue.toFixed(numberOfDecimalPlaces));
@@ -308,14 +310,15 @@ class Model extends Observer {
       initAutoScaleCreation,
     } = this.opt;
 
+    // prettier-ignore
     const initVerifKeys =
-      key === 'init' ||
-      key === 'initAutoScaleCreation' ||
-      key === 'step' ||
-      key === 'stepSizeForScale' ||
-      key === 'maxValue' ||
-      key === 'minValue' ||
-      key === 'numberOfDecimalPlaces';
+      key === 'init'
+      || key === 'initAutoScaleCreation'
+      || key === 'step'
+      || key === 'stepSizeForScale'
+      || key === 'maxValue'
+      || key === 'minValue'
+      || key === 'numberOfDecimalPlaces';
 
     const differenceMinAndMax = maxValue - minValue;
 
@@ -417,16 +420,17 @@ class Model extends Observer {
       customValues,
     } = this.opt;
 
+    // prettier-ignore
     const verifKeys =
-      key === 'init' ||
-      key === 'initValueFirst' ||
-      key === 'initValueSecond' ||
-      key === 'minValue' ||
-      key === 'maxValue' ||
-      key === 'isRange' ||
-      key === 'step' ||
-      key === 'numberOfDecimalPlaces' ||
-      key === 'customValues';
+      key === 'init'
+      || key === 'initValueFirst'
+      || key === 'initValueSecond'
+      || key === 'minValue'
+      || key === 'maxValue'
+      || key === 'isRange'
+      || key === 'step'
+      || key === 'numberOfDecimalPlaces'
+      || key === 'customValues';
 
     const firstValueIsIncorrect = initValueFirst > maxValue || initValueFirst < minValue;
     const secondValueIsIncorrect = initValueSecond > maxValue || initValueSecond < minValue;

@@ -19,21 +19,22 @@ class ViewScale extends Observer {
 
     const { key } = options;
 
+    // prettier-ignore
     const renderScaleVerifKeys =
-      key === 'init' ||
-      key === 'showScale' ||
-      key === 'initAutoScaleCreation' ||
-      key === 'step' ||
-      key === 'stepSizeForScale' ||
-      key === 'minValue' ||
-      key === 'maxValue' ||
-      key === 'calcNumberOfDecimalPlaces' ||
-      key === 'numberOfDecimalPlaces' ||
-      key === 'customValues' ||
-      key === 'initFormatted' ||
-      key === 'preFix' ||
-      key === 'postFix' ||
-      key === 'initScaleAdjustment';
+      key === 'init'
+      || key === 'showScale'
+      || key === 'initAutoScaleCreation'
+      || key === 'step'
+      || key === 'stepSizeForScale'
+      || key === 'minValue'
+      || key === 'maxValue'
+      || key === 'calcNumberOfDecimalPlaces'
+      || key === 'numberOfDecimalPlaces'
+      || key === 'customValues'
+      || key === 'initFormatted'
+      || key === 'preFix'
+      || key === 'postFix'
+      || key === 'initScaleAdjustment';
 
     // prettier-ignore
     const setEventResizeVerifKeys = key === 'init' || key === 'showScale' || key === 'initScaleAdjustment';

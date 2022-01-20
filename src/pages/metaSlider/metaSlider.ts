@@ -3,7 +3,6 @@ import PluginMethods from './main/PluginMethods';
 import './metaSlider.scss';
 
 (($) => {
-  // We call the desired plugin method, check the presence and type of the argument being passed
   $.fn.metaSlider = function (initParam, ...prop) {
     if (typeof initParam === 'string' && PluginMethods[initParam]) {
       return PluginMethods[initParam].apply(this, prop);

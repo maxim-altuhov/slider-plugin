@@ -30,9 +30,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">98.5% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>66/67</span>
+                <span class='fraction'>67/67</span>
             </div>
         
             
@@ -311,7 +311,8 @@
 <a name='L252'></a><a href='#L252'>252</a>
 <a name='L253'></a><a href='#L253'>253</a>
 <a name='L254'></a><a href='#L254'>254</a>
-<a name='L255'></a><a href='#L255'>255</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">6x</span>
+<a name='L255'></a><a href='#L255'>255</a>
+<a name='L256'></a><a href='#L256'>256</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -333,6 +334,7 @@
 <span class="cline-any cline-yes">19x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">19x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -395,27 +397,27 @@
 <span class="cline-any cline-yes">15x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">15x</span>
-<span class="cline-any cline-yes">80x</span>
-<span class="cline-any cline-yes">80x</span>
+<span class="cline-any cline-yes">83x</span>
+<span class="cline-any cline-yes">83x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">80x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">80x</span>
+<span class="cline-any cline-yes">83x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">83x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">15x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">15x</span>
-<span class="cline-any cline-yes">80x</span>
-<span class="cline-any cline-yes">80x</span>
+<span class="cline-any cline-yes">15x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">80x</span>
-<span class="cline-any cline-yes">80x</span>
-<span class="cline-any cline-yes">80x</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">83x</span>
+<span class="cline-any cline-yes">83x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">83x</span>
+<span class="cline-any cline-yes">83x</span>
+<span class="cline-any cline-yes">83x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">15x</span>
@@ -427,7 +429,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">87x</span>
+<span class="cline-any cline-yes">90x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -550,7 +552,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">15x</span>
-<span class="cline-any cline-yes">80x</span>
+<span class="cline-any cline-yes">83x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -586,21 +588,22 @@ class ViewScale extends Observer {
 &nbsp;
     const { key } = options;
 &nbsp;
+    // prettier-ignore
     const renderScaleVerifKeys =
-      key === 'init' ||
-      key === 'showScale' ||
-      key === 'initAutoScaleCreation' ||
-      key === 'step' ||
-      key === 'stepSizeForScale' ||
-      key === 'minValue' ||
-      key === 'maxValue' ||
-      key === 'calcNumberOfDecimalPlaces' ||
-      key === 'numberOfDecimalPlaces' ||
-      key === 'customValues' ||
-      key === 'initFormatted' ||
-      key === 'preFix' ||
-      key === 'postFix' ||
-      key === 'initScaleAdjustment';
+      key === 'init'
+      || key === 'showScale'
+      || key === 'initAutoScaleCreation'
+      || key === 'step'
+      || key === 'stepSizeForScale'
+      || key === 'minValue'
+      || key === 'maxValue'
+      || key === 'calcNumberOfDecimalPlaces'
+      || key === 'numberOfDecimalPlaces'
+      || key === 'customValues'
+      || key === 'initFormatted'
+      || key === 'preFix'
+      || key === 'postFix'
+      || key === 'initScaleAdjustment';
 &nbsp;
     // prettier-ignore
     const setEventResizeVerifKeys = key === 'init' || key === 'showScale' || key === 'initScaleAdjustment';
@@ -642,7 +645,7 @@ class ViewScale extends Observer {
       } = options;
 &nbsp;
       // prettier-ignore
-      const stepSizeValue = initAutoScaleCreation ? step : (stepSizeForScale ?? <span class="branch-1 cbranch-no" title="branch not covered" >step)</span>;
+      const stepSizeValue = initAutoScaleCreation ? step : (stepSizeForScale ?? step);
       const isCustomValue = customValues.length &gt; 0;
       const $fragmentWithScale = $(document.createDocumentFragment());
 &nbsp;
@@ -826,7 +829,7 @@ export default ViewScale;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Thu Jan 20 2022 07:08:46 GMT+0300 (Москва, стандартное время)
+                at Thu Jan 20 2022 20:02:50 GMT+0300 (Москва, стандартное время)
             </div>
         </div>
         <script src="../../prettify.js"></script>

@@ -51,9 +51,10 @@ describe('Checking the "Presenter" layer', () => {
   });
 
   test('Initializing the "calcTargetValue" method', () => {
+    const INIT_VALUE = 50;
     model.calcTargetValue = jest.fn();
-    presenter.calcTargetValue(null, 50);
+    presenter.calcTargetValue(null, INIT_VALUE);
 
-    expect(model.calcTargetValue).toHaveBeenCalledWith(null, 50, false);
+    expect(model.calcTargetValue).toHaveBeenCalledWith(null, INIT_VALUE, false);
   });
 });

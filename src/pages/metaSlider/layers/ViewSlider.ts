@@ -17,34 +17,36 @@ class ViewSlider extends Observer {
 
     const { key } = options;
 
+    // prettier-ignore
     const setValueVerifKeys =
-      key === 'init' ||
-      key === 'showBackground' ||
-      key === 'mainColor' ||
-      key === 'changedValue' ||
-      key === 'initValueFirst' ||
-      key === 'initValueSecond' ||
-      key === 'isRange' ||
-      key === 'minValue' ||
-      key === 'maxValue' ||
-      key === 'customValues' ||
-      key === 'step' ||
-      key === 'calcNumberOfDecimalPlaces' ||
-      key === 'numberOfDecimalPlaces';
+      key === 'init'
+      || key === 'showBackground'
+      || key === 'mainColor'
+      || key === 'changedValue'
+      || key === 'initValueFirst'
+      || key === 'initValueSecond'
+      || key === 'isRange'
+      || key === 'minValue'
+      || key === 'maxValue'
+      || key === 'customValues'
+      || key === 'step'
+      || key === 'calcNumberOfDecimalPlaces'
+      || key === 'numberOfDecimalPlaces';
 
+    // prettier-ignore
     const autoMarginVerifKeys =
-      key === 'init' ||
-      key === 'initAutoMargins' ||
-      key === 'showMarkers' ||
-      key === 'showScale' ||
-      key === 'isVertical';
+      key === 'init'
+      || key === 'initAutoMargins'
+      || key === 'showMarkers'
+      || key === 'showScale'
+      || key === 'isVertical';
 
     // prettier-ignore
     const minAndMaxVerifKeys =
-      key === 'init' ||
-      key === 'minValue' ||
-      key === 'maxValue' ||
-      key === 'customValues';
+      key === 'init'
+      || key === 'minValue'
+      || key === 'maxValue'
+      || key === 'customValues';
 
     if (setValueVerifKeys) this._setBackgroundTheRange(options);
     if (key === 'secondColor' || key === 'init') this._setBackgroundForSlider(options);

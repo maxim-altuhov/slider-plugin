@@ -10,11 +10,11 @@ class ControlPanel {
   private _objWithControlPanelDependencies = ObjWithControlPanelDependencies;
   private _keysWatchList = KeysWatchList;
 
-  constructor(panelSelector: string, sliderSelector: string) {
+  constructor($panelSelector: JQuery<HTMLElement>, $sliderSelector: JQuery<HTMLElement>) {
     this.watchTheSlider = this.watchTheSlider.bind(this);
     this._handleInputChange = this._handleInputChange.bind(this);
-    this._$panelSelector = $(panelSelector);
-    this._$sliderSelector = $(sliderSelector);
+    this._$panelSelector = $panelSelector;
+    this._$sliderSelector = $sliderSelector;
 
     this._getSelectors();
   }

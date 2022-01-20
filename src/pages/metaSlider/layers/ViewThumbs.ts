@@ -13,24 +13,26 @@ class ViewThumbs extends Observer {
 
     const { key } = options;
 
+    // prettier-ignore
     const setValueVerifKeys =
-      key === 'init' ||
-      key === 'changedValue' ||
-      key === 'initValueFirst' ||
-      key === 'initValueSecond' ||
-      key === 'customValues' ||
-      key === 'calcNumberOfDecimalPlaces' ||
-      key === 'numberOfDecimalPlaces' ||
-      key === 'isRange' ||
-      key === 'minValue' ||
-      key === 'maxValue' ||
-      key === 'step';
+      key === 'init'
+      || key === 'changedValue'
+      || key === 'initValueFirst'
+      || key === 'initValueSecond'
+      || key === 'customValues'
+      || key === 'calcNumberOfDecimalPlaces'
+      || key === 'numberOfDecimalPlaces'
+      || key === 'isRange'
+      || key === 'minValue'
+      || key === 'maxValue'
+      || key === 'step';
 
+    // prettier-ignore
     const styleVerifKeys =
-      key === 'init' ||
-      key === 'mainColor' ||
-      key === 'colorThumb' ||
-      key === 'colorBorderForThumb';
+      key === 'init'
+      || key === 'mainColor'
+      || key === 'colorThumb'
+      || key === 'colorBorderForThumb';
 
     if (setValueVerifKeys) this._setValueInThumbs(options);
     if (styleVerifKeys) this._setStyleForThumbs(options);
@@ -102,10 +104,10 @@ class ViewThumbs extends Observer {
 
     // prettier-ignore
     const configEventCode = 
-      code === 'ArrowLeft' ||
-      code === 'ArrowRight' ||
-      code === 'ArrowUp' ||
-      code === 'ArrowDown';
+      code === 'ArrowLeft'
+      || code === 'ArrowRight'
+      || code === 'ArrowUp'
+      || code === 'ArrowDown';
 
     const $target = $(target);
 
