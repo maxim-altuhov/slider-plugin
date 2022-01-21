@@ -9,7 +9,6 @@ let pluginOptions: IPluginOptions;
 
 const PluginMethods: IPluginMethods = {
   init(settings) {
-    // If the slider is not initialized yet
     const data = this.data('metaSlider');
 
     if (!data) {
@@ -20,6 +19,8 @@ const PluginMethods: IPluginMethods = {
       }
 
       if (settings) {
+        const KEY_CUSTOM_VALUES = 'customValues';
+
         Object.keys(settings).forEach((key) => {
           if (TypeSettings[key] && typeof settings[key] !== TypeSettings[key]) {
             throw new Error(
@@ -27,8 +28,8 @@ const PluginMethods: IPluginMethods = {
             );
           }
 
-          if (key === 'customValues' && !Array.isArray(settings[key])) {
-            throw new Error('The slider`s "customValues" property should be passed as an array.');
+          if (key === KEY_CUSTOM_VALUES && !Array.isArray(settings[key])) {
+            throw new Error('The slider\'s "customValues" property should be passed as an array.');
           }
         });
       }
@@ -56,7 +57,7 @@ const PluginMethods: IPluginMethods = {
     if (!limitedProp.includes(prop) && prop in pluginOptions) {
       const { model } = this.data('metaSlider');
 
-      if (value === undefined) throw new Error('The value parameter cannot be omitted.');
+      if (value === undefined) throw new Error(`The value property '${prop}' cannot be omitted.`);
 
       model.opt[prop] = value;
       model.opt.key = prop;

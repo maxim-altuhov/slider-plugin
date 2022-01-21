@@ -66,6 +66,7 @@ describe('Checking the methods of the metaSlider plugin', () => {
 
   test.each`
     testProp            | incorrectType      | expected
+    ${'initValueFirst'} | ${{ a: 'a' }}      | ${'number'}
     ${'initValueFirst'} | ${'incorrectType'} | ${'number'}
     ${'mainColor'}      | ${12345}           | ${'string'}
     ${'isRange'}        | ${'incorrectType'} | ${'boolean'}
@@ -73,14 +74,15 @@ describe('Checking the methods of the metaSlider plugin', () => {
   `(
     'Checking by type the correctness of the properties passed in the slider parameters => testProp = $testProp',
     ({ testProp, incorrectType, expected }) => {
+      const KEY_CUSTOM_VALUES = 'customValues';
       const settings = {
         [testProp]: incorrectType,
       };
 
-      if (testProp === 'customValues') {
+      if (testProp === KEY_CUSTOM_VALUES) {
         expect(() => {
           PluginMethods.init.call($initSelector, settings);
-        }).toThrow('The slider`s "customValues" property should be passed as an array.');
+        }).toThrow('The slider\'s "customValues" property should be passed as an array.');
       } else {
         expect(() => {
           PluginMethods.init.call($initSelector, settings);
@@ -94,27 +96,30 @@ describe('Checking the methods of the metaSlider plugin', () => {
    * the error output when passing incorrect arguments to the "setProp" method
    */
   test('Checking the "setProp" method', () => {
-    const fakeProp = 'fakePropName';
+    const FAKE_PROP = 'fakePropName';
+    const TEST_PROP = 'mainColor';
+    const TEST_VALUE = 'red';
+
     PluginMethods.init.call($initSelector, testSettings);
     const { model } = $initSelector.data('metaSlider');
     jest.spyOn(model, 'update').mockImplementation(() => 'update');
     jest.spyOn(PluginMethods, 'setProp');
 
-    PluginMethods.setProp.call($initSelector, 'mainColor', 'red');
+    PluginMethods.setProp.call($initSelector, TEST_PROP, TEST_VALUE);
 
-    expect(model.opt.mainColor).toBe('red');
-    expect(model.opt.key).toBe('mainColor');
+    expect(model.opt.mainColor).toBe(TEST_VALUE);
+    expect(model.opt.key).toBe(TEST_PROP);
     expect(model.update).toHaveBeenCalled();
     expect(PluginMethods.setProp).toHaveReturnedWith($initSelector);
 
     expect(() => {
-      PluginMethods.setProp.call($initSelector, 'fakePropName', 'red');
-    }).toThrow(`The '${fakeProp}' property does not exist.`);
+      PluginMethods.setProp.call($initSelector, FAKE_PROP, TEST_VALUE);
+    }).toThrow(`The '${FAKE_PROP}' property does not exist.`);
 
     expect(() => {
       // @ts-ignore
-      PluginMethods.setProp.call($initSelector, 'mainColor');
-    }).toThrow('The value parameter cannot be omitted.');
+      PluginMethods.setProp.call($initSelector, TEST_PROP);
+    }).toThrow(`The value property '${TEST_PROP}' cannot be omitted.`);
 
     limitedProp.forEach((prop) => {
       expect(() => {
@@ -124,8 +129,8 @@ describe('Checking the methods of the metaSlider plugin', () => {
   });
 
   test('Checking the "getProp" method', () => {
+    const FAKE_METHOD_NAME = 'fakeMethodName';
     jest.spyOn(PluginMethods, 'getProp');
-    const fakeMethodName = 'fakeMethodName';
 
     PluginMethods.init.call($initSelector, testSettings);
     PluginMethods.getProp.call($initSelector, 'customValues');
@@ -133,8 +138,8 @@ describe('Checking the methods of the metaSlider plugin', () => {
     expect(PluginMethods.getProp).toHaveReturnedWith(testSettings.customValues);
 
     expect(() => {
-      PluginMethods.getProp.call($initSelector, fakeMethodName);
-    }).toThrow(`The '${fakeMethodName}' property does not exist.`);
+      PluginMethods.getProp.call($initSelector, FAKE_METHOD_NAME);
+    }).toThrow(`The '${FAKE_METHOD_NAME}' property does not exist.`);
   });
 
   test('Checking the "getOptionsObj" method', () => {

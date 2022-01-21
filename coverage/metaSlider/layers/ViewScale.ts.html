@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>106/106</span>
+                <span class='fraction'>105/105</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>67/67</span>
+                <span class='fraction'>47/47</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>103/103</span>
+                <span class='fraction'>102/102</span>
             </div>
         
             
@@ -324,31 +324,31 @@
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">19x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">19x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">19x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">19x</span>
@@ -579,6 +579,26 @@ class ViewScale extends Observer {
   private _mapSkipScalePoints: Map&lt;number, JQuery&lt;HTMLElement&gt;[]&gt; = new Map();
   private _skipScalePointsArray: JQuery&lt;HTMLElement&gt;[] = [];
   private _isFirstInit = true;
+  private _verifKeysObj = {
+    renderScaleKeys: [
+      'init',
+      'showScale',
+      'initAutoScaleCreation',
+      'step',
+      'stepSizeForScale',
+      'minValue',
+      'maxValue',
+      'calcNumberOfDecimalPlaces',
+      'numberOfDecimalPlaces',
+      'customValues',
+      'initFormatted',
+      'preFix',
+      'postFix',
+      'initScaleAdjustment',
+    ],
+    setStyleKeys: ['init', 'colorForScale', 'showScale'],
+    setEventResizeKeys: ['init', 'showScale', 'initScaleAdjustment'],
+  };
 &nbsp;
   update(options: IPluginOptions) {
     if (this._isFirstInit) {
@@ -587,36 +607,16 @@ class ViewScale extends Observer {
     }
 &nbsp;
     const { key } = options;
+    const { renderScaleKeys, setStyleKeys, setEventResizeKeys } = this._verifKeysObj;
 &nbsp;
-    // prettier-ignore
-    const renderScaleVerifKeys =
-      key === 'init'
-      || key === 'showScale'
-      || key === 'initAutoScaleCreation'
-      || key === 'step'
-      || key === 'stepSizeForScale'
-      || key === 'minValue'
-      || key === 'maxValue'
-      || key === 'calcNumberOfDecimalPlaces'
-      || key === 'numberOfDecimalPlaces'
-      || key === 'customValues'
-      || key === 'initFormatted'
-      || key === 'preFix'
-      || key === 'postFix'
-      || key === 'initScaleAdjustment';
-&nbsp;
-    // prettier-ignore
-    const setEventResizeVerifKeys = key === 'init' || key === 'showScale' || key === 'initScaleAdjustment';
-    const styleVerifKeys = key === 'init' || key === 'colorForScale' || key === 'showScale';
-&nbsp;
-    if (renderScaleVerifKeys) {
+    if (renderScaleKeys.includes(key)) {
       this._createScale(options);
       this._checkingScaleSize(options);
 &nbsp;
-      if (setEventResizeVerifKeys) this._setEventResize(options);
+      if (setEventResizeKeys.includes(key)) this._setEventResize(options);
     }
 &nbsp;
-    if (styleVerifKeys) this._setStyleForScale(options);
+    if (setStyleKeys.includes(key)) this._setStyleForScale(options);
   }
 &nbsp;
   private _init(options: IPluginOptions) {
@@ -829,7 +829,7 @@ export default ViewScale;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Thu Jan 20 2022 20:02:50 GMT+0300 (Москва, стандартное время)
+                at Fri Jan 21 2022 16:17:42 GMT+0300 (Москва, стандартное время)
             </div>
         </div>
         <script src="../../prettify.js"></script>

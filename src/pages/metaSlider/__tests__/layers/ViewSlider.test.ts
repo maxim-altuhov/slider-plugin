@@ -36,6 +36,7 @@ describe('Checking the "ViewSlider" layer. State before first initialization the
     expect(notInitViewSlider['_$elemThumbs']).toHaveLength(0);
     expect(notInitViewSlider['_$elemMarkers']).toHaveLength(0);
     expect(notInitViewSlider['_isFirstInit']).toBe(true);
+    expect(notInitViewSlider['_verifKeysObj']).toBeDefined();
   });
 });
 

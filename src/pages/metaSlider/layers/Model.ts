@@ -88,11 +88,15 @@ class Model extends Observer {
     const { initValuesArray, isRange } = this.opt;
     const { activeThumb } = this._listSavedStatus;
     const averageValue = (initValuesArray[0] + initValuesArray[1]) / 2;
+    const currentActiveThumb = {
+      FIRST: 'first',
+      SECOND: 'second',
+    };
 
     if (targetValue === averageValue) {
-      if (activeThumb === 'first') {
+      if (activeThumb === currentActiveThumb.FIRST) {
         initValuesArray[0] = targetValue;
-      } else if (activeThumb === 'second') {
+      } else if (activeThumb === currentActiveThumb.SECOND) {
         initValuesArray[1] = targetValue;
       } else {
         initValuesArray[0] = targetValue;
@@ -137,17 +141,16 @@ class Model extends Observer {
 
   private _calcStepAsPercentage() {
     const { key } = this.opt;
+    const listVerifKeys = [
+      'init',
+      'step',
+      'maxValue',
+      'minValue',
+      'customValues',
+      'numberOfDecimalPlaces',
+    ];
 
-    // prettier-ignore
-    const calcStepAsPercentVerifKeys =
-      key === 'init'
-      || key === 'step'
-      || key === 'maxValue'
-      || key === 'minValue'
-      || key === 'customValues'
-      || key === 'numberOfDecimalPlaces';
-
-    if (calcStepAsPercentVerifKeys) {
+    if (listVerifKeys.includes(key)) {
       const { maxValue, minValue, step } = this.opt;
       this.opt.stepAsPercent = 100 / ((maxValue - minValue) / step);
     }
@@ -187,36 +190,43 @@ class Model extends Observer {
   }
 
   private _checkingIsVerticalSlider() {
+    const verifKeysObj = {
+      verticalSliderKeys: ['init', 'isVertical'],
+      autoMarginsKeys: ['init', 'initAutoMargins'],
+    };
     const { key, isVertical, initAutoMargins } = this.opt;
-    const verticalSliderVerifKeys = key === 'init' || key === 'isVertical';
+    const { verticalSliderKeys, autoMarginsKeys } = verifKeysObj;
 
-    if (key === 'init' || key === 'initAutoMargins') {
+    if (autoMarginsKeys.includes(key)) {
       this._listSavedStatus['autoMargins'] = initAutoMargins;
     }
 
-    if (verticalSliderVerifKeys && !isVertical) {
+    if (verticalSliderKeys.includes(key) && !isVertical) {
       this.opt.initAutoMargins = Boolean(this._listSavedStatus['autoMargins']);
     }
 
-    if (verticalSliderVerifKeys && isVertical) this.opt.initAutoMargins = false;
+    if (verticalSliderKeys.includes(key) && isVertical) this.opt.initAutoMargins = false;
   }
 
   private _checkingNumberOfDecimalPlaces() {
+    const verifKeysObj = {
+      getNumberKeys: [
+        'init',
+        'calcNumberOfDecimalPlaces',
+        'initValueFirst',
+        'initValueSecond',
+        'minValue',
+        'maxValue',
+        'step',
+      ],
+      checkNumberKeys: ['init', 'numberOfDecimalPlaces'],
+    };
     const { key, calcNumberOfDecimalPlaces } = this.opt;
+    const { getNumberKeys, checkNumberKeys } = verifKeysObj;
 
-    // prettier-ignore
-    const calcNumberVerifKeys =
-      key === 'init'
-      || key === 'calcNumberOfDecimalPlaces'
-      || key === 'initValueFirst'
-      || key === 'initValueSecond'
-      || key === 'minValue'
-      || key === 'maxValue'
-      || key === 'step';
+    if (getNumberKeys.includes(key) && calcNumberOfDecimalPlaces) this._getNumberOfDecimalPlaces();
 
-    if (calcNumberVerifKeys && calcNumberOfDecimalPlaces) this._getNumberOfDecimalPlaces();
-
-    if (key === 'init' || key === 'numberOfDecimalPlaces') {
+    if (checkNumberKeys.includes(key)) {
       if (this.opt.numberOfDecimalPlaces < 0) this.opt.numberOfDecimalPlaces = 0;
 
       if (!Number.isInteger(this.opt.numberOfDecimalPlaces)) {
@@ -248,14 +258,9 @@ class Model extends Observer {
       numberOfDecimalPlaces,
     } = this.opt;
 
-    // prettier-ignore
-    const verifKeys =
-      key === 'init'
-      || key === 'minValue'
-      || key === 'maxValue'
-      || key === 'numberOfDecimalPlaces';
+    const listVerifKeys = ['init', 'minValue', 'maxValue', 'numberOfDecimalPlaces'];
 
-    if (verifKeys) {
+    if (listVerifKeys.includes(key)) {
       this.opt.minValue = Number(minValue.toFixed(numberOfDecimalPlaces));
       this.opt.maxValue = Number(maxValue.toFixed(numberOfDecimalPlaces));
 
@@ -279,9 +284,10 @@ class Model extends Observer {
       checkingStepSizeForScale,
     } = this.opt;
 
-    const verifKeys = key === 'init' || key === 'showScale';
+    const SHOW_SCALE_KEY = 'showScale';
+    const listVerifKeys = ['init', SHOW_SCALE_KEY];
 
-    if (!showScale && verifKeys) {
+    if (!showScale && listVerifKeys.includes(key)) {
       this._listSavedStatus['initAutoScaleCreation'] = initAutoScaleCreation;
       this._listSavedStatus['initScaleAdjustment'] = initScaleAdjustment;
       this._listSavedStatus['checkingStepSizeForScale'] = checkingStepSizeForScale;
@@ -289,7 +295,7 @@ class Model extends Observer {
       this.opt.initAutoScaleCreation = false;
       this.opt.initScaleAdjustment = false;
       this.opt.checkingStepSizeForScale = false;
-    } else if (showScale && key === 'showScale') {
+    } else if (showScale && key === SHOW_SCALE_KEY) {
       this.opt.initAutoScaleCreation = Boolean(this._listSavedStatus['initAutoScaleCreation']);
       this.opt.initScaleAdjustment = Boolean(this._listSavedStatus['initScaleAdjustment']);
       this.opt.checkingStepSizeForScale = Boolean(
@@ -310,19 +316,19 @@ class Model extends Observer {
       initAutoScaleCreation,
     } = this.opt;
 
-    // prettier-ignore
-    const initVerifKeys =
-      key === 'init'
-      || key === 'initAutoScaleCreation'
-      || key === 'step'
-      || key === 'stepSizeForScale'
-      || key === 'maxValue'
-      || key === 'minValue'
-      || key === 'numberOfDecimalPlaces';
+    const listVerifKeys = [
+      'init',
+      'initAutoScaleCreation',
+      'step',
+      'stepSizeForScale',
+      'maxValue',
+      'minValue',
+      'numberOfDecimalPlaces',
+    ];
 
     const differenceMinAndMax = maxValue - minValue;
 
-    if (initVerifKeys) {
+    if (listVerifKeys.includes(key)) {
       this.opt.step = Number(this.opt.step.toFixed(numberOfDecimalPlaces));
 
       if (this.opt.step <= 0 || this.opt.step > differenceMinAndMax) {
@@ -373,8 +379,9 @@ class Model extends Observer {
 
   private _checkingCustomValues() {
     const { key, customValues } = this.opt;
+    const listVerifKeys = ['init', 'customValues'];
 
-    if (key === 'init' || key === 'customValues') {
+    if (listVerifKeys.includes(key)) {
       // prettier-ignore
       this.opt.customValues = (typeof customValues === 'string') ? customValues.split(',') : customValues;
       this.opt.customValues = this.opt.customValues
@@ -420,23 +427,23 @@ class Model extends Observer {
       customValues,
     } = this.opt;
 
-    // prettier-ignore
-    const verifKeys =
-      key === 'init'
-      || key === 'initValueFirst'
-      || key === 'initValueSecond'
-      || key === 'minValue'
-      || key === 'maxValue'
-      || key === 'isRange'
-      || key === 'step'
-      || key === 'numberOfDecimalPlaces'
-      || key === 'customValues';
+    const listVerifKeys = [
+      'init',
+      'initValueFirst',
+      'initValueSecond',
+      'minValue',
+      'maxValue',
+      'isRange',
+      'step',
+      'numberOfDecimalPlaces',
+      'customValues',
+    ];
 
     const firstValueIsIncorrect = initValueFirst > maxValue || initValueFirst < minValue;
     const secondValueIsIncorrect = initValueSecond > maxValue || initValueSecond < minValue;
     const valuesOverlap = initValueFirst > initValueSecond;
 
-    if (verifKeys) {
+    if (listVerifKeys.includes(key)) {
       if (firstValueIsIncorrect || valuesOverlap) {
         this.opt.initValueFirst = minValue;
         this.errorEvent.notify(errMessage['initValue'], this.opt);

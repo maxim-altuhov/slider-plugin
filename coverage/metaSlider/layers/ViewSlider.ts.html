@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>77/77</span>
+                <span class='fraction'>76/76</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">94.64% </span>
+                <span class="strong">90% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>53/56</span>
+                <span class='fraction'>27/30</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>72/72</span>
+                <span class='fraction'>71/71</span>
             </div>
         
             
@@ -246,10 +246,7 @@
 <a name='L187'></a><a href='#L187'>187</a>
 <a name='L188'></a><a href='#L188'>188</a>
 <a name='L189'></a><a href='#L189'>189</a>
-<a name='L190'></a><a href='#L190'>190</a>
-<a name='L191'></a><a href='#L191'>191</a>
-<a name='L192'></a><a href='#L192'>192</a>
-<a name='L193'></a><a href='#L193'>193</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">10x</span>
+<a name='L190'></a><a href='#L190'>190</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -259,6 +256,27 @@
 <span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">16x</span>
@@ -270,34 +288,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">16x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">16x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">16x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">16x</span>
 <span class="cline-any cline-yes">16x</span>
@@ -451,6 +445,27 @@ class ViewSlider extends Observer {
   private _$elemThumbs = $();
   private _$elemMarkers = $();
   private _isFirstInit = true;
+  private _verifKeysObj = {
+    setBackgroundRangeKeys: [
+      'init',
+      'showBackground',
+      'mainColor',
+      'changedValue',
+      'initValueFirst',
+      'initValueSecond',
+      'isRange',
+      'minValue',
+      'maxValue',
+      'customValues',
+      'step',
+      'calcNumberOfDecimalPlaces',
+      'numberOfDecimalPlaces',
+    ],
+    setBackgroundSliderKeys: ['init', 'secondColor'],
+    setVerticalKeys: ['init', 'isVertical'],
+    setAutoMarginsKeys: ['init', 'initAutoMargins', 'showMarkers', 'showScale', 'isVertical'],
+    setMinAndMaxKeys: ['init', 'minValue', 'maxValue', 'customValues'],
+  };
 &nbsp;
   update(options: IPluginOptions) {
     if (this._isFirstInit) {
@@ -459,43 +474,19 @@ class ViewSlider extends Observer {
     }
 &nbsp;
     const { key } = options;
+    const {
+      setBackgroundRangeKeys,
+      setBackgroundSliderKeys,
+      setVerticalKeys,
+      setAutoMarginsKeys,
+      setMinAndMaxKeys,
+    } = this._verifKeysObj;
 &nbsp;
-    // prettier-ignore
-    const setValueVerifKeys =
-      key === 'init'
-      || key === 'showBackground'
-      || key === 'mainColor'
-      || key === 'changedValue'
-      || key === 'initValueFirst'
-      || key === 'initValueSecond'
-      || key === 'isRange'
-      || key === 'minValue'
-      || key === 'maxValue'
-      || key === 'customValues'
-      || key === 'step'
-      || key === 'calcNumberOfDecimalPlaces'
-      || key === 'numberOfDecimalPlaces';
-&nbsp;
-    // prettier-ignore
-    const autoMarginVerifKeys =
-      key === 'init'
-      || key === 'initAutoMargins'
-      || key === 'showMarkers'
-      || key === 'showScale'
-      || key === 'isVertical';
-&nbsp;
-    // prettier-ignore
-    const minAndMaxVerifKeys =
-      key === 'init'
-      || key === 'minValue'
-      || key === 'maxValue'
-      || key === 'customValues';
-&nbsp;
-    if (setValueVerifKeys) this._setBackgroundTheRange(options);
-    if (key === 'secondColor' || key === 'init') this._setBackgroundForSlider(options);
-    if (key === 'isVertical' || key === 'init') this._setVerticalOrientation(options);
-    if (autoMarginVerifKeys) this._setAutoMargins(options);
-    if (minAndMaxVerifKeys) this._setMinAndMaxVal(options);
+    if (setBackgroundRangeKeys.includes(key)) this._setBackgroundTheRange(options);
+    if (setBackgroundSliderKeys.includes(key)) this._setBackgroundForSlider(options);
+    if (setVerticalKeys.includes(key)) this._setVerticalOrientation(options);
+    if (setAutoMarginsKeys.includes(key)) this._setAutoMargins(options);
+    if (setMinAndMaxKeys.includes(key)) this._setMinAndMaxVal(options);
   }
 &nbsp;
   renderSlider($initSelector: JQuery&lt;HTMLElement&gt;) {
@@ -640,7 +631,7 @@ export default ViewSlider;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Thu Jan 20 2022 20:02:50 GMT+0300 (Москва, стандартное время)
+                at Fri Jan 21 2022 16:17:42 GMT+0300 (Москва, стандартное время)
             </div>
         </div>
         <script src="../../prettify.js"></script>

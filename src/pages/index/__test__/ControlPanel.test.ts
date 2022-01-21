@@ -48,6 +48,7 @@ describe('Checking the "ControlPanel", before first initialization.', () => {
     expect(notInitControlPanel['_selectorsObj']).toBeDefined();
     expect(notInitControlPanel['_objWithControlPanelDependencies']).toBeDefined();
     expect(notInitControlPanel['_keysWatchList']).toBeDefined();
+    expect(notInitControlPanel['_typeInput']).toBeDefined();
     expect(notInitControlPanel['_getSelectors']).toHaveBeenCalled();
 
     mockGetSelectors.mockRestore();
@@ -64,6 +65,10 @@ describe('Checking the "ControlPanel"', () => {
   const objWithControlPanelDependencies = classControlPanel['_objWithControlPanelDependencies'];
   const testSelectorsArr = Object.entries(allSelectorsObj).filter((elem) => elem[1].length > 0);
   const { propertyList } = classControlPanel;
+  const typeInput = {
+    CHECKBOX: 'checkbox',
+    NUMBER: 'number',
+  };
 
   beforeAll(() => {
     classControlPanel.init();
@@ -73,7 +78,7 @@ describe('Checking the "ControlPanel"', () => {
     testSelectorsArr.forEach((currentElem) => {
       const [, $inputSelector] = currentElem;
 
-      if ($inputSelector.attr('type') === 'checkbox') $inputSelector.prop('checked', true);
+      if ($inputSelector.attr('type') === typeInput.CHECKBOX) $inputSelector.prop('checked', true);
       $inputSelector.removeAttr('data-dependency');
       $inputSelector.removeAttr('disabled');
     });
@@ -222,7 +227,7 @@ describe('Checking the "ControlPanel"', () => {
 
     expect($sliderSelector.metaSlider).toHaveBeenCalledWith('getProp', prop);
 
-    if (allSelectorsObj[prop].attr('type') === 'checkbox') {
+    if (allSelectorsObj[prop].attr('type') === typeInput.CHECKBOX) {
       expect(allSelectorsObj[prop].prop('checked')).toBe(currentValue);
     } else {
       expect(allSelectorsObj[prop].val()).toBe(String(currentValue));
@@ -294,11 +299,11 @@ describe('Checking the "ControlPanel"', () => {
   );
 
   test('Checking the "_togglePropDisableForInput" method', () => {
-    const targetProp = 'isVertical';
-    const targetOption = false;
-    classControlPanel['_togglePropDisableForInput'](targetProp, targetOption);
+    const TARGET_PROP = 'isVertical';
+    const TARGET_OPTION = false;
+    classControlPanel['_togglePropDisableForInput'](TARGET_PROP, TARGET_OPTION);
 
-    expect(allSelectorsObj[targetProp].prop('disabled')).toBe(targetOption);
+    expect(allSelectorsObj[TARGET_PROP].prop('disabled')).toBe(TARGET_OPTION);
   });
 
   test.each(['isVertical', 'isRange', 'customValues', 'step'])(
@@ -312,9 +317,9 @@ describe('Checking the "ControlPanel"', () => {
 
       $targetInput.trigger(eventChange);
 
-      if ($targetInput.attr('type') === 'number') {
+      if ($targetInput.attr('type') === typeInput.NUMBER) {
         expect(mockSetProp).toHaveBeenCalledWith(initProp, Number($targetInput.val()));
-      } else if ($targetInput.attr('type') === 'checkbox') {
+      } else if ($targetInput.attr('type') === typeInput.CHECKBOX) {
         expect(mockSetProp).toHaveBeenCalledWith(initProp, $targetInput.prop('checked'));
       } else {
         expect(mockSetProp).toHaveBeenCalledWith(initProp, $targetInput.val());

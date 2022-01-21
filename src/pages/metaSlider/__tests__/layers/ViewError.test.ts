@@ -21,7 +21,6 @@ describe('Checking the "ViewError" layer', () => {
   const classViewError = new ViewError();
   const TEXT_MSG = 'TEXT MESSAGE';
   const NEW_TEXT_MSG = 'NEW TEXT';
-
   const defaultSettings = {
     $selector: $('.fake-selector'),
     $elemSlider: $('.fake-slider'),

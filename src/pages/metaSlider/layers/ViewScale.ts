@@ -10,6 +10,26 @@ class ViewScale extends Observer {
   private _mapSkipScalePoints: Map<number, JQuery<HTMLElement>[]> = new Map();
   private _skipScalePointsArray: JQuery<HTMLElement>[] = [];
   private _isFirstInit = true;
+  private _verifKeysObj = {
+    renderScaleKeys: [
+      'init',
+      'showScale',
+      'initAutoScaleCreation',
+      'step',
+      'stepSizeForScale',
+      'minValue',
+      'maxValue',
+      'calcNumberOfDecimalPlaces',
+      'numberOfDecimalPlaces',
+      'customValues',
+      'initFormatted',
+      'preFix',
+      'postFix',
+      'initScaleAdjustment',
+    ],
+    setStyleKeys: ['init', 'colorForScale', 'showScale'],
+    setEventResizeKeys: ['init', 'showScale', 'initScaleAdjustment'],
+  };
 
   update(options: IPluginOptions) {
     if (this._isFirstInit) {
@@ -18,36 +38,16 @@ class ViewScale extends Observer {
     }
 
     const { key } = options;
+    const { renderScaleKeys, setStyleKeys, setEventResizeKeys } = this._verifKeysObj;
 
-    // prettier-ignore
-    const renderScaleVerifKeys =
-      key === 'init'
-      || key === 'showScale'
-      || key === 'initAutoScaleCreation'
-      || key === 'step'
-      || key === 'stepSizeForScale'
-      || key === 'minValue'
-      || key === 'maxValue'
-      || key === 'calcNumberOfDecimalPlaces'
-      || key === 'numberOfDecimalPlaces'
-      || key === 'customValues'
-      || key === 'initFormatted'
-      || key === 'preFix'
-      || key === 'postFix'
-      || key === 'initScaleAdjustment';
-
-    // prettier-ignore
-    const setEventResizeVerifKeys = key === 'init' || key === 'showScale' || key === 'initScaleAdjustment';
-    const styleVerifKeys = key === 'init' || key === 'colorForScale' || key === 'showScale';
-
-    if (renderScaleVerifKeys) {
+    if (renderScaleKeys.includes(key)) {
       this._createScale(options);
       this._checkingScaleSize(options);
 
-      if (setEventResizeVerifKeys) this._setEventResize(options);
+      if (setEventResizeKeys.includes(key)) this._setEventResize(options);
     }
 
-    if (styleVerifKeys) this._setStyleForScale(options);
+    if (setStyleKeys.includes(key)) this._setStyleForScale(options);
   }
 
   private _init(options: IPluginOptions) {

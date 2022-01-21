@@ -8,6 +8,27 @@ class ViewSlider extends Observer {
   private _$elemThumbs = $();
   private _$elemMarkers = $();
   private _isFirstInit = true;
+  private _verifKeysObj = {
+    setBackgroundRangeKeys: [
+      'init',
+      'showBackground',
+      'mainColor',
+      'changedValue',
+      'initValueFirst',
+      'initValueSecond',
+      'isRange',
+      'minValue',
+      'maxValue',
+      'customValues',
+      'step',
+      'calcNumberOfDecimalPlaces',
+      'numberOfDecimalPlaces',
+    ],
+    setBackgroundSliderKeys: ['init', 'secondColor'],
+    setVerticalKeys: ['init', 'isVertical'],
+    setAutoMarginsKeys: ['init', 'initAutoMargins', 'showMarkers', 'showScale', 'isVertical'],
+    setMinAndMaxKeys: ['init', 'minValue', 'maxValue', 'customValues'],
+  };
 
   update(options: IPluginOptions) {
     if (this._isFirstInit) {
@@ -16,43 +37,19 @@ class ViewSlider extends Observer {
     }
 
     const { key } = options;
+    const {
+      setBackgroundRangeKeys,
+      setBackgroundSliderKeys,
+      setVerticalKeys,
+      setAutoMarginsKeys,
+      setMinAndMaxKeys,
+    } = this._verifKeysObj;
 
-    // prettier-ignore
-    const setValueVerifKeys =
-      key === 'init'
-      || key === 'showBackground'
-      || key === 'mainColor'
-      || key === 'changedValue'
-      || key === 'initValueFirst'
-      || key === 'initValueSecond'
-      || key === 'isRange'
-      || key === 'minValue'
-      || key === 'maxValue'
-      || key === 'customValues'
-      || key === 'step'
-      || key === 'calcNumberOfDecimalPlaces'
-      || key === 'numberOfDecimalPlaces';
-
-    // prettier-ignore
-    const autoMarginVerifKeys =
-      key === 'init'
-      || key === 'initAutoMargins'
-      || key === 'showMarkers'
-      || key === 'showScale'
-      || key === 'isVertical';
-
-    // prettier-ignore
-    const minAndMaxVerifKeys =
-      key === 'init'
-      || key === 'minValue'
-      || key === 'maxValue'
-      || key === 'customValues';
-
-    if (setValueVerifKeys) this._setBackgroundTheRange(options);
-    if (key === 'secondColor' || key === 'init') this._setBackgroundForSlider(options);
-    if (key === 'isVertical' || key === 'init') this._setVerticalOrientation(options);
-    if (autoMarginVerifKeys) this._setAutoMargins(options);
-    if (minAndMaxVerifKeys) this._setMinAndMaxVal(options);
+    if (setBackgroundRangeKeys.includes(key)) this._setBackgroundTheRange(options);
+    if (setBackgroundSliderKeys.includes(key)) this._setBackgroundForSlider(options);
+    if (setVerticalKeys.includes(key)) this._setVerticalOrientation(options);
+    if (setAutoMarginsKeys.includes(key)) this._setAutoMargins(options);
+    if (setMinAndMaxKeys.includes(key)) this._setMinAndMaxVal(options);
   }
 
   renderSlider($initSelector: JQuery<HTMLElement>) {

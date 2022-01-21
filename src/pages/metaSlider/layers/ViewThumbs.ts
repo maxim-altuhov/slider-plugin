@@ -4,6 +4,23 @@ import Observer from '../patterns/Observer';
 class ViewThumbs extends Observer {
   private _$elemThumbs = $();
   private _isFirstInit = true;
+  private _verifKeysObj = {
+    setValueKeys: [
+      'init',
+      'changedValue',
+      'initValueFirst',
+      'initValueSecond',
+      'customValues',
+      'calcNumberOfDecimalPlaces',
+      'numberOfDecimalPlaces',
+      'isRange',
+      'minValue',
+      'maxValue',
+      'step',
+    ],
+    setStyleKeys: ['init', 'mainColor', 'colorThumb', 'colorBorderForThumb'],
+    checkIsRangeKeys: ['init', 'isRange'],
+  };
 
   update(options: IPluginOptions) {
     if (this._isFirstInit) {
@@ -12,31 +29,11 @@ class ViewThumbs extends Observer {
     }
 
     const { key } = options;
+    const { setValueKeys, setStyleKeys, checkIsRangeKeys } = this._verifKeysObj;
 
-    // prettier-ignore
-    const setValueVerifKeys =
-      key === 'init'
-      || key === 'changedValue'
-      || key === 'initValueFirst'
-      || key === 'initValueSecond'
-      || key === 'customValues'
-      || key === 'calcNumberOfDecimalPlaces'
-      || key === 'numberOfDecimalPlaces'
-      || key === 'isRange'
-      || key === 'minValue'
-      || key === 'maxValue'
-      || key === 'step';
-
-    // prettier-ignore
-    const styleVerifKeys =
-      key === 'init'
-      || key === 'mainColor'
-      || key === 'colorThumb'
-      || key === 'colorBorderForThumb';
-
-    if (setValueVerifKeys) this._setValueInThumbs(options);
-    if (styleVerifKeys) this._setStyleForThumbs(options);
-    if (key === 'init' || key === 'isRange') this._checkIsRange(options);
+    if (setValueKeys.includes(key)) this._setValueInThumbs(options);
+    if (setStyleKeys.includes(key)) this._setStyleForThumbs(options);
+    if (checkIsRangeKeys.includes(key)) this._checkIsRange(options);
   }
 
   private _init(options: IPluginOptions) {
@@ -101,23 +98,17 @@ class ViewThumbs extends Observer {
     event: Event & { target: EventTarget; code?: string },
   ) {
     const { code, target } = event;
-
-    // prettier-ignore
-    const configEventCode = 
-      code === 'ArrowLeft'
-      || code === 'ArrowRight'
-      || code === 'ArrowUp'
-      || code === 'ArrowDown';
-
+    const listEventCode = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'];
     const $target = $(target);
 
-    if (configEventCode) {
+    if (code && listEventCode.includes(code)) {
+      event.preventDefault();
+      const [codeLeft, codeRight, codeUp, codeDown] = listEventCode;
       const { step } = options;
       let eventTargetValue = Number($target.attr('data-value'));
 
-      event.preventDefault();
-      if (code === 'ArrowLeft' || code === 'ArrowDown') eventTargetValue -= step;
-      if (code === 'ArrowRight' || code === 'ArrowUp') eventTargetValue += step;
+      if (code === codeLeft || code === codeDown) eventTargetValue -= step;
+      if (code === codeRight || code === codeUp) eventTargetValue += step;
 
       this.notify(event, eventTargetValue);
     }

@@ -9,6 +9,10 @@ class ControlPanel {
   private _selectorsObj: { [key: string]: JQuery<HTMLElement> } = {};
   private _objWithControlPanelDependencies = ObjWithControlPanelDependencies;
   private _keysWatchList = KeysWatchList;
+  private _typeInput = {
+    CHECKBOX: 'checkbox',
+    TEXT: 'text',
+  };
 
   constructor($panelSelector: JQuery<HTMLElement>, $sliderSelector: JQuery<HTMLElement>) {
     this.watchTheSlider = this.watchTheSlider.bind(this);
@@ -53,10 +57,11 @@ class ControlPanel {
    * of the slider properties on each other takes place
    */
   watchTheSlider() {
+    const CHANGE_VALUE_KEY = 'changedValue';
     const key: string = this._$sliderSelector.metaSlider('getProp', 'key');
 
     // Getting the current value of the measured property
-    if (key !== 'changedValue') this._getProp(key);
+    if (key !== CHANGE_VALUE_KEY) this._getProp(key);
 
     // Tracking the property being changed by key
     if (key in this._keysWatchList) {
@@ -105,7 +110,7 @@ class ControlPanel {
     const valueProp = this._$sliderSelector.metaSlider('getProp', prop);
     const $inputTarget = this._selectorsObj[prop];
 
-    if ($inputTarget.attr('type') === 'checkbox') {
+    if ($inputTarget.attr('type') === this._typeInput.CHECKBOX) {
       $inputTarget.prop('checked', valueProp);
     } else {
       $inputTarget.val(valueProp);
@@ -155,7 +160,7 @@ class ControlPanel {
     const $inputTarget = this._selectorsObj[initProp];
     let targetValueInBooleanType;
 
-    if ($inputTarget.attr('type') === 'checkbox') {
+    if ($inputTarget.attr('type') === this._typeInput.CHECKBOX) {
       targetValueInBooleanType = $inputTarget.prop('checked');
     } else {
       targetValueInBooleanType = Boolean($inputTarget.val());
@@ -192,9 +197,9 @@ class ControlPanel {
     const targetProp = $inputTarget.attr('name');
     let targetValue = null;
 
-    if ($inputTarget.attr('type') === 'checkbox') {
+    if ($inputTarget.attr('type') === this._typeInput.CHECKBOX) {
       targetValue = $inputTarget.prop('checked');
-    } else if ($inputTarget.attr('type') === 'text') {
+    } else if ($inputTarget.attr('type') === this._typeInput.TEXT) {
       targetValue = $inputTarget.val();
     } else {
       targetValue = Number($inputTarget.val());

@@ -19,6 +19,7 @@ describe('Checking the "ViewThumbs" layer, before first initialization.', () => 
     expect(notInitViewThumbs.observerList).toHaveLength(0);
     expect(notInitViewThumbs['_$elemThumbs']).toHaveLength(0);
     expect(notInitViewThumbs['_isFirstInit']).toBe(true);
+    expect(notInitViewThumbs['_verifKeysObj']).toBeDefined();
   });
 });
 
@@ -151,20 +152,21 @@ describe('Checking the "ViewThumbs" layer => "update" method', () => {
     (index) => {
       const { initValuesArray, step } = testSettings;
       const mockNotify = jest.spyOn(classViewThumbs, 'notify').mockImplementation();
-      const testKeysArr = ['ArrowUp', 'ArrowRight', 'ArrowDown', 'ArrowLeft'];
+      const listEventCode = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'];
 
-      testKeysArr.forEach((keyCode) => {
-        const eventKeydown = $.Event('keydown', { code: keyCode });
+      listEventCode.forEach((eventCode) => {
+        const [codeLeft, codeRight, codeUp, codeDown] = listEventCode;
+        const eventKeydown = $.Event('keydown', { code: eventCode });
         eventKeydown.preventDefault = jest.fn();
         $elemThumbs.eq(index).trigger(eventKeydown, testSettings);
 
         expect(eventKeydown.preventDefault).toHaveBeenCalled();
 
-        if (keyCode === 'ArrowUp' || keyCode === 'ArrowRight') {
+        if (eventCode === codeUp || eventCode === codeRight) {
           expect(mockNotify).toHaveBeenCalledWith(eventKeydown, initValuesArray[index] + step);
         }
 
-        if (keyCode === 'ArrowDown' || keyCode === 'ArrowLeft') {
+        if (eventCode === codeDown || eventCode === codeLeft) {
           expect(mockNotify).toHaveBeenCalledWith(eventKeydown, initValuesArray[index] - step);
         }
       });

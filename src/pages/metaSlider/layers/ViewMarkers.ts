@@ -2,6 +2,32 @@ class ViewMarkers {
   private _$elemMarkers = $();
   private _$elemThumbs = $();
   private _isFirstInit = true;
+  private _verifKeysObj = {
+    setValueKeys: [
+      'init',
+      'changedValue',
+      'initValueFirst',
+      'initValueSecond',
+      'customValues',
+      'preFix',
+      'postFix',
+      'calcNumberOfDecimalPlaces',
+      'numberOfDecimalPlaces',
+      'initFormatted',
+      'isRange',
+      'minValue',
+      'maxValue',
+      'step',
+    ],
+    setStyleKeys: [
+      'init',
+      'showMarkers',
+      'mainColor',
+      'colorMarker',
+      'colorTextForMarker',
+      'colorBorderForMarker',
+    ],
+  };
 
   update(options: IPluginOptions) {
     if (this._isFirstInit) {
@@ -10,35 +36,10 @@ class ViewMarkers {
     }
 
     const { key } = options;
+    const { setValueKeys, setStyleKeys } = this._verifKeysObj;
 
-    // prettier-ignore
-    const setValueVerifKeys =
-      key === 'init'
-      || key === 'changedValue'
-      || key === 'initValueFirst'
-      || key === 'initValueSecond'
-      || key === 'customValues'
-      || key === 'preFix'
-      || key === 'postFix'
-      || key === 'calcNumberOfDecimalPlaces'
-      || key === 'numberOfDecimalPlaces'
-      || key === 'initFormatted'
-      || key === 'isRange'
-      || key === 'minValue'
-      || key === 'maxValue'
-      || key === 'step';
-
-    // prettier-ignore
-    const styleVerifKeys =
-      key === 'init'
-      || key === 'showMarkers'
-      || key === 'mainColor'
-      || key === 'colorMarker'
-      || key === 'colorTextForMarker'
-      || key === 'colorBorderForMarker';
-
-    if (setValueVerifKeys) this._setValueInMarkers(options);
-    if (styleVerifKeys) this._setStyleForMarkers(options);
+    if (setValueKeys.includes(key)) this._setValueInMarkers(options);
+    if (setStyleKeys.includes(key)) this._setStyleForMarkers(options);
   }
 
   private _init(options: IPluginOptions) {

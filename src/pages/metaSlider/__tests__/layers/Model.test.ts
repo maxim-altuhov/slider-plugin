@@ -160,6 +160,10 @@ describe('Checking the "Model" layer', () => {
 
       classModel['_checkingTargetValue'](checkingValue);
       const statusActiveThumb = classModel['_listSavedStatus']['activeThumb'];
+      const currentActiveThumb = {
+        FIRST: 'first',
+        SECOND: 'second',
+      };
 
       // prettier-ignore
       const { 
@@ -178,9 +182,9 @@ describe('Checking the "Model" layer', () => {
       }
 
       if (checkingValue === averageValue) {
-        if (statusActiveThumb === 'first') {
+        if (statusActiveThumb === currentActiveThumb.FIRST) {
           expect(initValuesArray).toEqual([checkingValue, initValueSecond]);
-        } else if (statusActiveThumb === 'second') {
+        } else if (statusActiveThumb === currentActiveThumb.SECOND) {
           expect(initValuesArray).toEqual([initValueFirst, checkingValue]);
         } else {
           expect(initValuesArray).toEqual([checkingValue, initValueSecond]);
@@ -210,9 +214,8 @@ describe('Checking the "Model" layer', () => {
 
     classModel['_setCurrentValues']();
 
-    // prettier-ignore
-    const { 
-      key, 
+    const {
+      key,
       initValuesArray,
       initValueFirst,
       initValueSecond,
@@ -329,19 +332,21 @@ describe('Checking the "Model" layer', () => {
     numberOfDecimalPlacesCheckingList.forEach((currentNum) => {
       classModel.opt.numberOfDecimalPlaces = currentNum;
 
+      const CONTROL_KEY = 'numberOfDecimalPlaces';
       const { numberOfDecimalPlaces } = classModel.opt;
+      const listVerifKeys = ['init', 'numberOfDecimalPlaces'];
 
       [true, false].forEach((status) => {
         classModel.opt.calcNumberOfDecimalPlaces = status;
 
         classModel['_checkingNumberOfDecimalPlaces']();
 
-        if (key !== 'numberOfDecimalPlaces' && classModel.opt.calcNumberOfDecimalPlaces) {
+        if (key !== CONTROL_KEY && classModel.opt.calcNumberOfDecimalPlaces) {
           expect(classModel['_getNumberOfDecimalPlaces']).toHaveBeenCalled();
         }
       });
 
-      if (key === 'init' || key === 'numberOfDecimalPlaces') {
+      if (listVerifKeys.includes(key)) {
         if (currentNum === 2.5) expect(numberOfDecimalPlaces.toFixed).toHaveBeenCalled();
 
         if (currentNum === -5) {
@@ -446,9 +451,10 @@ describe('Checking the "Model" layer', () => {
         checkingStepSizeForScale,
       } = classModel.opt;
 
-      const verifKeys = key === 'init' || key === 'showScale';
+      const SHOW_SCALE_KEY = 'showScale';
+      const listVerifKeys = ['init', 'showScale'];
 
-      if (!showScale && verifKeys) {
+      if (!showScale && listVerifKeys.includes(key)) {
         expect(initAutoScaleCreation).toBe(false);
         expect(initScaleAdjustment).toBe(false);
         expect(checkingStepSizeForScale).toBe(false);
@@ -456,7 +462,7 @@ describe('Checking the "Model" layer', () => {
         expect(classModel['_listSavedStatus']['initAutoScaleCreation']).toBe(true);
         expect(classModel['_listSavedStatus']['initScaleAdjustment']).toBe(true);
         expect(classModel['_listSavedStatus']['checkingStepSizeForScale']).toBe(false);
-      } else if (showScale && key === 'showScale') {
+      } else if (showScale && key === SHOW_SCALE_KEY) {
         expect(initAutoScaleCreation).toBe(classModel['_listSavedStatus']['initAutoScaleCreation']);
         expect(initScaleAdjustment).toBe(classModel['_listSavedStatus']['initScaleAdjustment']);
         expect(checkingStepSizeForScale).toBe(
@@ -496,7 +502,6 @@ describe('Checking the "Model" layer', () => {
 
       classModel['_checkingStepSize'](fakeErrMessage);
 
-      // prettier-ignore
       const {
         stepSizeForScale: stepScale,
         step,
