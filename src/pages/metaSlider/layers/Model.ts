@@ -159,14 +159,13 @@ class Model extends Observer {
   // Checking incoming slider settings
   private _checkingIncomingProp() {
     const errMessage: IErrMessage = {
-      initValue: `Ошибка во входящих данных для одного или нескольких бегунков слайдера. 
-      Установлено значение по-умолчанию.`,
-      minAndMaxValue: `Max значение установленное для слайдера меньше его Min значения. 
-      Установлено значение по-умолчанию.`,
-      stepSizeForScale: `Установите корректное значение шага для шкалы с делениями. 
-      Установлено ближайщее оптимальное значение.`,
-      step: `Значение шага слайдера не может быть больше разницы между макс. и мин. значением, 
-      а также меньше или равно 0.`,
+      initValue: `An error occurred in the input data for one or more thumbs of the slider.
+        The default value is set.`,
+      minAndMaxValue: `The maximum value set for the slider is less than its minimum value.
+        The default value is set.`,
+      stepSizeForScale: `Set the correct step value for the division scale.
+        The closest optimal value has been set.`,
+      step: 'The slider step value cannot be greater than the difference between max. and min. value, and less than or equal to 0.',
     };
 
     this._checkingIsVerticalSlider();
