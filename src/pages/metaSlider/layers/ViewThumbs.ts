@@ -1,7 +1,6 @@
 import makeThrottlingHandler from '../utils/makeThrottlingHandler';
-import Observer from '../patterns/Observer';
 
-class ViewThumbs extends Observer {
+class ViewThumbs {
   private _$elemThumbs = $();
   private _isFirstInit = true;
   private _verifKeysObj = {
@@ -21,6 +20,8 @@ class ViewThumbs extends Observer {
     setStyleKeys: ['init', 'mainColor', 'colorThumb', 'colorBorderForThumb'],
     checkIsRangeKeys: ['init', 'isRange'],
   };
+
+  constructor(private _view: TypeMainView) {}
 
   update(options: IPluginOptions) {
     if (this._isFirstInit) {
@@ -105,12 +106,12 @@ class ViewThumbs extends Observer {
       event.preventDefault();
       const [codeLeft, codeRight, codeUp, codeDown] = listEventCode;
       const { step } = options;
-      let eventTargetValue = Number($target.attr('data-value'));
+      let targetValue = Number($target.attr('data-value'));
 
-      if (code === codeLeft || code === codeDown) eventTargetValue -= step;
-      if (code === codeRight || code === codeUp) eventTargetValue += step;
+      if (code === codeLeft || code === codeDown) targetValue -= step;
+      if (code === codeRight || code === codeUp) targetValue += step;
 
-      this.notify(event, eventTargetValue);
+      this._view.updateModel(event, targetValue);
     }
   }
 
@@ -130,7 +131,7 @@ class ViewThumbs extends Observer {
 
   // Tracking the movement of thumbs sliders
   private _handleThumbPointermove(event: Event) {
-    this.notify(event);
+    this._view.updateModel(event);
   }
 
   // Tracking the termination of the thumbs sliders

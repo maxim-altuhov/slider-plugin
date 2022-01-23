@@ -1,7 +1,6 @@
 import makeThrottlingHandler from '../utils/makeThrottlingHandler';
-import Observer from '../patterns/Observer';
 
-class ViewScale extends Observer {
+class ViewScale {
   private _$selector = $();
   private _$elemSlider = $();
   private _$elemScale = $();
@@ -30,6 +29,8 @@ class ViewScale extends Observer {
     setStyleKeys: ['init', 'colorForScale', 'showScale'],
     setEventResizeKeys: ['init', 'showScale', 'initScaleAdjustment'],
   };
+
+  constructor(private _view: TypeMainView) {}
 
   update(options: IPluginOptions) {
     if (this._isFirstInit) {
@@ -248,7 +249,7 @@ class ViewScale extends Observer {
     const $target = $(event.target);
     const targetValue = Number($target.attr('data-value'));
 
-    this.notify(event, targetValue);
+    this._view.updateModel(event, targetValue);
   }
 }
 

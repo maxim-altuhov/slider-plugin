@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 // The tests uses the 'any' type in jest.spyOn so that private methods of the class can be tested
+import View from '../../layers/View';
 import InitSettings from '../../data/InitSettings';
 import ViewSlider from '../../layers/ViewSlider';
 import Model from '../../layers/Model';
 
 jest.mock('../../utils/createUniqueID');
-const classViewSlider = new ViewSlider();
+const classMainView = new View();
+const classViewSlider = new ViewSlider(classMainView);
 document.body.innerHTML = '<div id="render-selector"></div>';
 const $selector = $('#render-selector');
 classViewSlider.renderSlider($selector);

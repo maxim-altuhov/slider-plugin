@@ -1,22 +1,23 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 // The tests uses the 'any' type in jest.spyOn so that private methods of the class can be tested
+import View from '../../layers/View';
 import ViewSlider from '../../layers/ViewSlider';
 import ViewThumbs from '../../layers/ViewThumbs';
 import InitSettings from '../../data/InitSettings';
 import * as makeThrottlingHandler from '../../utils/makeThrottlingHandler';
 
 jest.mock('../../utils/createUniqueID');
-const classViewSlider = new ViewSlider();
+const classMainView = new View();
+const classViewSlider = new ViewSlider(classMainView);
 document.body.innerHTML = '<div id="render-selector"></div>';
 const $selector = $('#render-selector');
 classViewSlider.renderSlider($selector);
 
 describe('Checking the "ViewThumbs" layer, before first initialization.', () => {
-  const notInitViewThumbs = new ViewThumbs();
+  const notInitViewThumbs = new ViewThumbs(classMainView);
 
   test('State before first initialization the "update" method', () => {
     expect($selector.html()).toMatchSnapshot();
-    expect(notInitViewThumbs.observerList).toHaveLength(0);
     expect(notInitViewThumbs['_$elemThumbs']).toHaveLength(0);
     expect(notInitViewThumbs['_isFirstInit']).toBe(true);
     expect(notInitViewThumbs['_verifKeysObj']).toBeDefined();
@@ -24,7 +25,7 @@ describe('Checking the "ViewThumbs" layer, before first initialization.', () => 
 });
 
 describe('Checking the "ViewThumbs" layer => "update" method', () => {
-  const classViewThumbs = new ViewThumbs();
+  const classViewThumbs = new ViewThumbs(classMainView);
   const defaultSettings = {
     key: 'init',
     $elemThumbs: $('.js-meta-slider__thumb'),
@@ -151,7 +152,7 @@ describe('Checking the "ViewThumbs" layer => "update" method', () => {
     'Checking the "_setEventsThumbs" method, event "keydown" (index %d) => init _handleThumbKeydown',
     (index) => {
       const { initValuesArray, step } = testSettings;
-      const mockNotify = jest.spyOn(classViewThumbs, 'notify').mockImplementation();
+      const mockUpdateModel = jest.spyOn(classMainView, 'updateModel').mockImplementation();
       const listEventCode = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'];
 
       listEventCode.forEach((eventCode) => {
@@ -163,11 +164,11 @@ describe('Checking the "ViewThumbs" layer => "update" method', () => {
         expect(eventKeydown.preventDefault).toHaveBeenCalled();
 
         if (eventCode === codeUp || eventCode === codeRight) {
-          expect(mockNotify).toHaveBeenCalledWith(eventKeydown, initValuesArray[index] + step);
+          expect(mockUpdateModel).toHaveBeenCalledWith(eventKeydown, initValuesArray[index] + step);
         }
 
         if (eventCode === codeDown || eventCode === codeLeft) {
-          expect(mockNotify).toHaveBeenCalledWith(eventKeydown, initValuesArray[index] - step);
+          expect(mockUpdateModel).toHaveBeenCalledWith(eventKeydown, initValuesArray[index] - step);
         }
       });
     },
@@ -176,7 +177,7 @@ describe('Checking the "ViewThumbs" layer => "update" method', () => {
   test.each([0, 1])(
     'Checking the "_setEventsThumbs" method, event "pointerdown/pointerup" (index %d) => init _handleThumbPointerdown, _handleThumbPointermove, _handleThumbPointerup',
     (index) => {
-      const mockNotify = jest.spyOn(classViewThumbs, 'notify').mockImplementation();
+      const mockUpdateModel = jest.spyOn(classMainView, 'updateModel').mockImplementation();
       const mockMakeThrottlingHandler = jest.spyOn(makeThrottlingHandler, 'default');
       $elemThumbs[index].setPointerCapture = jest.fn();
       const mockSetPointerCapture = $elemThumbs[index].setPointerCapture;
@@ -192,7 +193,7 @@ describe('Checking the "ViewThumbs" layer => "update" method', () => {
 
       expect(mockSetPointerCapture).toHaveBeenCalledWith(eventPointerdown.pointerId);
       expect(mockMakeThrottlingHandler).toHaveBeenCalled();
-      expect(mockNotify).toHaveBeenCalledWith(eventPointermove);
+      expect(mockUpdateModel).toHaveBeenCalledWith(eventPointermove);
 
       jest.clearAllTimers();
 

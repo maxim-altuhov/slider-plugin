@@ -30,7 +30,7 @@ class Model extends Observer {
   // Calculation of thumbs slider position values
   calcTargetValue(
     event: (Event & { clientY: number; clientX: number }) | null,
-    initValue?: number,
+    inputValue?: number,
     onlyReturn = false,
   ): number | null {
     const {
@@ -60,8 +60,8 @@ class Model extends Observer {
       valueInEventPosition = eventPosition - sliderOffset;
     }
 
-    if (initValue !== undefined) {
-      valueAsPercentage = ((initValue - minValue) / (maxValue - minValue)) * 100;
+    if (inputValue !== undefined) {
+      valueAsPercentage = ((inputValue - minValue) / (maxValue - minValue)) * 100;
     } else {
       valueAsPercentage = (valueInEventPosition / sliderSize) * 100;
     }

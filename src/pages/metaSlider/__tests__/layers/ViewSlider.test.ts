@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 // The tests uses the 'any' type in jest.spyOn so that private methods of the class can be tested
+import View from '../../layers/View';
 import ViewSlider from '../../layers/ViewSlider';
 import InitSettings from '../../data/InitSettings';
 import * as createUniqueID from '../../utils/createUniqueID';
 
 const mockCreateUniqueID = jest.spyOn(createUniqueID, 'default').mockImplementation(() => '');
-const classViewSlider = new ViewSlider();
+const classMainView = new View();
+const classViewSlider = new ViewSlider(classMainView);
 const initSelectorName = 'render-selector';
 const scaleSelectorName = '.js-meta-slider__scale';
 const thumbSelectorName = '.js-meta-slider__thumb';
@@ -25,11 +27,10 @@ $(thumbSelectorName).eq(-1).css('height', TEST_HEIGHT_ELEM);
 $(markerSelectorName).eq(-1).css('height', TEST_HEIGHT_ELEM);
 
 describe('Checking the "ViewSlider" layer. State before first initialization the "renderSlider" and "update" method', () => {
-  const notInitViewSlider = new ViewSlider();
+  const notInitViewSlider = new ViewSlider(classMainView);
 
   test('State before first initialization', () => {
     expect($initSelector.html()).toMatchSnapshot();
-    expect(notInitViewSlider.observerList).toHaveLength(0);
     expect(notInitViewSlider['_$selector']).toHaveLength(0);
     expect(notInitViewSlider['_$elemSlider']).toHaveLength(0);
     expect(notInitViewSlider['_$sliderProgress']).toHaveLength(0);
@@ -236,13 +237,13 @@ describe('Checking the "ViewSlider" layer', () => {
   });
 
   test('Checking the "_setEventsSlider" method, event "pointerdown" => _handleSliderPointerdown', () => {
-    const mockNotify = jest.spyOn(classViewSlider, 'notify').mockImplementation();
+    const mockUpdateModel = jest.spyOn(classMainView, 'updateModel').mockImplementation();
     const eventPointerdown = $.Event('pointerdown.slider');
     eventPointerdown.preventDefault = jest.fn();
 
     $elemSlider.trigger(eventPointerdown);
 
     expect(eventPointerdown.preventDefault).toHaveBeenCalled();
-    expect(mockNotify).toHaveBeenCalledWith(eventPointerdown);
+    expect(mockUpdateModel).toHaveBeenCalledWith(eventPointerdown);
   });
 });

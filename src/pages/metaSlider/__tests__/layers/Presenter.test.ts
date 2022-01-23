@@ -23,24 +23,20 @@ describe('Checking the "Presenter" layer', () => {
   test('Initializing the "setObservers" method', () => {
     model.subscribe = jest.fn();
     model.errorEvent.subscribe = jest.fn();
-    presenter['_getView']('viewSlider').subscribe = jest.fn();
-    presenter['_getView']('viewThumbs').subscribe = jest.fn();
-    presenter['_getView']('viewScale').subscribe = jest.fn();
+    view.subscribe = jest.fn();
 
     presenter.setObservers();
 
     expect(model.subscribe).toHaveBeenCalled();
     expect(model.errorEvent.subscribe).toHaveBeenCalled();
-    expect(view.viewList['viewSlider'].subscribe).toHaveBeenCalled();
-    expect(view.viewList['viewThumbs'].subscribe).toHaveBeenCalled();
-    expect(view.viewList['viewScale'].subscribe).toHaveBeenCalled();
+    expect(view.subscribe).toHaveBeenCalled();
   });
 
   test('Initializing the "updateViews" method', () => {
-    view.update = jest.fn();
+    view.updateViews = jest.fn();
     presenter.updateViews(InitSettings);
 
-    expect(view.update).toHaveBeenCalledWith(InitSettings);
+    expect(view.updateViews).toHaveBeenCalledWith(InitSettings);
   });
 
   test('Initializing the "renderError" method', () => {
@@ -50,11 +46,11 @@ describe('Checking the "Presenter" layer', () => {
     expect(view.viewList['viewError'].renderError).toHaveBeenCalledWith('message', InitSettings);
   });
 
-  test('Initializing the "calcTargetValue" method', () => {
-    const INIT_VALUE = 50;
+  test('Initializing the "updateModel" method', () => {
+    const INPUT_VALUE = 50;
     model.calcTargetValue = jest.fn();
-    presenter.calcTargetValue(null, INIT_VALUE);
+    presenter.updateModel(null, INPUT_VALUE);
 
-    expect(model.calcTargetValue).toHaveBeenCalledWith(null, INIT_VALUE, false);
+    expect(model.calcTargetValue).toHaveBeenCalledWith(null, INPUT_VALUE, false);
   });
 });

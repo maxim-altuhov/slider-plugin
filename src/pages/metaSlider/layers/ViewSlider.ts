@@ -1,7 +1,6 @@
 import createUniqueID from '../utils/createUniqueID';
-import Observer from '../patterns/Observer';
 
-class ViewSlider extends Observer {
+class ViewSlider {
   private _$selector = $();
   private _$elemSlider = $();
   private _$sliderProgress = $();
@@ -29,6 +28,8 @@ class ViewSlider extends Observer {
     setAutoMarginsKeys: ['init', 'initAutoMargins', 'showMarkers', 'showScale', 'isVertical'],
     setMinAndMaxKeys: ['init', 'minValue', 'maxValue', 'customValues'],
   };
+
+  constructor(private _view: TypeMainView) {}
 
   update(options: IPluginOptions) {
     if (this._isFirstInit) {
@@ -181,7 +182,7 @@ class ViewSlider extends Observer {
     const $target = $(event.target);
 
     if ($target.hasClass('js-meta-slider')) {
-      this.notify(event);
+      this._view.updateModel(event);
     }
   }
 }

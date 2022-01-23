@@ -1,22 +1,23 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 // The tests uses the 'any' type in jest.spyOn so that private methods of the class can be tested
+import View from '../../layers/View';
 import ViewSlider from '../../layers/ViewSlider';
 import ViewScale from '../../layers/ViewScale';
 import InitSettings from '../../data/InitSettings';
 import * as makeThrottlingHandler from '../../utils/makeThrottlingHandler';
 
 jest.mock('../../utils/createUniqueID');
-const classViewSlider = new ViewSlider();
+const classMainView = new View();
+const classViewSlider = new ViewSlider(classMainView);
 document.body.innerHTML = '<div id="render-selector"></div>';
 const $initSelector = $('#render-selector');
 classViewSlider.renderSlider($initSelector);
 
 describe('Checking the "ViewScale" layer, before first initialization.', () => {
-  const notInitViewScale = new ViewScale();
+  const notInitViewScale = new ViewScale(classMainView);
 
   test('State before first initialization the "update" method', () => {
     expect($initSelector.html()).toMatchSnapshot();
-    expect(notInitViewScale.observerList).toHaveLength(0);
     expect(notInitViewScale['_$selector']).toHaveLength(0);
     expect(notInitViewScale['_$elemSlider']).toHaveLength(0);
     expect(notInitViewScale['_$elemScale']).toHaveLength(0);
@@ -31,7 +32,7 @@ describe('Checking the "ViewScale" layer, before first initialization.', () => {
 
 describe('Checking the "ViewScale" layer', () => {
   const SLIDER_SIZE_PX = 250;
-  const classViewScale = new ViewScale();
+  const classViewScale = new ViewScale(classMainView);
   const defaultSettings = {
     key: 'init',
     $selector: $initSelector,
@@ -395,7 +396,7 @@ describe('Checking the "ViewScale" layer', () => {
   });
 
   test('Checking the "_setEventsScalePoints" method, event "click" => init "_handleScalePointClick"', () => {
-    const mockNotify = jest.spyOn(classViewScale, 'notify').mockImplementation();
+    const mockUpdateModel = jest.spyOn(classMainView, 'updateModel').mockImplementation();
     classViewScale.update(testSettings);
     const $elemScalePoints = classViewScale['_$elemScalePoints'];
 
@@ -409,7 +410,10 @@ describe('Checking the "ViewScale" layer', () => {
       $elemPoint.trigger(eventClick);
 
       expect(eventClick.preventDefault).toHaveBeenCalled();
-      expect(mockNotify).toHaveBeenCalledWith(eventClick, Number($elemPoint.attr('data-value')));
+      expect(mockUpdateModel).toHaveBeenCalledWith(
+        eventClick,
+        Number($elemPoint.attr('data-value')),
+      );
     });
   });
 });
