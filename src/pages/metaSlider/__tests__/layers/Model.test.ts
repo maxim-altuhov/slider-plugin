@@ -70,18 +70,18 @@ describe('Checking the "Model" layer', () => {
 
   // The test uses the @ts-ignore rule so that a fake event can be passed to the test method
   test.each`
-    checkingValue | expected | isVertical | onlyReturn
-    ${50}         | ${50}    | ${false}   | ${true}
-    ${50}         | ${50}    | ${true}    | ${false}
-    ${-50}        | ${0}     | ${false}   | ${false}
-    ${150}        | ${100}   | ${false}   | ${false}
-    ${undefined}  | ${40}    | ${true}    | ${undefined}
-    ${undefined}  | ${59}    | ${false}   | ${undefined}
-    ${-50}        | ${0}     | ${false}   | ${true}
-    ${150}        | ${100}   | ${false}   | ${true}
+    checkingValue | expected | isVertical | onlyReturn   | outerWidth | offsetLeft
+    ${50}         | ${50}    | ${false}   | ${true}      | ${825}     | ${85}
+    ${50}         | ${50}    | ${true}    | ${false}     | ${825}     | ${85}
+    ${-50}        | ${0}     | ${false}   | ${false}     | ${825}     | ${85}
+    ${150}        | ${100}   | ${false}   | ${false}     | ${0}       | ${0}
+    ${undefined}  | ${40}    | ${true}    | ${undefined} | ${825}     | ${85}
+    ${undefined}  | ${59}    | ${false}   | ${undefined} | ${825}     | ${85}
+    ${-50}        | ${0}     | ${false}   | ${true}      | ${825}     | ${85}
+    ${150}        | ${100}   | ${false}   | ${true}      | ${825}     | ${85}
   `(
     'Checking the "calcTargetValue" method => checkingValue: $checkingValue, isVertical: $isVertical, onlyReturn: $onlyReturn',
-    ({ checkingValue, expected, isVertical, onlyReturn }) => {
+    ({ checkingValue, expected, isVertical, onlyReturn, outerWidth, offsetLeft }) => {
       jest.spyOn(classModel, 'calcTargetValue');
       jest.spyOn<Model, any>(classModel, '_checkingTargetValue').mockImplementation();
 
@@ -98,10 +98,10 @@ describe('Checking the "Model" layer', () => {
           y: -288.78125,
           toJSON() {},
         }));
-      const mockOuterWidth = jest.spyOn($.fn, 'outerWidth').mockImplementation(() => 825);
+      const mockOuterWidth = jest.spyOn($.fn, 'outerWidth').mockImplementation(() => outerWidth);
       const mockOffset = jest
         .spyOn($.fn, 'offset')
-        .mockImplementation(() => ({ top: 205, left: 85 }));
+        .mockImplementation(() => ({ top: 205, left: offsetLeft }));
 
       const fakeEvent = $.Event('click', {
         target: classModel.opt.$elemThumbs[0],
@@ -552,6 +552,7 @@ describe('Checking the "Model" layer', () => {
     ${1.2}       | ${2}
     ${3}         | ${4}
     ${5.567}     | ${10}
+    ${-3}        | ${-3}
   `(
     'Checking the "_checkingCorrectStepSizeForScale" method => stepSizeForScale: $stepForScale',
     ({ stepForScale, expected }) => {
@@ -568,7 +569,7 @@ describe('Checking the "Model" layer', () => {
 
       expect(mockIsInteger).toHaveBeenNthCalledWith(1, stepForScale);
 
-      if (!Number.isInteger((maxValue - minValue) / stepForScale)) {
+      if (!Number.isInteger((maxValue - minValue) / stepForScale) && stepForScale > 0) {
         expect(stepSizeForScale).toBe(expected);
 
         expect(mockErrorEvent).toHaveBeenCalledWith(

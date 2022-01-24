@@ -10,21 +10,28 @@ const classMainView = new View();
 const classViewSlider = new ViewSlider(classMainView);
 const initSelectorName = 'render-selector';
 const scaleSelectorName = '.js-meta-slider__scale';
+const scalePointsSelectorName = '.js-meta-slider__scale-point';
 const thumbSelectorName = '.js-meta-slider__thumb';
 const markerSelectorName = '.js-meta-slider__marker';
-const TEST_HEIGHT_ELEM = 20;
-
 const initHTMLBlock = `<div id="${initSelectorName}"></div>`;
-const scalePointHTML = `<button type="button" class="meta-slider__scale-point
-js-meta-slider__scale-point" style="height:${TEST_HEIGHT_ELEM}px"></button>`;
 document.body.innerHTML = initHTMLBlock;
+
+// prettier-ignore
+const scalePointHTML = '<button type="button" class="meta-slider__scale-point js-meta-slider__scale-point"></button>';
 const $initSelector = $(`#${initSelectorName}`);
-
 classViewSlider.renderSlider($initSelector);
-$(scaleSelectorName).append(scalePointHTML);
 
-$(thumbSelectorName).eq(-1).css('height', TEST_HEIGHT_ELEM);
-$(markerSelectorName).eq(-1).css('height', TEST_HEIGHT_ELEM);
+const $initElemScale = $(scaleSelectorName);
+$initElemScale.append(scalePointHTML);
+
+const $initElemThumbs = $(thumbSelectorName);
+const $initElemMarkers = $(markerSelectorName);
+const $initElemScalePoints = $(scalePointsSelectorName);
+
+const TEST_HEIGHT_ELEM = '20px';
+$initElemThumbs.css('height', TEST_HEIGHT_ELEM);
+$initElemMarkers.css('height', TEST_HEIGHT_ELEM);
+$initElemScalePoints.css('height', TEST_HEIGHT_ELEM);
 
 describe('Checking the "ViewSlider" layer. State before first initialization the "renderSlider" and "update" method', () => {
   const notInitViewSlider = new ViewSlider(classMainView);
@@ -44,12 +51,12 @@ describe('Checking the "ViewSlider" layer. State before first initialization the
 describe('Checking the "ViewSlider" layer', () => {
   const defaultSettings = {
     key: 'init',
-    $selector: $(`#${initSelectorName}`),
+    $selector: $initSelector,
     $elemSlider: $('.js-meta-slider'),
     $sliderProgress: $('.js-meta-slider__progress'),
-    $elemThumbs: $('.js-meta-slider__thumb'),
-    $elemMarkers: $('.js-meta-slider__marker'),
-    $elemScale: $('.js-meta-slider__scale'),
+    $elemThumbs: $initElemThumbs,
+    $elemMarkers: $initElemMarkers,
+    $elemScale: $initElemScale,
     showBackground: true,
     initAutoMargins: true,
     showMarkers: true,
@@ -66,6 +73,8 @@ describe('Checking the "ViewSlider" layer', () => {
   let $selector: JQuery<HTMLElement>;
   let $elemSlider: JQuery<HTMLElement>;
   let $sliderProgress: JQuery<HTMLElement>;
+  let $elemThumbs: JQuery<HTMLElement>;
+  let $elemMarkers: JQuery<HTMLElement>;
 
   beforeAll(() => {
     testSettings = $.extend({}, InitSettings, defaultSettings);
@@ -74,6 +83,8 @@ describe('Checking the "ViewSlider" layer', () => {
     $selector = classViewSlider['_$selector'];
     $elemSlider = classViewSlider['_$elemSlider'];
     $sliderProgress = classViewSlider['_$sliderProgress'];
+    $elemThumbs = classViewSlider['_$elemThumbs'];
+    $elemMarkers = classViewSlider['_$elemMarkers'];
   });
 
   afterEach(() => {
@@ -111,10 +122,10 @@ describe('Checking the "ViewSlider" layer', () => {
     classViewSlider.update(testSettings);
 
     expect(classViewSlider['_isFirstInit']).toBe(false);
-    expect(classViewSlider['_$elemSlider']).toHaveLength(1);
-    expect(classViewSlider['_$sliderProgress']).toHaveLength(1);
-    expect(classViewSlider['_$elemThumbs']).toHaveLength(2);
-    expect(classViewSlider['_$elemMarkers']).toHaveLength(2);
+    expect($elemSlider).toHaveLength(1);
+    expect($sliderProgress).toHaveLength(1);
+    expect($elemThumbs).toHaveLength(2);
+    expect($elemMarkers).toHaveLength(2);
     expect(classViewSlider['_setEventsSlider']).toHaveBeenCalled();
   });
 
@@ -186,6 +197,24 @@ describe('Checking the "ViewSlider" layer', () => {
 
     expect($elemSlider.css('margin-top')).toBe('');
     expect($elemSlider.css('margin-bottom')).toBe('');
+  });
+
+  test('Checking the "_setAutoMargins" method => "elem.outerHeight() undefined or equal to zero"', () => {
+    testSettings.key = 'initAutoMargins';
+    testSettings.showMarkers = true;
+    testSettings.showScale = true;
+    $elemMarkers.length = 0;
+    $elemThumbs.length = 0;
+    $initElemScalePoints.detach();
+
+    classViewSlider.update(testSettings);
+
+    expect($elemSlider.css('margin-top')).toBe('0px');
+    expect($elemSlider.css('margin-bottom')).toBe('0px');
+
+    $elemMarkers.length = 2;
+    $elemThumbs.length = 2;
+    $initElemScalePoints.appendTo($initElemScale);
   });
 
   test('Checking the "_setBackgroundForSlider" method => "defaultSettings"', () => {

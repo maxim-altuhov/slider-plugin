@@ -124,9 +124,8 @@ class ViewSlider {
     const verifProp = initAutoMargins && !isVertical;
 
     if (verifProp && showMarkers) {
-      const heightMarker = this._$elemMarkers.eq(-1).outerHeight() || 0;
-      const heightThumb = this._$elemThumbs.eq(-1).outerHeight() || 0;
-
+      const heightMarker = this._$elemMarkers.outerHeight() || 0;
+      const heightThumb = this._$elemThumbs.outerHeight() || 0;
       this._$elemSlider.css('margin-top', `${heightMarker + heightThumb / 1.5}px`);
     } else {
       this._$elemSlider.prop('style').removeProperty('margin-top');
