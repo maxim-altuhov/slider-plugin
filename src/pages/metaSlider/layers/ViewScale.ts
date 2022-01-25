@@ -30,7 +30,7 @@ class ViewScale {
     setEventResizeKeys: ['init', 'showScale', 'initScaleAdjustment'],
   };
 
-  constructor(private _view: TypeMainView) {}
+  constructor(private _view: IMainView) {}
 
   update(options: IPluginOptions) {
     if (this._isFirstInit) {

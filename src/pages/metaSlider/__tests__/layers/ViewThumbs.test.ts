@@ -1,17 +1,15 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 // The tests uses the 'any' type in jest.spyOn so that private methods of the class can be tested
 import View from '../../layers/View';
-import ViewSlider from '../../layers/ViewSlider';
 import ViewThumbs from '../../layers/ViewThumbs';
 import InitSettings from '../../data/InitSettings';
 import * as makeThrottlingHandler from '../../utils/makeThrottlingHandler';
 
 jest.mock('../../utils/createUniqueID');
 const classMainView = new View();
-const classViewSlider = new ViewSlider(classMainView);
 document.body.innerHTML = '<div id="render-selector"></div>';
 const $selector = $('#render-selector');
-classViewSlider.renderSlider($selector);
+classMainView.renderSlider($selector);
 
 describe('Checking the "ViewThumbs" layer, before first initialization.', () => {
   const notInitViewThumbs = new ViewThumbs(classMainView);

@@ -1,5 +1,3 @@
-import createUniqueID from '../utils/createUniqueID';
-
 class ViewSlider {
   private _$selector = $();
   private _$elemSlider = $();
@@ -29,7 +27,7 @@ class ViewSlider {
     setMinAndMaxKeys: ['init', 'minValue', 'maxValue', 'customValues'],
   };
 
-  constructor(private _view: TypeMainView) {}
+  constructor(private _view: IMainView) {}
 
   update(options: IPluginOptions) {
     if (this._isFirstInit) {
@@ -53,42 +51,17 @@ class ViewSlider {
     if (setMinAndMaxKeys.includes(key)) this._setMinAndMaxVal(options);
   }
 
-  renderSlider($initSelector: JQuery<HTMLElement>) {
-    const sliderID = createUniqueID();
-
-    if (this._$selector.length === 0) {
-      this._$selector = $initSelector;
-      const $fragmentWithASlider = $(document.createDocumentFragment());
-      const $blockSlider = $(document.createElement('div'));
-
-      $blockSlider.addClass('meta-slider js-meta-slider');
-      this._$selector.attr('data-id', sliderID);
-
-      const HTMLBlock = `<div class="meta-slider__progress js-meta-slider__progress"></div>
-    <button type="button" class="meta-slider__thumb js-meta-slider__thumb meta-slider__thumb_left" data-value="" data-text="">
-      <span class="meta-slider__marker js-meta-slider__marker meta-slider__marker_left"></span>
-    </button>
-    <button type="button" class="meta-slider__thumb js-meta-slider__thumb meta-slider__thumb_right" data-value="" data-text="">
-      <span class="meta-slider__marker js-meta-slider__marker meta-slider__marker_right"></span>
-    </button>
-    <div class="meta-slider__scale js-meta-slider__scale"></div>`;
-
-      $blockSlider.html(HTMLBlock);
-
-      $fragmentWithASlider.append($blockSlider);
-      this._$selector.append($fragmentWithASlider);
-    }
-  }
-
   private _init(options: IPluginOptions) {
     // prettier-ignore
     const { 
+      $selector,
       $elemSlider,
       $sliderProgress,
       $elemThumbs,
       $elemMarkers,
     } = options;
 
+    this._$selector = $selector;
     this._$elemSlider = $elemSlider;
     this._$sliderProgress = $sliderProgress;
     this._$elemThumbs = $elemThumbs;

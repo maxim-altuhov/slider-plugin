@@ -1,16 +1,14 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 // The tests uses the 'any' type in jest.spyOn so that private methods of the class can be tested
-import View from '../../layers/View';
 import InitSettings from '../../data/InitSettings';
-import ViewSlider from '../../layers/ViewSlider';
+import View from '../../layers/View';
 import Model from '../../layers/Model';
 
 jest.mock('../../utils/createUniqueID');
 const classMainView = new View();
-const classViewSlider = new ViewSlider(classMainView);
 document.body.innerHTML = '<div id="render-selector"></div>';
 const $selector = $('#render-selector');
-classViewSlider.renderSlider($selector);
+classMainView.renderSlider($selector);
 
 describe('Checking the "Model" layer', () => {
   const classModel = new Model($selector, InitSettings);
@@ -70,18 +68,19 @@ describe('Checking the "Model" layer', () => {
 
   // The test uses the @ts-ignore rule so that a fake event can be passed to the test method
   test.each`
-    checkingValue | expected | isVertical | onlyReturn   | outerWidth | offsetLeft
-    ${50}         | ${50}    | ${false}   | ${true}      | ${825}     | ${85}
-    ${50}         | ${50}    | ${true}    | ${false}     | ${825}     | ${85}
-    ${-50}        | ${0}     | ${false}   | ${false}     | ${825}     | ${85}
-    ${150}        | ${100}   | ${false}   | ${false}     | ${0}       | ${0}
-    ${undefined}  | ${40}    | ${true}    | ${undefined} | ${825}     | ${85}
-    ${undefined}  | ${59}    | ${false}   | ${undefined} | ${825}     | ${85}
-    ${-50}        | ${0}     | ${false}   | ${true}      | ${825}     | ${85}
-    ${150}        | ${100}   | ${false}   | ${true}      | ${825}     | ${85}
+    checkingValue | expected | isVertical | onlyReturn   | outerWidth   | offset
+    ${50}         | ${50}    | ${false}   | ${true}      | ${825}       | ${{ top: 205, left: 85 }}
+    ${50}         | ${50}    | ${true}    | ${false}     | ${825}       | ${{ top: 205, left: 85 }}
+    ${-50}        | ${0}     | ${false}   | ${false}     | ${825}       | ${{ top: 205, left: 85 }}
+    ${150}        | ${100}   | ${false}   | ${false}     | ${undefined} | ${undefined}
+    ${150}        | ${100}   | ${false}   | ${false}     | ${undefined} | ${{ top: 205, left: undefined }}
+    ${undefined}  | ${40}    | ${true}    | ${undefined} | ${825}       | ${{ top: 205, left: 85 }}
+    ${undefined}  | ${59}    | ${false}   | ${undefined} | ${825}       | ${{ top: 205, left: 85 }}
+    ${-50}        | ${0}     | ${false}   | ${true}      | ${825}       | ${{ top: 205, left: 85 }}
+    ${150}        | ${100}   | ${false}   | ${true}      | ${825}       | ${{ top: 205, left: 85 }}
   `(
     'Checking the "calcTargetValue" method => checkingValue: $checkingValue, isVertical: $isVertical, onlyReturn: $onlyReturn',
-    ({ checkingValue, expected, isVertical, onlyReturn, outerWidth, offsetLeft }) => {
+    ({ checkingValue, expected, isVertical, onlyReturn, outerWidth, offset }) => {
       jest.spyOn(classModel, 'calcTargetValue');
       jest.spyOn<Model, any>(classModel, '_checkingTargetValue').mockImplementation();
 
@@ -99,9 +98,7 @@ describe('Checking the "Model" layer', () => {
           toJSON() {},
         }));
       const mockOuterWidth = jest.spyOn($.fn, 'outerWidth').mockImplementation(() => outerWidth);
-      const mockOffset = jest
-        .spyOn($.fn, 'offset')
-        .mockImplementation(() => ({ top: 205, left: offsetLeft }));
+      const mockOffset = jest.spyOn($.fn, 'offset').mockImplementation(() => offset);
 
       const fakeEvent = $.Event('click', {
         target: classModel.opt.$elemThumbs[0],

@@ -3,9 +3,8 @@
 import View from '../../layers/View';
 import ViewSlider from '../../layers/ViewSlider';
 import InitSettings from '../../data/InitSettings';
-import * as createUniqueID from '../../utils/createUniqueID';
 
-const mockCreateUniqueID = jest.spyOn(createUniqueID, 'default').mockImplementation(() => '');
+jest.mock('../../utils/createUniqueID');
 const classMainView = new View();
 const classViewSlider = new ViewSlider(classMainView);
 const initSelectorName = 'render-selector';
@@ -19,7 +18,7 @@ document.body.innerHTML = initHTMLBlock;
 // prettier-ignore
 const scalePointHTML = '<button type="button" class="meta-slider__scale-point js-meta-slider__scale-point"></button>';
 const $initSelector = $(`#${initSelectorName}`);
-classViewSlider.renderSlider($initSelector);
+classMainView.renderSlider($initSelector);
 
 const $initElemScale = $(scaleSelectorName);
 $initElemScale.append(scalePointHTML);
@@ -92,29 +91,6 @@ describe('Checking the "ViewSlider" layer', () => {
     jest.restoreAllMocks();
   });
 
-  test('Checking the "renderSlider" method', () => {
-    const checkingSelectorsArr = [
-      /js-meta-slider/,
-      /js-meta-slider__progress/,
-      /js-meta-slider__thumb/,
-      /js-meta-slider__marker/,
-      /js-meta-slider__scale/,
-      /data-id/,
-      /data-value/,
-      /data-text/,
-    ];
-
-    classViewSlider.renderSlider($initSelector);
-
-    checkingSelectorsArr.forEach((selector) => {
-      expect(document.body.innerHTML).toMatch(selector);
-    });
-    expect(mockCreateUniqueID).toHaveBeenCalled();
-    expect(document.body.innerHTML).not.toBe(initHTMLBlock);
-    expect($selector).toHaveLength(1);
-    expect($selector).toBe($initSelector);
-  });
-
   test('Checking the "_init" method', () => {
     jest.spyOn<ViewSlider, any>(classViewSlider, '_setEventsSlider');
 
@@ -122,6 +98,7 @@ describe('Checking the "ViewSlider" layer', () => {
     classViewSlider.update(testSettings);
 
     expect(classViewSlider['_isFirstInit']).toBe(false);
+    expect($selector).toHaveLength(1);
     expect($elemSlider).toHaveLength(1);
     expect($sliderProgress).toHaveLength(1);
     expect($elemThumbs).toHaveLength(2);

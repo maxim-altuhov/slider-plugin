@@ -1,15 +1,13 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 import View from '../../layers/View';
-import ViewSlider from '../../layers/ViewSlider';
 import ViewMarkers from '../../layers/ViewMarkers';
 import InitSettings from '../../data/InitSettings';
 
 jest.mock('../../utils/createUniqueID');
 const classMainView = new View();
-const classViewSlider = new ViewSlider(classMainView);
 document.body.innerHTML = '<div id="render-selector"></div>';
 const $selector = $('#render-selector');
-classViewSlider.renderSlider($selector);
+classMainView.renderSlider($selector);
 
 describe('Checking the "ViewMarkers" layer, before first initialization.', () => {
   const notInitViewMarkers = new ViewMarkers();

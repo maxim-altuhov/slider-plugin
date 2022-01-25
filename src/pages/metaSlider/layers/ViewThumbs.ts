@@ -21,7 +21,7 @@ class ViewThumbs {
     checkIsRangeKeys: ['init', 'isRange'],
   };
 
-  constructor(private _view: TypeMainView) {}
+  constructor(private _view: IMainView) {}
 
   update(options: IPluginOptions) {
     if (this._isFirstInit) {

@@ -65,6 +65,13 @@ interface IPluginMethods {
   unsubscribe(this: JQuery<HTMLElement>, observer: Function): void;
 }
 
+interface IMainView {
+  readonly viewList: Record<string, any>;
+  renderSlider($initSelector: JQuery): void;
+  updateViews(options: IPluginOptions): void;
+  updateModel(event: Event, targetValue?: number): void;
+}
+
 interface IErrMessage {
   [key: string]: string;
 }

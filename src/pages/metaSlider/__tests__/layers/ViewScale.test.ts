@@ -1,17 +1,15 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 // The tests uses the 'any' type in jest.spyOn so that private methods of the class can be tested
 import View from '../../layers/View';
-import ViewSlider from '../../layers/ViewSlider';
 import ViewScale from '../../layers/ViewScale';
 import InitSettings from '../../data/InitSettings';
 import * as makeThrottlingHandler from '../../utils/makeThrottlingHandler';
 
 jest.mock('../../utils/createUniqueID');
 const classMainView = new View();
-const classViewSlider = new ViewSlider(classMainView);
 document.body.innerHTML = '<div id="render-selector"></div>';
 const $initSelector = $('#render-selector');
-classViewSlider.renderSlider($initSelector);
+classMainView.renderSlider($initSelector);
 
 describe('Checking the "ViewScale" layer, before first initialization.', () => {
   const notInitViewScale = new ViewScale(classMainView);
