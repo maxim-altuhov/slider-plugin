@@ -23,7 +23,7 @@ class Presenter {
 
   // Error output if there are incorrect values in the slider settings
   renderError(message: string, options: IPluginOptions) {
-    this._getView('viewError').renderError(message, options);
+    this._view.renderError(message, options);
   }
 
   // Calling a method in the model to calculate the values of the thumbs slider positions
@@ -33,11 +33,6 @@ class Presenter {
     onlyReturn = false,
   ) {
     this._model.calcTargetValue(event, inputValue, onlyReturn);
-  }
-
-  // Getting the desired subview via the main View
-  private _getView(viewName: string) {
-    return this._view.viewList[viewName];
   }
 }
 

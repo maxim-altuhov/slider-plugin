@@ -7,19 +7,14 @@ import ViewThumbs from './ViewThumbs';
 import ViewError from './ViewError';
 
 class View extends Observer implements IMainView {
-  private _$selector = $();
-
-  /**
-   * I use the any type to be able to access any method
-   * of the class instance in the viewList object.
-   */
-  readonly viewList: Record<string, any> = {
-    viewError: new ViewError(),
+  readonly viewError = new ViewError();
+  readonly subViewsList: Record<string, ISubViewsUpdate> = {
     viewScale: new ViewScale(this),
     viewSlider: new ViewSlider(this),
     viewThumbs: new ViewThumbs(this),
     viewMarkers: new ViewMarkers(),
   };
+  private _$selector = $();
 
   // Initial render of the slider and its main elements
   renderSlider($initSelector: JQuery<HTMLElement>) {
@@ -47,9 +42,13 @@ class View extends Observer implements IMainView {
     this._$selector.append($fragmentWithASlider);
   }
 
+  renderError(message: string, options: IPluginOptions) {
+    this.viewError.renderError(message, options);
+  }
+
   updateViews(options: IPluginOptions) {
-    Object.keys(this.viewList).forEach((view) => {
-      if ('update' in this.viewList[view]) this.viewList[view].update(options);
+    Object.keys(this.subViewsList).forEach((view) => {
+      this.subViewsList[view].update(options);
     });
   }
 

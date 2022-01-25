@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>24/24</span>
+                <span class='fraction'>25/25</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>1/1</span>
+                <span class='fraction'>0/0</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>5/5</span>
+                <span class='fraction'>6/6</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>23/23</span>
+                <span class='fraction'>25/25</span>
             </div>
         
             
@@ -117,8 +117,7 @@
 <a name='L58'></a><a href='#L58'>58</a>
 <a name='L59'></a><a href='#L59'>59</a>
 <a name='L60'></a><a href='#L60'>60</a>
-<a name='L61'></a><a href='#L61'>61</a>
-<a name='L62'></a><a href='#L62'>62</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">10x</span>
+<a name='L61'></a><a href='#L61'>61</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-yes">10x</span>
@@ -127,6 +126,7 @@
 <span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -137,12 +137,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">6x</span>
@@ -168,8 +162,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">20x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -188,19 +186,14 @@ import ViewThumbs from './ViewThumbs';
 import ViewError from './ViewError';
 &nbsp;
 class View extends Observer implements IMainView {
-  private _$selector = $();
-&nbsp;
-  /**
-   * I use the any type to be able to access any method
-   * of the class instance in the viewList object.
-   */
-  readonly viewList: Record&lt;string, any&gt; = {
-    viewError: new ViewError(),
+  readonly viewError = new ViewError();
+  readonly subViewsList: Record&lt;string, ISubViewsUpdate&gt; = {
     viewScale: new ViewScale(this),
     viewSlider: new ViewSlider(this),
     viewThumbs: new ViewThumbs(this),
     viewMarkers: new ViewMarkers(),
   };
+  private _$selector = $();
 &nbsp;
   // Initial render of the slider and its main elements
   renderSlider($initSelector: JQuery&lt;HTMLElement&gt;) {
@@ -228,9 +221,13 @@ class View extends Observer implements IMainView {
     this._$selector.append($fragmentWithASlider);
   }
 &nbsp;
+  renderError(message: string, options: IPluginOptions) {
+    this.viewError.renderError(message, options);
+  }
+&nbsp;
   updateViews(options: IPluginOptions) {
-    Object.keys(this.viewList).forEach((view) =&gt; {
-      if ('update' in this.viewList[view]) this.viewList[view].update(options);
+    Object.keys(this.subViewsList).forEach((view) =&gt; {
+      this.subViewsList[view].update(options);
     });
   }
 &nbsp;
@@ -247,7 +244,7 @@ export default View;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Tue Jan 25 2022 14:20:36 GMT+0300 (Москва, стандартное время)
+                at Tue Jan 25 2022 17:53:27 GMT+0300 (Москва, стандартное время)
             </div>
         </div>
         <script src="../../prettify.js"></script>

@@ -65,9 +65,19 @@ interface IPluginMethods {
   unsubscribe(this: JQuery<HTMLElement>, observer: Function): void;
 }
 
+interface ISubViewsUpdate {
+  update(options: IPluginOptions): void;
+}
+
+interface ISubViewsError {
+  renderError(message: string, options: IPluginOptions): void;
+}
+
 interface IMainView {
-  readonly viewList: Record<string, any>;
+  readonly viewError: ISubViewsError;
+  readonly subViewsList: Record<string, ISubViewsUpdate>;
   renderSlider($initSelector: JQuery): void;
+  renderError(message: string, options: IPluginOptions): void;
   updateViews(options: IPluginOptions): void;
   updateModel(event: Event, targetValue?: number): void;
 }

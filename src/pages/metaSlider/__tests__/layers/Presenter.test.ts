@@ -13,6 +13,10 @@ const view = presenter['_view'];
 const model = presenter['_model'];
 
 describe('Checking the "Presenter" layer', () => {
+  afterAll(() => {
+    jest.restoreAllMocks();
+  });
+
   test('Initializing the "renderSlider" method', () => {
     view.renderSlider = jest.fn();
     presenter.renderSlider(fakeSelector);
@@ -40,10 +44,10 @@ describe('Checking the "Presenter" layer', () => {
   });
 
   test('Initializing the "renderError" method', () => {
-    presenter['_getView']('viewError').renderError = jest.fn();
+    view.renderError = jest.fn();
     presenter.renderError('message', InitSettings);
 
-    expect(view.viewList['viewError'].renderError).toHaveBeenCalledWith('message', InitSettings);
+    expect(view.renderError).toHaveBeenCalledWith('message', InitSettings);
   });
 
   test('Initializing the "updateModel" method', () => {

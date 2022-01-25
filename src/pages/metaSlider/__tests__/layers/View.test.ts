@@ -10,13 +10,9 @@ const $initSelector = $(`#${initSelectorName}`);
 
 describe('Checking the "View" layer', () => {
   const classView = new View();
-  const viewListContainsUpdate: string[] = [];
 
-  Object.keys(classView.viewList).forEach((view) => {
-    if ('update' in classView.viewList[view]) {
-      classView.viewList[view].update = jest.fn();
-      viewListContainsUpdate.push(view);
-    }
+  Object.keys(classView.subViewsList).forEach((view) => {
+    classView.subViewsList[view].update = jest.fn();
   });
 
   afterAll(() => {
@@ -48,24 +44,30 @@ describe('Checking the "View" layer', () => {
     expect(classView['_$selector']).toBe($initSelector);
   });
 
-  test.each(viewListContainsUpdate)(
-    'When the "update" method is performed at the "View" level, an update occurs in the dependent subview from "ViewList"-> %s and an object with options is passed to the "update"',
-    (view) => {
-      classView.updateViews(InitSettings);
+  test('Checking the "renderError" method', () => {
+    const FAKE_MESSAGE = 'message';
+    jest.spyOn(classView.viewError, 'renderError').mockImplementation();
 
-      expect(classView.viewList[view].update).toHaveBeenCalledWith(InitSettings);
-    },
-  );
+    classView.renderError(FAKE_MESSAGE, InitSettings);
+
+    expect(classView.viewError.renderError).toHaveBeenCalledWith(FAKE_MESSAGE, InitSettings);
+  });
+
+  test('When the "update" method is performed at the "View" level, an update occurs in the dependent subview from "subViewsList"-> %s and an object with options is passed to the "update"', () => {
+    classView.updateViews(InitSettings);
+
+    Object.keys(classView.subViewsList).forEach((view) => {
+      expect(classView.subViewsList[view].update).toHaveBeenCalledWith(InitSettings);
+    });
+  });
 
   test('Checking the "updateModel" method', () => {
     const FAKE_TARGET_VALUE = 50;
-    const fakeEvent: Event = $.Event('click');
-    const mockNotify = jest.spyOn(classView, 'notify').mockImplementation();
+    const FAKE_EVENT: Event = $.Event('click');
+    jest.spyOn(classView, 'notify').mockImplementation();
 
-    classView.updateModel(fakeEvent, FAKE_TARGET_VALUE);
+    classView.updateModel(FAKE_EVENT, FAKE_TARGET_VALUE);
 
-    expect(classView.notify).toHaveBeenCalledWith(fakeEvent, FAKE_TARGET_VALUE);
-
-    mockNotify.mockRestore();
+    expect(classView.notify).toHaveBeenCalledWith(FAKE_EVENT, FAKE_TARGET_VALUE);
   });
 });
