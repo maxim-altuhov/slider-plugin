@@ -24,9 +24,9 @@ describe('Checking the correct operation of the plugin`s "metaSlider" method', (
       $initSelector.metaSlider(settings);
 
       if (settings) {
-        expect(PluginMethods.init).toHaveBeenCalledWith(settings);
+        expect(PluginMethods.init).toHaveBeenCalledWith($initSelector, settings);
       } else {
-        expect(PluginMethods.init).toHaveBeenCalledWith();
+        expect(PluginMethods.init).toHaveBeenCalledWith($initSelector);
       }
     },
   );

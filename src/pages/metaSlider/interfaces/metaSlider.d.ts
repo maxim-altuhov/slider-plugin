@@ -49,33 +49,17 @@ interface IPluginOptions {
   valuesAsPercentageArray: number[];
 }
 
-interface IPluginMethods {
-  [key: string]: any;
-  init(this: JQuery<HTMLElement>, settings?: object & { [key: string]: any }): JQuery<HTMLElement>;
-  setProp(
-    this: JQuery<HTMLElement>,
-    prop: string,
-    value: string | number | (string | number)[],
-  ): JQuery<HTMLElement>;
-  getProp(this: JQuery<HTMLElement>, prop: string): string | number | (string | number)[];
-  getOptionsObj(this: JQuery<HTMLElement>): IPluginOptions;
-  getCurrentValues(this: JQuery<HTMLElement>): string[] | number[];
-  destroy(this: JQuery<HTMLElement>): JQuery<HTMLElement>;
-  subscribe(this: JQuery<HTMLElement>, observer: Function): void;
-  unsubscribe(this: JQuery<HTMLElement>, observer: Function): void;
-}
-
-interface ISubViewsUpdate {
+interface ISubViewUpdate {
   update(options: IPluginOptions): void;
 }
 
-interface ISubViewsError {
+interface ISubViewError {
   renderError(message: string, options: IPluginOptions): void;
 }
 
 interface IMainView {
-  readonly viewError: ISubViewsError;
-  readonly subViewsList: Record<string, ISubViewsUpdate>;
+  readonly viewError: ISubViewError;
+  readonly subViewsList: Record<string, ISubViewUpdate>;
   renderSlider($initSelector: JQuery): void;
   renderError(message: string, options: IPluginOptions): void;
   updateViews(options: IPluginOptions): void;

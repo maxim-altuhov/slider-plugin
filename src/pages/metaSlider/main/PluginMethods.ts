@@ -1,18 +1,32 @@
 import TypeSettings from '../data/TypeSettings';
 import InitSettings from '../data/InitSettings';
-import limitedProp from '../data/limitedProp';
 import Presenter from '../layers/Presenter';
 import Model from '../layers/Model';
 import View from '../layers/View';
 
-let pluginOptions: IPluginOptions;
+class PluginMethods {
+  static [key: string]: any;
+  static initSettings = InitSettings;
+  static typeSettings = TypeSettings;
+  static limitedProp = [
+    'key',
+    '$selector',
+    '$elemSlider',
+    '$sliderProgress',
+    '$elemMarkers',
+    '$elemScale',
+    '$elemThumbs',
+    'textValueFirst',
+    'textValueSecond',
+    'initValuesArray',
+    'textValuesArray',
+    'valuesAsPercentageArray',
+    'stepAsPercent',
+  ];
 
-const PluginMethods: IPluginMethods = {
-  init(settings) {
-    const data = this.data('metaSlider');
-
-    if (!data) {
-      if (this.length > 1) {
+  static init($selector: JQuery<HTMLElement>, settings?: object & { [key: string]: any }) {
+    if (!$selector.data('metaSlider')) {
+      if ($selector.length > 1) {
         throw new Error(
           'The selector for initializing the slider must be the only one in the list of passed selectors and unique on the page.',
         );
@@ -22,9 +36,11 @@ const PluginMethods: IPluginMethods = {
         const KEY_CUSTOM_VALUES = 'customValues';
 
         Object.keys(settings).forEach((key) => {
-          if (TypeSettings[key] && typeof settings[key] !== TypeSettings[key]) {
+          const isCorrectType = typeof settings[key] === PluginMethods.typeSettings[key];
+
+          if (PluginMethods.typeSettings[key] && !isCorrectType) {
             throw new Error(
-              `The slider's "${key}" property should be passed as "${TypeSettings[key]}"`,
+              `The slider's "${key}" property should be passed as "${PluginMethods.typeSettings[key]}"`,
             );
           }
 
@@ -35,27 +51,35 @@ const PluginMethods: IPluginMethods = {
       }
 
       // Combining user settings and default settings
-      pluginOptions = $.extend({}, InitSettings, settings);
+      const pluginOptions = $.extend({}, PluginMethods.initSettings, settings);
 
       // Initializing the plugin
-      const model = new Model(this, pluginOptions);
+      const model = new Model($selector, pluginOptions);
       const view = new View();
       const presenter = new Presenter(view, model);
 
-      presenter.renderSlider(this);
+      presenter.renderSlider($selector);
       presenter.setObservers();
       model.init();
 
-      this.data('metaSlider', { model });
+      $selector.data('metaSlider', { model });
     }
 
-    return this;
-  },
-  setProp(prop, value) {
-    if (limitedProp.includes(prop)) throw new Error(`Property '${prop}' cannot be changed.`);
+    return $selector;
+  }
 
-    if (!limitedProp.includes(prop) && prop in pluginOptions) {
-      const { model } = this.data('metaSlider');
+  static setProp(
+    $selector: JQuery<HTMLElement>,
+    prop: string,
+    value: string | number | (string | number)[],
+  ) {
+    const pluginOptions: IPluginOptions = $selector.data('metaSlider').model.opt;
+    const includesLimitedProp = PluginMethods.limitedProp.includes(prop);
+
+    if (includesLimitedProp) throw new Error(`Property '${prop}' cannot be changed.`);
+
+    if (!includesLimitedProp && prop in pluginOptions) {
+      const { model } = $selector.data('metaSlider');
 
       if (value === undefined) throw new Error(`The value property '${prop}' cannot be omitted.`);
 
@@ -66,19 +90,27 @@ const PluginMethods: IPluginMethods = {
       throw new Error(`The '${prop}' property does not exist.`);
     }
 
-    return this;
-  },
-  getProp(prop) {
-    if (prop in pluginOptions) return this.data('metaSlider').model.opt[prop];
+    return $selector;
+  }
+
+  static getProp(
+    $selector: JQuery<HTMLElement>,
+    prop: string,
+  ): string | number | (string | number)[] {
+    const pluginOptions: IPluginOptions = $selector.data('metaSlider').model.opt;
+
+    if (prop in pluginOptions) return $selector.data('metaSlider').model.opt[prop];
 
     throw new Error(`The '${prop}' property does not exist.`);
-  },
-  getOptionsObj() {
-    return this.data('metaSlider').model.opt;
-  },
-  getCurrentValues() {
-    const modelOptions = this.data('metaSlider').model.opt;
-    const { customValues, textValuesArray, initValuesArray } = modelOptions;
+  }
+
+  static getOptionsObj($selector: JQuery<HTMLElement>): IPluginOptions {
+    return $selector.data('metaSlider').model.opt;
+  }
+
+  static getCurrentValues($selector: JQuery<HTMLElement>) {
+    const pluginOptions: IPluginOptions = $selector.data('metaSlider').model.opt;
+    const { customValues, textValuesArray, initValuesArray } = pluginOptions;
     let currentValues = [];
 
     if (customValues.length > 0) {
@@ -88,19 +120,27 @@ const PluginMethods: IPluginMethods = {
     }
 
     return currentValues;
-  },
-  destroy() {
-    this.removeData('metaSlider');
-    this.empty();
+  }
 
-    return this;
-  },
-  subscribe(observer) {
-    this.data('metaSlider').model.subscribe(observer);
-  },
-  unsubscribe(observer) {
-    this.data('metaSlider').model.unsubscribe(observer);
-  },
-};
+  static destroy($selector: JQuery<HTMLElement>) {
+    $selector.removeData('metaSlider').removeAttr('data-id').empty();
+
+    return $selector;
+  }
+
+  static subscribe($selector: JQuery<HTMLElement>, observer: Function) {
+    const { model } = $selector.data('metaSlider');
+    model.subscribe(observer);
+
+    return $selector;
+  }
+
+  static unsubscribe($selector: JQuery<HTMLElement>, observer: Function) {
+    const { model } = $selector.data('metaSlider');
+    model.unsubscribe(observer);
+
+    return $selector;
+  }
+}
 
 export default PluginMethods;

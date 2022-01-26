@@ -8,7 +8,7 @@ import ViewError from './ViewError';
 
 class View extends Observer implements IMainView {
   readonly viewError = new ViewError();
-  readonly subViewsList: Record<string, ISubViewsUpdate> = {
+  readonly subViewsList: Record<string, ISubViewUpdate> = {
     viewScale: new ViewScale(this),
     viewSlider: new ViewSlider(this),
     viewThumbs: new ViewThumbs(this),
