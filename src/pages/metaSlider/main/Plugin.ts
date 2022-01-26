@@ -4,7 +4,7 @@ import Presenter from '../layers/Presenter';
 import Model from '../layers/Model';
 import View from '../layers/View';
 
-class PluginMethods {
+class Plugin {
   static [key: string]: any;
   static initSettings = InitSettings;
   static typeSettings = TypeSettings;
@@ -36,11 +36,11 @@ class PluginMethods {
         const KEY_CUSTOM_VALUES = 'customValues';
 
         Object.keys(settings).forEach((key) => {
-          const isCorrectType = typeof settings[key] === PluginMethods.typeSettings[key];
+          const isCorrectType = typeof settings[key] === Plugin.typeSettings[key];
 
-          if (PluginMethods.typeSettings[key] && !isCorrectType) {
+          if (Plugin.typeSettings[key] && !isCorrectType) {
             throw new Error(
-              `The slider's "${key}" property should be passed as "${PluginMethods.typeSettings[key]}"`,
+              `The slider's "${key}" property should be passed as "${Plugin.typeSettings[key]}"`,
             );
           }
 
@@ -51,7 +51,7 @@ class PluginMethods {
       }
 
       // Combining user settings and default settings
-      const pluginOptions = $.extend({}, PluginMethods.initSettings, settings);
+      const pluginOptions = $.extend({}, Plugin.initSettings, settings);
 
       // Initializing the plugin
       const model = new Model($selector, pluginOptions);
@@ -74,7 +74,7 @@ class PluginMethods {
     value: string | number | (string | number)[],
   ) {
     const pluginOptions: IPluginOptions = $selector.data('metaSlider').model.opt;
-    const includesLimitedProp = PluginMethods.limitedProp.includes(prop);
+    const includesLimitedProp = Plugin.limitedProp.includes(prop);
 
     if (includesLimitedProp) throw new Error(`Property '${prop}' cannot be changed.`);
 
@@ -143,4 +143,4 @@ class PluginMethods {
   }
 }
 
-export default PluginMethods;
+export default Plugin;

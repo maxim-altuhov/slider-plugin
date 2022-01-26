@@ -1,8 +1,8 @@
-import PluginMethods from '../main/PluginMethods';
+import Plugin from '../main/Plugin';
 import InitSettings from '../data/InitSettings';
 import '../metaSlider';
 
-jest.mock('../main/PluginMethods');
+jest.mock('../main/Plugin');
 jest.spyOn($.fn, 'metaSlider');
 
 document.body.innerHTML = '<div id="fake-selector"></div>';
@@ -14,7 +14,7 @@ describe('Checking the correct operation of the plugin`s "metaSlider" method', (
     (initParam) => {
       $initSelector.metaSlider(initParam);
 
-      expect(PluginMethods[initParam]).toHaveBeenCalled();
+      expect(Plugin[initParam]).toHaveBeenCalled();
     },
   );
 
@@ -24,9 +24,9 @@ describe('Checking the correct operation of the plugin`s "metaSlider" method', (
       $initSelector.metaSlider(settings);
 
       if (settings) {
-        expect(PluginMethods.init).toHaveBeenCalledWith($initSelector, settings);
+        expect(Plugin.init).toHaveBeenCalledWith($initSelector, settings);
       } else {
-        expect(PluginMethods.init).toHaveBeenCalledWith($initSelector);
+        expect(Plugin.init).toHaveBeenCalledWith($initSelector);
       }
     },
   );

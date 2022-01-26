@@ -1,6 +1,6 @@
 import Model from '../../layers/Model';
 import Presenter from '../../layers/Presenter';
-import PluginMethods from '../../main/PluginMethods';
+import Plugin from '../../main/Plugin';
 import InitSettings from '../../data/InitSettings';
 
 jest.mock('../../layers/View');
@@ -35,15 +35,15 @@ describe('Checking the methods of the metaSlider plugin', () => {
   });
 
   test('Checking the "init" method => Checking the initialization of the plugin with the transmission of parameters', () => {
-    jest.spyOn(PluginMethods, 'init');
+    jest.spyOn(Plugin, 'init');
 
     expect($initSelector.data('metaSlider')).toBeUndefined();
 
-    PluginMethods.init($initSelector, testSettings);
+    Plugin.init($initSelector, testSettings);
     const { model } = $initSelector.data('metaSlider');
 
-    expect(PluginMethods.init).toHaveBeenCalledWith($initSelector, testSettings);
-    expect(PluginMethods.init).toHaveReturnedWith($initSelector);
+    expect(Plugin.init).toHaveBeenCalledWith($initSelector, testSettings);
+    expect(Plugin.init).toHaveReturnedWith($initSelector);
     expect(model.init).toHaveBeenCalled();
     expect(mockRenderSlider).toHaveBeenCalledWith($initSelector);
     expect(mockSetObservers).toHaveBeenCalled();
@@ -55,7 +55,7 @@ describe('Checking the methods of the metaSlider plugin', () => {
     $initSelector.length = 2;
 
     expect(() => {
-      PluginMethods.init($initSelector);
+      Plugin.init($initSelector);
     }).toThrow(
       'The selector for initializing the slider must be the only one in the list of passed selectors and unique on the page',
     );
@@ -80,11 +80,11 @@ describe('Checking the methods of the metaSlider plugin', () => {
 
       if (testProp === KEY_CUSTOM_VALUES) {
         expect(() => {
-          PluginMethods.init($initSelector, settings);
+          Plugin.init($initSelector, settings);
         }).toThrow('The slider\'s "customValues" property should be passed as an array.');
       } else {
         expect(() => {
-          PluginMethods.init($initSelector, settings);
+          Plugin.init($initSelector, settings);
         }).toThrow(`The slider's "${testProp}" property should be passed as "${expected}"`);
       }
     },
@@ -99,108 +99,108 @@ describe('Checking the methods of the metaSlider plugin', () => {
     const TEST_PROP = 'mainColor';
     const TEST_VALUE = 'red';
 
-    PluginMethods.init($initSelector, testSettings);
+    Plugin.init($initSelector, testSettings);
     const { model } = $initSelector.data('metaSlider');
     jest.spyOn(model, 'update').mockImplementation(() => 'update');
-    jest.spyOn(PluginMethods, 'setProp');
+    jest.spyOn(Plugin, 'setProp');
 
-    PluginMethods.setProp($initSelector, TEST_PROP, TEST_VALUE);
+    Plugin.setProp($initSelector, TEST_PROP, TEST_VALUE);
 
     expect(model.opt.mainColor).toBe(TEST_VALUE);
     expect(model.opt.key).toBe(TEST_PROP);
     expect(model.update).toHaveBeenCalled();
-    expect(PluginMethods.setProp).toHaveReturnedWith($initSelector);
+    expect(Plugin.setProp).toHaveReturnedWith($initSelector);
 
     expect(() => {
-      PluginMethods.setProp($initSelector, FAKE_PROP, TEST_VALUE);
+      Plugin.setProp($initSelector, FAKE_PROP, TEST_VALUE);
     }).toThrow(`The '${FAKE_PROP}' property does not exist.`);
 
     expect(() => {
       // @ts-ignore
-      PluginMethods.setProp($initSelector, TEST_PROP);
+      Plugin.setProp($initSelector, TEST_PROP);
     }).toThrow(`The value property '${TEST_PROP}' cannot be omitted.`);
 
-    PluginMethods.limitedProp.forEach((prop) => {
+    Plugin.limitedProp.forEach((prop) => {
       expect(() => {
-        PluginMethods.setProp($initSelector, prop, 'fakeValue');
+        Plugin.setProp($initSelector, prop, 'fakeValue');
       }).toThrow(`Property '${prop}' cannot be changed.`);
     });
   });
 
   test('Checking the "getProp" method', () => {
     const FAKE_METHOD_NAME = 'fakeMethodName';
-    jest.spyOn(PluginMethods, 'getProp');
+    jest.spyOn(Plugin, 'getProp');
 
-    PluginMethods.init($initSelector, testSettings);
-    PluginMethods.getProp($initSelector, 'customValues');
+    Plugin.init($initSelector, testSettings);
+    Plugin.getProp($initSelector, 'customValues');
 
-    expect(PluginMethods.getProp).toHaveReturnedWith(testSettings.customValues);
+    expect(Plugin.getProp).toHaveReturnedWith(testSettings.customValues);
 
     expect(() => {
-      PluginMethods.getProp($initSelector, FAKE_METHOD_NAME);
+      Plugin.getProp($initSelector, FAKE_METHOD_NAME);
     }).toThrow(`The '${FAKE_METHOD_NAME}' property does not exist.`);
   });
 
   test('Checking the "getOptionsObj" method', () => {
-    jest.spyOn(PluginMethods, 'getOptionsObj');
+    jest.spyOn(Plugin, 'getOptionsObj');
 
-    PluginMethods.init($initSelector, testSettings);
-    PluginMethods.getOptionsObj($initSelector);
+    Plugin.init($initSelector, testSettings);
+    Plugin.getOptionsObj($initSelector);
 
-    expect(PluginMethods.getOptionsObj).toHaveReturnedWith(testSettings);
+    expect(Plugin.getOptionsObj).toHaveReturnedWith(testSettings);
   });
 
   test('Checking the "getCurrentValues" method', () => {
-    jest.spyOn(PluginMethods, 'getCurrentValues');
+    jest.spyOn(Plugin, 'getCurrentValues');
 
-    PluginMethods.init($initSelector, testSettings);
-    PluginMethods.getCurrentValues($initSelector);
+    Plugin.init($initSelector, testSettings);
+    Plugin.getCurrentValues($initSelector);
 
-    expect(PluginMethods.getCurrentValues).toHaveReturnedWith(testSettings.textValuesArray);
+    expect(Plugin.getCurrentValues).toHaveReturnedWith(testSettings.textValuesArray);
 
     $initSelector.removeData('metaSlider');
     testSettings.customValues = [];
-    PluginMethods.init($initSelector, testSettings);
-    PluginMethods.getCurrentValues($initSelector);
+    Plugin.init($initSelector, testSettings);
+    Plugin.getCurrentValues($initSelector);
 
-    expect(PluginMethods.getCurrentValues).toHaveReturnedWith(testSettings.initValuesArray);
+    expect(Plugin.getCurrentValues).toHaveReturnedWith(testSettings.initValuesArray);
   });
 
   test('Checking the "destroy" method', () => {
-    jest.spyOn(PluginMethods, 'destroy');
+    jest.spyOn(Plugin, 'destroy');
     jest.spyOn($.fn, 'removeData');
     jest.spyOn($.fn, 'empty');
 
-    PluginMethods.init($initSelector);
-    PluginMethods.destroy($initSelector);
+    Plugin.init($initSelector);
+    Plugin.destroy($initSelector);
 
-    expect(PluginMethods.destroy).toHaveReturnedWith($initSelector);
+    expect(Plugin.destroy).toHaveReturnedWith($initSelector);
     expect($initSelector.removeData).toHaveBeenCalledWith('metaSlider');
     expect($initSelector.empty).toHaveBeenCalled();
   });
 
   test('Checking the "subscribe" method', () => {
-    jest.spyOn(PluginMethods, 'subscribe');
-    PluginMethods.init($initSelector);
+    jest.spyOn(Plugin, 'subscribe');
+    Plugin.init($initSelector);
 
     const fakeFoo = () => true;
     const { model } = $initSelector.data('metaSlider');
     jest.spyOn(model, 'subscribe').mockImplementation();
 
-    PluginMethods.subscribe($initSelector, fakeFoo);
+    Plugin.subscribe($initSelector, fakeFoo);
 
     expect(model.subscribe).toHaveBeenCalledWith(fakeFoo);
   });
 
   test('Checking the "unsubscribe" method', () => {
-    jest.spyOn(PluginMethods, 'unsubscribe');
-    PluginMethods.init($initSelector);
+    jest.spyOn(Plugin, 'unsubscribe');
+    Plugin.init($initSelector);
 
     const fakeFoo = () => true;
     const { model } = $initSelector.data('metaSlider');
     jest.spyOn(model, 'unsubscribe').mockImplementation();
 
-    PluginMethods.unsubscribe($initSelector, fakeFoo);
+    Plugin.unsubscribe($initSelector, fakeFoo);
 
     expect(model.unsubscribe).toHaveBeenCalledWith(fakeFoo);
   });

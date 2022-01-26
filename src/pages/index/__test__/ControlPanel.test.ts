@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 // The tests uses the 'any' type in jest.spyOn so that private methods of the class can be tested
-import PluginMethods from '../../metaSlider/main/PluginMethods';
+import Plugin from '../../metaSlider/main/Plugin';
 import Model from '../../metaSlider/layers/Model';
 import '../../metaSlider/metaSlider';
 import ControlPanel from '../ts/ControlPanel';
@@ -10,9 +10,9 @@ jest.mock('../../../pages/metaSlider/layers/Presenter');
 jest.spyOn($.fn, 'metaSlider');
 jest.spyOn(Model.prototype, 'init').mockImplementation(() => 'init');
 jest.spyOn(Model.prototype, 'update').mockImplementation(() => 'update');
-jest.spyOn(PluginMethods, 'subscribe').mockImplementation();
-jest.spyOn(PluginMethods, 'unsubscribe').mockImplementation();
-jest.spyOn(PluginMethods, 'setProp').mockImplementation();
+jest.spyOn(Plugin, 'subscribe').mockImplementation();
+jest.spyOn(Plugin, 'unsubscribe').mockImplementation();
+jest.spyOn(Plugin, 'setProp').mockImplementation();
 
 document.body.innerHTML = `<div id="fake-slider-selector"></div>
 <div id="fake-panel-selector">
