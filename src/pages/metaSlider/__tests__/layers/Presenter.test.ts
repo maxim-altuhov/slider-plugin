@@ -52,9 +52,10 @@ describe('Checking the "Presenter" layer', () => {
 
   test('Initializing the "updateModel" method', () => {
     const INPUT_VALUE = 50;
+    const eventClick: MouseEvent = $.Event('click');
     model.calcTargetValue = jest.fn();
-    presenter.updateModel(null, INPUT_VALUE);
+    presenter.updateModel(eventClick, INPUT_VALUE);
 
-    expect(model.calcTargetValue).toHaveBeenCalledWith(null, INPUT_VALUE, false);
+    expect(model.calcTargetValue).toHaveBeenCalledWith(false, INPUT_VALUE, eventClick);
   });
 });

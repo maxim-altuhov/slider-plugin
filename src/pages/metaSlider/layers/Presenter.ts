@@ -16,23 +16,19 @@ class Presenter {
     this._view.subscribe(this.updateModel.bind(this));
   }
 
-  // Passing new data from the model and updating the view and subview
-  updateViews(options: IPluginOptions) {
-    this._view.updateViews(options);
-  }
-
   // Error output if there are incorrect values in the slider settings
   renderError(message: string, options: IPluginOptions) {
     this._view.renderError(message, options);
   }
 
+  // Passing new data from the model and updating the view and subview
+  updateViews(options: IPluginOptions) {
+    this._view.updateViews(options);
+  }
+
   // Calling a method in the model to calculate the values of the thumbs slider positions
-  updateModel(
-    event: (Event & { clientY: number; clientX: number }) | null,
-    inputValue?: number,
-    onlyReturn = false,
-  ) {
-    this._model.calcTargetValue(event, inputValue, onlyReturn);
+  updateModel(event: MouseEvent, inputValue?: number, onlyReturn = false) {
+    this._model.calcTargetValue(onlyReturn, inputValue, event);
   }
 }
 

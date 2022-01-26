@@ -161,7 +161,6 @@ describe('Checking the "ControlPanel"', () => {
     mockUnsubscribe.mockRestore();
   });
 
-  // eslint-disable-next-line fsd/no-function-declaration-in-event-listener
   test('Checking the "watchTheSlider" method', () => {
     const mockInitCheckingDependencies = jest
       .spyOn<ControlPanel, any>(classControlPanel, '_initCheckingDependencies')

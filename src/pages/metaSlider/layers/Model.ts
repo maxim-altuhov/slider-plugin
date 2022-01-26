@@ -28,11 +28,7 @@ class Model extends Observer {
   }
 
   // Calculation of thumbs slider position values
-  calcTargetValue(
-    event: (Event & { clientY: number; clientX: number }) | null,
-    inputValue?: number,
-    onlyReturn = false,
-  ): number | null {
+  calcTargetValue(onlyReturn: boolean, inputValue?: number, event?: MouseEvent): number | null {
     const {
       $elemSlider,
       isVertical,
@@ -454,8 +450,8 @@ class Model extends Observer {
       }
 
       this.opt.initValueFirst = isRange ? this.opt.initValueFirst : minValue;
-      this.opt.initValueFirst = this.calcTargetValue(null, this.opt.initValueFirst, true);
-      this.opt.initValueSecond = this.calcTargetValue(null, this.opt.initValueSecond, true);
+      this.opt.initValueFirst = this.calcTargetValue(true, this.opt.initValueFirst);
+      this.opt.initValueSecond = this.calcTargetValue(true, this.opt.initValueSecond);
 
       if (this.opt.initValueFirst !== null && this.opt.initValueSecond !== null) {
         if (customValues.length > 0) {

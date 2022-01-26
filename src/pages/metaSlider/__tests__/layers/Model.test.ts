@@ -114,7 +114,7 @@ describe('Checking the "Model" layer', () => {
       classModel.opt.numberOfDecimalPlaces = 0;
 
       // @ts-ignore
-      classModel.calcTargetValue(fakeEvent, checkingValue, onlyReturn);
+      classModel.calcTargetValue(onlyReturn, checkingValue, fakeEvent);
 
       if (isVertical) {
         expect(mockGetBoundingClientRect).toHaveBeenCalled();
@@ -711,8 +711,8 @@ describe('Checking the "Model" layer', () => {
 
       if (!isRange) expect(initValueFirst).toBe(minValue);
 
-      expect(classModel.calcTargetValue).toHaveBeenNthCalledWith(1, null, initValueFirst, true);
-      expect(classModel.calcTargetValue).toHaveBeenNthCalledWith(2, null, initValueSecond, true);
+      expect(classModel.calcTargetValue).toHaveBeenNthCalledWith(1, true, initValueFirst);
+      expect(classModel.calcTargetValue).toHaveBeenNthCalledWith(2, true, initValueSecond);
 
       const initValuesIsDefined = initValueFirst && initValueSecond;
 
