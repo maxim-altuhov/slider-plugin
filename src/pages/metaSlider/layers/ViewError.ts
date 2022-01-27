@@ -1,8 +1,8 @@
 class ViewError {
   private _$selector: undefined | JQuery<HTMLElement>;
-  private _$elemErrorInfo: null | JQuery<HTMLElement> | undefined;
-  private _$elemErrorText: null | JQuery<HTMLElement> | undefined;
-  private _$elemErrorCloseBtn: null | JQuery<HTMLElement> | undefined;
+  private _$elemErrorInfo: undefined | JQuery<HTMLElement>;
+  private _$elemErrorText: undefined | JQuery<HTMLElement>;
+  private _$elemErrorCloseBtn: undefined | JQuery<HTMLElement>;
 
   renderError(message: string, options: IPluginOptions) {
     const { $selector, $elemSlider, showError } = options;
@@ -44,9 +44,9 @@ class ViewError {
     if (this._$elemErrorCloseBtn && this._$elemErrorInfo) {
       this._$elemErrorCloseBtn.off('click.closeBtn');
       this._$elemErrorInfo.remove();
-      this._$elemErrorInfo = null;
-      this._$elemErrorText = null;
-      this._$elemErrorCloseBtn = null;
+      this._$elemErrorInfo = undefined;
+      this._$elemErrorText = undefined;
+      this._$elemErrorCloseBtn = undefined;
     }
   }
 }

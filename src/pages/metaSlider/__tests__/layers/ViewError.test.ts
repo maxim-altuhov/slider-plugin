@@ -28,9 +28,9 @@ describe('Checking the "ViewError" layer', () => {
   };
 
   const testSettings: IPluginOptions = $.extend({}, InitSettings, defaultSettings);
-  let $elemErrorInfo: null | JQuery<HTMLElement> | undefined;
-  let $elemErrorText: null | JQuery<HTMLElement> | undefined;
-  let $elemErrorCloseBtn: null | JQuery<HTMLElement> | undefined;
+  let $elemErrorInfo: JQuery<HTMLElement> | undefined;
+  let $elemErrorText: JQuery<HTMLElement> | undefined;
+  let $elemErrorCloseBtn: JQuery<HTMLElement> | undefined;
 
   beforeEach(() => {
     classViewError.renderError(TEXT_MSG, testSettings);
@@ -70,16 +70,16 @@ describe('Checking the "ViewError" layer', () => {
   });
 
   test('Checking the "_setEventErrorClose" method, event "click" => init _handleCloseBtnClick => When we click on the button to close the error window, it is deleted and all selectors are reset', () => {
-    expect(classViewError['_$elemErrorInfo']).not.toBeNull();
-    expect(classViewError['_$elemErrorText']).not.toBeNull();
-    expect(classViewError['_$elemErrorCloseBtn']).not.toBeNull();
+    expect(classViewError['_$elemErrorInfo']).toBeDefined();
+    expect(classViewError['_$elemErrorText']).toBeDefined();
+    expect(classViewError['_$elemErrorCloseBtn']).toBeDefined();
     expect(document.body.innerHTML).not.toBe(initHTMLBlock);
 
     classViewError['_$elemErrorCloseBtn']?.trigger('click');
 
-    expect(classViewError['_$elemErrorInfo']).toBeNull();
-    expect(classViewError['_$elemErrorText']).toBeNull();
-    expect(classViewError['_$elemErrorCloseBtn']).toBeNull();
+    expect(classViewError['_$elemErrorInfo']).toBeUndefined();
+    expect(classViewError['_$elemErrorText']).toBeUndefined();
+    expect(classViewError['_$elemErrorCloseBtn']).toBeUndefined();
     expect(document.body.innerHTML).toBe(initHTMLBlock);
   });
 });
