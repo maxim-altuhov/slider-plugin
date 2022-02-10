@@ -46,8 +46,9 @@ class ViewThumbs {
     const { mainColor, colorThumb, colorBorderForThumb } = options;
     const backgroundColor = colorThumb || mainColor;
 
-    this._$elemThumbs.each((_, thumb) => {
-      $(thumb).css({ 'background-color': backgroundColor, 'border-color': colorBorderForThumb });
+    this._$elemThumbs.css({
+      'background-color': backgroundColor,
+      'border-color': colorBorderForThumb,
     });
   }
 
@@ -85,12 +86,8 @@ class ViewThumbs {
   }
 
   private _setEventsThumbs(options: IPluginOptions) {
-    this._$elemThumbs.each((_, thumb) => {
-      const $currentThumb = $(thumb);
-
-      $currentThumb.on('pointerdown.thumb', this._handleThumbPointerdown.bind(this));
-      $currentThumb.on('keydown.thumb', this._handleThumbKeydown.bind(this, options));
-    });
+    this._$elemThumbs.on('pointerdown.thumb', this._handleThumbPointerdown.bind(this));
+    this._$elemThumbs.on('keydown.thumb', this._handleThumbKeydown.bind(this, options));
   }
 
   // Changing the position of the thumbs sliders when using the keyboard

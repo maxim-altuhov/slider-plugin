@@ -87,22 +87,18 @@ class ViewMarkers {
     } = options;
 
     const backgroundColor = colorMarker || mainColor;
+    const styleProp = {
+      display: '',
+      color: colorTextForMarker,
+      'background-color': backgroundColor,
+      'border-color': colorBorderForMarker,
+    };
 
-    this._$elemMarkers.each((_, marker) => {
-      const $currentMarker = $(marker);
-      const styleProp = {
-        display: '',
-        color: colorTextForMarker,
-        'background-color': backgroundColor,
-        'border-color': colorBorderForMarker,
-      };
-
-      if (showMarkers) {
-        $currentMarker.css(styleProp);
-      } else {
-        $currentMarker.css('display', 'none');
-      }
-    });
+    if (showMarkers) {
+      this._$elemMarkers.css(styleProp);
+    } else {
+      this._$elemMarkers.css('display', 'none');
+    }
   }
 }
 

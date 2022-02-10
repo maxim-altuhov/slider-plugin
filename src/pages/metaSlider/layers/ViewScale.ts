@@ -238,9 +238,7 @@ class ViewScale {
 
   // Event handler for clicks on scale values
   private _setEventsScalePoints() {
-    this._$elemScalePoints.each((_, elemPoint) => {
-      $(elemPoint).on('click.scalePoint', this._handleScalePointClick.bind(this));
-    });
+    this._$elemScalePoints.on('click.scalePoint', this._handleScalePointClick.bind(this));
   }
 
   // Gets values when clicking on the slider scale
