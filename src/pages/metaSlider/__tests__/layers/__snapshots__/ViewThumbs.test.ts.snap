@@ -8,5 +8,7 @@ exports[`Checking the "ViewThumbs" layer, before first initialization. State bef
     <button type=\\"button\\" class=\\"meta-slider__thumb js-meta-slider__thumb meta-slider__thumb_right\\" data-value=\\"\\" data-text=\\"\\">
       <span class=\\"meta-slider__marker js-meta-slider__marker meta-slider__marker_right\\"></span>
     </button>
-    <div class=\\"meta-slider__scale js-meta-slider__scale\\"></div></div>"
+    <div class=\\"meta-slider__scale js-meta-slider__scale\\">
+      <button type=\\"button\\" class=\\"meta-slider__scale-point js-meta-slider__scale-point\\" style=\\"display: none;\\"></button>
+    </div></div>"
 `;

@@ -122,7 +122,7 @@ describe('Checking the "ViewScale" layer', () => {
         'left',
         `${((Number($scalePoint.attr('data-value')) - minValue) / (maxValue - minValue)) * 100}%`,
       );
-      expect(classViewScale['_calcScalePointsSize']).toHaveBeenCalledWith(scalePoint);
+      expect(classViewScale['_calcScalePointsSize']).toHaveBeenCalledWith(scalePoint, testSettings);
     });
 
     expect(classViewScale['_setEventsScalePoints']).toHaveBeenCalled();
@@ -199,6 +199,44 @@ describe('Checking the "ViewScale" layer', () => {
     });
   });
 
+  test.each`
+    isVerticalStatus | testScalePointHeight | testScalePointWidth
+    ${true}          | ${50}                | ${null}
+    ${false}         | ${null}              | ${100}
+    ${true}          | ${null}              | ${null}
+    ${false}         | ${null}              | ${null}
+  `(
+    'Checking the "_calcScalePointsSize" method => option "isVertical"',
+    ({ isVerticalStatus, testScalePointHeight, testScalePointWidth }) => {
+      const $testScalePoint = classViewScale['_$elemScalePoints'].eq(0);
+
+      testSettings.isVertical = isVerticalStatus;
+      testSettings.testHeight = testScalePointHeight;
+      testSettings.testWidth = testScalePointWidth;
+      classViewScale['_calcScalePointsSize']($testScalePoint[0], testSettings);
+
+      const { isVertical, testHeight, testWidth } = testSettings;
+
+      if (isVertical && testHeight) {
+        expect(classViewScale['_scalePointsSize']).toBe(testScalePointHeight);
+      }
+
+      if (isVertical && !testHeight) {
+        expect(classViewScale['_scalePointsSize']).toBe(0);
+      }
+
+      if (!isVertical && testWidth) {
+        expect(classViewScale['_scalePointsSize']).toBe(testScalePointWidth);
+      }
+
+      if (!isVertical && !testWidth) {
+        expect(classViewScale['_scalePointsSize']).toBe(0);
+      }
+
+      classViewScale['_scalePointsSize'] = 0;
+    },
+  );
+
   test('Checking the "_setStyleForScale" method => "defaultSettings"', () => {
     classViewScale.update(testSettings);
     const { colorForScale } = testSettings;
@@ -263,14 +301,18 @@ describe('Checking the "ViewScale" layer', () => {
     expect(skipScalePointsArray.length > 0).toBeTruthy();
 
     skipScalePointsArray.forEach(($scalePointSkip) => {
-      expect(calcScalePointsSize).toHaveBeenCalledWith($scalePointSkip[0]);
+      expect(calcScalePointsSize).toHaveBeenCalledWith($scalePointSkip[0], testSettings);
     });
 
     expect(mapSkipScalePoints.set).toHaveBeenCalledWith(expect.any(Number), [
       ...skipScalePointsArray,
     ]);
 
-    expect(checkingSkipScalePointSize).toHaveBeenCalledWith(SLIDER_SIZE_PX, expect.any(Number));
+    expect(checkingSkipScalePointSize).toHaveBeenCalledWith(
+      SLIDER_SIZE_PX,
+      expect.any(Number),
+      testSettings,
+    );
   });
 
   test('Checking the "_checkingScaleSize" method => if the number of scale points is even and > 6"', () => {
@@ -294,7 +336,7 @@ describe('Checking the "ViewScale" layer', () => {
 
     expect(skipScalePointsArray.length > 0).toBeTruthy();
     skipScalePointsArray.forEach(($scalePointSkip) => {
-      expect(calcScalePointsSize).toHaveBeenCalledWith($scalePointSkip[0]);
+      expect(calcScalePointsSize).toHaveBeenCalledWith($scalePointSkip[0], testSettings);
     });
   });
 
@@ -321,7 +363,7 @@ describe('Checking the "ViewScale" layer', () => {
 
     expect(skipScalePointsArray.length > 0).toBeTruthy();
     skipScalePointsArray.forEach(($scalePointSkip) => {
-      expect(calcScalePointsSize).toHaveBeenCalledWith($scalePointSkip[0]);
+      expect(calcScalePointsSize).toHaveBeenCalledWith($scalePointSkip[0], testSettings);
     });
   });
 
@@ -352,11 +394,14 @@ describe('Checking the "ViewScale" layer', () => {
     classViewScale['_mapSkipScalePoints'].set(CONTROL_SIZE_PX, [$testScalePoint]);
     expect(classViewScale['_mapSkipScalePoints'].size > 0).toBeTruthy();
 
-    classViewScale['_checkingSkipScalePointSize'](SLIDER_SIZE_PX, MARGIN_PX);
+    classViewScale['_checkingSkipScalePointSize'](SLIDER_SIZE_PX, MARGIN_PX, testSettings);
     expect($testScalePoint[0].outerHTML).toMatchSnapshot();
     expect($testScalePoint.attr('tabindex')).toBeUndefined();
     expect($testScalePoint.attr('class')).not.toMatch(/meta-slider__scale-point_skipped/);
-    expect(classViewScale['_calcScalePointsSize']).toHaveBeenCalledWith($testScalePoint[0]);
+    expect(classViewScale['_calcScalePointsSize']).toHaveBeenCalledWith(
+      $testScalePoint[0],
+      testSettings,
+    );
     expect(classViewScale['_mapSkipScalePoints'].delete).toHaveBeenCalledWith(CONTROL_SIZE_PX);
     expect(classViewScale['_mapSkipScalePoints'].size).toBe(0);
   });

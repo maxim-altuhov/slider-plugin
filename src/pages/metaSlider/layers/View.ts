@@ -9,8 +9,8 @@ import ViewError from './ViewError';
 class View extends Observer implements IMainView {
   readonly viewError = new ViewError();
   readonly subViewsList: Record<string, ISubViewUpdate> = {
-    viewScale: new ViewScale(this),
     viewSlider: new ViewSlider(this),
+    viewScale: new ViewScale(this),
     viewThumbs: new ViewThumbs(this),
     viewMarkers: new ViewMarkers(),
   };
@@ -34,7 +34,9 @@ class View extends Observer implements IMainView {
     <button type="button" class="meta-slider__thumb js-meta-slider__thumb meta-slider__thumb_right" data-value="" data-text="">
       <span class="meta-slider__marker js-meta-slider__marker meta-slider__marker_right"></span>
     </button>
-    <div class="meta-slider__scale js-meta-slider__scale"></div>`;
+    <div class="meta-slider__scale js-meta-slider__scale">
+      <button type="button" class="meta-slider__scale-point js-meta-slider__scale-point" style="display: none;"></button>
+    </div>`;
 
     $blockSlider.html(HTMLBlock);
 

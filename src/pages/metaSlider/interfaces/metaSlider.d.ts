@@ -47,6 +47,8 @@ interface IPluginOptions {
   textValueSecond: string;
   textValuesArray: string[];
   valuesAsPercentageArray: number[];
+  testWidth?: null | number;
+  testHeight?: null | number;
 }
 
 interface ISubViewUpdate {

@@ -22,6 +22,8 @@ class Plugin {
     'textValuesArray',
     'valuesAsPercentageArray',
     'stepAsPercent',
+    'testHeight',
+    'testWidth',
   ];
 
   static init($selector: JQuery<HTMLElement>, settings?: object & { [key: string]: any }) {

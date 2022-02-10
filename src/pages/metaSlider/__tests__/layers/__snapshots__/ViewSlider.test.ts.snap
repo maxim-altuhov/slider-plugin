@@ -8,5 +8,7 @@ exports[`Checking the "ViewSlider" layer. State before first initialization the 
     <button type=\\"button\\" class=\\"meta-slider__thumb js-meta-slider__thumb meta-slider__thumb_right\\" data-value=\\"\\" data-text=\\"\\" style=\\"height: 20px;\\">
       <span class=\\"meta-slider__marker js-meta-slider__marker meta-slider__marker_right\\" style=\\"height: 20px;\\"></span>
     </button>
-    <div class=\\"meta-slider__scale js-meta-slider__scale\\"><button type=\\"button\\" class=\\"meta-slider__scale-point js-meta-slider__scale-point\\" style=\\"height: 20px;\\"></button></div></div>"
+    <div class=\\"meta-slider__scale js-meta-slider__scale\\">
+      <button type=\\"button\\" class=\\"meta-slider__scale-point js-meta-slider__scale-point\\" style=\\"display: none; height: 20px;\\"></button>
+    <button type=\\"button\\" class=\\"meta-slider__scale-point js-meta-slider__scale-point\\" style=\\"height: 20px;\\"></button></div></div>"
 `;

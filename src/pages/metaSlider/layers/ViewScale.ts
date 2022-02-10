@@ -12,6 +12,7 @@ class ViewScale {
   private _verifKeysObj = {
     renderScaleKeys: [
       'init',
+      'isVertical',
       'showScale',
       'initAutoScaleCreation',
       'step',
@@ -103,7 +104,7 @@ class ViewScale {
         const valueInScalePoint = Number($scalePoint.attr('data-value'));
 
         const position = (valueInScalePoint - minValue) / (maxValue - minValue);
-        this._calcScalePointsSize(scalePoint);
+        this._calcScalePointsSize(scalePoint, options);
         $scalePoint.css('left', `${position * 100}%`);
       });
 
@@ -115,8 +116,14 @@ class ViewScale {
     }
   }
 
-  private _calcScalePointsSize(targetScalePoint: HTMLElement) {
-    this._scalePointsSize += targetScalePoint.offsetWidth;
+  private _calcScalePointsSize(targetScalePoint: HTMLElement, options: IPluginOptions) {
+    const { isVertical, testHeight, testWidth } = options;
+
+    if (isVertical) {
+      this._scalePointsSize += testHeight ?? targetScalePoint.offsetHeight;
+    } else {
+      this._scalePointsSize += testWidth ?? targetScalePoint.offsetWidth;
+    }
   }
 
   private _setStyleForScale(options: IPluginOptions) {
@@ -174,13 +181,13 @@ class ViewScale {
           }
 
           if (!currentScalePoint.classList.contains('meta-slider__scale-point_skipped'))
-            this._calcScalePointsSize(currentScalePoint);
+            this._calcScalePointsSize(currentScalePoint, options);
         });
 
         this._mapSkipScalePoints.set(totalSizeScalePoints, [...this._skipScalePointsArray]);
       }
 
-      this._checkingSkipScalePointSize(sliderSize, MARGIN_PX);
+      this._checkingSkipScalePointSize(sliderSize, MARGIN_PX, options);
     }
   }
 
@@ -199,7 +206,7 @@ class ViewScale {
    * The method tracks the slider size and returns hidden scale divisions,
    * if they already fit on the scale
    */
-  private _checkingSkipScalePointSize(sliderSize: number, margin: number) {
+  private _checkingSkipScalePointSize(sliderSize: number, margin: number, options: IPluginOptions) {
     this._mapSkipScalePoints.forEach((scalePointSkipArray, controlSize) => {
       if (sliderSize > controlSize + margin / 3) {
         scalePointSkipArray.forEach(($scalePoint) => {
@@ -208,7 +215,7 @@ class ViewScale {
             .removeClass('meta-slider__scale-point_skipped')
             .css({ color: 'inherit', borderColor: '' });
 
-          this._calcScalePointsSize($scalePoint[0]);
+          this._calcScalePointsSize($scalePoint[0], options);
         });
 
         this._mapSkipScalePoints.delete(controlSize);
