@@ -87,8 +87,7 @@ const setBabelOptions = (presets) => {
         '@babel/preset-env',
         {
           useBuiltIns: 'usage',
-          corejs: 3,
-          targets: { node: 'current' },
+          corejs: { version: '3.8', proposals: true },
         },
       ],
     ],

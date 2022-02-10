@@ -1,10 +1,13 @@
 import $ from 'jquery';
 
 import '../metaSlider/metaSlider';
+import showMessageForIE from './utils/showMessageForIE';
 import ControlPanel from './ts/ControlPanel';
 import './index.scss';
 
 $(() => {
+  showMessageForIE();
+
   const $slider1 = $('#slider-1');
   const $slider2 = $('#slider-2');
   const $slider3 = $('#slider-3');
