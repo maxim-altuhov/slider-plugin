@@ -44,15 +44,6 @@ describe('Checking the "View" layer', () => {
     expect(classView['_$selector']).toBe($initSelector);
   });
 
-  test('Checking the "renderError" method', () => {
-    const FAKE_MESSAGE = 'message';
-    jest.spyOn(classView.viewError, 'renderError').mockImplementation();
-
-    classView.renderError(FAKE_MESSAGE, InitSettings);
-
-    expect(classView.viewError.renderError).toHaveBeenCalledWith(FAKE_MESSAGE, InitSettings);
-  });
-
   test('When the "update" method is performed at the "View" level, an update occurs in the dependent subview from "subViewsList"-> %s and an object with options is passed to the "update"', () => {
     classView.updateViews(InitSettings);
 

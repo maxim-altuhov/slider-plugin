@@ -18,13 +18,6 @@ describe('Checking the "Model" layer', () => {
   InitSettings.$elemMarkers = $selector.find('.js-meta-slider__marker');
   InitSettings.$elemScale = $selector.find('.js-meta-slider__scale');
 
-  const fakeErrMessage = {
-    step: 'Error message',
-    stepSizeForScale: 'Error message',
-    minAndMaxValue: 'Error message',
-    initValue: 'Error message',
-  };
-
   afterEach(() => {
     classModel.opt = { ...InitSettings };
     jest.restoreAllMocks();
@@ -35,7 +28,6 @@ describe('Checking the "Model" layer', () => {
     expect(classModel.opt).toBe(InitSettings);
     expect(classModel.opt.$selector).toBe($selector);
     expect(classModel.observerList).toHaveLength(0);
-    expect(classModel.errorEvent).toBeDefined();
     expect(classModel['_listSavedStatus']).toBeDefined();
   });
 
@@ -325,17 +317,17 @@ describe('Checking the "Model" layer', () => {
     jest.spyOn(Number.prototype, 'toFixed');
     const mockIsInteger = jest.spyOn(Number, 'isInteger');
     const numberOfDecimalPlacesCheckingList = [-5, 5, 0, 2.5];
+    const listVerifKeys = ['init', 'numberOfDecimalPlaces'];
+    const isInit = key === 'init';
 
     classModel.opt.key = key;
 
     numberOfDecimalPlacesCheckingList.forEach((currentNum) => {
       classModel.opt.numberOfDecimalPlaces = currentNum;
-
-      const CONTROL_KEY = 'numberOfDecimalPlaces';
       const { numberOfDecimalPlaces } = classModel.opt;
-      const listVerifKeys = ['init', 'numberOfDecimalPlaces'];
 
       [true, false].forEach((status) => {
+        const CONTROL_KEY = 'numberOfDecimalPlaces';
         classModel.opt.calcNumberOfDecimalPlaces = status;
 
         classModel['_checkingNumberOfDecimalPlaces']();
@@ -345,9 +337,12 @@ describe('Checking the "Model" layer', () => {
         }
       });
 
+      if (currentNum !== 0 && isInit) {
+        expect(classModel.opt.calcNumberOfDecimalPlaces).toBe(false);
+      }
+
       if (listVerifKeys.includes(key)) {
         if (currentNum === 2.5) expect(numberOfDecimalPlaces.toFixed).toHaveBeenCalled();
-
         if (currentNum === -5) {
           expect(mockIsInteger).toHaveBeenCalledWith(0);
         } else {
@@ -377,6 +372,8 @@ describe('Checking the "Model" layer', () => {
   test.each`
     key                        | testMinValue | testMaxValue | valueFirst | valueSecond
     ${'init'}                  | ${0}         | ${100}       | ${10}      | ${80}
+    ${'init'}                  | ${20}        | ${100}       | ${10}      | ${80}
+    ${'init'}                  | ${0}         | ${70}        | ${10}      | ${80}
     ${'init'}                  | ${100}       | ${100}       | ${null}    | ${null}
     ${'minValue'}              | ${200}       | ${100}       | ${10}      | ${80}
     ${'maxValue'}              | ${200}       | ${100}       | ${10}      | ${80}
@@ -385,7 +382,6 @@ describe('Checking the "Model" layer', () => {
     'Checking the "_checkingMinMaxValues" method => key: $key, minValue: $testMinValue, maxValue: $testMaxValue, initValueFirst: $valueFirst, initValueSecond: $valueSecond',
     ({ key, testMinValue, testMaxValue, valueFirst, valueSecond }) => {
       jest.spyOn(Number.prototype, 'toFixed');
-      const mockErrorEvent = jest.spyOn(classModel.errorEvent, 'notify').mockImplementation();
 
       classModel.opt.key = key;
       classModel.opt.initValueFirst = valueFirst;
@@ -394,7 +390,7 @@ describe('Checking the "Model" layer', () => {
       classModel.opt.maxValue = testMaxValue;
       classModel.opt.numberOfDecimalPlaces = 2;
 
-      classModel['_checkingMinMaxValues'](fakeErrMessage);
+      classModel['_checkingMinMaxValues']();
 
       // prettier-ignore
       const { 
@@ -405,15 +401,15 @@ describe('Checking the "Model" layer', () => {
         numberOfDecimalPlaces,
       } = classModel.opt;
 
+      const isInit = key === 'init';
+      const minValueIsIncorrect = initValueFirst && testMinValue > initValueFirst && isInit;
+      const maxValueIsIncorrect = initValueSecond && testMaxValue < initValueSecond && isInit;
+
+      if (minValueIsIncorrect) expect(minValue).toBe(initValueFirst);
+      if (maxValueIsIncorrect) expect(maxValue).toBe(initValueSecond);
+
       expect(minValue.toFixed).toHaveBeenCalledWith(numberOfDecimalPlaces);
       expect(maxValue.toFixed).toHaveBeenCalledWith(numberOfDecimalPlaces);
-
-      if (minValue > maxValue) {
-        expect(mockErrorEvent).toHaveBeenCalledWith(
-          fakeErrMessage['minAndMaxValue'],
-          classModel.opt,
-        );
-      }
 
       if (minValue >= maxValue) {
         if (!initValueFirst || !initValueSecond) {
@@ -486,7 +482,6 @@ describe('Checking the "Model" layer', () => {
     ({ key, min, max, stepForScale, stepValue, initAutoScale, checkingStep }) => {
       jest.spyOn<Model, any>(classModel, '_checkingCorrectStepSizeForScale').mockImplementation();
       jest.spyOn(Number.prototype, 'toFixed');
-      const mockErrorEvent = jest.spyOn(classModel.errorEvent, 'notify').mockImplementation();
 
       classModel.opt.key = key;
       classModel.opt.minValue = min;
@@ -498,8 +493,13 @@ describe('Checking the "Model" layer', () => {
       classModel.opt.numberOfDecimalPlaces = 2;
 
       const diffMinAndMax = classModel.opt.maxValue - classModel.opt.minValue;
+      const isInit = key === 'init';
 
-      classModel['_checkingStepSize'](fakeErrMessage);
+      classModel['_checkingStepSize']();
+
+      if (stepForScale && isInit) {
+        expect(classModel.opt.initAutoScaleCreation).toBe(false);
+      }
 
       const {
         stepSizeForScale: stepScale,
@@ -511,15 +511,8 @@ describe('Checking the "Model" layer', () => {
 
       expect(step.toFixed).toHaveBeenCalledWith(numberOfDecimalPlaces);
 
-      if (!stepForScale) {
-        expect(stepScale).toBe(step);
-      }
-
-      if (step <= 0 || step > diffMinAndMax) {
-        expect(step).toBe(diffMinAndMax);
-        expect(mockErrorEvent).toHaveBeenCalledWith(fakeErrMessage['step'], classModel.opt);
-      }
-
+      if (!stepForScale) expect(stepScale).toBe(step);
+      if (step <= 0 || step > diffMinAndMax) expect(step).toBe(diffMinAndMax);
       if (initAutoScaleCreation) {
         expect(checkingStepSizeForScale).toBe(false);
         expect(stepScale).toBe(step);
@@ -527,16 +520,9 @@ describe('Checking the "Model" layer', () => {
 
       const rulesStepScale = stepScale && (stepScale <= 0 || stepScale > diffMinAndMax);
 
-      if (rulesStepScale) {
-        expect(stepScale).toBe(diffMinAndMax);
-        expect(mockErrorEvent).toHaveBeenCalledWith(
-          fakeErrMessage['stepSizeForScale'],
-          classModel.opt,
-        );
-      }
-
+      if (rulesStepScale) expect(stepScale).toBe(diffMinAndMax);
       if (checkingStepSizeForScale && !initAutoScaleCreation) {
-        expect(classModel['_checkingCorrectStepSizeForScale']).toHaveBeenCalledWith(fakeErrMessage);
+        expect(classModel['_checkingCorrectStepSizeForScale']).toHaveBeenCalled();
       } else {
         expect(classModel['_checkingCorrectStepSizeForScale']).not.toHaveBeenCalled();
       }
@@ -555,24 +541,18 @@ describe('Checking the "Model" layer', () => {
     ({ stepForScale, expected }) => {
       jest.spyOn(Number.prototype, 'toFixed');
       const mockIsInteger = jest.spyOn(Number, 'isInteger');
-      const mockErrorEvent = jest.spyOn(classModel.errorEvent, 'notify').mockImplementation();
 
       classModel.opt.stepSizeForScale = stepForScale;
       classModel.opt.minValue = 0;
       classModel.opt.maxValue = 100;
 
-      classModel['_checkingCorrectStepSizeForScale'](fakeErrMessage);
+      classModel['_checkingCorrectStepSizeForScale']();
       const { maxValue, minValue, stepSizeForScale } = classModel.opt;
 
       expect(mockIsInteger).toHaveBeenNthCalledWith(1, stepForScale);
 
       if (!Number.isInteger((maxValue - minValue) / stepForScale) && stepForScale > 0) {
         expect(stepSizeForScale).toBe(expected);
-
-        expect(mockErrorEvent).toHaveBeenCalledWith(
-          fakeErrMessage['stepSizeForScale'],
-          classModel.opt,
-        );
 
         if (!Number.isInteger(stepForScale) && stepSizeForScale) {
           expect(stepSizeForScale.toFixed).toHaveBeenCalledWith(1);
@@ -662,8 +642,6 @@ describe('Checking the "Model" layer', () => {
   `(
     'Checking the "_checkingInitValues" method => key: $key, initValueFirst: $valFirst, initValueSecond: $valSec, isRange: $range, customValues: $customVal',
     ({ key, valFirst, valSec, min, max, range, customVal }) => {
-      const mockErrorEvent = jest.spyOn(classModel.errorEvent, 'notify').mockImplementation();
-
       jest
         .spyOn(classModel, 'calcTargetValue')
         // @ts-ignore
@@ -677,7 +655,7 @@ describe('Checking the "Model" layer', () => {
       classModel.opt.isRange = range;
       classModel.opt.customValues = customVal;
 
-      classModel['_checkingInitValues'](fakeErrMessage);
+      classModel['_checkingInitValues']();
 
       const {
         initValueFirst,
@@ -699,16 +677,8 @@ describe('Checking the "Model" layer', () => {
       const secondValueIsIncorrect = valSec > maxValue || valSec < minValue;
       const valuesOverlap = valFirst > valSec;
 
-      if (firstValueIsIncorrect || valuesOverlap) {
-        expect(initValueFirst).toBe(minValue);
-        expect(mockErrorEvent).toBeCalledWith(fakeErrMessage['initValue'], classModel.opt);
-      }
-
-      if (secondValueIsIncorrect || valuesOverlap) {
-        expect(initValueSecond).toBe(maxValue);
-        expect(mockErrorEvent).toBeCalledWith(fakeErrMessage['initValue'], classModel.opt);
-      }
-
+      if (firstValueIsIncorrect || valuesOverlap) expect(initValueFirst).toBe(minValue);
+      if (secondValueIsIncorrect || valuesOverlap) expect(initValueSecond).toBe(maxValue);
       if (!isRange) expect(initValueFirst).toBe(minValue);
 
       expect(classModel.calcTargetValue).toHaveBeenNthCalledWith(1, true, initValueFirst);

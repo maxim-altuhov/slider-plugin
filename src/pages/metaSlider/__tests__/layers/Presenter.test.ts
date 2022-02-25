@@ -26,13 +26,11 @@ describe('Checking the "Presenter" layer', () => {
 
   test('Initializing the "setObservers" method', () => {
     model.subscribe = jest.fn();
-    model.errorEvent.subscribe = jest.fn();
     view.subscribe = jest.fn();
 
     presenter.setObservers();
 
     expect(model.subscribe).toHaveBeenCalled();
-    expect(model.errorEvent.subscribe).toHaveBeenCalled();
     expect(view.subscribe).toHaveBeenCalled();
   });
 
@@ -41,13 +39,6 @@ describe('Checking the "Presenter" layer', () => {
     presenter.updateViews(InitSettings);
 
     expect(view.updateViews).toHaveBeenCalledWith(InitSettings);
-  });
-
-  test('Initializing the "renderError" method', () => {
-    view.renderError = jest.fn();
-    presenter.renderError('message', InitSettings);
-
-    expect(view.renderError).toHaveBeenCalledWith('message', InitSettings);
   });
 
   test('Initializing the "updateModel" method', () => {

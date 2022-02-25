@@ -13,7 +13,6 @@ const TypeSettings: { [key: string]: string } = {
   initAutoMargins: 'boolean',
   initScaleAdjustment: 'boolean',
   calcNumberOfDecimalPlaces: 'boolean',
-  showError: 'boolean',
   showScale: 'boolean',
   showMarkers: 'boolean',
   showBackground: 'boolean',

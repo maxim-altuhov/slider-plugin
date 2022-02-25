@@ -12,13 +12,7 @@ class Presenter {
   // Adding methods to the Observer
   setObservers() {
     this._model.subscribe(this.updateViews.bind(this));
-    this._model.errorEvent.subscribe(this.renderError.bind(this));
     this._view.subscribe(this.updateModel.bind(this));
-  }
-
-  // Error output if there are incorrect values in the slider settings
-  renderError(message: string, options: IPluginOptions) {
-    this._view.renderError(message, options);
   }
 
   // Passing new data from the model and updating the view and subview

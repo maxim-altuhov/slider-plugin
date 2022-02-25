@@ -23,7 +23,6 @@ interface IPluginOptions {
   initAutoMargins: boolean;
   initScaleAdjustment: boolean;
   calcNumberOfDecimalPlaces: boolean;
-  showError: boolean;
   showScale: boolean;
   showMarkers: boolean;
   showBackground: boolean;
@@ -54,20 +53,9 @@ interface IPluginOptions {
 interface ISubViewUpdate {
   update(options: IPluginOptions): void;
 }
-
-interface ISubViewError {
-  renderError(message: string, options: IPluginOptions): void;
-}
-
 interface IMainView {
-  readonly viewError: ISubViewError;
   readonly subViewsList: Record<string, ISubViewUpdate>;
   renderSlider($initSelector: JQuery): void;
-  renderError(message: string, options: IPluginOptions): void;
   updateViews(options: IPluginOptions): void;
   updateModel(event: Event, targetValue?: number): void;
-}
-
-interface IErrMessage {
-  [key: string]: string;
 }

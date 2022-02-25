@@ -2,7 +2,6 @@ import Observer from '../patterns/Observer';
 
 class Model extends Observer {
   opt;
-  errorEvent = new Observer();
   private _listSavedStatus: { [index: string]: boolean | string } = {};
 
   constructor(selector: JQuery<HTMLElement>, options: IPluginOptions) {
@@ -154,24 +153,14 @@ class Model extends Observer {
 
   // Checking incoming slider settings
   private _checkingIncomingProp() {
-    const errMessage: IErrMessage = {
-      initValue: `An error occurred in the input data for one or more thumbs of the slider.
-        The default value is set.`,
-      minAndMaxValue: `The maximum value set for the slider is less than its minimum value.
-        The default value is set.`,
-      stepSizeForScale: `Set the correct step value for the division scale.
-        The closest optimal value has been set.`,
-      step: 'The slider step value cannot be greater than the difference between max. and min. value, and less than or equal to 0.',
-    };
-
     this._checkingIsVerticalSlider();
     this._checkingNumberOfDecimalPlaces();
-    this._checkingMinMaxValues(errMessage);
+    this._checkingMinMaxValues();
     this._checkingShowScaleStatus();
-    this._checkingStepSize(errMessage);
+    this._checkingStepSize();
     this._checkingCustomValues();
     this._calcStepAsPercentage();
-    this._checkingInitValues(errMessage);
+    this._checkingInitValues();
   }
 
   private _getSliderSelectors() {
@@ -216,17 +205,20 @@ class Model extends Observer {
       ],
       checkNumberKeys: ['init', 'numberOfDecimalPlaces'],
     };
-    const { key, calcNumberOfDecimalPlaces } = this.opt;
+    const { key } = this.opt;
     const { getNumberKeys, checkNumberKeys } = verifKeysObj;
+    const isInit = key === 'init';
 
-    if (getNumberKeys.includes(key) && calcNumberOfDecimalPlaces) this._getNumberOfDecimalPlaces();
+    if (this.opt.numberOfDecimalPlaces < 0) this.opt.numberOfDecimalPlaces = 0;
 
-    if (checkNumberKeys.includes(key)) {
-      if (this.opt.numberOfDecimalPlaces < 0) this.opt.numberOfDecimalPlaces = 0;
+    if (this.opt.numberOfDecimalPlaces !== 0 && isInit) this.opt.calcNumberOfDecimalPlaces = false;
 
-      if (!Number.isInteger(this.opt.numberOfDecimalPlaces)) {
-        this.opt.numberOfDecimalPlaces = Number(this.opt.numberOfDecimalPlaces.toFixed());
-      }
+    if (getNumberKeys.includes(key) && this.opt.calcNumberOfDecimalPlaces) {
+      this._getNumberOfDecimalPlaces();
+    }
+
+    if (checkNumberKeys.includes(key) && !Number.isInteger(this.opt.numberOfDecimalPlaces)) {
+      this.opt.numberOfDecimalPlaces = Number(this.opt.numberOfDecimalPlaces.toFixed());
     }
   }
 
@@ -242,7 +234,7 @@ class Model extends Observer {
     this.opt.numberOfDecimalPlaces = Math.max(...resultArr);
   }
 
-  private _checkingMinMaxValues(errMessage: IErrMessage) {
+  private _checkingMinMaxValues() {
     // prettier-ignore
     const { 
       key,
@@ -254,13 +246,17 @@ class Model extends Observer {
     } = this.opt;
 
     const listVerifKeys = ['init', 'minValue', 'maxValue', 'numberOfDecimalPlaces'];
+    const isInit = key === 'init';
 
     if (listVerifKeys.includes(key)) {
-      this.opt.minValue = Number(minValue.toFixed(numberOfDecimalPlaces));
-      this.opt.maxValue = Number(maxValue.toFixed(numberOfDecimalPlaces));
+      const minValueIsIncorrect = initValueFirst && minValue > initValueFirst && isInit;
+      const maxValueIsIncorrect = initValueSecond && maxValue < initValueSecond && isInit;
 
-      // prettier-ignore
-      if (this.opt.minValue > this.opt.maxValue ) this.errorEvent.notify(errMessage['minAndMaxValue'], this.opt);
+      if (minValueIsIncorrect) this.opt.minValue = initValueFirst;
+      if (maxValueIsIncorrect) this.opt.maxValue = initValueSecond;
+
+      this.opt.minValue = Number(this.opt.minValue.toFixed(numberOfDecimalPlaces));
+      this.opt.maxValue = Number(this.opt.maxValue.toFixed(numberOfDecimalPlaces));
 
       if (this.opt.minValue >= this.opt.maxValue) {
         this.opt.minValue = initValueFirst ?? 0;
@@ -299,12 +295,15 @@ class Model extends Observer {
     }
   }
 
-  private _checkingStepSize(errMessage: IErrMessage) {
+  private _checkingStepSize() {
+    const { key } = this.opt;
+    const isInit = key === 'init';
+
+    if (this.opt.stepSizeForScale && isInit) this.opt.initAutoScaleCreation = false;
     this.opt.stepSizeForScale = this.opt.stepSizeForScale ?? this.opt.step;
 
     // prettier-ignore
     const {
-      key,
       maxValue,
       minValue,
       numberOfDecimalPlaces,
@@ -328,7 +327,6 @@ class Model extends Observer {
 
       if (this.opt.step <= 0 || this.opt.step > differenceMinAndMax) {
         this.opt.step = differenceMinAndMax;
-        this.errorEvent.notify(errMessage['step'], this.opt);
       }
 
       if (initAutoScaleCreation) {
@@ -338,11 +336,10 @@ class Model extends Observer {
 
       if (this.opt.stepSizeForScale <= 0 || this.opt.stepSizeForScale > differenceMinAndMax) {
         this.opt.stepSizeForScale = differenceMinAndMax;
-        this.errorEvent.notify(errMessage['stepSizeForScale'], this.opt);
       }
 
       if (this.opt.checkingStepSizeForScale && !initAutoScaleCreation) {
-        this._checkingCorrectStepSizeForScale(errMessage);
+        this._checkingCorrectStepSizeForScale();
       }
     }
   }
@@ -351,7 +348,7 @@ class Model extends Observer {
    * Checking whether the scale is completely divided by the set scale step
    * and adjusting the scale step
    */
-  private _checkingCorrectStepSizeForScale(errMessage: IErrMessage) {
+  private _checkingCorrectStepSizeForScale() {
     const { maxValue, minValue } = this.opt;
 
     if (this.opt.stepSizeForScale) {
@@ -366,8 +363,6 @@ class Model extends Observer {
         } else {
           break;
         }
-
-        this.errorEvent.notify(errMessage['stepSizeForScale'], this.opt);
       }
     }
   }
@@ -407,7 +402,7 @@ class Model extends Observer {
     this.opt.stepSizeForScale = 1;
   }
 
-  private _checkingInitValues(errMessage: IErrMessage) {
+  private _checkingInitValues() {
     this.opt.initValueFirst = this.opt.initValueFirst ?? this.opt.minValue;
     this.opt.initValueSecond = this.opt.initValueSecond ?? this.opt.maxValue;
 
@@ -439,15 +434,8 @@ class Model extends Observer {
     const valuesOverlap = initValueFirst > initValueSecond;
 
     if (listVerifKeys.includes(key)) {
-      if (firstValueIsIncorrect || valuesOverlap) {
-        this.opt.initValueFirst = minValue;
-        this.errorEvent.notify(errMessage['initValue'], this.opt);
-      }
-
-      if (secondValueIsIncorrect || valuesOverlap) {
-        this.opt.initValueSecond = maxValue;
-        this.errorEvent.notify(errMessage['initValue'], this.opt);
-      }
+      if (firstValueIsIncorrect || valuesOverlap) this.opt.initValueFirst = minValue;
+      if (secondValueIsIncorrect || valuesOverlap) this.opt.initValueSecond = maxValue;
 
       this.opt.initValueFirst = isRange ? this.opt.initValueFirst : minValue;
       this.opt.initValueFirst = this.calcTargetValue(true, this.opt.initValueFirst);

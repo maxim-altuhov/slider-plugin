@@ -29,7 +29,6 @@ const propertyList = [
   'initAutoMargins',
   'initFormatted',
   'initScaleAdjustment',
-  'showError',
   'initAutoScaleCreation',
   'checkingStepSizeForScale',
 ];

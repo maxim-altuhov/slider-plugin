@@ -4,10 +4,8 @@ import ViewSlider from './ViewSlider';
 import ViewScale from './ViewScale';
 import ViewMarkers from './ViewMarkers';
 import ViewThumbs from './ViewThumbs';
-import ViewError from './ViewError';
 
 class View extends Observer implements IMainView {
-  readonly viewError = new ViewError();
   readonly subViewsList: Record<string, ISubViewUpdate> = {
     viewSlider: new ViewSlider(this),
     viewScale: new ViewScale(this),
@@ -42,10 +40,6 @@ class View extends Observer implements IMainView {
 
     $fragmentWithASlider.append($blockSlider);
     this._$selector.append($fragmentWithASlider);
-  }
-
-  renderError(message: string, options: IPluginOptions) {
-    this.viewError.renderError(message, options);
   }
 
   updateViews(options: IPluginOptions) {
