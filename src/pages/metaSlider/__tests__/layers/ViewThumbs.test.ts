@@ -12,18 +12,19 @@ const $selector = $('#render-selector');
 classMainView.renderSlider($selector);
 
 describe('Checking the "ViewThumbs" layer, before first initialization.', () => {
-  const notInitViewThumbs = new ViewThumbs(classMainView);
+  const notInitViewThumbs = new ViewThumbs();
 
   test('State before first initialization the "update" method', () => {
     expect($selector.html()).toMatchSnapshot();
     expect(notInitViewThumbs['_$elemThumbs']).toHaveLength(0);
     expect(notInitViewThumbs['_isFirstInit']).toBe(true);
     expect(notInitViewThumbs['_verifKeysObj']).toBeDefined();
+    expect(notInitViewThumbs.observerList).toHaveLength(0);
   });
 });
 
 describe('Checking the "ViewThumbs" layer => "update" method', () => {
-  const classViewThumbs = new ViewThumbs(classMainView);
+  const classViewThumbs = new ViewThumbs();
   const defaultSettings = {
     key: 'init',
     $elemThumbs: $('.js-meta-slider__thumb'),
@@ -149,8 +150,8 @@ describe('Checking the "ViewThumbs" layer => "update" method', () => {
   test.each([0, 1])(
     'Checking the "_setEventsThumbs" method, event "keydown" (index %d) => init _handleThumbKeydown',
     (index) => {
+      jest.spyOn(classViewThumbs, 'notify').mockImplementation();
       const { initValuesArray, step } = testSettings;
-      const mockUpdateModel = jest.spyOn(classMainView, 'updateModel').mockImplementation();
       const listEventCode = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'];
 
       listEventCode.forEach((eventCode) => {
@@ -162,11 +163,17 @@ describe('Checking the "ViewThumbs" layer => "update" method', () => {
         expect(eventKeydown.preventDefault).toHaveBeenCalled();
 
         if (eventCode === codeUp || eventCode === codeRight) {
-          expect(mockUpdateModel).toHaveBeenCalledWith(eventKeydown, initValuesArray[index] + step);
+          expect(classViewThumbs.notify).toHaveBeenCalledWith(
+            eventKeydown,
+            initValuesArray[index] + step,
+          );
         }
 
         if (eventCode === codeDown || eventCode === codeLeft) {
-          expect(mockUpdateModel).toHaveBeenCalledWith(eventKeydown, initValuesArray[index] - step);
+          expect(classViewThumbs.notify).toHaveBeenCalledWith(
+            eventKeydown,
+            initValuesArray[index] - step,
+          );
         }
       });
     },
@@ -175,7 +182,7 @@ describe('Checking the "ViewThumbs" layer => "update" method', () => {
   test.each([0, 1])(
     'Checking the "_setEventsThumbs" method, event "pointerdown/pointerup" (index %d) => init _handleThumbPointerdown, _handleThumbPointermove, _handleThumbPointerup',
     (index) => {
-      const mockUpdateModel = jest.spyOn(classMainView, 'updateModel').mockImplementation();
+      jest.spyOn(classViewThumbs, 'notify').mockImplementation();
       const mockMakeThrottlingHandler = jest.spyOn(makeThrottlingHandler, 'default');
       $elemThumbs[index].setPointerCapture = jest.fn();
       const mockSetPointerCapture = $elemThumbs[index].setPointerCapture;
@@ -191,7 +198,7 @@ describe('Checking the "ViewThumbs" layer => "update" method', () => {
 
       expect(mockSetPointerCapture).toHaveBeenCalledWith(eventPointerdown.pointerId);
       expect(mockMakeThrottlingHandler).toHaveBeenCalled();
-      expect(mockUpdateModel).toHaveBeenCalledWith(eventPointermove);
+      expect(classViewThumbs.notify).toHaveBeenCalledWith(eventPointermove);
 
       jest.clearAllTimers();
 

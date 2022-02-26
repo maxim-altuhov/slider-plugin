@@ -13,10 +13,21 @@ describe('Checking the "View" layer', () => {
 
   Object.keys(classView.subViewsList).forEach((view) => {
     classView.subViewsList[view].update = jest.fn();
+    classView.subViewsList[view].subscribe = jest.fn();
   });
 
-  afterAll(() => {
+  afterEach(() => {
     jest.restoreAllMocks();
+  });
+
+  test('Checking the "setObservers" method', () => {
+    classView.setObservers();
+
+    Object.keys(classView.subViewsList).forEach((view) => {
+      if ('subscribe' in classView.subViewsList[view]) {
+        expect(classView.subViewsList[view].subscribe).toHaveBeenCalledWith(expect.any(Function));
+      }
+    });
   });
 
   test('Checking the "renderSlider" method', () => {

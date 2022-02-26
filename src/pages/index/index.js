@@ -17,7 +17,9 @@ $(() => {
   const controlPanel3 = new ControlPanel($('#config-slider-3'), $slider3);
   const controlPanel4 = new ControlPanel($('#config-slider-4'), $slider4);
 
-  $slider1.metaSlider();
+  $slider1.metaSlider({
+    step: 5,
+  });
 
   $slider2.metaSlider({
     mainColor: '#ffb13c',

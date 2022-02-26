@@ -1,4 +1,6 @@
-class ViewSlider {
+import Observer from '../patterns/Observer';
+
+class ViewSlider extends Observer {
   private _$selector = $();
   private _$elemSlider = $();
   private _$sliderProgress = $();
@@ -26,8 +28,6 @@ class ViewSlider {
     setAutoMarginsKeys: ['init', 'initAutoMargins', 'showMarkers', 'showScale', 'isVertical'],
     setMinAndMaxKeys: ['init', 'minValue', 'maxValue', 'customValues'],
   };
-
-  constructor(private _view: IMainView) {}
 
   update(options: IPluginOptions) {
     if (this._isFirstInit) {
@@ -154,7 +154,7 @@ class ViewSlider {
     const $target = $(event.target);
 
     if ($target.hasClass('js-meta-slider')) {
-      this._view.updateModel(event);
+      this.notify(event);
     }
   }
 }

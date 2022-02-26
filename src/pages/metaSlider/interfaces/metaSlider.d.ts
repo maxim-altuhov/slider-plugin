@@ -50,12 +50,10 @@ interface IPluginOptions {
   testHeight?: null | number;
 }
 
-interface ISubViewUpdate {
+interface ISubView {
+  observerList: Function[];
   update(options: IPluginOptions): void;
-}
-interface IMainView {
-  readonly subViewsList: Record<string, ISubViewUpdate>;
-  renderSlider($initSelector: JQuery): void;
-  updateViews(options: IPluginOptions): void;
-  updateModel(event: Event, targetValue?: number): void;
+  subscribe(observer: Function): void;
+  unsubscribe(observer: Function): void;
+  notify(...arg: any): void;
 }

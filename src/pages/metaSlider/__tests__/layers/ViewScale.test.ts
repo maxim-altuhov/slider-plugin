@@ -12,7 +12,7 @@ const $initSelector = $('#render-selector');
 classMainView.renderSlider($initSelector);
 
 describe('Checking the "ViewScale" layer, before first initialization.', () => {
-  const notInitViewScale = new ViewScale(classMainView);
+  const notInitViewScale = new ViewScale();
 
   test('State before first initialization the "update" method', () => {
     expect($initSelector.html()).toMatchSnapshot();
@@ -24,13 +24,14 @@ describe('Checking the "ViewScale" layer, before first initialization.', () => {
     expect(notInitViewScale['_mapSkipScalePoints'].size).toBe(0);
     expect(notInitViewScale['_skipScalePointsArray']).toHaveLength(0);
     expect(notInitViewScale['_isFirstInit']).toBe(true);
+    expect(notInitViewScale.observerList).toHaveLength(0);
     expect(notInitViewScale['_verifKeysObj']).toBeDefined();
   });
 });
 
 describe('Checking the "ViewScale" layer', () => {
   const SLIDER_SIZE_PX = 250;
-  const classViewScale = new ViewScale(classMainView);
+  const classViewScale = new ViewScale();
   const defaultSettings = {
     key: 'init',
     $selector: $initSelector,
@@ -439,7 +440,8 @@ describe('Checking the "ViewScale" layer', () => {
   });
 
   test('Checking the "_setEventsScalePoints" method, event "click" => init "_handleScalePointClick"', () => {
-    const mockUpdateModel = jest.spyOn(classMainView, 'updateModel').mockImplementation();
+    jest.spyOn(classViewScale, 'notify').mockImplementation();
+
     classViewScale.update(testSettings);
     const $elemScalePoints = classViewScale['_$elemScalePoints'];
 
@@ -453,7 +455,7 @@ describe('Checking the "ViewScale" layer', () => {
       $elemPoint.trigger(eventClick);
 
       expect(eventClick.preventDefault).toHaveBeenCalled();
-      expect(mockUpdateModel).toHaveBeenCalledWith(
+      expect(classViewScale.notify).toHaveBeenCalledWith(
         eventClick,
         Number($elemPoint.attr('data-value')),
       );

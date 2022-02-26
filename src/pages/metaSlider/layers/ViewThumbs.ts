@@ -1,6 +1,7 @@
 import makeThrottlingHandler from '../utils/makeThrottlingHandler';
+import Observer from '../patterns/Observer';
 
-class ViewThumbs {
+class ViewThumbs extends Observer {
   private _$elemThumbs = $();
   private _isFirstInit = true;
   private _verifKeysObj = {
@@ -20,8 +21,6 @@ class ViewThumbs {
     setStyleKeys: ['init', 'mainColor', 'colorThumb', 'colorBorderForThumb'],
     checkIsRangeKeys: ['init', 'isRange'],
   };
-
-  constructor(private _view: IMainView) {}
 
   update(options: IPluginOptions) {
     if (this._isFirstInit) {
@@ -108,7 +107,7 @@ class ViewThumbs {
       if (code === codeLeft || code === codeDown) targetValue -= step;
       if (code === codeRight || code === codeUp) targetValue += step;
 
-      this._view.updateModel(event, targetValue);
+      this.notify(event, targetValue);
     }
   }
 
@@ -128,7 +127,7 @@ class ViewThumbs {
 
   // Tracking the movement of thumbs sliders
   private _handleThumbPointermove(event: Event) {
-    this._view.updateModel(event);
+    this.notify(event);
   }
 
   // Tracking the termination of the thumbs sliders

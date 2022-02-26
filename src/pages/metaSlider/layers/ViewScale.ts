@@ -1,6 +1,7 @@
 import makeThrottlingHandler from '../utils/makeThrottlingHandler';
+import Observer from '../patterns/Observer';
 
-class ViewScale {
+class ViewScale extends Observer {
   private _$selector = $();
   private _$elemSlider = $();
   private _$elemScale = $();
@@ -31,8 +32,6 @@ class ViewScale {
     setEventResizeKeys: ['init', 'showScale', 'initScaleAdjustment'],
   };
 
-  constructor(private _view: IMainView) {}
-
   update(options: IPluginOptions) {
     if (this._isFirstInit) {
       this._init(options);
@@ -42,14 +41,14 @@ class ViewScale {
     const { key } = options;
     const { renderScaleKeys, setStyleKeys, setEventResizeKeys } = this._verifKeysObj;
 
+    if (setStyleKeys.includes(key)) this._setStyleForScale(options);
+
     if (renderScaleKeys.includes(key)) {
       this._createScale(options);
       this._checkingScaleSize(options);
 
       if (setEventResizeKeys.includes(key)) this._setEventResize(options);
     }
-
-    if (setStyleKeys.includes(key)) this._setStyleForScale(options);
   }
 
   private _init(options: IPluginOptions) {
@@ -254,7 +253,7 @@ class ViewScale {
     const $target = $(event.target);
     const targetValue = Number($target.attr('data-value'));
 
-    this._view.updateModel(event, targetValue);
+    this.notify(event, targetValue);
   }
 }
 

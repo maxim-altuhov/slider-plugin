@@ -5,14 +5,23 @@ import ViewScale from './ViewScale';
 import ViewMarkers from './ViewMarkers';
 import ViewThumbs from './ViewThumbs';
 
-class View extends Observer implements IMainView {
-  readonly subViewsList: Record<string, ISubViewUpdate> = {
-    viewSlider: new ViewSlider(this),
-    viewScale: new ViewScale(this),
-    viewThumbs: new ViewThumbs(this),
+class View extends Observer {
+  readonly subViewsList: Record<string, ISubView> = {
+    viewSlider: new ViewSlider(),
+    viewScale: new ViewScale(),
+    viewThumbs: new ViewThumbs(),
     viewMarkers: new ViewMarkers(),
   };
   private _$selector = $();
+
+  // Adding method "updateModel" to the observer list in subviews
+  setObservers() {
+    Object.keys(this.subViewsList).forEach((view) => {
+      if ('subscribe' in this.subViewsList[view]) {
+        this.subViewsList[view].subscribe(this.updateModel.bind(this));
+      }
+    });
+  }
 
   // Initial render of the slider and its main elements
   renderSlider($initSelector: JQuery<HTMLElement>) {
@@ -44,7 +53,9 @@ class View extends Observer implements IMainView {
 
   updateViews(options: IPluginOptions) {
     Object.keys(this.subViewsList).forEach((view) => {
-      this.subViewsList[view].update(options);
+      if ('update' in this.subViewsList[view]) {
+        this.subViewsList[view].update(options);
+      }
     });
   }
 

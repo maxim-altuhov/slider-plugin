@@ -1,5 +1,6 @@
 import Model from '../../layers/Model';
 import Presenter from '../../layers/Presenter';
+import View from '../../layers/View';
 import Plugin from '../../main/Plugin';
 import InitSettings from '../../data/InitSettings';
 
@@ -9,8 +10,11 @@ jest.spyOn(Model.prototype, 'init').mockImplementation(() => 'init');
 const mockRenderSlider = jest
   .spyOn(Presenter.prototype, 'renderSlider')
   .mockImplementation(() => 'renderSlider');
-const mockSetObservers = jest
+const mockSetObserversPresenter = jest
   .spyOn(Presenter.prototype, 'setObservers')
+  .mockImplementation(() => 'setObservers');
+const mockSetObserversView = jest
+  .spyOn(View.prototype, 'setObservers')
   .mockImplementation(() => 'setObservers');
 
 document.body.innerHTML = '<div id="fake-selector"></div>';
@@ -46,7 +50,8 @@ describe('Checking the methods of the metaSlider plugin', () => {
     expect(Plugin.init).toHaveReturnedWith($initSelector);
     expect(model.init).toHaveBeenCalled();
     expect(mockRenderSlider).toHaveBeenCalledWith($initSelector);
-    expect(mockSetObservers).toHaveBeenCalled();
+    expect(mockSetObserversPresenter).toHaveBeenCalled();
+    expect(mockSetObserversView).toHaveBeenCalled();
     expect($initSelector.data('metaSlider')).toBeDefined();
     expect($initSelector.data('metaSlider')).toHaveProperty('model');
   });

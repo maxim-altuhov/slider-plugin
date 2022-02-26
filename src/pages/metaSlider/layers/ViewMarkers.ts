@@ -1,4 +1,6 @@
-class ViewMarkers {
+import Observer from '../patterns/Observer';
+
+class ViewMarkers extends Observer {
   private _$elemMarkers = $();
   private _$elemThumbs = $();
   private _isFirstInit = true;

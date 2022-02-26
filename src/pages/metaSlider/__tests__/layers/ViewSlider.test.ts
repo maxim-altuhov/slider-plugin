@@ -6,7 +6,7 @@ import InitSettings from '../../data/InitSettings';
 
 jest.mock('../../utils/createUniqueID');
 const classMainView = new View();
-const classViewSlider = new ViewSlider(classMainView);
+const classViewSlider = new ViewSlider();
 const initSelectorName = 'render-selector';
 const scaleSelectorName = '.js-meta-slider__scale';
 const scalePointsSelectorName = '.js-meta-slider__scale-point';
@@ -33,7 +33,7 @@ $initElemMarkers.css('height', TEST_HEIGHT_ELEM);
 $initElemScalePoints.css('height', TEST_HEIGHT_ELEM);
 
 describe('Checking the "ViewSlider" layer. State before first initialization the "renderSlider" and "update" method', () => {
-  const notInitViewSlider = new ViewSlider(classMainView);
+  const notInitViewSlider = new ViewSlider();
 
   test('State before first initialization', () => {
     expect($initSelector.html()).toMatchSnapshot();
@@ -43,6 +43,7 @@ describe('Checking the "ViewSlider" layer. State before first initialization the
     expect(notInitViewSlider['_$elemThumbs']).toHaveLength(0);
     expect(notInitViewSlider['_$elemMarkers']).toHaveLength(0);
     expect(notInitViewSlider['_isFirstInit']).toBe(true);
+    expect(notInitViewSlider.observerList).toHaveLength(0);
     expect(notInitViewSlider['_verifKeysObj']).toBeDefined();
   });
 });
@@ -243,13 +244,13 @@ describe('Checking the "ViewSlider" layer', () => {
   });
 
   test('Checking the "_setEventsSlider" method, event "pointerdown" => _handleSliderPointerdown', () => {
-    const mockUpdateModel = jest.spyOn(classMainView, 'updateModel').mockImplementation();
+    jest.spyOn(classViewSlider, 'notify').mockImplementation();
     const eventPointerdown = $.Event('pointerdown.slider');
     eventPointerdown.preventDefault = jest.fn();
 
     $elemSlider.trigger(eventPointerdown);
 
     expect(eventPointerdown.preventDefault).toHaveBeenCalled();
-    expect(mockUpdateModel).toHaveBeenCalledWith(eventPointerdown);
+    expect(classViewSlider.notify).toHaveBeenCalledWith(eventPointerdown);
   });
 });

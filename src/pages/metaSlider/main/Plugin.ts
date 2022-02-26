@@ -62,6 +62,7 @@ class Plugin {
 
       presenter.renderSlider($selector);
       presenter.setObservers();
+      view.setObservers();
       model.init();
 
       $selector.data('metaSlider', { model });
