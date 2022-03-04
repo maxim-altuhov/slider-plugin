@@ -74,7 +74,7 @@ class Plugin {
   static setProp(
     $selector: JQuery<HTMLElement>,
     prop: string,
-    value: string | number | (string | number)[],
+    value: string | number | boolean | (string | number)[],
   ) {
     const pluginOptions: IPluginOptions = $selector.data('metaSlider').model.opt;
     const includesLimitedProp = Plugin.limitedProp.includes(prop);
@@ -99,7 +99,7 @@ class Plugin {
   static getProp(
     $selector: JQuery<HTMLElement>,
     prop: string,
-  ): string | number | (string | number)[] {
+  ): string | number | boolean | (string | number)[] {
     const pluginOptions: IPluginOptions = $selector.data('metaSlider').model.opt;
 
     if (prop in pluginOptions) return $selector.data('metaSlider').model.opt[prop];

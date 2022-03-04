@@ -4,7 +4,7 @@
 
 В данном репозитории находится плагин для JQuery, который позволяет добавить функционал слайдера ("бегунка") на страницу сайта. Слайдер - это специальный элемент, который с помощью перетягивания контроллера позволяет задавать числовые/текстовые значения или их диапазоны.
 
-Данный плагин является результатом выполнения 4 задания программы обучения MetaLamp.
+Данный плагин является результатом выполнения 4 задания программы обучения MetaLamp. Проект совместим с версиями Node 14.x и jQuery 3.x.
 
 ## Разделы
 
@@ -12,6 +12,8 @@
 * [`Развертывание проекта`](#Развертывание-проекта)
 * [`Подключение плагина`](#Подключение-плагина)
 * [`Опции плагина`](#Опции-плагина)
+* [`API плагина`](#API-плагина)
+* [`Архитектура`](#Архитектура)
 
 ## Описание плагина
 
@@ -110,7 +112,7 @@
 | `maxValue`                  | number           | `100` или `initValueSecond`    | Макс. значение |
 | `step`                      | number           | `1`                            | Значение шага слайдера |
 | `stepSizeForScale`          | number           | равно `step`                   | Значение шага шкалы |
-| `customValues`              | [number, string] |  `[]`                          | Пользовательские значения, через запятую |
+| `customValues`              | (string \| number)[] |  `[]`                          | Пользовательские значения, через запятую |
 | `preFix`                    | string           |  `''`                          | Устанавливает "префикс" перед значениями слайдера и значениями шкалы |
 | `postFix`                   | string           |  `''`                          | Устанавливает "постфикс" после значений слайдера и значениями шкалы |
 | `numberOfDecimalPlaces`     | number           |  `0`                           | Кол-во отображаемых знаков после запятой |
@@ -139,4 +141,115 @@
 | `colorBorderForThumb` |  string      |   `#ffffff`      | Цвет рамки вокруг "бегунков" |
 | `colorForScale`       |  string      |   `#000000`      | Цвет шкалы |
 
+## API плагина
 
+Плагин может принимать в качестве параметра объект с опциями, либо методы плагина.
+
+```js
+  // JavaScript
+  $('#slider-1').metaSlider();
+
+  $('#slider-2').metaSlider({
+    mainColor: '#ffb13c',
+    secondColor: '#fbd3b0',
+    colorForScale: '#814100',
+    colorBorderForThumb: '#a9521e',
+    colorBorderForMarker: '#a9521e',
+    colorTextForMarker: '#000',
+    customValues: ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ'],
+    initValueFirst: 1,
+    initValueSecond: 3,
+  });
+
+  $('#slider-1').metaSlider('setProp', 'step', 10);
+```
+
+`setProp(prop: string, value: string | number | boolean | (string | number)[]): JQuery` - метод устанавливает заданное значение для свойства слайдера, возвращает объект jQuery с селектором на котором слайдер был вызван.
+```js
+  // JavaScript
+  $('#slider').metaSlider('setProp', 'mainColor', '#ffb13c');
+```
+
+`getProp(prop: string): string | number | boolean | (string | number)[]` - метод возвращает значение указанного свойства слайдера.
+```js
+  // JavaScript
+  const $slider = $('#slider');
+  $slider.metaSlider({
+    mainColor: '#ffb13c',
+  })
+
+  const mainColor = $slider.metaSlider('getProp', 'mainColor');
+  console.log(mainColor); // '#ffb13c'
+```
+
+`getOptionsObj(): IPluginOptions` - метод возвращает объект с текущими свойствами слайдера и их значениями.
+```js
+  // JavaScript
+  const $slider = $('#slider');
+  $slider.metaSlider();
+
+  const optionsObj = $slider.metaSlider('getOptionsObj');
+  console.log(optionsObj); // {step: 1, mainColor: '#ffb13c', isVertical: false, …}
+```
+
+`getCurrentValues(): string[] | number[]` - метод возвращает текущие значения на которых находятся "бегунки" слайдера.
+```js
+  // JavaScript
+  const $slider = $('#slider');
+  $slider.metaSlider({
+    initValueFirst: 10,
+    initValueSecond: 100,
+  });
+
+  const currentValues = $slider.metaSlider('getCurrentValues');
+  console.log(currentValues); // [10, 100]
+```
+
+`destroy(): JQuery` - метод удаляет слайдер, всё его содержимое, но не удаляет сам элемент на котором был вызван слайдер. Возвращает объект jQuery с селектором на котором слайдер был вызван.
+```js
+  // JavaScript
+  const $slider = $('#slider');
+  $slider.metaSlider();
+
+  $slider.metaSlider('destroy');
+```
+
+`subscribe(observer: Function): JQuery` - метод позволяет "подписаться" на событие обновления слайдера. Возвращает объект jQuery с селектором на котором слайдер был вызван.
+```js
+  // JavaScript
+  const $slider = $('#slider');
+  $slider.metaSlider();
+
+  const foo = () => {
+    console.log('Слайдер обновился!');
+  };
+
+  $slider.metaSlider('subscribe', foo);
+
+  // Произошло обновление слайдера
+  // Вывод в консоль => 'Слайдер обновился!'
+```
+`unsubscribe(observer: Function): JQuery` - метод позволяет "отписаться" от события обновления слайдера. Возвращает объект jQuery с селектором на котором слайдер был вызван.
+```js
+  // JavaScript
+  const $slider = $('#slider');
+  $slider.metaSlider();
+
+  const foo = () => {
+    console.log('Слайдер обновился!');
+  };
+
+  $slider.metaSlider('subscribe', foo);
+
+  // Произошло обновление слайдера
+  // Вывод в консоль => 'Слайдер обновился!'
+
+  $slider.metaSlider('unsubscribe', foo); // "отписаться" от события обновления слайдера
+```
+## Архитектура
+
+В основе плагина лежит MVP-архитектура с Passive View. Взаимодействие между слоями приложения, их отвязка и привязка, происходит с использованием паттерна `Observer`. Данный паттерн позволяет минимизировать связи в приложении и обеспечить передачу данных между слоями.
+
+### Model
+
+Model это слой приложения в котором хранится состояние слайдера и происходит валидация входящих данных относящихся к бизнес-логике приложения. В модели осуществляется расчёт позиций "бегунков" после взаимодействия пользователя с элементами управления слайдером и передача нового состояния слайдера в Presenter.
