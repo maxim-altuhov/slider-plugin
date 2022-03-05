@@ -1,8 +1,8 @@
 @import '@base/base.scss';
 @import '@comp/control/control';
-@import './scss/container.scss';
-@import './scss/slider.scss';
-@import './scss/config.scss';
+@import './blocks/container/container.scss';
+@import './blocks/slider/slider.scss';
+@import './blocks/config/config.scss';
 
 body,
 html {
