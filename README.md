@@ -280,6 +280,7 @@
 
 [`jQuery 3.6.0`](https://github.com/jquery)  
 [`Webpack 5.21.2`](https://github.com/webpack/webpack)  
+[`Pug 3.0.0`](https://github.com/pugjs/pug)  
 [`Typescript 4.4.4`](https://github.com/microsoft/TypeScript/)  
 [`Babel 7.12.17`](https://github.com/babel/babel)  
 [`Jest 27.3.1`](https://github.com/facebook/jest)  
