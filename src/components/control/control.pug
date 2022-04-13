@@ -1,14 +1,38 @@
-mixin control(properties)
+//- 
+    const properties = [
+      {
+        type: "text" || "number" || "checkbox",
+        name: String,
+        text: String,
+        step: "any" || Number,
+        isDisabled: Boolean,
+      },
+    ]
+
+mixin control(properties = [])
   each prop in properties
+    - 
+      const {
+        type = "text",
+        name = "",
+        text = "",
+        step = "any",
+        isDisabled = false,
+      } = prop;
+
+      const typeList = {
+        TEXT: "text",
+        NUMBER: "number",
+        CHECKBOX: "checkbox",
+      };
+      
     .control
       .control__field
-        if prop.type === "text"
-          label.control__label= prop.text
-            input.control__input(type="text" name=prop.name disabled=prop.disabled)
-        else if prop.type === "checkbox"
+        if type === typeList.CHECKBOX
           label.control__label
-            input.control__checkbox.control__checkbox_hidden(type="checkbox" name=prop.name value=prop.name disabled=prop.disabled)
-            span.control__checkbox-title= prop.text
+            input.control__checkbox.control__checkbox_hidden(type="checkbox" name=name value=name disabled=isDisabled)
+            span.control__checkbox-title= text
         else
-          label.control__label= prop.text
-            input.control__input(type="number" step=prop.step name=prop.name disabled=prop.disabled)
+          - const inputAttr = (type === typeList.NUMBER) ? { type, step } : { type };
+          label.control__label= text
+            input(class="control__input")&attributes(inputAttr, { name, disabled: isDisabled })

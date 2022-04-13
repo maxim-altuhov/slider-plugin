@@ -2,9 +2,10 @@ import getNameBrowser from './getNameBrowser';
 
 function showMessageForIE() {
   const currentBrowser = getNameBrowser();
+  const thisIsIEBrowser = (currentBrowser === 'Internet Explorer 11') || (currentBrowser === 'Internet Explorer');
 
-  if (currentBrowser === 'Internet Explorer 11' || currentBrowser === 'Internet Explorer') {
-    document.body.innerHTML = 'Браузер Internet Explorer больше не поддерживается, пожалуйста, перейдите в более современный браузер!';
+  if (thisIsIEBrowser) {
+    document.body.innerHTML = 'Internet Explorer is no longer supported, please switch to a more modern browser!';
   }
 }
 

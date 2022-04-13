@@ -4,16 +4,16 @@
   }
 
   &__label {
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     cursor: pointer;
     display: flex;
     align-items: center;
     text-align: right;
     line-height: 1.4;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   }
 
   &__input {
-    width: 100px;
+    width: 130px;
     height: 30px;
     border: 1px solid #afafaf;
     border-radius: 5px;
@@ -60,10 +60,8 @@
     top: 0;
     width: 30px;
     height: 30px;
-    background-image: url('./img/checkbox.svg');
-    background-repeat: no-repeat;
+    background: url('./img/checkbox.svg') center 4px no-repeat;
     background-size: 24px;
-    background-position: center 4px;
   }
 
   &__checkbox:focus+&__checkbox-title:before {
@@ -78,7 +76,8 @@
     border: 0;
     padding: 0;
     white-space: nowrap;
-    clip-path: inset(100%);
+    clip-path: polygon(0px 0px, 0px 0px, 0px 0px);
+    -webkit-clip-path: polygon(0px 0px, 0px 0px, 0px 0px);
     clip: rect(0, 0, 0, 0);
     overflow: hidden;
   }

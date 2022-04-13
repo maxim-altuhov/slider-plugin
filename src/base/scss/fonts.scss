@@ -1,2 +1,4 @@
+@import './mixins';
+
 @include font('Montserrat', 'montserrat-regular', '400', 'normal');
 @include font('Montserrat', 'montserrat-bold', '700', 'normal');

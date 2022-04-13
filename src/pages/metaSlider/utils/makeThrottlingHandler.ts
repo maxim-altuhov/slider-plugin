@@ -1,7 +1,7 @@
+// The any type is used, since the called functions can contain any arguments and return any values
 function makeThrottlingHandler(fn: Function, timeout: number) {
   let timer: NodeJS.Timeout | null = null;
 
-  // I use the any type so that it is possible to pass any arguments to the called functions
   return (...args: any) => {
     if (timer) return;
 

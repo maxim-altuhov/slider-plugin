@@ -1,15 +1,17 @@
-// Basic settings
+@import './variables';
+
+*,
+*:before,
+*:after {
+  font-family: $font-family;
+  box-sizing: border-box;
+}
+
 html {
   font-family: $font-family;
   font-weight: 400;
   font-size: 14px;
-  line-height: 24px;
+  line-height: (24 / 14);
   color: #000;
-  min-width: 305px;
-}
-
-input,
-button,
-textarea {
-  font-family: $font-family;
+  min-width: 320px;
 }

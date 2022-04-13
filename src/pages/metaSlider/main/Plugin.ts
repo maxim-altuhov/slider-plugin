@@ -35,10 +35,9 @@ class Plugin {
       }
 
       if (settings) {
-        const KEY_CUSTOM_VALUES = 'customValues';
-
         Object.keys(settings).forEach((key) => {
           const isCorrectType = typeof settings[key] === Plugin.typeSettings[key];
+          const isCustomValues = key === 'customValues';
 
           if (Plugin.typeSettings[key] && !isCorrectType) {
             throw new Error(
@@ -46,7 +45,7 @@ class Plugin {
             );
           }
 
-          if (key === KEY_CUSTOM_VALUES && !Array.isArray(settings[key])) {
+          if (isCustomValues && !Array.isArray(settings[key])) {
             throw new Error('The slider\'s "customValues" property should be passed as an array.');
           }
         });
@@ -100,19 +99,19 @@ class Plugin {
     $selector: JQuery<HTMLElement>,
     prop: string,
   ): string | number | boolean | (string | number)[] {
-    const pluginOptions: IPluginOptions = $selector.data('metaSlider').model.opt;
+    const pluginOptions: IPluginOptions = { ...$selector.data('metaSlider').model.opt };
 
-    if (prop in pluginOptions) return $selector.data('metaSlider').model.opt[prop];
+    if (prop in pluginOptions) return pluginOptions[prop];
 
     throw new Error(`The '${prop}' property does not exist.`);
   }
 
   static getOptionsObj($selector: JQuery<HTMLElement>): IPluginOptions {
-    return $selector.data('metaSlider').model.opt;
+    return { ...$selector.data('metaSlider').model.opt };
   }
 
   static getCurrentValues($selector: JQuery<HTMLElement>) {
-    const pluginOptions: IPluginOptions = $selector.data('metaSlider').model.opt;
+    const pluginOptions: IPluginOptions = { ...$selector.data('metaSlider').model.opt };
     const { customValues, textValuesArray, initValuesArray } = pluginOptions;
     let currentValues = [];
 

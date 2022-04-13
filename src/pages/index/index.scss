@@ -1,13 +1,12 @@
-@import '@base/base.scss';
+@import '@base/base';
 @import '@comp/control/control';
-@import './blocks/container/container.scss';
-@import './blocks/slider/slider.scss';
-@import './blocks/config/config.scss';
+@import './blocks/container/container';
+@import './blocks/slider/slider';
+@import './blocks/config/config';
 
 body,
 html {
   background-color: #414d58;
-  box-sizing: border-box;
 }
 
 .control {
