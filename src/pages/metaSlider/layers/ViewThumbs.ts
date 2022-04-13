@@ -102,10 +102,12 @@ class ViewThumbs extends Observer {
       event.preventDefault();
       const [codeLeft, codeRight, codeUp, codeDown] = listEventCode;
       const { step } = options;
+      const eventCodeReducingValue = code === codeLeft || code === codeDown;
+      const eventCodeIncreasingValue = code === codeRight || code === codeUp;
       let targetValue = Number($target.attr('data-value'));
 
-      if (code === codeLeft || code === codeDown) targetValue -= step;
-      if (code === codeRight || code === codeUp) targetValue += step;
+      if (eventCodeReducingValue) targetValue -= step;
+      if (eventCodeIncreasingValue) targetValue += step;
 
       this.notify(event, targetValue);
     }

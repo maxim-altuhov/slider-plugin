@@ -98,10 +98,13 @@ class Model extends Observer {
       }
     }
 
-    if (targetValue < averageValue && isRange) {
+    const targetValueLessThanAverage = targetValue < averageValue;
+    const targetValueMoreThanAverage = targetValue > averageValue;
+
+    if (targetValueLessThanAverage && isRange) {
       initValuesArray[0] = targetValue;
       this._listSavedStatus['activeThumb'] = 'first';
-    } else if (targetValue > averageValue || !isRange) {
+    } else if (targetValueMoreThanAverage || !isRange) {
       initValuesArray[1] = targetValue;
       this._listSavedStatus['activeThumb'] = 'second';
     }
@@ -211,7 +214,9 @@ class Model extends Observer {
 
     if (this.opt.numberOfDecimalPlaces < 0) this.opt.numberOfDecimalPlaces = 0;
 
-    if (this.opt.numberOfDecimalPlaces !== 0 && isInit) this.opt.calcNumberOfDecimalPlaces = false;
+    const numberOfDecimalPlacesIsNotNull = this.opt.numberOfDecimalPlaces !== 0;
+
+    if (numberOfDecimalPlacesIsNotNull && isInit) this.opt.calcNumberOfDecimalPlaces = false;
 
     if (getNumberKeys.includes(key) && this.opt.calcNumberOfDecimalPlaces) {
       this._getNumberOfDecimalPlaces();
@@ -275,8 +280,8 @@ class Model extends Observer {
       checkingStepSizeForScale,
     } = this.opt;
 
-    const SHOW_SCALE_KEY = 'showScale';
-    const listVerifKeys = ['init', SHOW_SCALE_KEY];
+    const listVerifKeys = ['init', 'showScale'];
+    const isShowScaleKey = key === 'showScale';
 
     if (!showScale && listVerifKeys.includes(key)) {
       this._listSavedStatus['initAutoScaleCreation'] = initAutoScaleCreation;
@@ -286,7 +291,7 @@ class Model extends Observer {
       this.opt.initAutoScaleCreation = false;
       this.opt.initScaleAdjustment = false;
       this.opt.checkingStepSizeForScale = false;
-    } else if (showScale && key === SHOW_SCALE_KEY) {
+    } else if (showScale && isShowScaleKey) {
       this.opt.initAutoScaleCreation = Boolean(this._listSavedStatus['initAutoScaleCreation']);
       this.opt.initScaleAdjustment = Boolean(this._listSavedStatus['initScaleAdjustment']);
       this.opt.checkingStepSizeForScale = Boolean(
@@ -324,19 +329,19 @@ class Model extends Observer {
 
     if (listVerifKeys.includes(key)) {
       this.opt.step = Number(this.opt.step.toFixed(numberOfDecimalPlaces));
+      const isIncorrectStepSize = this.opt.step <= 0 || this.opt.step > differenceMinAndMax;
 
-      if (this.opt.step <= 0 || this.opt.step > differenceMinAndMax) {
-        this.opt.step = differenceMinAndMax;
-      }
+      if (isIncorrectStepSize) this.opt.step = differenceMinAndMax;
 
       if (initAutoScaleCreation) {
         this.opt.checkingStepSizeForScale = false;
         this.opt.stepSizeForScale = this.opt.step;
       }
 
-      if (this.opt.stepSizeForScale <= 0 || this.opt.stepSizeForScale > differenceMinAndMax) {
-        this.opt.stepSizeForScale = differenceMinAndMax;
-      }
+      const isIncorrectStepSizeForScale =
+        this.opt.stepSizeForScale <= 0 || this.opt.stepSizeForScale > differenceMinAndMax;
+
+      if (isIncorrectStepSizeForScale) this.opt.stepSizeForScale = differenceMinAndMax;
 
       if (this.opt.checkingStepSizeForScale && !initAutoScaleCreation) {
         this._checkingCorrectStepSizeForScale();
@@ -385,8 +390,9 @@ class Model extends Observer {
   // Resetting default options when setting custom values
   private _initCustomValues() {
     const { customValues } = this.opt;
+    const hasOneCustomValue = customValues.length === 1;
 
-    if (customValues.length === 1 && Array.isArray(customValues)) {
+    if (hasOneCustomValue && Array.isArray(customValues)) {
       customValues.push(customValues[0]);
     }
 

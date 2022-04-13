@@ -162,14 +162,17 @@ describe('Checking the "ViewThumbs" layer => "update" method', () => {
 
         expect(eventKeydown.preventDefault).toHaveBeenCalled();
 
-        if (eventCode === codeUp || eventCode === codeRight) {
+        const eventCodeReducingValue = eventCode === codeLeft || eventCode === codeDown;
+        const eventCodeIncreasingValue = eventCode === codeRight || eventCode === codeUp;
+
+        if (eventCodeIncreasingValue) {
           expect(classViewThumbs.notify).toHaveBeenCalledWith(
             eventKeydown,
             initValuesArray[index] + step,
           );
         }
 
-        if (eventCode === codeDown || eventCode === codeLeft) {
+        if (eventCodeReducingValue) {
           expect(classViewThumbs.notify).toHaveBeenCalledWith(
             eventKeydown,
             initValuesArray[index] - step,

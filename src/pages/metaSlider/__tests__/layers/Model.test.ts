@@ -164,10 +164,13 @@ describe('Checking the "Model" layer', () => {
         isRange,
       } = classModel.opt;
 
-      if (checkingValue < averageValue && isRange) {
+      const checkingValueLessThanAverage = checkingValue < averageValue;
+      const checkingValueMoreThanAverage = checkingValue > averageValue;
+
+      if (checkingValueLessThanAverage && isRange) {
         expect(initValuesArray).toEqual([checkingValue, initValueSecond]);
         expect(statusActiveThumb).toBe('first');
-      } else if (checkingValue > averageValue || !isRange) {
+      } else if (checkingValueMoreThanAverage || !isRange) {
         expect(initValuesArray).toEqual([initValueFirst, checkingValue]);
         expect(statusActiveThumb).toBe('second');
       }
@@ -319,6 +322,11 @@ describe('Checking the "Model" layer', () => {
     const numberOfDecimalPlacesCheckingList = [-5, 5, 0, 2.5];
     const listVerifKeys = ['init', 'numberOfDecimalPlaces'];
     const isInit = key === 'init';
+    const controlNumbers = {
+      ZERO: 0,
+      FRACTIONAL: 2.5,
+      NEGATIVE: -5,
+    };
 
     classModel.opt.key = key;
 
@@ -327,23 +335,29 @@ describe('Checking the "Model" layer', () => {
       const { numberOfDecimalPlaces } = classModel.opt;
 
       [true, false].forEach((status) => {
-        const CONTROL_KEY = 'numberOfDecimalPlaces';
+        const TESTING_KEY = 'numberOfDecimalPlaces';
+        const isNotTestingKey = key !== TESTING_KEY;
         classModel.opt.calcNumberOfDecimalPlaces = status;
 
         classModel['_checkingNumberOfDecimalPlaces']();
 
-        if (key !== CONTROL_KEY && classModel.opt.calcNumberOfDecimalPlaces) {
+        if (isNotTestingKey && classModel.opt.calcNumberOfDecimalPlaces) {
           expect(classModel['_getNumberOfDecimalPlaces']).toHaveBeenCalled();
         }
       });
 
-      if (currentNum !== 0 && isInit) {
+      const currentNumIsNotZero = currentNum !== controlNumbers.ZERO;
+
+      if (currentNumIsNotZero && isInit) {
         expect(classModel.opt.calcNumberOfDecimalPlaces).toBe(false);
       }
 
       if (listVerifKeys.includes(key)) {
-        if (currentNum === 2.5) expect(numberOfDecimalPlaces.toFixed).toHaveBeenCalled();
-        if (currentNum === -5) {
+        if (currentNum === controlNumbers.FRACTIONAL) {
+          expect(numberOfDecimalPlaces.toFixed).toHaveBeenCalled();
+        }
+
+        if (currentNum === controlNumbers.NEGATIVE) {
           expect(mockIsInteger).toHaveBeenCalledWith(0);
         } else {
           expect(mockIsInteger).toHaveBeenCalledWith(currentNum);
@@ -448,6 +462,7 @@ describe('Checking the "Model" layer', () => {
 
       const SHOW_SCALE_KEY = 'showScale';
       const listVerifKeys = ['init', 'showScale'];
+      const isShowScaleKey = showScale && key === SHOW_SCALE_KEY;
 
       if (!showScale && listVerifKeys.includes(key)) {
         expect(initAutoScaleCreation).toBe(false);
@@ -457,7 +472,7 @@ describe('Checking the "Model" layer', () => {
         expect(classModel['_listSavedStatus']['initAutoScaleCreation']).toBe(true);
         expect(classModel['_listSavedStatus']['initScaleAdjustment']).toBe(true);
         expect(classModel['_listSavedStatus']['checkingStepSizeForScale']).toBe(false);
-      } else if (showScale && key === SHOW_SCALE_KEY) {
+      } else if (isShowScaleKey) {
         expect(initAutoScaleCreation).toBe(classModel['_listSavedStatus']['initAutoScaleCreation']);
         expect(initScaleAdjustment).toBe(classModel['_listSavedStatus']['initScaleAdjustment']);
         expect(checkingStepSizeForScale).toBe(
@@ -511,16 +526,18 @@ describe('Checking the "Model" layer', () => {
 
       expect(step.toFixed).toHaveBeenCalledWith(numberOfDecimalPlaces);
 
+      const isIncorrectStepSize = step <= 0 || step > diffMinAndMax;
+
       if (!stepForScale) expect(stepScale).toBe(step);
-      if (step <= 0 || step > diffMinAndMax) expect(step).toBe(diffMinAndMax);
+      if (isIncorrectStepSize) expect(step).toBe(diffMinAndMax);
       if (initAutoScaleCreation) {
         expect(checkingStepSizeForScale).toBe(false);
         expect(stepScale).toBe(step);
       }
 
-      const rulesStepScale = stepScale && (stepScale <= 0 || stepScale > diffMinAndMax);
+      const isIncorrectStepScale = stepScale && (stepScale <= 0 || stepScale > diffMinAndMax);
 
-      if (rulesStepScale) expect(stepScale).toBe(diffMinAndMax);
+      if (isIncorrectStepScale) expect(stepScale).toBe(diffMinAndMax);
       if (checkingStepSizeForScale && !initAutoScaleCreation) {
         expect(classModel['_checkingCorrectStepSizeForScale']).toHaveBeenCalled();
       } else {
@@ -685,8 +702,9 @@ describe('Checking the "Model" layer', () => {
       expect(classModel.calcTargetValue).toHaveBeenNthCalledWith(2, true, initValueSecond);
 
       const initValuesIsDefined = initValueFirst && initValueSecond;
+      const hasCustomValues = customValues.length > 0;
 
-      if (customValues.length > 0 && initValuesIsDefined) {
+      if (hasCustomValues && initValuesIsDefined) {
         expect(textValueFirst).toBe(String(customValues[initValueFirst]));
         expect(textValueSecond).toBe(String(customValues[initValueSecond]));
         expect(textValuesArray).toEqual([textValueFirst, textValueSecond]);

@@ -107,9 +107,9 @@ class ViewScale extends Observer {
         $scalePoint.css('left', `${position * 100}%`);
       });
 
-      if (this._mapSkipScalePoints && this._mapSkipScalePoints.size > 0) {
-        this._mapSkipScalePoints.clear();
-      }
+      const hasMissingScalePoints = this._mapSkipScalePoints && this._mapSkipScalePoints.size > 0;
+
+      if (hasMissingScalePoints) this._mapSkipScalePoints.clear();
 
       this._setEventsScalePoints();
     }
@@ -152,6 +152,7 @@ class ViewScale extends Observer {
 
     if (showScale && initScaleAdjustment) {
       const MARGIN_PX = 100;
+      const CONTROL_NUM_POINTS = 6;
       const sliderSize = this._$elemSlider.outerWidth() || 0;
 
       while (this._scalePointsSize + MARGIN_PX > sliderSize) {
@@ -162,25 +163,31 @@ class ViewScale extends Observer {
         );
 
         this._scalePointsSize = 0;
-        const sizeScalePointsArray = this._$elemScalePoints.length;
+        const numberScalePoints = this._$elemScalePoints.length;
 
-        if (sizeScalePointsArray <= 2) break;
+        if (numberScalePoints <= 2) break;
 
         this._$elemScalePoints.each((index, currentScalePoint) => {
-          // prettier-ignore
-          const firstOrLastIndex = (index === 0) || (index === sizeScalePointsArray - 1);
-          const intervalWithoutFirstAndLastIndex = !firstOrLastIndex && sizeScalePointsArray <= 6;
+          const firstOrLastIndex = index === 0 || index === numberScalePoints - 1;
+          const indexIsOdd = index % 2 !== 0;
+          const numberPointsIsOdd = numberScalePoints % 2 !== 0;
+          const numberPointsIsEven = numberScalePoints % 2 === 0;
+          const numberPointsGreaterThanControl = numberScalePoints > CONTROL_NUM_POINTS;
+          const numberPointsLessThanControl = numberScalePoints <= CONTROL_NUM_POINTS;
+          const intervalWithoutFirstAndLastIndex =
+            !firstOrLastIndex && numberScalePoints <= CONTROL_NUM_POINTS;
 
-          if (index % 2 !== 0 && sizeScalePointsArray > 6) {
+          if (indexIsOdd && numberPointsGreaterThanControl) {
             this._setPropForSkipScalePoint(currentScalePoint);
-          } else if (sizeScalePointsArray % 2 !== 0 && sizeScalePointsArray <= 6) {
+          } else if (numberPointsIsOdd && numberPointsLessThanControl) {
             this._setPropForSkipScalePoint(currentScalePoint);
-          } else if (sizeScalePointsArray % 2 === 0 && intervalWithoutFirstAndLastIndex) {
+          } else if (numberPointsIsEven && intervalWithoutFirstAndLastIndex) {
             this._setPropForSkipScalePoint(currentScalePoint);
           }
 
-          if (!currentScalePoint.classList.contains('meta-slider__scale-point_skipped'))
+          if (!currentScalePoint.classList.contains('meta-slider__scale-point_skipped')) {
             this._calcScalePointsSize(currentScalePoint, options);
+          }
         });
 
         this._mapSkipScalePoints.set(totalSizeScalePoints, [...this._skipScalePointsArray]);

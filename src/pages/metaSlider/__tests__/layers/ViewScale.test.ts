@@ -356,8 +356,9 @@ describe('Checking the "ViewScale" layer', () => {
 
     $elemScalePoints.each((index, scalePoint) => {
       const firstOrLastIndex = index === 0 || index === $elemScalePoints.length - 1;
+      const indexIsEven = index % 2 === 0;
 
-      if (index % 2 === 0 && !firstOrLastIndex) {
+      if (indexIsEven && !firstOrLastIndex) {
         expect(classViewScale['_setPropForSkipScalePoint']).toHaveBeenCalledWith(scalePoint);
       }
     });
