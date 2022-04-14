@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/dot-notation */
+import * as createUniqueID from '../../utils/createUniqueID';
 import View from '../../layers/View';
 import InitSettings from '../../data/InitSettings';
-import * as createUniqueID from '../../utils/createUniqueID';
 
 const initSelectorName = 'render-selector';
 const initHTMLBlock = `<div id="${initSelectorName}"></div>`;

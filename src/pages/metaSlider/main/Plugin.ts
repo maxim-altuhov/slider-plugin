@@ -75,18 +75,17 @@ class Plugin {
     prop: string,
     value: string | number | boolean | (string | number)[],
   ) {
-    const pluginOptions: IPluginOptions = $selector.data('metaSlider').model.opt;
+    const { model } = $selector.data('metaSlider');
+    const pluginOptions: IPluginOptions = model.getOptions();
     const includesLimitedProp = Plugin.limitedProp.includes(prop);
 
     if (includesLimitedProp) throw new Error(`Property '${prop}' cannot be changed.`);
 
     if (!includesLimitedProp && prop in pluginOptions) {
-      const { model } = $selector.data('metaSlider');
-
       if (value === undefined) throw new Error(`The value property '${prop}' cannot be omitted.`);
 
-      model.opt[prop] = value;
-      model.opt.key = prop;
+      model.setProp(prop, value);
+      model.setProp('key', prop);
       model.update();
     } else {
       throw new Error(`The '${prop}' property does not exist.`);
@@ -99,19 +98,20 @@ class Plugin {
     $selector: JQuery<HTMLElement>,
     prop: string,
   ): string | number | boolean | (string | number)[] {
-    const pluginOptions: IPluginOptions = { ...$selector.data('metaSlider').model.opt };
+    const { model } = $selector.data('metaSlider');
+    const pluginOptions: IPluginOptions = model.getOptions();
 
-    if (prop in pluginOptions) return pluginOptions[prop];
+    if (prop in pluginOptions) return model.getProp(prop);
 
     throw new Error(`The '${prop}' property does not exist.`);
   }
 
   static getOptionsObj($selector: JQuery<HTMLElement>): IPluginOptions {
-    return { ...$selector.data('metaSlider').model.opt };
+    return $selector.data('metaSlider').model.getOptions();
   }
 
   static getCurrentValues($selector: JQuery<HTMLElement>) {
-    const pluginOptions: IPluginOptions = { ...$selector.data('metaSlider').model.opt };
+    const pluginOptions: IPluginOptions = $selector.data('metaSlider').model.getOptions();
     const { customValues, textValuesArray, initValuesArray } = pluginOptions;
     let currentValues = [];
 

@@ -19,14 +19,14 @@ describe('Checking the "Model" layer', () => {
   InitSettings.$elemScale = $selector.find('.js-meta-slider__scale');
 
   afterEach(() => {
-    classModel.opt = { ...InitSettings };
+    classModel['_opt'] = { ...InitSettings };
     jest.restoreAllMocks();
   });
 
   test('State before first initialization', () => {
     expect($selector.html()).toMatchSnapshot();
-    expect(classModel.opt).toBe(InitSettings);
-    expect(classModel.opt.$selector).toBe($selector);
+    expect(classModel['_opt']).toBe(InitSettings);
+    expect(classModel['_opt'].$selector).toBe($selector);
     expect(classModel.observerList).toHaveLength(0);
     expect(classModel['_listSavedStatus']).toBeDefined();
   });
@@ -39,11 +39,11 @@ describe('Checking the "Model" layer', () => {
 
     classModel.init();
 
-    expect(classModel.opt.key).toBe('init');
+    expect(classModel['_opt'].key).toBe('init');
     expect(classModel['_getSliderSelectors']).toHaveBeenCalled();
     expect(classModel['_checkingIncomingProp']).toHaveBeenCalled();
     expect(classModel['_calcValuesInPercentage']).toHaveBeenCalled();
-    expect(classModel.notify).toHaveBeenCalledWith(classModel.opt);
+    expect(classModel.notify).toHaveBeenCalledWith(classModel['_opt']);
   });
 
   test('Checking the "update" method', () => {
@@ -55,7 +55,37 @@ describe('Checking the "Model" layer', () => {
 
     expect(classModel['_checkingIncomingProp']).toHaveBeenCalled();
     expect(classModel['_calcValuesInPercentage']).toHaveBeenCalled();
-    expect(classModel.notify).toHaveBeenCalledWith(classModel.opt);
+    expect(classModel.notify).toHaveBeenCalledWith(classModel['_opt']);
+  });
+
+  test('Checking the "getOptions" method', () => {
+    jest.spyOn(classModel, 'getOptions');
+    classModel.getOptions();
+
+    expect(classModel.getOptions).toHaveReturnedWith(classModel['_opt']);
+  });
+
+  test('Checking the "getProp" method', () => {
+    const TEST_PROP = 'mainColor';
+    jest.spyOn(classModel, 'getOptions');
+    jest.spyOn(classModel, 'getProp');
+
+    classModel.getProp(TEST_PROP);
+
+    expect(classModel.getOptions).toHaveBeenCalled();
+    expect(classModel.getProp).toHaveReturnedWith(classModel['_opt'][TEST_PROP]);
+  });
+
+  test.each`
+    testProp       | testValue
+    ${'minValue'}  | ${1}
+    ${'maxValue'}  | ${10}
+    ${'step'}      | ${5}
+    ${'mainColor'} | ${'red'}
+  `('Checking the "setProp" method', ({ testProp, testValue }) => {
+    classModel.setProp(testProp, testValue);
+
+    expect(classModel['_opt'][testProp]).toBe(testValue);
   });
 
   // The test uses the @ts-ignore rule so that a fake event can be passed to the test method
@@ -93,17 +123,17 @@ describe('Checking the "Model" layer', () => {
       const mockOffset = jest.spyOn($.fn, 'offset').mockImplementation(() => offset);
 
       const fakeEvent = $.Event('click', {
-        target: classModel.opt.$elemThumbs[0],
+        target: classModel['_opt'].$elemThumbs[0],
         clientY: 205,
         clientX: 575,
       });
 
-      classModel.opt.isVertical = isVertical;
-      classModel.opt.minValue = 0;
-      classModel.opt.maxValue = 100;
-      classModel.opt.step = 1;
-      classModel.opt.stepAsPercent = 1;
-      classModel.opt.numberOfDecimalPlaces = 0;
+      classModel['_opt'].isVertical = isVertical;
+      classModel['_opt'].minValue = 0;
+      classModel['_opt'].maxValue = 100;
+      classModel['_opt'].step = 1;
+      classModel['_opt'].stepAsPercent = 1;
+      classModel['_opt'].numberOfDecimalPlaces = 0;
 
       // @ts-ignore
       classModel.calcTargetValue(onlyReturn, checkingValue, fakeEvent);
@@ -140,12 +170,12 @@ describe('Checking the "Model" layer', () => {
       jest.spyOn<Model, any>(classModel, '_calcValuesInPercentage').mockImplementation();
       jest.spyOn<Model, any>(classModel, '_setCurrentValues').mockImplementation();
 
-      classModel.opt.initValueFirst = valueFirst;
-      classModel.opt.initValueSecond = valueSecond;
-      classModel.opt.minValue = 0;
-      classModel.opt.maxValue = 100;
-      classModel.opt.isRange = testIsRange;
-      classModel.opt.initValuesArray = [valueFirst, valueSecond];
+      classModel['_opt'].initValueFirst = valueFirst;
+      classModel['_opt'].initValueSecond = valueSecond;
+      classModel['_opt'].minValue = 0;
+      classModel['_opt'].maxValue = 100;
+      classModel['_opt'].isRange = testIsRange;
+      classModel['_opt'].initValuesArray = [valueFirst, valueSecond];
       classModel['_listSavedStatus']['activeThumb'] = activeThumb;
       const averageValue = (valueFirst + valueSecond) / 2;
 
@@ -162,7 +192,7 @@ describe('Checking the "Model" layer', () => {
         initValueFirst,
         initValueSecond,
         isRange,
-      } = classModel.opt;
+      } = classModel['_opt'];
 
       const checkingValueLessThanAverage = checkingValue < averageValue;
       const checkingValueMoreThanAverage = checkingValue > averageValue;
@@ -191,20 +221,20 @@ describe('Checking the "Model" layer', () => {
   );
 
   test('Checking the "_calcValuesInPercentage" method', () => {
-    classModel.opt.minValue = 0;
-    classModel.opt.maxValue = 200;
-    classModel.opt.initValuesArray = [0, 100];
+    classModel['_opt'].minValue = 0;
+    classModel['_opt'].maxValue = 200;
+    classModel['_opt'].initValuesArray = [0, 100];
 
     classModel['_calcValuesInPercentage']();
-    const { valuesAsPercentageArray } = classModel.opt;
+    const { valuesAsPercentageArray } = classModel['_opt'];
 
     expect(valuesAsPercentageArray).toEqual([0, 50]);
   });
 
   test('Checking the "_setCurrentValues" method', () => {
     jest.spyOn(classModel, 'notify').mockImplementation();
-    classModel.opt.initValuesArray = [1, 2];
-    classModel.opt.customValues = [0, 100, 200];
+    classModel['_opt'].initValuesArray = [1, 2];
+    classModel['_opt'].customValues = [0, 100, 200];
 
     classModel['_setCurrentValues']();
 
@@ -217,7 +247,7 @@ describe('Checking the "Model" layer', () => {
       textValueSecond,
       textValuesArray,
       customValues,
-    } = classModel.opt;
+    } = classModel['_opt'];
 
     expect(key).toBe('changedValue');
     expect(initValueFirst).toBe(initValuesArray[0]);
@@ -225,19 +255,19 @@ describe('Checking the "Model" layer', () => {
     expect(textValueFirst).toBe(String(customValues[initValuesArray[0]]));
     expect(textValueSecond).toBe(String(customValues[initValuesArray[1]]));
     expect(textValuesArray).toEqual([textValueFirst, textValueSecond]);
-    expect(classModel.notify).toHaveBeenCalledWith(classModel.opt);
+    expect(classModel.notify).toHaveBeenCalledWith(classModel['_opt']);
   });
 
   test.each(['init', 'step', 'maxValue', 'minValue', 'customValues', 'numberOfDecimalPlaces'])(
     'Checking the "_calcStepAsPercentage" method => key: %p',
     (key) => {
-      classModel.opt.key = key;
-      classModel.opt.minValue = 0;
-      classModel.opt.maxValue = 100;
-      classModel.opt.step = 5;
+      classModel['_opt'].key = key;
+      classModel['_opt'].minValue = 0;
+      classModel['_opt'].maxValue = 100;
+      classModel['_opt'].step = 5;
 
       classModel['_calcStepAsPercentage']();
-      const { stepAsPercent } = classModel.opt;
+      const { stepAsPercent } = classModel['_opt'];
 
       expect(stepAsPercent).toBe(5);
     },
@@ -265,39 +295,39 @@ describe('Checking the "Model" layer', () => {
 
   test('Checking the "_getSliderSelectors" method', () => {
     const mockFind = jest.spyOn($.fn, 'find');
-    classModel.opt.$elemSlider = $();
-    classModel.opt.$sliderProgress = $();
-    classModel.opt.$elemThumbs = $();
-    classModel.opt.$elemMarkers = $();
-    classModel.opt.$elemScale = $();
+    classModel['_opt'].$elemSlider = $();
+    classModel['_opt'].$sliderProgress = $();
+    classModel['_opt'].$elemThumbs = $();
+    classModel['_opt'].$elemMarkers = $();
+    classModel['_opt'].$elemScale = $();
 
-    expect(classModel.opt.$elemSlider).toHaveLength(0);
-    expect(classModel.opt.$sliderProgress).toHaveLength(0);
-    expect(classModel.opt.$elemThumbs).toHaveLength(0);
-    expect(classModel.opt.$elemMarkers).toHaveLength(0);
-    expect(classModel.opt.$elemScale).toHaveLength(0);
+    expect(classModel['_opt'].$elemSlider).toHaveLength(0);
+    expect(classModel['_opt'].$sliderProgress).toHaveLength(0);
+    expect(classModel['_opt'].$elemThumbs).toHaveLength(0);
+    expect(classModel['_opt'].$elemMarkers).toHaveLength(0);
+    expect(classModel['_opt'].$elemScale).toHaveLength(0);
 
     classModel['_getSliderSelectors']();
 
     expect(mockFind).toBeCalledTimes(5);
-    expect(classModel.opt.$elemSlider).toHaveLength(1);
-    expect(classModel.opt.$sliderProgress).toHaveLength(1);
-    expect(classModel.opt.$elemThumbs).toHaveLength(2);
-    expect(classModel.opt.$elemMarkers).toHaveLength(2);
-    expect(classModel.opt.$elemScale).toHaveLength(1);
+    expect(classModel['_opt'].$elemSlider).toHaveLength(1);
+    expect(classModel['_opt'].$sliderProgress).toHaveLength(1);
+    expect(classModel['_opt'].$elemThumbs).toHaveLength(2);
+    expect(classModel['_opt'].$elemMarkers).toHaveLength(2);
+    expect(classModel['_opt'].$elemScale).toHaveLength(1);
   });
 
   test.each(['init', 'initAutoMargins', 'isVertical'])(
     'Checking the "_checkingIsVerticalSlider" method => isVertical and initAutoMargins: true/false => key: %p',
     (key) => {
-      classModel.opt.key = key;
+      classModel['_opt'].key = key;
 
       [true, false].forEach((status) => {
-        classModel.opt.isVertical = !status;
-        classModel.opt.initAutoMargins = status;
+        classModel['_opt'].isVertical = !status;
+        classModel['_opt'].initAutoMargins = status;
         classModel['_checkingIsVerticalSlider']();
 
-        const { initAutoMargins } = classModel.opt;
+        const { initAutoMargins } = classModel['_opt'];
         const statusAutoMargins = classModel['_listSavedStatus']['autoMargins'];
 
         expect(classModel['_listSavedStatus']).toHaveProperty('autoMargins', initAutoMargins);
@@ -328,20 +358,20 @@ describe('Checking the "Model" layer', () => {
       NEGATIVE: -5,
     };
 
-    classModel.opt.key = key;
+    classModel['_opt'].key = key;
 
     numberOfDecimalPlacesCheckingList.forEach((currentNum) => {
-      classModel.opt.numberOfDecimalPlaces = currentNum;
-      const { numberOfDecimalPlaces } = classModel.opt;
+      classModel['_opt'].numberOfDecimalPlaces = currentNum;
+      const { numberOfDecimalPlaces } = classModel['_opt'];
 
       [true, false].forEach((status) => {
         const TESTING_KEY = 'numberOfDecimalPlaces';
         const isNotTestingKey = key !== TESTING_KEY;
-        classModel.opt.calcNumberOfDecimalPlaces = status;
+        classModel['_opt'].calcNumberOfDecimalPlaces = status;
 
         classModel['_checkingNumberOfDecimalPlaces']();
 
-        if (isNotTestingKey && classModel.opt.calcNumberOfDecimalPlaces) {
+        if (isNotTestingKey && classModel['_opt'].calcNumberOfDecimalPlaces) {
           expect(classModel['_getNumberOfDecimalPlaces']).toHaveBeenCalled();
         }
       });
@@ -349,7 +379,7 @@ describe('Checking the "Model" layer', () => {
       const currentNumIsNotZero = currentNum !== controlNumbers.ZERO;
 
       if (currentNumIsNotZero && isInit) {
-        expect(classModel.opt.calcNumberOfDecimalPlaces).toBe(false);
+        expect(classModel['_opt'].calcNumberOfDecimalPlaces).toBe(false);
       }
 
       if (listVerifKeys.includes(key)) {
@@ -375,11 +405,11 @@ describe('Checking the "Model" layer', () => {
   `(
     'Checking the "_getNumberOfDecimalPlaces" method => testProp: $testProp, testValue: $testValue',
     ({ testProp, testValue, expected }) => {
-      classModel.opt[testProp] = testValue;
+      classModel['_opt'][testProp] = testValue;
 
       classModel['_getNumberOfDecimalPlaces']();
 
-      expect(classModel.opt.numberOfDecimalPlaces).toBe(expected);
+      expect(classModel['_opt'].numberOfDecimalPlaces).toBe(expected);
     },
   );
 
@@ -397,12 +427,12 @@ describe('Checking the "Model" layer', () => {
     ({ key, testMinValue, testMaxValue, valueFirst, valueSecond }) => {
       jest.spyOn(Number.prototype, 'toFixed');
 
-      classModel.opt.key = key;
-      classModel.opt.initValueFirst = valueFirst;
-      classModel.opt.initValueSecond = valueSecond;
-      classModel.opt.minValue = testMinValue;
-      classModel.opt.maxValue = testMaxValue;
-      classModel.opt.numberOfDecimalPlaces = 2;
+      classModel['_opt'].key = key;
+      classModel['_opt'].initValueFirst = valueFirst;
+      classModel['_opt'].initValueSecond = valueSecond;
+      classModel['_opt'].minValue = testMinValue;
+      classModel['_opt'].maxValue = testMaxValue;
+      classModel['_opt'].numberOfDecimalPlaces = 2;
 
       classModel['_checkingMinMaxValues']();
 
@@ -413,7 +443,7 @@ describe('Checking the "Model" layer', () => {
         minValue,
         maxValue,
         numberOfDecimalPlaces,
-      } = classModel.opt;
+      } = classModel['_opt'];
 
       const isInit = key === 'init';
       const minValueIsIncorrect = initValueFirst && testMinValue > initValueFirst && isInit;
@@ -444,11 +474,11 @@ describe('Checking the "Model" layer', () => {
   `(
     'Checking the "_checkingShowScaleStatus" method => key: $testKey, showScale: $statusScale',
     ({ testKey, statusScale }) => {
-      classModel.opt.key = testKey;
-      classModel.opt.showScale = statusScale;
-      classModel.opt.initAutoScaleCreation = true;
-      classModel.opt.initScaleAdjustment = true;
-      classModel.opt.checkingStepSizeForScale = false;
+      classModel['_opt'].key = testKey;
+      classModel['_opt'].showScale = statusScale;
+      classModel['_opt'].initAutoScaleCreation = true;
+      classModel['_opt'].initScaleAdjustment = true;
+      classModel['_opt'].checkingStepSizeForScale = false;
 
       classModel['_checkingShowScaleStatus']();
 
@@ -458,7 +488,7 @@ describe('Checking the "Model" layer', () => {
         initAutoScaleCreation,
         initScaleAdjustment,
         checkingStepSizeForScale,
-      } = classModel.opt;
+      } = classModel['_opt'];
 
       const SHOW_SCALE_KEY = 'showScale';
       const listVerifKeys = ['init', 'showScale'];
@@ -498,22 +528,22 @@ describe('Checking the "Model" layer', () => {
       jest.spyOn<Model, any>(classModel, '_checkingCorrectStepSizeForScale').mockImplementation();
       jest.spyOn(Number.prototype, 'toFixed');
 
-      classModel.opt.key = key;
-      classModel.opt.minValue = min;
-      classModel.opt.maxValue = max;
-      classModel.opt.stepSizeForScale = stepForScale;
-      classModel.opt.step = stepValue;
-      classModel.opt.initAutoScaleCreation = initAutoScale;
-      classModel.opt.checkingStepSizeForScale = checkingStep;
-      classModel.opt.numberOfDecimalPlaces = 2;
+      classModel['_opt'].key = key;
+      classModel['_opt'].minValue = min;
+      classModel['_opt'].maxValue = max;
+      classModel['_opt'].stepSizeForScale = stepForScale;
+      classModel['_opt'].step = stepValue;
+      classModel['_opt'].initAutoScaleCreation = initAutoScale;
+      classModel['_opt'].checkingStepSizeForScale = checkingStep;
+      classModel['_opt'].numberOfDecimalPlaces = 2;
 
-      const diffMinAndMax = classModel.opt.maxValue - classModel.opt.minValue;
+      const diffMinAndMax = classModel['_opt'].maxValue - classModel['_opt'].minValue;
       const isInit = key === 'init';
 
       classModel['_checkingStepSize']();
 
       if (stepForScale && isInit) {
-        expect(classModel.opt.initAutoScaleCreation).toBe(false);
+        expect(classModel['_opt'].initAutoScaleCreation).toBe(false);
       }
 
       const {
@@ -522,7 +552,7 @@ describe('Checking the "Model" layer', () => {
         initAutoScaleCreation,
         checkingStepSizeForScale,
         numberOfDecimalPlaces,
-      } = classModel.opt;
+      } = classModel['_opt'];
 
       expect(step.toFixed).toHaveBeenCalledWith(numberOfDecimalPlaces);
 
@@ -559,12 +589,12 @@ describe('Checking the "Model" layer', () => {
       jest.spyOn(Number.prototype, 'toFixed');
       const mockIsInteger = jest.spyOn(Number, 'isInteger');
 
-      classModel.opt.stepSizeForScale = stepForScale;
-      classModel.opt.minValue = 0;
-      classModel.opt.maxValue = 100;
+      classModel['_opt'].stepSizeForScale = stepForScale;
+      classModel['_opt'].minValue = 0;
+      classModel['_opt'].maxValue = 100;
 
       classModel['_checkingCorrectStepSizeForScale']();
-      const { maxValue, minValue, stepSizeForScale } = classModel.opt;
+      const { maxValue, minValue, stepSizeForScale } = classModel['_opt'];
 
       expect(mockIsInteger).toHaveBeenNthCalledWith(1, stepForScale);
 
@@ -589,11 +619,11 @@ describe('Checking the "Model" layer', () => {
     ({ key, testCustomValues, expected }) => {
       jest.spyOn<Model, any>(classModel, '_initCustomValues').mockImplementation();
 
-      classModel.opt.key = key;
-      classModel.opt.customValues = testCustomValues;
+      classModel['_opt'].key = key;
+      classModel['_opt'].customValues = testCustomValues;
 
       classModel['_checkingCustomValues']();
-      const { customValues } = classModel.opt;
+      const { customValues } = classModel['_opt'];
 
       expect(customValues).toEqual(expected);
 
@@ -604,7 +634,7 @@ describe('Checking the "Model" layer', () => {
   test.each([[[1]], [['a', 'b', 'c']], [['abc']]])(
     'Checking the "_initCustomValues" method => customValues: %p',
     (testValue) => {
-      classModel.opt.customValues = [...testValue];
+      classModel['_opt'].customValues = [...testValue];
 
       classModel['_initCustomValues']();
 
@@ -620,7 +650,7 @@ describe('Checking the "Model" layer', () => {
         numberOfDecimalPlaces,
         step,
         stepSizeForScale,
-      } = classModel.opt;
+      } = classModel['_opt'];
 
       expect(minValue).toBe(0);
       expect(maxValue).toBe(customValues.length - 1);
@@ -664,13 +694,13 @@ describe('Checking the "Model" layer', () => {
         // @ts-ignore
         .mockImplementation((_, initValue) => initValue);
 
-      classModel.opt.key = key;
-      classModel.opt.initValueFirst = valFirst;
-      classModel.opt.initValueSecond = valSec;
-      classModel.opt.minValue = min;
-      classModel.opt.maxValue = max;
-      classModel.opt.isRange = range;
-      classModel.opt.customValues = customVal;
+      classModel['_opt'].key = key;
+      classModel['_opt'].initValueFirst = valFirst;
+      classModel['_opt'].initValueSecond = valSec;
+      classModel['_opt'].minValue = min;
+      classModel['_opt'].maxValue = max;
+      classModel['_opt'].isRange = range;
+      classModel['_opt'].customValues = customVal;
 
       classModel['_checkingInitValues']();
 
@@ -685,7 +715,7 @@ describe('Checking the "Model" layer', () => {
         textValueSecond,
         textValuesArray,
         isRange,
-      } = classModel.opt;
+      } = classModel['_opt'];
 
       if (!valFirst) expect(initValueFirst).toBe(minValue);
       if (!valSec) expect(initValueSecond).toBe(maxValue);

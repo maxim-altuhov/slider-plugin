@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 // The tests uses the 'any' type in jest.spyOn so that private methods of the class can be tested
+import * as makeThrottlingHandler from '../../utils/makeThrottlingHandler';
 import View from '../../layers/View';
 import ViewScale from '../../layers/ViewScale';
 import InitSettings from '../../data/InitSettings';
-import * as makeThrottlingHandler from '../../utils/makeThrottlingHandler';
 
 jest.mock('../../utils/createUniqueID');
 const classMainView = new View();

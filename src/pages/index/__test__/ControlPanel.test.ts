@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 // The tests uses the 'any' type in jest.spyOn so that private methods of the class can be tested
+import '../../metaSlider/metaSlider';
 import Plugin from '../../metaSlider/main/Plugin';
 import Model from '../../metaSlider/layers/Model';
-import '../../metaSlider/metaSlider';
 import ControlPanel from '../ts/ControlPanel';
 
 jest.mock('../../../pages/metaSlider/layers/View');
@@ -101,7 +101,7 @@ describe('Checking the "ControlPanel"', () => {
     inputCustomValues.val(['a', 'b', 'c']);
     inputMainColor.val('red');
 
-    $sliderSelector.data('metaSlider').model.opt.key = '';
+    $sliderSelector.data('metaSlider').model.setProp('key', '');
   });
 
   test('Checking the "init" method', () => {
@@ -173,7 +173,7 @@ describe('Checking the "ControlPanel"', () => {
       .mockImplementation();
 
     propertyList.forEach((propKey) => {
-      $sliderSelector.data('metaSlider').model.opt.key = propKey;
+      $sliderSelector.data('metaSlider').model.setProp('key', propKey);
       classControlPanel.watchTheSlider();
 
       expect($sliderSelector.metaSlider).toHaveBeenCalledWith('getProp', 'key');
@@ -221,7 +221,7 @@ describe('Checking the "ControlPanel"', () => {
 
   test.each(['step', 'showScale'])('Checking the "_getProp" method => option %p', (prop) => {
     jest.spyOn<ControlPanel, any>(classControlPanel, '_getProp');
-    const currentValue = $sliderSelector.data('metaSlider').model.opt[prop];
+    const currentValue = $sliderSelector.data('metaSlider').model.getProp(prop);
     classControlPanel['_getProp'](prop);
 
     expect($sliderSelector.metaSlider).toHaveBeenCalledWith('getProp', prop);

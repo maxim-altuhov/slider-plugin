@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/dot-notation */
 import Model from '../../layers/Model';
 import Presenter from '../../layers/Presenter';
 import View from '../../layers/View';
@@ -111,8 +112,8 @@ describe('Checking the methods of the metaSlider plugin', () => {
 
     Plugin.setProp($initSelector, TEST_PROP, TEST_VALUE);
 
-    expect(model.opt.mainColor).toBe(TEST_VALUE);
-    expect(model.opt.key).toBe(TEST_PROP);
+    expect(model['_opt'][TEST_PROP]).toBe(TEST_VALUE);
+    expect(model['_opt'].key).toBe(TEST_PROP);
     expect(model.update).toHaveBeenCalled();
     expect(Plugin.setProp).toHaveReturnedWith($initSelector);
 
