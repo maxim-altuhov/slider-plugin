@@ -1,20 +1,20 @@
-class Observer {
-  public observerList: Function[] = [];
+abstract class Observer {
+  private _observerList: Function[] = [];
 
   subscribe(observer: Function) {
     if (typeof observer !== 'function') {
       throw new Error('Add observer must be a function');
     }
 
-    this.observerList.forEach((item) => {
+    this._observerList.forEach((item) => {
       if (item === observer) throw new Error('Observer already in the list');
     });
 
-    this.observerList.push(observer);
+    this._observerList.push(observer);
   }
 
   unsubscribe(observer: Function) {
-    this.observerList = this.observerList.filter((item) => item !== observer);
+    this._observerList = this._observerList.filter((item) => item !== observer);
   }
 
   /**
@@ -22,7 +22,7 @@ class Observer {
    * Type any, so that it is possible to pass any arguments to the called methods
    */
   notify(...arg: any) {
-    this.observerList.forEach((observer) => observer(...arg));
+    this._observerList.forEach((observer) => observer(...arg));
   }
 }
 

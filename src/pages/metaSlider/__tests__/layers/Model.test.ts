@@ -27,7 +27,7 @@ describe('Checking the "Model" layer', () => {
     expect($selector.html()).toMatchSnapshot();
     expect(classModel['_opt']).toBe(InitSettings);
     expect(classModel['_opt'].$selector).toBe($selector);
-    expect(classModel.observerList).toHaveLength(0);
+    expect(classModel['_observerList']).toHaveLength(0);
     expect(classModel['_listSavedStatus']).toBeDefined();
   });
 

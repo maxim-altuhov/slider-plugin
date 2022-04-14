@@ -24,7 +24,7 @@ describe('Checking the "ViewScale" layer, before first initialization.', () => {
     expect(notInitViewScale['_mapSkipScalePoints'].size).toBe(0);
     expect(notInitViewScale['_skipScalePointsArray']).toHaveLength(0);
     expect(notInitViewScale['_isFirstInit']).toBe(true);
-    expect(notInitViewScale.observerList).toHaveLength(0);
+    expect(notInitViewScale['_observerList']).toHaveLength(0);
     expect(notInitViewScale['_verifKeysObj']).toBeDefined();
   });
 });

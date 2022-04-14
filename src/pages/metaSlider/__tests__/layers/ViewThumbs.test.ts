@@ -19,7 +19,7 @@ describe('Checking the "ViewThumbs" layer, before first initialization.', () => 
     expect(notInitViewThumbs['_$elemThumbs']).toHaveLength(0);
     expect(notInitViewThumbs['_isFirstInit']).toBe(true);
     expect(notInitViewThumbs['_verifKeysObj']).toBeDefined();
-    expect(notInitViewThumbs.observerList).toHaveLength(0);
+    expect(notInitViewThumbs['_observerList']).toHaveLength(0);
   });
 });
 

@@ -51,7 +51,6 @@ interface IPluginOptions {
 }
 
 interface ISubView {
-  observerList: Function[];
   update(options: IPluginOptions): void;
   subscribe(observer: Function): void;
   unsubscribe(observer: Function): void;
