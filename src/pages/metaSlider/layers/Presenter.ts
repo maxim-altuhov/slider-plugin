@@ -21,7 +21,7 @@ class Presenter {
   }
 
   // Calling a method in the model to calculate the values of the thumbs slider positions
-  updateModel(event: MouseEvent, inputValue?: number, onlyReturn = false) {
+  updateModel(event: Event & MouseEvent & KeyboardEvent, inputValue?: number, onlyReturn = false) {
     this._model.calcTargetValue(onlyReturn, inputValue, event);
   }
 }

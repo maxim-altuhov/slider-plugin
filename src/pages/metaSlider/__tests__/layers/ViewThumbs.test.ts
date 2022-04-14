@@ -64,7 +64,7 @@ describe('Checking the "ViewThumbs" layer => "update" method', () => {
 
     expect($elemThumbs).toHaveLength(2);
     expect(classViewThumbs['_isFirstInit']).toBe(false);
-    expect(classViewThumbs['_setEventsThumbs']).toHaveBeenCalledWith(testSettings);
+    expect(classViewThumbs['_setEventsThumbs']).toHaveBeenCalled();
   });
 
   test('Checking the "_setValueInThumbs" method => defaultSettings', () => {
@@ -147,38 +147,23 @@ describe('Checking the "ViewThumbs" layer => "update" method', () => {
     expect($elemThumbs.prop('style')).toHaveProperty('display', 'none');
   });
 
-  test.each([0, 1])(
+  test.each(['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'KeyS', 'KeyX'])(
     'Checking the "_setEventsThumbs" method, event "keydown" (index %d) => init _handleThumbKeydown',
-    (index) => {
+    (eventCode) => {
       jest.spyOn(classViewThumbs, 'notify').mockImplementation();
-      const { initValuesArray, step } = testSettings;
+      const { initValuesArray } = testSettings;
       const listEventCode = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'];
+      const eventKeydown = $.Event('keydown', { code: eventCode });
+      eventKeydown.preventDefault = jest.fn();
+      $elemThumbs.eq(1).trigger(eventKeydown);
 
-      listEventCode.forEach((eventCode) => {
-        const [codeLeft, codeRight, codeUp, codeDown] = listEventCode;
-        const eventKeydown = $.Event('keydown', { code: eventCode });
-        eventKeydown.preventDefault = jest.fn();
-        $elemThumbs.eq(index).trigger(eventKeydown, testSettings);
-
+      if (listEventCode.includes(eventCode)) {
         expect(eventKeydown.preventDefault).toHaveBeenCalled();
-
-        const eventCodeReducingValue = eventCode === codeLeft || eventCode === codeDown;
-        const eventCodeIncreasingValue = eventCode === codeRight || eventCode === codeUp;
-
-        if (eventCodeIncreasingValue) {
-          expect(classViewThumbs.notify).toHaveBeenCalledWith(
-            eventKeydown,
-            initValuesArray[index] + step,
-          );
-        }
-
-        if (eventCodeReducingValue) {
-          expect(classViewThumbs.notify).toHaveBeenCalledWith(
-            eventKeydown,
-            initValuesArray[index] - step,
-          );
-        }
-      });
+        expect(classViewThumbs.notify).toHaveBeenCalledWith(eventKeydown, initValuesArray[1]);
+      } else {
+        expect(eventKeydown.preventDefault).not.toHaveBeenCalled();
+        expect(classViewThumbs.notify).not.toHaveBeenCalled();
+      }
     },
   );
 

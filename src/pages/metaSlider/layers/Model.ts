@@ -16,14 +16,14 @@ class Model extends Observer {
     this._getSliderSelectors();
     this._checkingIncomingProp();
     this._calcValuesInPercentage();
-    this.notify(this._opt);
+    this.notify({ ...this._opt });
   }
 
   // Method called when updating the model from the outside
   update() {
     this._checkingIncomingProp();
     this._calcValuesInPercentage();
-    this.notify(this._opt);
+    this.notify({ ...this._opt });
   }
 
   getOptions() {
@@ -41,7 +41,11 @@ class Model extends Observer {
   }
 
   // Calculation of thumbs slider position values
-  calcTargetValue(onlyReturn: boolean, inputValue?: number, event?: MouseEvent): number | null {
+  calcTargetValue(
+    onlyReturn: boolean,
+    inputValue?: number,
+    event?: Event & MouseEvent & KeyboardEvent,
+  ): number | null {
     const {
       $elemSlider,
       isVertical,
@@ -51,26 +55,40 @@ class Model extends Observer {
       stepAsPercent,
       numberOfDecimalPlaces,
     } = this._opt;
+    let valueInThumbPosition = inputValue;
     let eventPosition = 0;
     let sliderOffset = 0;
     let sliderSize = 0;
     let valueInEventPosition = 0;
     let valueAsPercentage = 0;
 
-    if (isVertical && event) {
-      eventPosition = event.clientY;
-      sliderOffset = $elemSlider[0].getBoundingClientRect().bottom;
-      sliderSize = $elemSlider[0].getBoundingClientRect().height;
-      valueInEventPosition = sliderOffset - eventPosition;
-    } else if (!isVertical && event) {
-      eventPosition = event.clientX;
-      sliderOffset = $elemSlider.offset()?.left || 0;
-      sliderSize = $elemSlider.outerWidth() || 0;
-      valueInEventPosition = eventPosition - sliderOffset;
+    if (event && !event.code) {
+      if (isVertical) {
+        eventPosition = event.clientY;
+        sliderOffset = $elemSlider[0].getBoundingClientRect().bottom;
+        sliderSize = $elemSlider[0].getBoundingClientRect().height;
+        valueInEventPosition = sliderOffset - eventPosition;
+      } else {
+        eventPosition = event.clientX;
+        sliderOffset = $elemSlider.offset()?.left || 0;
+        sliderSize = $elemSlider.outerWidth() || 0;
+        valueInEventPosition = eventPosition - sliderOffset;
+      }
     }
 
-    if (inputValue !== undefined) {
-      valueAsPercentage = ((inputValue - minValue) / (maxValue - minValue)) * 100;
+    if (valueInThumbPosition !== undefined) {
+      if (event && event.code) {
+        const { code } = event;
+        const listEventCode = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'];
+        const [codeLeft, codeRight, codeUp, codeDown] = listEventCode;
+        const eventCodeReducingValue = code === codeLeft || code === codeDown;
+        const eventCodeIncreasingValue = code === codeRight || code === codeUp;
+
+        if (eventCodeReducingValue) valueInThumbPosition -= step;
+        if (eventCodeIncreasingValue) valueInThumbPosition += step;
+      }
+
+      valueAsPercentage = ((valueInThumbPosition - minValue) / (maxValue - minValue)) * 100;
     } else {
       valueAsPercentage = (valueInEventPosition / sliderSize) * 100;
     }

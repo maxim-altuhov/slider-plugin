@@ -43,7 +43,7 @@ describe('Checking the "Presenter" layer', () => {
 
   test('Initializing the "updateModel" method', () => {
     const INPUT_VALUE = 50;
-    const eventClick: MouseEvent = $.Event('click');
+    const eventClick: Event & MouseEvent & KeyboardEvent = $.Event('click');
     model.calcTargetValue = jest.fn();
     presenter.updateModel(eventClick, INPUT_VALUE);
 

@@ -154,6 +154,42 @@ describe('Checking the "Model" layer', () => {
     },
   );
 
+  // The test uses the @ts-ignore rule so that a fake event can be passed to the test method
+  test.each`
+    eventCode       | expected
+    ${'ArrowLeft'}  | ${40}
+    ${'ArrowRight'} | ${60}
+    ${'ArrowUp'}    | ${60}
+    ${'ArrowDown'}  | ${40}
+  `('Checking the "calcTargetValue" method => KeyboardEvent', ({ eventCode, expected }) => {
+    jest.spyOn(classModel, 'calcTargetValue');
+    jest.spyOn<Model, any>(classModel, '_checkingTargetValue').mockImplementation();
+
+    const CONTROL_VALUE = 50;
+    classModel['_opt'].step = 10;
+    classModel['_opt'].stepAsPercent = 10;
+    classModel['_opt'].minValue = 0;
+    classModel['_opt'].maxValue = 100;
+    classModel['_opt'].numberOfDecimalPlaces = 0;
+
+    const fakeEvent = $.Event('keydown', { code: eventCode });
+    const listEventCode = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'];
+    const [codeLeft, codeRight, codeUp, codeDown] = listEventCode;
+    const eventCodeReducingValue = eventCode === codeLeft || eventCode === codeDown;
+    const eventCodeIncreasingValue = eventCode === codeRight || eventCode === codeUp;
+
+    // @ts-ignore
+    classModel.calcTargetValue(false, CONTROL_VALUE, fakeEvent);
+
+    if (eventCodeReducingValue) {
+      expect(classModel['_checkingTargetValue']).toHaveBeenCalledWith(expected);
+    }
+
+    if (eventCodeIncreasingValue) {
+      expect(classModel['_checkingTargetValue']).toHaveBeenCalledWith(expected);
+    }
+  });
+
   test.each`
     checkingValue | valueFirst | valueSecond | testIsRange | activeThumb
     ${50}         | ${0}       | ${100}      | ${true}     | ${'first'}

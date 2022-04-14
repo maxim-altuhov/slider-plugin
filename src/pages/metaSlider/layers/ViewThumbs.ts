@@ -38,7 +38,7 @@ class ViewThumbs extends Observer {
 
   private _init(options: IPluginOptions) {
     this._$elemThumbs = options.$elemThumbs;
-    this._setEventsThumbs(options);
+    this._setEventsThumbs();
   }
 
   private _setStyleForThumbs(options: IPluginOptions) {
@@ -84,30 +84,20 @@ class ViewThumbs extends Observer {
     }
   }
 
-  private _setEventsThumbs(options: IPluginOptions) {
+  private _setEventsThumbs() {
     this._$elemThumbs.on('pointerdown.thumb', this._handleThumbPointerdown.bind(this));
-    this._$elemThumbs.on('keydown.thumb', this._handleThumbKeydown.bind(this, options));
+    this._$elemThumbs.on('keydown.thumb', this._handleThumbKeydown.bind(this));
   }
 
   // Changing the position of the thumbs sliders when using the keyboard
-  private _handleThumbKeydown(
-    options: IPluginOptions,
-    event: Event & { target: EventTarget; code?: string },
-  ) {
+  private _handleThumbKeydown(event: Event & { target: EventTarget; code?: string }) {
     const { code, target } = event;
     const listEventCode = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'];
     const $target = $(target);
 
     if (code && listEventCode.includes(code)) {
       event.preventDefault();
-      const [codeLeft, codeRight, codeUp, codeDown] = listEventCode;
-      const { step } = options;
-      const eventCodeReducingValue = code === codeLeft || code === codeDown;
-      const eventCodeIncreasingValue = code === codeRight || code === codeUp;
-      let targetValue = Number($target.attr('data-value'));
-
-      if (eventCodeReducingValue) targetValue -= step;
-      if (eventCodeIncreasingValue) targetValue += step;
+      const targetValue = Number($target.attr('data-value'));
 
       this.notify(event, targetValue);
     }
