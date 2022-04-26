@@ -3,8 +3,8 @@ import Plugin from './main/Plugin';
 import './metaSlider.scss';
 
 (($) => {
-  $.fn.metaSlider = function (initParam, ...prop) {
-    const isPluginMethodCall = typeof initParam === 'string' && Plugin[initParam];
+  $.fn.metaSlider = function (initParam?: string | Partial<IPluginOptions>, ...prop: any[]) {
+    const isPluginMethodCall = typeof initParam === 'string' && initParam in Plugin;
 
     if (isPluginMethodCall) return Plugin[initParam](this, ...prop);
     if (!initParam) return Plugin.init(this);

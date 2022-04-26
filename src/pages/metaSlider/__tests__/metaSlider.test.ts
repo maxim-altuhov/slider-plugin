@@ -9,7 +9,7 @@ document.body.innerHTML = '<div id="fake-selector"></div>';
 const $initSelector = $('#fake-selector');
 
 describe('Checking the correct operation of the plugin`s "metaSlider" method', () => {
-  test.each(['setProp', 'init'])(
+  test.each(['init'])(
     'Checking the correctness of calls to available plugin methods => initParam: %p',
     (initParam) => {
       $initSelector.metaSlider(initParam);

@@ -1,8 +1,8 @@
-// The any type is used, since the called functions can contain any arguments and return any values
-function makeThrottlingHandler(fn: Function, timeout: number) {
+// The any type is used, since the called functions can contain any arguments
+function makeThrottlingHandler(fn: (...args: any[]) => unknown, timeout: number) {
   let timer: NodeJS.Timeout | null = null;
 
-  return (...args: any) => {
+  return (...args: any[]) => {
     if (timer) return;
 
     timer = setTimeout(() => {

@@ -51,7 +51,7 @@ describe('Checking the "ViewScale" layer', () => {
     colorForScale: 'black',
   };
 
-  let testSettings: IPluginOptions;
+  let testSettings: IPluginOptions & { testWidth?: number | null; testHeight?: number | null };
   let $selector: JQuery<HTMLElement>;
   let $elemSlider: JQuery<HTMLElement>;
   let $elemScale: JQuery<HTMLElement>;

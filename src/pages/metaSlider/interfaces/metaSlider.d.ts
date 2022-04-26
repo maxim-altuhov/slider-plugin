@@ -1,9 +1,13 @@
-/**
- * I use the any type in [key: string]: any to be able to
- * access any property in the object with slider options.
- */
+type TypePluginOptions =
+  | JQuery<HTMLElement>
+  | string
+  | number
+  | boolean
+  | (number | string)[]
+  | null;
+
 interface IPluginOptions {
-  [key: string]: any;
+  [key: string]: TypePluginOptions;
   key: string;
   $selector: JQuery<HTMLElement>;
   $elemSlider: JQuery<HTMLElement>;
@@ -46,13 +50,14 @@ interface IPluginOptions {
   textValueSecond: string;
   textValuesArray: string[];
   valuesAsPercentageArray: number[];
-  testWidth?: null | number;
-  testHeight?: null | number;
 }
 
-interface ISubView {
+interface IObserver {
+  subscribe(observer: (...args: any[]) => unknown): void;
+  unsubscribe(observer: (...args: any[]) => unknown): void;
+  notify(...arg: any[]): void;
+}
+
+interface ISubView extends Partial<IObserver> {
   update(options: IPluginOptions): void;
-  subscribe(observer: Function): void;
-  unsubscribe(observer: Function): void;
-  notify(...arg: any): void;
 }

@@ -17,7 +17,6 @@ describe('Checking the "ViewMarkers" layer, before first initialization.', () =>
     expect(notInitViewMarkers['_$elemMarkers']).toHaveLength(0);
     expect(notInitViewMarkers['_$elemThumbs']).toHaveLength(0);
     expect(notInitViewMarkers['_isFirstInit']).toBe(true);
-    expect(notInitViewMarkers['_observerList']).toHaveLength(0);
     expect(notInitViewMarkers['_verifKeysObj']).toBeDefined();
   });
 });

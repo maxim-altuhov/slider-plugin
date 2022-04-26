@@ -11,9 +11,9 @@ const $initSelector = $(`#${initSelectorName}`);
 describe('Checking the "View" layer', () => {
   const classView = new View();
 
-  Object.keys(classView.subViewsList).forEach((view) => {
-    classView.subViewsList[view].update = jest.fn();
-    classView.subViewsList[view].subscribe = jest.fn();
+  Object.values(classView.subViewsList).forEach((view) => {
+    view.update = jest.fn();
+    view.subscribe = jest.fn();
   });
 
   afterEach(() => {
@@ -23,10 +23,8 @@ describe('Checking the "View" layer', () => {
   test('Checking the "setObservers" method', () => {
     classView.setObservers();
 
-    Object.keys(classView.subViewsList).forEach((view) => {
-      if ('subscribe' in classView.subViewsList[view]) {
-        expect(classView.subViewsList[view].subscribe).toHaveBeenCalledWith(expect.any(Function));
-      }
+    Object.values(classView.subViewsList).forEach((view) => {
+      if ('subscribe' in view) expect(view.subscribe).toHaveBeenCalledWith(expect.any(Function));
     });
   });
 
@@ -58,8 +56,8 @@ describe('Checking the "View" layer', () => {
   test('When the "update" method is performed at the "View" level, an update occurs in the dependent subview from "subViewsList"-> %s and an object with options is passed to the "update"', () => {
     classView.updateViews(InitSettings);
 
-    Object.keys(classView.subViewsList).forEach((view) => {
-      expect(classView.subViewsList[view].update).toHaveBeenCalledWith(InitSettings);
+    Object.values(classView.subViewsList).forEach((view) => {
+      if ('update' in view) expect(view.update).toHaveBeenCalledWith(InitSettings);
     });
   });
 

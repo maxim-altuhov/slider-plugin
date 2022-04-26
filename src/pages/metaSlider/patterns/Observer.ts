@@ -1,7 +1,7 @@
-abstract class Observer {
-  private _observerList: Function[] = [];
+abstract class Observer implements IObserver {
+  private _observerList: ((...args: any[]) => unknown)[] = [];
 
-  subscribe(observer: Function) {
+  subscribe(observer: (...args: any[]) => unknown) {
     if (typeof observer !== 'function') {
       throw new Error('Add observer must be a function');
     }
@@ -13,15 +13,11 @@ abstract class Observer {
     this._observerList.push(observer);
   }
 
-  unsubscribe(observer: Function) {
+  unsubscribe(observer: (...args: any[]) => unknown) {
     this._observerList = this._observerList.filter((item) => item !== observer);
   }
 
-  /**
-   * Calls all subscribed methods from the list.
-   * Type any, so that it is possible to pass any arguments to the called methods
-   */
-  notify(...arg: any) {
+  notify(...arg: any[]) {
     this._observerList.forEach((observer) => observer(...arg));
   }
 }

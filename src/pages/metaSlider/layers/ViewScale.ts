@@ -115,7 +115,10 @@ class ViewScale extends Observer {
     }
   }
 
-  private _calcScalePointsSize(targetScalePoint: HTMLElement, options: IPluginOptions) {
+  private _calcScalePointsSize(
+    targetScalePoint: HTMLElement,
+    options: IPluginOptions & { testWidth?: number | null; testHeight?: number | null },
+  ) {
     const { isVertical, testHeight, testWidth } = options;
 
     if (isVertical) {

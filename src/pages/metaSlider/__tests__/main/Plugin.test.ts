@@ -126,7 +126,7 @@ describe('Checking the methods of the metaSlider plugin', () => {
       Plugin.setProp($initSelector, TEST_PROP);
     }).toThrow(`The value property '${TEST_PROP}' cannot be omitted.`);
 
-    Plugin.limitedProp.forEach((prop) => {
+    Plugin.limitedSetProp.forEach((prop) => {
       expect(() => {
         Plugin.setProp($initSelector, prop, 'fakeValue');
       }).toThrow(`Property '${prop}' cannot be changed.`);

@@ -107,7 +107,7 @@ class ControlPanel {
 
   // Method for getting the current slider properties and setting new values in the control panel
   private _getProp(prop: string) {
-    const valueProp = this._$sliderSelector.metaSlider('getProp', prop);
+    const valueProp = this._$sliderSelector.metaSlider<string | number | string[]>('getProp', prop);
     const $inputTarget = this._selectorsObj[prop];
 
     if ($inputTarget.attr('type') === this._typeInput.CHECKBOX) {

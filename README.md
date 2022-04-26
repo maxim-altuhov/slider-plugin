@@ -166,7 +166,7 @@
   $('#slider-1').metaSlider('setProp', 'step', 10);
 ```
 
-`setProp(prop: string, value: string | number | boolean | (string | number)[]): JQuery` - метод устанавливает заданное значение для свойства слайдера, возвращает объект jQuery с селектором на котором слайдер был вызван.
+`setProp(prop: string, value: string | number | boolean | (string | number)[]): JQuery<HTMLElement>` - метод устанавливает заданное значение для свойства слайдера, возвращает объект jQuery с селектором на котором слайдер был вызван.
 ```js
   // JavaScript
   $('#slider').metaSlider('setProp', 'mainColor', '#ffb13c');
@@ -207,7 +207,7 @@
   console.log(currentValues); // [10, 100]
 ```
 
-`destroy(): JQuery` - метод удаляет слайдер, всё его содержимое, но не удаляет сам элемент на котором был вызван слайдер. Возвращает объект jQuery с селектором на котором слайдер был вызван.
+`destroy(): JQuery<HTMLElement>` - метод удаляет слайдер, всё его содержимое, но не удаляет сам элемент на котором был вызван слайдер. Возвращает объект jQuery с селектором на котором слайдер был вызван.
 ```js
   // JavaScript
   const $slider = $('#slider');
@@ -216,7 +216,7 @@
   $slider.metaSlider('destroy');
 ```
 
-`subscribe(observer: Function): JQuery` - метод позволяет "подписаться" на событие обновления слайдера. Возвращает объект jQuery с селектором на котором слайдер был вызван.
+`subscribe(observer: function): JQuery<HTMLElement>` - метод позволяет "подписаться" на событие обновления слайдера. Возвращает объект jQuery с селектором на котором слайдер был вызван.
 ```js
   // JavaScript
   const $slider = $('#slider');
@@ -231,7 +231,7 @@
   // Произошло обновление слайдера
   // Вывод в консоль => 'Слайдер обновился!'
 ```
-`unsubscribe(observer: Function): JQuery` - метод позволяет "отписаться" от события обновления слайдера. Возвращает объект jQuery с селектором на котором слайдер был вызван.
+`unsubscribe(observer: function): JQuery<HTMLElement>` - метод позволяет "отписаться" от события обновления слайдера. Возвращает объект jQuery с селектором на котором слайдер был вызван.
 ```js
   // JavaScript
   const $slider = $('#slider');

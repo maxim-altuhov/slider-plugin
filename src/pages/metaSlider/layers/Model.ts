@@ -263,12 +263,23 @@ class Model extends Observer {
   private _getNumberOfDecimalPlaces() {
     const propToCheck = ['minValue', 'maxValue', 'step'];
 
-    // prettier-ignore
-    const resultArr = propToCheck.map((prop) =>
-      this._opt[prop].toString().includes('.') ? this._opt[prop].toString().match(/\.(\d+)/)[1].length : 0,
-    );
+    const listValueForCheck = propToCheck.map((prop) => {
+      const valueInProp = this._opt[prop];
+      let result = 0;
 
-    this._opt.numberOfDecimalPlaces = Math.max(...resultArr);
+      if (valueInProp) {
+        const valueInPropAsString = valueInProp.toString();
+        const checkTarget = valueInPropAsString.includes('.')
+          ? valueInPropAsString.match(/\.(\d+)/)
+          : null;
+
+        result = checkTarget ? checkTarget[1].length : 0;
+      }
+
+      return result;
+    });
+
+    this._opt.numberOfDecimalPlaces = Math.max(...listValueForCheck);
   }
 
   private _checkingMinMaxValues() {

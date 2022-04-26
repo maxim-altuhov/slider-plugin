@@ -5,10 +5,10 @@ import Model from '../layers/Model';
 import View from '../layers/View';
 
 class Plugin {
-  static [key: string]: any;
+  static [key: string]: InstanceType<typeof Plugin>;
   static initSettings = InitSettings;
   static typeSettings = TypeSettings;
-  static limitedProp = [
+  static limitedSetProp = [
     'key',
     '$selector',
     '$elemSlider',
@@ -26,7 +26,7 @@ class Plugin {
     'testWidth',
   ];
 
-  static init($selector: JQuery<HTMLElement>, settings?: object & { [key: string]: any }) {
+  static init($selector: JQuery<HTMLElement>, settings?: Partial<IPluginOptions>) {
     if (!$selector.data('metaSlider')) {
       if ($selector.length > 1) {
         throw new Error(
@@ -77,7 +77,7 @@ class Plugin {
   ) {
     const { model } = $selector.data('metaSlider');
     const pluginOptions: IPluginOptions = model.getOptions();
-    const includesLimitedProp = Plugin.limitedProp.includes(prop);
+    const includesLimitedProp = Plugin.limitedSetProp.includes(prop);
 
     if (includesLimitedProp) throw new Error(`Property '${prop}' cannot be changed.`);
 
@@ -130,14 +130,14 @@ class Plugin {
     return $selector;
   }
 
-  static subscribe($selector: JQuery<HTMLElement>, observer: Function) {
+  static subscribe($selector: JQuery<HTMLElement>, observer: (...args: any[]) => unknown) {
     const { model } = $selector.data('metaSlider');
     model.subscribe(observer);
 
     return $selector;
   }
 
-  static unsubscribe($selector: JQuery<HTMLElement>, observer: Function) {
+  static unsubscribe($selector: JQuery<HTMLElement>, observer: (...args: any[]) => unknown) {
     const { model } = $selector.data('metaSlider');
     model.unsubscribe(observer);
 
