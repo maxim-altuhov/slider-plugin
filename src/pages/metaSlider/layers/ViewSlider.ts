@@ -7,7 +7,7 @@ class ViewSlider extends Observer {
   private _$elemThumbs = $();
   private _$elemMarkers = $();
   private _isFirstInit = true;
-  private _verifKeysObj = {
+  private readonly _verifKeysObj = {
     setBackgroundRangeKeys: [
       'init',
       'showBackground',

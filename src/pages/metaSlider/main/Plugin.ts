@@ -5,10 +5,10 @@ import Model from '../layers/Model';
 import View from '../layers/View';
 
 class Plugin {
-  static [key: string]: InstanceType<typeof Plugin>;
-  static initSettings = InitSettings;
-  static typeSettings = TypeSettings;
-  static limitedSetProp = [
+  static readonly [key: string]: InstanceType<typeof Plugin>;
+  static readonly initSettings = InitSettings;
+  static readonly typeSettings = TypeSettings;
+  static readonly limitedSetProp = [
     'key',
     '$selector',
     '$elemSlider',
@@ -22,8 +22,6 @@ class Plugin {
     'textValuesArray',
     'valuesAsPercentageArray',
     'stepAsPercent',
-    'testHeight',
-    'testWidth',
   ];
 
   static init($selector: JQuery<HTMLElement>, settings?: Partial<IPluginOptions>) {
@@ -73,7 +71,7 @@ class Plugin {
   static setProp(
     $selector: JQuery<HTMLElement>,
     prop: string,
-    value: string | number | boolean | (string | number)[],
+    value: string | number | boolean | string[] | number[],
   ) {
     const { model } = $selector.data('metaSlider');
     const pluginOptions: IPluginOptions = model.getOptions();

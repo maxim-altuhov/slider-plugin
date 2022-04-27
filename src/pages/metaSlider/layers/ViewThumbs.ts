@@ -4,7 +4,7 @@ import Observer from '../patterns/Observer';
 class ViewThumbs extends Observer {
   private _$elemThumbs = $();
   private _isFirstInit = true;
-  private _verifKeysObj = {
+  private readonly _verifKeysObj = {
     setValueKeys: [
       'init',
       'changedValue',

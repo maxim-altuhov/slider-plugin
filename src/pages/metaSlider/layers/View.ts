@@ -17,7 +17,7 @@ class View extends Observer {
   // Adding method "updateModel" to the observer list in subviews
   setObservers() {
     Object.values(this.subViewsList).forEach((view) => {
-      if ('subscribe' in view && view.subscribe) view.subscribe(this.updateModel.bind(this));
+      if (view.subscribe) view.subscribe(this.updateModel.bind(this));
     });
   }
 
@@ -51,7 +51,7 @@ class View extends Observer {
 
   updateViews(options: IPluginOptions) {
     Object.values(this.subViewsList).forEach((view) => {
-      if ('update' in view && view.update) view.update(options);
+      if (view.update) view.update(options);
     });
   }
 

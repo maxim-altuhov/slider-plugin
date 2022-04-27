@@ -10,7 +10,7 @@ class ViewScale extends Observer {
   private _mapSkipScalePoints: Map<number, JQuery<HTMLElement>[]> = new Map();
   private _skipScalePointsArray: JQuery<HTMLElement>[] = [];
   private _isFirstInit = true;
-  private _verifKeysObj = {
+  private readonly _verifKeysObj = {
     renderScaleKeys: [
       'init',
       'isVertical',

@@ -2,7 +2,7 @@ class ViewMarkers {
   private _$elemMarkers = $();
   private _$elemThumbs = $();
   private _isFirstInit = true;
-  private _verifKeysObj = {
+  private readonly _verifKeysObj = {
     setValueKeys: [
       'init',
       'changedValue',
